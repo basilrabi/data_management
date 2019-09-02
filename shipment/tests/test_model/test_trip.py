@@ -1,0 +1,112 @@
+from django.core.exceptions import ValidationError
+from django.test import TestCase
+from django.utils.dateparse import parse_datetime as pd
+
+from shipment.models.dso import Shipment, Vessel
+from shipment.models.lct import LCT, Trip, TripDetail
+
+class  TripTest(TestCase):
+
+    def setUp(self):
+        lct = LCT(name='guagua', capacity=1000)
+        lct.save()
+        vessel = Vessel(name='PM Hayabusa')
+        vessel.save()
+
+    def test_data_is_complete_if_not_rejected(self):
+        # pylint: disable=E1101
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        self.assertEqual(trip.clean(), None)
+        self.assertEqual(trip.dump_truck_trips, 50)
+        self.assertEqual(trip.vessel_grab, 2)
+
+        trip = Trip(lct=lct, vessel=vessel, status='partial', vessel_grab=2)
+        self.assertRaises(ValidationError, trip.clean)
+
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='partial',
+                    dump_truck_trips=20)
+        self.assertRaises(ValidationError, trip.clean)
+
+    def test_data_is_okay_if_rejected(self):
+        # pylint: disable=E1101
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+        trip = Trip(lct=lct, vessel=vessel, status='rejected')
+        self.assertEqual(trip.clean(), None)
+        self.assertEqual(trip.dump_truck_trips, 0)
+        self.assertEqual(trip.vessel_grab, 0)
+
+    def test_if_trigger_works(self):
+        # pylint: disable=E1101
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+
+        # No trip details
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        trip.save()
+        trip = Trip.objects.all().first()
+        self.assertEqual(trip.interval_from, None)
+        self.assertEqual(trip.interval_to, None)
+        self.assertEqual(trip.valid, False)
+
+        # One detail
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from='2019-08-16 00:00:00+0800',
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip = Trip.objects.all().first()
+        self.assertEqual(trip.interval_from, pd('2019-08-16 00:00:00+0800'))
+        self.assertEqual(trip.interval_to, None)
+        self.assertEqual(trip.valid, False)
+
+        # Two details
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from='2019-08-16 00:05:00+0800',
+            interval_class='loading'
+        )
+        trip_detail.save()
+        trip = Trip.objects.all().first()
+        self.assertEqual(trip.interval_from, pd('2019-08-16 00:00:00+0800'))
+        self.assertEqual(trip.interval_to, pd('2019-08-16 00:05:00+0800'))
+        self.assertEqual(trip.valid, False)
+
+        # Valid shipment
+        shipment = Shipment(
+            name='284', vessel=vessel,
+            start_loading='2019-08-16 10:00:00+0800',
+            end_loading='2019-08-16 20:00:00+0800'
+        )
+        shipment.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from='2019-08-16 10:05:00+0800',
+            interval_class='preparation_departure'
+        )
+        trip_detail.save()
+        trip = Trip.objects.all().first()
+        self.assertEqual(trip.interval_from, pd('2019-08-16 00:00:00+0800'))
+        self.assertEqual(trip.interval_to, pd('2019-08-16 10:05:00+0800'))
+        self.assertEqual(trip.valid, True)
+
+        # Become invalid again
+        trip_detail = trip.tripdetail_set.all().last()
+        trip_detail.delete()
+        trip = Trip.objects.all().first()
+        self.assertEqual(trip.interval_from, pd('2019-08-16 00:00:00+0800'))
+        self.assertEqual(trip.interval_to, pd('2019-08-16 00:05:00+0800'))
+        self.assertEqual(trip.valid, False)
