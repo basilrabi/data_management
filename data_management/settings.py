@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,7 @@ WSGI_APPLICATION = 'data_management.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': db_name,
         'USER': db_user,
         'PASSWORD': db_password,

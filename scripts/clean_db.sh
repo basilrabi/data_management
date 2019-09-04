@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
-db_cmd='psql -h localhost -U djangotest postgres -c'
+db_cmd='-h localhost -U djangotest'
 
-$db_cmd "drop database if exists data_management_test"
-$db_cmd "create database data_management_test"
+psql $db_cmd postgres -c "drop database if exists data_management_test"
+psql $db_cmd postgres -c "create database data_management_test"
+psql $db_cmd data_management_test -c "create extension postgis"
