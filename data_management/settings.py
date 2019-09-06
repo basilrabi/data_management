@@ -33,6 +33,10 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'custom.apps.CustomConfig',
+    'fleet.apps.FleetConfig',
+    'location.apps.LocationConfig',
+    'personnel.apps.PersonnelConfig',
+    'sampling.apps.SamplingConfig',
     'shipment.apps.ShipmentConfig',
     'django.contrib.admin',
     'django.contrib.auth',
