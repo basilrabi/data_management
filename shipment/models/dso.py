@@ -3,7 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .customfields import NameField
+from custom.fields import NameField
 
 class Shipment(models.Model):
     """

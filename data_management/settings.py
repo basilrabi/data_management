@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'custom.apps.CustomConfig',
     'shipment.apps.ShipmentConfig',
     'django.contrib.admin',
     'django.contrib.auth',
