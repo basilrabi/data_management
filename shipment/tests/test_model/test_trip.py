@@ -64,7 +64,7 @@ class  TripTest(TestCase):
         # One detail
         trip_detail = TripDetail(
             trip=trip,
-            interval_from='2019-08-16 00:00:00+0800',
+            interval_from=pd('2019-08-16 00:00:00+0800'),
             interval_class='preparation_loading'
         )
         trip_detail.save()
@@ -76,7 +76,7 @@ class  TripTest(TestCase):
         # Two details
         trip_detail = TripDetail(
             trip=trip,
-            interval_from='2019-08-16 00:05:00+0800',
+            interval_from=pd('2019-08-16 00:05:00+0800'),
             interval_class='loading'
         )
         trip_detail.save()
@@ -88,13 +88,13 @@ class  TripTest(TestCase):
         # Valid shipment
         shipment = Shipment(
             name='284', vessel=vessel,
-            start_loading='2019-08-16 10:00:00+0800',
-            end_loading='2019-08-16 20:00:00+0800'
+            start_loading=pd('2019-08-16 10:00:00+0800'),
+            end_loading=pd('2019-08-16 20:00:00+0800')
         )
         shipment.save()
         trip_detail = TripDetail(
             trip=trip,
-            interval_from='2019-08-16 10:05:00+0800',
+            interval_from=pd('2019-08-16 10:05:00+0800'),
             interval_class='preparation_departure'
         )
         trip_detail.save()
@@ -109,4 +109,40 @@ class  TripTest(TestCase):
         trip = Trip.objects.all().first()
         self.assertEqual(trip.interval_from, pd('2019-08-16 00:00:00+0800'))
         self.assertEqual(trip.interval_to, pd('2019-08-16 00:05:00+0800'))
+        self.assertEqual(trip.valid, False)
+
+    def test_trip_validity_recheck_upon_shipment_detail_update(self):
+        # pylint: disable=E1101
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+        shipment = Shipment(
+            name='284', vessel=vessel,
+            start_loading=pd('2019-08-16 10:00:00+0800'),
+            end_loading=pd('2019-08-16 20:00:00+0800')
+        )
+        shipment.save()
+
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 10:05:00+0800'),
+            interval_class='preparation_departure'
+        )
+        trip_detail.save()
+
+        self.assertEqual(trip.valid, True)
+        shipment.start_loading=pd('2019-08-16 10:06:00+0800')
+        shipment.save()
+        trip = Trip.objects.all().first()
         self.assertEqual(trip.valid, False)

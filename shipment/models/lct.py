@@ -153,7 +153,8 @@ class TripDetail(models.Model):
         ('rain', 'Rain'),
         ('rain_swell', 'Rain and Swell'),
         ('refueling', 'Refueling'),
-        ('rewatering', 'Rewatering')
+        ('rewatering', 'Rewatering'),
+        ('end', 'End'),
     )
 
     interval_class = models.CharField(max_length=30, choices=CLASS_CHOICES)
@@ -177,6 +178,10 @@ class TripDetail(models.Model):
         if self.trip.tripdetail_set.filter(interval_from=self.interval_from) \
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Times should be different.')
+
+        if self.trip.tripdetail_set.filter(interval_class='end') \
+                .exclude(id=self.id).count() > 0:
+            raise ValidationError('Only one end is allowed.')
 
         for trip in self.trip.lct.trip_set.all().exclude(id=self.trip.id):
             if trip._interval_to():

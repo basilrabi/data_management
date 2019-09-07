@@ -128,3 +128,25 @@ class  LCTContractTest(TestCase):
             interval_class='preparation_loading'
         )
         self.assertRaises(ValidationError, trip_detail.clean)
+
+    def test_only_one_end_per_detail(self):
+        # pylint: disable=E1101
+        trip = Trip.objects.all().first()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-17 00:00:00+0800'),
+            interval_class='end'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-17 00:00:00+0800'),
+            interval_class='end'
+        )
+        self.assertRaises(ValidationError, trip_detail.clean)
