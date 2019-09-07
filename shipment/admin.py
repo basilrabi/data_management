@@ -53,6 +53,7 @@ class ShipmentAdmin(admin.ModelAdmin):
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
     inlines = [TripDetailInline]
+    readonly_fields = ['interval_from', 'interval_to']
     list_display = ('lct',
                     'interval_from',
                     'interval_to',
