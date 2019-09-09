@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block title %}{% endblock %}
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit-no" />
+        {% load static %}
+        <link rel="shortcut icon" href="{%  static 'favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'custom/css/bootstrap.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'custom/css/jquery-ui.css' %}" />
+        <link rel="stylesheet" href="{% static 'custom/css/style.css' %}" />
+        <script src="{% static 'custom/js/jquery-1.12.4.min.js' %}"></script>
+        <script src="{% static 'custom/js/jquery-ui.min.js' %}"></script>
+        <script>
+        $( function() {
+          $( ".datepicker" ).datepicker();
+        } );
+        </script>
+    </head>
+    <body>
+        <p class="ws1"></p>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <img class="center" src="{% static 'custom/img/TMC.svg' %}" alt="Taganito Mining Corporation" />
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+        <p class="ws1"></p>
+    </body>
+</html>

@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'custom.apps.CustomConfig',
     'fleet.apps.FleetConfig',
+    'inventory.apps.InventoryConfig',
     'location.apps.LocationConfig',
     'personnel.apps.PersonnelConfig',
     'sampling.apps.SamplingConfig',
