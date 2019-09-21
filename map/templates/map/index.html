@@ -15,7 +15,9 @@
 <script>
         var mymap = L.map('mapid').setView([9.5235, 125.8313], 14);
         L.tileLayer.wms('http://192.169.101.192:8010/ogc/map?',{
-            layers: 'Taganito Mine General Location'
+            layers: 'Taganito Mine General Location',
+            maxZoom: 25
         }).addTo(mymap);
+        L.control.scale({imperial: false}).addTo(mymap);
 </script>
 {% endblock %}
