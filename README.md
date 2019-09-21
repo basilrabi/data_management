@@ -45,7 +45,7 @@ Clone the source code:
 
 ```bash
 cd
-git clone http://192.169.101.20:3000/brabi/data_management.git
+git clone http://tmc:3000/basilrabi/data_management.git
 ```
 
 Install the requirements:
