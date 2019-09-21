@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="{% static 'custom/css/bootstrap.min.css' %}" />
         <link rel="stylesheet" href="{% static 'custom/css/jquery-ui.css' %}" />
         <link rel="stylesheet" href="{% static 'custom/css/style.css' %}" />
+        {% block css %}{% endblock %}
         <script src="{% static 'custom/js/jquery-1.12.4.min.js' %}"></script>
         <script src="{% static 'custom/js/jquery-ui.min.js' %}"></script>
         <script>
@@ -16,6 +17,7 @@
           $( ".datepicker" ).datepicker();
         } );
         </script>
+        {% block script %}{% endblock %}
     </head>
     <body>
         <p class="ws1"></p>

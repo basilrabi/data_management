@@ -22,5 +22,6 @@ admin.site.site_header = 'Data Management'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/admin/')),
-    path('inventory/', include('inventory.urls'))
+    path('inventory/', include('inventory.urls')),
+    path('map/', include('map.urls'))
 ]

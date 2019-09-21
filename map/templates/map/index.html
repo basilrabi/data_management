@@ -1,0 +1,21 @@
+{% extends "custom/base_generic.html" %}
+{% block title %}
+<title>Taganito Mine General Location</title>
+{% endblock %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'map/css/leaflet.css' %}" />
+<link rel="stylesheet" href="{% static 'map/css/map.css' %}" />
+{% endblock %}
+{% block script %}
+<script src="{% static 'map/js/leaflet.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div id="mapid" style="height: 600px;"></div>
+<script>
+        var mymap = L.map('mapid').setView([9.5235, 125.8313], 14);
+        L.tileLayer.wms('http://192.169.101.192:8010/ogc/map?',{
+            layers: 'Taganito Mine General Location'
+        }).addTo(mymap);
+</script>
+{% endblock %}
