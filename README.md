@@ -176,21 +176,9 @@ WantedBy=multi-user.target
 ##### SELinux Adventures
 
 If you want SELinux activated, running the service might fail since SELinux will prevent a lot of things.
-To have a local policy, run:
+You may [compile](http://www.ryanchapin.com/fv-b-4-826/HowTo-Compile-and-Install-New-SELinux-Plicy-Modules.html) the type enforcement files in the `SELinux/` directory.
 
-```bash
-setsebool -P domain_can_mmap_files 1 # TODO: might not be needed in F32
-setsebool -P httpd_read_user_content 1
-setenforce 0
-systemctl start data_management
-systemctl restart data_management
-grep gunicorn /var/log/audit/audit.log | audit2allow -M mydatamanagement
-semodule -i mydatamanagement.pp
-setenforce 1
-systemctl enable data_management
-```
-
-See <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-fixing_problems-allowing_access_audit2allow>
+See [this](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-fixing_problems-allowing_access_audit2allow)
 for further clarification of SELinux.
 
 ##### NGINX
@@ -226,25 +214,4 @@ After the configuration file, run the following:
 usermod -a -G $USER nginx
 systemctl start nginx
 systemctl enable nginx
-```
-
-Again, because of SELinux, nginx will not be able to write on the unix socket.
-See <https://stackoverflow.com/questions/23948527/13-permission-denied-while-connecting-to-upstreamnginx>.
-Fix this by running the following:
-
-```bash
-setsebool -P httpd_can_network_connect 1 # TODO: might not be needed
-grep nginx /var/log/audit/audit.log | audit2allow -M mynginx
-semodule -i mynginx.pp
-systemctl restart data_management
-systemctl restart nginx
-```
-
-##### PostgreSQL
-
-Due to SELinux again, gunicorn would not be able to connect to the postgres database.
-
-```bash
-grep postgres /var/log/audit/audit.log | audit2allow -M db
-semodule -i db.pp
 ```
