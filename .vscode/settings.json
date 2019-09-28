@@ -1,3 +1,6 @@
 {
-    "python.pythonPath": "/home/brabi/.virtualenvs/data_management/bin/python"
+    "python.pythonPath": "~/.virtualenvs/data_management/bin/python",
+    "terminal.integrated.fontSize": 13,
+    "editor.rulers": [80],
+    "editor.fontSize": 13
 }
