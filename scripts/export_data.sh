@@ -3,7 +3,7 @@
 rm data -rf
 mkdir data
 
-db_cmd='-h pi -U djangotest data_management'
+db_cmd='-h tmc -U data_management data_management'
 
 psql $db_cmd -c "\copy shipment_lct to 'data/shipment_lct.csv' csv header"
 psql $db_cmd -c "\copy shipment_lctcontract to 'data/shipment_lctcontract.csv' csv header"
