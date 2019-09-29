@@ -6,7 +6,7 @@ with open('data/shipment_shipment.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         # pylint: disable=E1101
-        vessel = Vessel.objects.get(id=row['vessel_id'])
+        vessel = Vessel.objects.get(name=row['vessel'])
         shipment = Shipment(name=row['name'],
                             start_loading=pdt(row['start_loading']),
                             end_loading=pdt(row['end_loading']),

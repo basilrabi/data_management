@@ -85,8 +85,9 @@ class Trip(models.Model):
 
     def _interval_from(self):
         # pylint: disable=E1101
-        return self.tripdetail_set.all() \
-            .aggregate(models.Min('interval_from'))['interval_from__min']
+        if self.tripdetail_set.all().count() > 0:
+            return self.tripdetail_set.all() \
+                .aggregate(models.Min('interval_from'))['interval_from__min']
 
     def _interval_to(self):
         # pylint: disable=E1101
@@ -116,8 +117,9 @@ class Trip(models.Model):
                 raise ValidationError('Number of vessel grabs used required.')
 
     def save(self, *args, **kwargs):
+        if self._interval_from():
+            self.interval_from = self._interval_from()
         self.interval_to = self._interval_to()
-        self.interval_from = self._interval_from()
         self.valid = self._valid()
         super().save(*args, **kwargs)
 
@@ -196,7 +198,7 @@ class TripDetail(models.Model):
             models.Q(end__isnull=True)
         ).count() < 1:
             raise ValidationError('LCT used is not rented or has no lease'
-                                  ' contractfor the date inputed.')
+                                  ' contract for the date inputed.')
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

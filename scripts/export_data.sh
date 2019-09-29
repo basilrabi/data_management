@@ -3,11 +3,19 @@
 rm data -rf
 mkdir data
 
-db_cmd='-h tmc -U data_management data_management'
+mv data_management/local.py data_management/local.py.bak
+cat >data_management/local.py <<EOL
+db_name = '$DATA_MANAGEMENT_DB_NAME'
+db_user = '$DATA_MANAGEMENT_DB_USER'
+db_password = '$DATA_MANAGEMENT_DB_PASSWORD'
+db_host = '$DATA_MANAGEMENT_DB_HOST'
+EOL
 
-psql $db_cmd -c "\copy shipment_lct to 'data/shipment_lct.csv' csv header"
-psql $db_cmd -c "\copy shipment_lctcontract to 'data/shipment_lctcontract.csv' csv header"
-psql $db_cmd -c "\copy shipment_shipment to 'data/shipment_shipment.csv' csv header"
-psql $db_cmd -c "\copy shipment_trip to 'data/shipment_trip.csv' csv header"
-psql $db_cmd -c "\copy shipment_tripdetail to 'data/shipment_tripdetail.csv' csv header"
-psql $db_cmd -c "\copy shipment_vessel to 'data/shipment_vessel.csv' csv header"
+./manage.py shell < scripts/export_data/shipment_lct.py
+./manage.py shell < scripts/export_data/shipment_lctcontract.py
+./manage.py shell < scripts/export_data/shipment_vessel.py
+./manage.py shell < scripts/export_data/shipment_shipment.py
+./manage.py shell < scripts/export_data/shipment_trip.py
+./manage.py shell < scripts/export_data/shipment_tripdetail.py
+
+mv data_management/local.py.bak data_management/local.py

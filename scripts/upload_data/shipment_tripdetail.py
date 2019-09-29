@@ -6,10 +6,11 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         # pylint: disable=E1101
-        trip = Trip.objects.get(id=row['trip_id'])
+        trip = Trip.objects.get(lct__name=row['trip_lct'],
+                                interval_from=pdt(row['trip_interval_from']))
         detail = TripDetail(trip=trip,
                             interval_from=pdt(row['interval_from']),
                             interval_class=row['interval_class'],
                             remarks=row['remarks'])
         detail.save()
-        print('TripDetial {} saved.'.format(detail.id))
+        print('TripDetail {} saved.'.format(detail.id))
