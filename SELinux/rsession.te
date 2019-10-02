@@ -2,22 +2,34 @@
 module rsession 1.0;
 
 require {
-	type tmp_t;
-	type devpts_t;
-	type user_home_t;
-	type ptmx_t;
-	type init_t;
-	class dir { create rename rmdir setattr };
-	class file { append link setattr write };
-	class sock_file { create setattr };
-	class chr_file { ioctl open read write };
-	class process execmem;
+        type devpts_t;
+        type init_t;
+        type ptmx_t;
+        type user_home_t;
+        type initrc_tmp_t;
+        type tmp_t;
+        type ntop_port_t;
+        class dir { create rename rmdir setattr };
+        class file { append create link setattr unlink write };
+        class sock_file { create setattr };
+        class chr_file { ioctl open read write };
+        class process execmem;
+        class tcp_socket name_connect;
 }
 
 #============= init_t ==============
 
 #!!!! This avc is allowed in the current policy
 allow init_t devpts_t:chr_file open;
+
+#!!!! This avc is allowed in the current policy
+allow init_t initrc_tmp_t:dir rmdir;
+
+#!!!! This avc is allowed in the current policy
+allow init_t initrc_tmp_t:file { create unlink write };
+
+#!!!! This avc is allowed in the current policy
+allow init_t ntop_port_t:tcp_socket name_connect;
 
 #!!!! This avc is allowed in the current policy
 #!!!! This av rule may have been overridden by an extended permission av rule
