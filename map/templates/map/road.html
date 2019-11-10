@@ -1,0 +1,15 @@
+{% extends "map/index.html" %}
+{% block title %}
+<title>Road Gradients in Taganito Mine</title>
+{% endblock %}
+{% block content %}
+<div id="mapid" style="height: 600px;"></div>
+<script>
+        var mymap = L.map('mapid').setView([9.5235, 125.8313], 14);
+        L.tileLayer.wms('http://192.169.101.192:8010/ogc/road?',{
+            layers: 'Gradients of Road Network',
+            maxZoom: 25
+        }).addTo(mymap);
+        L.control.scale({imperial: false}).addTo(mymap);
+</script>
+{% endblock %}
