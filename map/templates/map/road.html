@@ -5,24 +5,44 @@
 {% block content %}
 <div id="map" style="height: 600px;"></div>
 <script>
-        var mymap = L.map('map', {
-            attributionControl: false,
-            center: [9.5235, 125.8313],
-            zoom: 14
-        });
-        L.tileLayer.wms('http://192.169.101.192:8010/ogc/road?',{
-            layers: 'Gradients of Road Network',
-            maxZoom: 25,
-            detectRetina: true
-        }).addTo(mymap);
-        L.control.scale({imperial: false}).addTo(mymap);
+    function getColor(d) {
+		return d > 33 ? '#B20000' :
+		    d > 21  ? '#FF4040' :
+			d > 15  ? '#FF8080' :
+			d > 12  ? '#FFBFBF' :
+			'#1CDE63';
+	}
+    var mymap = L.map('map', {
+        attributionControl: false,
+        center: [9.5235, 125.8313],
+        zoom: 14
+    });
+    L.tileLayer.wms('http://192.169.101.192:8010/ogc/road?',{
+        layers: 'Gradients of Road Network',
+        maxZoom: 25,
+        detectRetina: true
+    }).addTo(mymap);
+    L.control.scale({imperial: false}).addTo(mymap);
 
-        var legend = L.control({position: 'topright', detectRetina: true});
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML += "<img src=http://192.169.101.192:8010/ogc/road?&SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image/jpeg&LAYER=Road%20Gradient>";
-            return div;
+    var legend = L.control({position: 'topright'});
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 12, 15, 21, 33],
+            labels = [],
+            from, to;
+
+        for (var i = 0; i < grades.length; i++) {
+            from = grades[i];
+            to = grades[i + 1];
+            labels.push(
+                '<i style="background:' + getColor(from + 1) + '"></i> ' +
+                from + (to ? '&ndash;' + to : '+'));
         }
-        legend.addTo(mymap);
+
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
+    legend.addTo(mymap);
 </script>
 {% endblock %}
