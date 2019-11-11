@@ -3,9 +3,13 @@
 <title>Road Gradients in Taganito Mine</title>
 {% endblock %}
 {% block content %}
-<div id="mapid" style="height: 600px;"></div>
+<div id="map" style="height: 600px;"></div>
 <script>
-        var mymap = L.map('mapid').setView([9.5235, 125.8313], 14);
+        var mymap = L.map('map', {
+            attributionControl: false,
+            center: [9.5235, 125.8313],
+            zoom: 14
+        });
         L.tileLayer.wms('http://192.169.101.192:8010/ogc/road?',{
             layers: 'Gradients of Road Network',
             maxZoom: 25,
