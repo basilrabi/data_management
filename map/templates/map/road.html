@@ -38,7 +38,7 @@
             to = grades[i + 1];
             labels.push(
                 '<i style="background:' + getColor(from + 1) + '"></i> ' +
-                from + (to ? '&ndash;' + to : '+'));
+                (from < 10 ? '&nbsp;&nbsp;0' : from) + (to ? '&ndash;' + to : '+'));
         }
 
         div.innerHTML = labels.join('<br>');
