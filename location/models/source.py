@@ -7,7 +7,8 @@ RIDGES = (
     ('T1', 'Taga 1'),
     ('T2', 'Taga 2'),
     ('T3', 'Taga 3'),
-    ('UZ', 'Urbiztondo')
+    ('UZ', 'Urbiztondo'),
+    ('KB', 'Kinalablaban')
 )
 
 class MineBlock(models.Model):
