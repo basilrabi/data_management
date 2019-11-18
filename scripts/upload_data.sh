@@ -1,5 +1,14 @@
 #!/usr/bin/bash
 
+set -a
+. data_management/local.py
+set +a
+
+ogr2ogr -update -append \
+    -f PostgreSQL "PG:host=$db_host user=$db_user dbname=$db_name password=$db_password" \
+    -fieldmap 0,1 \
+    -nln location_mineblock data/location_mineblock.gpkg
+
 ./manage.py shell < scripts/upload_data/shipment_lct.py && \
 echo "Uploading shipment.LCT success." && \
 ./manage.py shell < scripts/upload_data/shipment_lctcontract.py && \
