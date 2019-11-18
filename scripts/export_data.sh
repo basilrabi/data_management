@@ -11,6 +11,10 @@ db_password = '$DATA_MANAGEMENT_DB_PASSWORD'
 db_host = '$DATA_MANAGEMENT_DB_HOST'
 EOL
 
+ogr2ogr -f "GPKG" data/location_mineblock.gpkg \
+    "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
+    location_mineblock
+
 ./manage.py shell < scripts/export_data/shipment_lct.py
 ./manage.py shell < scripts/export_data/shipment_lctcontract.py
 ./manage.py shell < scripts/export_data/shipment_vessel.py
