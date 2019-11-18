@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.contrib.gis.db import models as gis_models
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -24,7 +25,6 @@ class Material(models.Model):
 class MiningSample(models.Model):
     series_number = models.PositiveSmallIntegerField()
     material = models.ForeignKey('Material', on_delete=models.CASCADE)
-    mine_block = models.ForeignKey(MineBlock, on_delete=models.CASCADE)
     ridge = models.CharField(max_length=2, null=True, blank=True)
     dumping_area = models.ForeignKey(Stockyard, on_delete=models.CASCADE)
     piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
@@ -59,7 +59,6 @@ class MiningSample(models.Model):
 
     def save(self, *args, **kwargs):
         # pylint: disable=E1101
-        self.ridge = self.mine_block.ridge
         if self.has_increment():
             self.start_collection = self.miningsampleincrement_set.all() \
                 .order_by('report__date').first().report.date
@@ -93,7 +92,7 @@ class MiningSample(models.Model):
     def __str__(self):
         # pylint: disable=E1101
         return '{}-{}-{:05d}'.format(self.piling_method.name,
-                                     self.mine_block.ridge,
+                                     self.ridge,
                                      self.series_number)
 
 class MiningSampleAssay(models.Model):
@@ -171,8 +170,6 @@ class MiningSampleIncrement(models.Model):
             raise ValidationError('Material classes do not match.')
         if self.report.piling_method != self.sample.piling_method:
             raise ValidationError('Piling method do not match.')
-        if self.report.mine_block_source != self.sample.mine_block:
-            raise ValidationError('Mine block do not match.')
         if self.report.dumping_area != self.sample.dumping_area:
             raise ValidationError('Dumping area do not match.')
         if self.sample.required_trips():
@@ -194,7 +191,7 @@ class MiningSampleIncrement(models.Model):
             )
         ]
 
-class MiningSampleReport(models.Model):
+class MiningSampleReport(gis_models.Model):
     date = models.DateField()
     SHIFT = (
         ('D', 'Day'),
@@ -207,7 +204,7 @@ class MiningSampleReport(models.Model):
     tx = models.ForeignKey(TrackedExcavator,
                            on_delete=models.CASCADE,
                            verbose_name='TX')
-    mine_block_source = models.ForeignKey(MineBlock, on_delete=models.CASCADE)
+    source = gis_models.MultiPolygonField(srid=3125, null=True, blank=True)
     dumping_area = models.ForeignKey(Stockyard, on_delete=models.CASCADE)
     sampler = models.ManyToManyField(Person,
                                      related_name='samplereport',
@@ -249,6 +246,8 @@ class MiningSampleReport(models.Model):
             if not self.piling_method.trip(self.date):
                 raise ValidationError('No required trips set for piling method '
                                       'selected.')
+
+        # TODO: all polygons of 1 report must come from 1 ridge
 
     class Meta:
         ordering = ['-date', '-shift_collected']

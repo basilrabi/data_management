@@ -91,8 +91,8 @@ class MiningSampleReportTest(TestCase):
         mb2 = MineBlock(name='201', ridge='T1')
         mb1.save()
         mb2.save()
-        my1 = Stockyard(name='MY201', ridge='T1')
-        my2 = Stockyard(name='MY301', ridge='UZ')
+        my1 = Stockyard(name='MY201')
+        my2 = Stockyard(name='MY301')
         my1.save()
         my2.save()
         tx = TrackedExcavator(fleet_number=1)
@@ -108,7 +108,6 @@ class MiningSampleReportTest(TestCase):
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
         mat1 = Material.objects.get(name='LF')
-        mb1 = MineBlock.objects.get(name='101')
         my1 = Stockyard.objects.get(name='MY201')
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
@@ -117,7 +116,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -130,7 +128,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p4)
@@ -143,7 +140,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p3,
                                 foreman=p1)
@@ -156,7 +152,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -169,7 +164,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m2,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -183,8 +177,6 @@ class MiningSampleReportTest(TestCase):
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
         mat1 = Material.objects.get(name='LF')
         mat2 = Material.objects.get(name='LA')
-        mb1 = MineBlock.objects.get(name='101')
-        mb2 = MineBlock.objects.get(name='201')
         my1 = Stockyard.objects.get(name='MY201')
         my2 = Stockyard.objects.get(name='MY301')
         p1 = Person.objects.get(first_name='A')
@@ -194,7 +186,6 @@ class MiningSampleReportTest(TestCase):
 
         s1 = MiningSample(series_number=1,
                           material=mat1,
-                          mine_block=mb1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -204,7 +195,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -220,7 +210,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m2,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -236,7 +225,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat2,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -252,7 +240,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb2,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -268,7 +255,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my2,
                                 supervisor=p2,
                                 foreman=p1)
@@ -283,7 +269,6 @@ class MiningSampleReportTest(TestCase):
         # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
-        mb1 = MineBlock.objects.get(name='101')
         my1 = Stockyard.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
@@ -292,7 +277,6 @@ class MiningSampleReportTest(TestCase):
 
         s1 = MiningSample(series_number=1,
                           material=mat1,
-                          mine_block=mb1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -302,7 +286,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -324,7 +307,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -341,7 +323,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -357,7 +338,6 @@ class MiningSampleReportTest(TestCase):
         # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
-        mb1 = MineBlock.objects.get(name='101')
         my1 = Stockyard.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
@@ -366,7 +346,6 @@ class MiningSampleReportTest(TestCase):
 
         s1 = MiningSample(series_number=1,
                           material=mat1,
-                          mine_block=mb1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -376,7 +355,6 @@ class MiningSampleReportTest(TestCase):
                                 piling_method=m1,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
@@ -392,12 +370,10 @@ class MiningSampleReportTest(TestCase):
         # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
-        mb1 = MineBlock.objects.get(name='101')
         my1 = Stockyard.objects.get(name='MY201')
 
         s1 = MiningSample(series_number=1,
                           material=mat1,
-                          mine_block=mb1,
                           dumping_area=my1,
                           piling_method=m1,
                           ready_for_delivery=True)

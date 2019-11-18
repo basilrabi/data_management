@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from custom.admin_gis import TMCLocationAdmin
 from personnel.models.person import Person
 
 from .models.piling import PilingMethod, TripsPerPile
@@ -66,12 +67,11 @@ class MiningSampleAssayAdmin(admin.ModelAdmin):
                     'date_analyzed')
 
 @admin.register(MiningSampleReport)
-class MiningSampleReportAdmin(admin.ModelAdmin):
+class MiningSampleReportAdmin(TMCLocationAdmin):
     list_display = ('date',
                     'shift_collected',
                     'piling_method',
                     'material',
-                    'mine_block_source',
                     'dumping_area')
 
     def add_view(self, request, form_url='', extra_context=None):

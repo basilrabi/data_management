@@ -23,17 +23,11 @@ class MineBlock(models.Model):
         return '{} MB {}'.format(self.ridge, self.name)
 
 class Stockyard(models.Model):
-    name = PileField(max_length=20)
-    ridge = models.CharField(max_length=2, choices=RIDGES)
+    name = PileField(max_length=20, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
-        ordering = ['ridge', 'name']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['ridge', 'name'], name='unique_yard_per_ridge'
-            )
-        ]
+        ordering = ['name']
 
     def __str__(self):
-        return '{} {}'.format(self.ridge, self.name)
+        return '{}'.format(self.name)

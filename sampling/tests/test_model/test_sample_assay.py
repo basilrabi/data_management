@@ -49,13 +49,12 @@ class MiningSampleAssayTest(TestCase):
         mat1.save()
         mb1 = MineBlock(name='101', ridge='T3')
         mb1.save()
-        my1 = Stockyard(name='MY201', ridge='T1')
+        my1 = Stockyard(name='MY201')
         my1.save()
         tx = TrackedExcavator(fleet_number=1)
         tx.save()
         s1 = MiningSample(series_number=1,
                           material=mat1,
-                          mine_block=mb1,
                           dumping_area=my1,
                           piling_method=method)
         s1.save()
@@ -64,12 +63,11 @@ class MiningSampleAssayTest(TestCase):
                                 piling_method=method,
                                 material=mat1,
                                 tx=tx,
-                                mine_block_source=mb1,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
-        r1.sampler.add(p3)
+        r1.sampler.add(p3) # pylint: disable=E1101
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=10)
         i1.save()

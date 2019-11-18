@@ -32,9 +32,7 @@ class StockyardTest(TestCase):
         pass
 
     def test_name_is_unique_per_ridge_part(self):
-        yard = Stockyard(ridge='T1', name='LDA 1')
+        yard = Stockyard(name='LDA 1')
         yard.save()
-        yard = Stockyard(ridge='T2', name='LDA 1')
-        self.assertEqual(None, yard.save())
-        yard = Stockyard(ridge='T1', name='LDA-1')
+        yard = Stockyard(name='LDA-1')
         self.assertRaises(IntegrityError, yard.save)

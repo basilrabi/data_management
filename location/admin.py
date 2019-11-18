@@ -9,4 +9,4 @@ class MineBlockAdmin(TMCLocationAdmin):
 
 @admin.register(Stockyard)
 class StockyardAdmin(TMCLocationAdmin):
-    list_display = ('name', 'ridge')
+    pass
