@@ -18,6 +18,8 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 
 admin.site.site_header = 'Data Management'
+admin.site.site_title = 'TMC'
+admin.site.index_title = 'Data Groups'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
