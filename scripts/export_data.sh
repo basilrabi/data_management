@@ -1,6 +1,9 @@
 #!/usr/bin/bash
 
-rm data -rf
+if [ -d "data" ]
+then
+    mv data data_$(date +"%Y-%m-%d_%H-%M-%S")
+fi
 mkdir data
 
 mv data_management/local.py data_management/local.py.bak
