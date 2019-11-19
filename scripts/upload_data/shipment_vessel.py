@@ -6,5 +6,9 @@ with open('data/shipment_vessel.csv', newline='') as csvfile:
     for row in reader:
         # pylint: disable=E1101
         vessel = Vessel(name=row['name'])
-        vessel.save()
-        print('Vessel {} saved.'.format(vessel.id))
+        try:
+            vessel.clean()
+            vessel.save()
+            print('Vessel {} saved.'.format(vessel.id))
+        except:
+            print('Vessel {} was not saved.'.format(vessel.name))

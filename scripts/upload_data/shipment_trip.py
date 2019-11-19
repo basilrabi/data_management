@@ -12,14 +12,20 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
             trip = Trip(lct=lct,
                         vessel=vessel,
                         status=row['status'],
-                        dump_truck_trips=row['dump_truck_trips'],
-                        vessel_grab=row['vessel_grab'],
+                        dump_truck_trips=int(row['dump_truck_trips']),
+                        vessel_grab=int(row['vessel_grab']),
                         interval_from=row['interval_from'])
         else:
             trip = Trip(lct=lct,
                         vessel=vessel,
                         status=row['status'],
-                        dump_truck_trips=row['dump_truck_trips'],
-                        vessel_grab=row['vessel_grab'])
-        trip.save()
-        print('Trip {} saved.'.format(trip.id))
+                        dump_truck_trips=int(row['dump_truck_trips']),
+                        vessel_grab=int(row['vessel_grab']))
+        try:
+            trip.clean()
+            trip.save()
+            print('Trip {} saved.'.format(trip.id))
+        except:
+            print('Trip {}-{} was not saved.'.format(
+                trip.lct.__str__(), trip.vessel.__str__()
+            ))

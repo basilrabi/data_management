@@ -12,5 +12,12 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                             interval_from=pdt(row['interval_from']),
                             interval_class=row['interval_class'],
                             remarks=row['remarks'])
-        detail.save()
-        print('TripDetail {} saved.'.format(detail.id))
+        try:
+            detail.clean()
+            detail.save()
+            print('TripDetail {} saved.'.format(detail.id))
+        except:
+            print('TripDetail {}:{} was not saved.'.format(
+                detail.trip.lct.__str__(),
+                str(detail.interval_from)
+            ))

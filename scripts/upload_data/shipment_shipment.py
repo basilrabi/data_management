@@ -13,5 +13,9 @@ with open('data/shipment_shipment.csv', newline='') as csvfile:
                             dump_truck_trips=row['dump_truck_trips'],
                             tonnage=row['tonnage'],
                             vessel=vessel)
-        shipment.save()
-        print('Shipment {} saved.'.format(shipment.id))
+        try:
+            shipment.clean()
+            shipment.save()
+            print('Shipment {} saved.'.format(shipment.id))
+        except:
+            print('Shipment {} was not saved.'.format(shipment.name))

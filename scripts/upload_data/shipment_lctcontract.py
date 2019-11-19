@@ -10,5 +10,11 @@ with open('data/shipment_lctcontract.csv', newline='') as csvfile:
         contract = LCTContract(
             lct=lct, start=pd(row['start']), end=pd(row['end'])
         )
-        contract.save()
-        print('Contract {} saved.'.format(contract.id))
+        try:
+            contract.clean()
+            contract.save()
+            print('Contract {} saved.'.format(contract.id))
+        except:
+            print('Contract {}:{} was not saved.'.format(
+                contract.lct.__str__(), str(contract.start)
+            ))
