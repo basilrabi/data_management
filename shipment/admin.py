@@ -60,4 +60,5 @@ class TripAdmin(admin.ModelAdmin):
                     'vessel',
                     'dump_truck_trips',
                     'cycle',
-                    'valid')
+                    'valid',
+                    'continuous')

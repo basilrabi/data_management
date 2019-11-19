@@ -13,6 +13,86 @@ class  TripTest(TestCase):
         vessel = Vessel(name='PM Hayabusa')
         vessel.save()
 
+    def test_continuity(self):
+        # pylint: disable=E1101
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+
+        # Only one trip is continuous
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:05:00+0800'),
+            interval_class='loading'
+        )
+        trip_detail.save()
+
+        trip = Trip.objects.get(dump_truck_trips=50)
+        self.assertEqual(trip._continuous(), True)
+
+        # Another adjacent trip is continous
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=51,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:05:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:10:00+0800'),
+            interval_class='loading'
+        )
+        trip_detail.save()
+
+        trip = Trip.objects.get(dump_truck_trips=50)
+        self.assertEqual(trip._continuous(), True)
+        trip = Trip.objects.get(dump_truck_trips=51)
+        self.assertEqual(trip._continuous(), True)
+
+        # Another adjacent trip but broken
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=52,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:15:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:20:00+0800'),
+            interval_class='loading'
+        )
+        trip_detail.save()
+
+        trip = Trip.objects.get(dump_truck_trips=50)
+        self.assertEqual(trip._continuous(), True)
+        trip = Trip.objects.get(dump_truck_trips=51)
+        self.assertEqual(trip._continuous(), False)
+        trip = Trip.objects.get(dump_truck_trips=52)
+        self.assertEqual(trip._continuous(), False)
+
     def test_data_is_complete_if_not_rejected(self):
         # pylint: disable=E1101
         lct = LCT.objects.all().first()

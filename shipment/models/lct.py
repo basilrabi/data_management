@@ -77,11 +77,44 @@ class Trip(models.Model):
     valid = models.BooleanField(default=False,
                                 help_text='A valid trip coincides with the '
                                           'shipment schedule.')
+    continuous = models.BooleanField(
+        default=False,
+        help_text='A continuous trip as its previous or next trip having '
+                  'adjacent time stamps.'
+    )
 
     def cycle(self):
         if self.interval_to:
             return self.interval_to - self.interval_from
         return datetime.timedelta(0)
+
+    def next(self):
+        # pylint: disable=E1101
+        if self.interval_from:
+            return self.lct.trip_set.filter(models.Q(
+                interval_from__gt=self.interval_from
+            )).order_by('interval_from').first()
+
+    def previous(self):
+        # pylint: disable=E1101
+        if self.interval_from:
+            return self.lct.trip_set.filter(models.Q(
+                interval_from__lt=self.interval_from
+            )).order_by('-interval_from').first()
+
+    def _continuous(self):
+        """
+        Checks whether the trip of the same LCT is continuous.
+        """
+        if not self._interval_to():
+            return False
+        if self.next():
+            if self._interval_to() != self.next()._interval_from():
+                return False
+        if self.previous():
+            if self._interval_from() != self.previous()._interval_to():
+                return False
+        return True
 
     def _interval_from(self):
         # pylint: disable=E1101
@@ -116,12 +149,18 @@ class Trip(models.Model):
             if self.vessel_grab < 1:
                 raise ValidationError('Number of vessel grabs used required.')
 
-    def save(self, *args, **kwargs):
+    def save(self, recurse_adjacent=True, *args, **kwargs):
         if self._interval_from():
             self.interval_from = self._interval_from()
         self.interval_to = self._interval_to()
         self.valid = self._valid()
+        self.continuous = self._continuous()
         super().save(*args, **kwargs)
+        if recurse_adjacent:
+            if self.next():
+                self.next().save(recurse_adjacent=False)
+            if self.previous():
+                self.previous().save(recurse_adjacent=False)
 
     class Meta:
         ordering = ['lct', '-interval_from']
