@@ -11,11 +11,12 @@ with open('data/shipment_tripdetail.csv', 'w', newline='') as csvfile:
                      'remarks'])
     # pylint: disable=E1101
     for detail in TripDetail.objects.all().order_by('interval_from'):
-        writer.writerow([
-            str(detail.trip.lct.name),
-            str(detail.trip.interval_from.astimezone(get_localzone())),
-            str(detail.interval_from.astimezone(get_localzone())),
-            str(detail.interval_class),
-            str(detail.remarks or '')
-        ])
+        if detail.trip.tripdetail_set.all().count() > 1:
+            writer.writerow([
+                str(detail.trip.lct.name),
+                str(detail.trip.interval_from.astimezone(get_localzone())),
+                str(detail.interval_from.astimezone(get_localzone())),
+                str(detail.interval_class),
+                str(detail.remarks or '')
+            ])
 csvfile.close()

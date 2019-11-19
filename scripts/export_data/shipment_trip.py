@@ -13,15 +13,17 @@ with open('data/shipment_trip.csv', 'w', newline='') as csvfile:
                      'valid'])
     # pylint: disable=E1101
     for trip in Trip.objects.all():
-        vessel = ''
-        if trip.vessel:
-            vessel = trip.vessel.name
-        writer.writerow([str(trip.lct.name),
-                         str(vessel),
-                         str(trip.status),
-                         str(trip.dump_truck_trips),
-                         str(trip.vessel_grab),
-                         str(trip.interval_from or ''),
-                         str(trip.interval_to or ''),
-                         str(trip.valid)])
+        if trip.tripdetail_set.all().count() > 1:
+            if trip.vessel:
+                vessel = trip.vessel.name
+            else:
+                vessel = ''
+            writer.writerow([str(trip.lct.name),
+                             str(vessel),
+                             str(trip.status),
+                             str(trip.dump_truck_trips),
+                             str(trip.vessel_grab),
+                             str(trip.interval_from or ''),
+                             str(trip.interval_to or ''),
+                             str(trip.valid)])
 csvfile.close()
