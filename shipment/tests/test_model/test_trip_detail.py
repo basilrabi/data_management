@@ -5,7 +5,7 @@ from django.utils.dateparse import parse_datetime as pd
 from shipment.models.dso import Shipment, Vessel
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
-class  LCTContractTest(TestCase):
+class  TripDetailTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -108,6 +108,19 @@ class  LCTContractTest(TestCase):
         trip_detail = TripDetail(
             trip=trip2,
             interval_from=pd('2019-08-16 00:04:00+0800'),
+            interval_class='preparation_loading'
+        )
+        self.assertRaises(ValidationError, trip_detail.clean)
+
+        trip_detail = TripDetail(
+            trip=trip2,
+            interval_from=pd('2019-08-15 12:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip2,
+            interval_from=pd('2019-08-20 12:00:00+0800'),
             interval_class='preparation_loading'
         )
         self.assertRaises(ValidationError, trip_detail.clean)

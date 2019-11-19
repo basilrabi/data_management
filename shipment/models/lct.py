@@ -177,6 +177,9 @@ class TripDetail(models.Model):
 
     def clean(self):
         # pylint: disable=E1101
+        if not self.interval_from:
+            raise ValidationError('Date and time should not be empty.')
+
         if self.trip.tripdetail_set.filter(interval_from=self.interval_from) \
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Times should be different.')
@@ -186,9 +189,26 @@ class TripDetail(models.Model):
             raise ValidationError('Only one end is allowed.')
 
         for trip in self.trip.lct.trip_set.all().exclude(id=self.trip.id):
+            t_begin = None
+            t_end = None
+            if self.trip._interval_from():
+                t_begin = self.trip._interval_from()
+                if self.interval_from < t_begin:
+                    t_begin = self.interval_from
+                if self.trip._interval_to():
+                    t_end = self.trip._interval_to()
+                    if self.interval_from > t_end:
+                        t_end = self.interval_from
+
             if trip._interval_to():
-                if trip._interval_from() < self.interval_from and \
-                        trip._interval_to() > self.interval_from:
+                if trip._interval_from() < (t_end or self.interval_from) and \
+                        trip._interval_to() > (t_begin or self.interval_from):
+                    raise ValidationError('Travel time of one LCT should not'
+                                          ' overlap.')
+
+            if trip._interval_from():
+                if trip._interval_from() > (t_begin or self.interval_from) and \
+                        trip._interval_from() < (t_end or self.interval_from):
                     raise ValidationError('Travel time of one LCT should not'
                                           ' overlap.')
 
