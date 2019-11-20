@@ -1,6 +1,14 @@
 from django.db import models
 from re import sub
 
+class AlphaNumeric(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        return sub(r'[^\w]', '', str(value).upper())
+
 class MineBlockField(models.CharField):
     """
     This field must always start with a number.
@@ -49,3 +57,14 @@ class SpaceLess(models.CharField):
     def get_prep_value(self, value):
         if value:
             return sub(r'\s+', '', str(value).upper())
+
+class MarineVesselName(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        if value:
+            value = sub(r'\s+', ' ', str(value).upper().strip())
+            value = sub(r'^M[^a-zA-Z]*V\s*', '', value)
+            return value

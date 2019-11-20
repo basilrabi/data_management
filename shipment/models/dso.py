@@ -3,7 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from custom.fields import NameField
+from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.variables import day_time, zero_time
 
 class LayDaysDetail(models.Model):
@@ -269,7 +269,14 @@ class Vessel(models.Model):
     """
     Bulk cargo vessel used for exporting nickel and iron ore.
     """
-    name = NameField(max_length=50, unique=True)
+    name = MarineVesselName(max_length=50)
+    stripped_name = AlphaNumeric(
+        max_length=50, unique=True, null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        self.stripped_name = self.name
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['name']

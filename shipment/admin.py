@@ -44,7 +44,8 @@ class LCTAdmin(admin.ModelAdmin):
 
 @admin.register(Vessel)
 class VesselAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('__str__',)
+    exclude = ('stripped_name',)
 
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):

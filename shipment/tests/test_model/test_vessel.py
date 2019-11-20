@@ -36,3 +36,17 @@ class  VesselTest(TestCase):
 
         vessel = Vessel(name=' PM  HAYABUSA')
         self.assertRaises(IntegrityError, vessel.save)
+
+    def test_if_not_duplicated_with_mv_a(self):
+        vessel = Vessel(name='MV PM Hayabusa')
+        vessel.save()
+
+        vessel = Vessel(name='MV PM  HAYABUSA')
+        self.assertRaises(IntegrityError, vessel.save)
+
+    def test_if_not_duplicated_with_mv_b(self):
+        vessel = Vessel(name='MV PM Hayabusa')
+        vessel.save()
+
+        vessel = Vessel(name=' M/V PM-HAYABUSA')
+        self.assertRaises(IntegrityError, vessel.save)
