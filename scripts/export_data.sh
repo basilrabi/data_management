@@ -12,6 +12,7 @@ db_name = '$DATA_MANAGEMENT_DB_NAME'
 db_user = '$DATA_MANAGEMENT_DB_USER'
 db_password = '$DATA_MANAGEMENT_DB_PASSWORD'
 db_host = '$DATA_MANAGEMENT_DB_HOST'
+db_port = '$DATA_MANAGEMENT_DB_PORT'
 EOL
 
 ogr2ogr -f "GPKG" data/location_mineblock.gpkg \

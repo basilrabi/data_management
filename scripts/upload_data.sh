@@ -5,7 +5,7 @@ set -a
 set +a
 
 ogr2ogr -update -append \
-    -f PostgreSQL "PG:host=$db_host user=$db_user dbname=$db_name password=$db_password" \
+    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
     -fieldmap 0,1 \
     -nln location_mineblock data/location_mineblock.gpkg
 
