@@ -96,19 +96,24 @@ class LayDaysStatement(models.Model):
     completed_loading = models.DateTimeField(null=True, blank=True)
     cargo_description = NameField(max_length=20, default='NICKEL ORE')
     tonnage = models.PositiveIntegerField(null=True, blank=True)
-    loading_terms = models.PositiveSmallIntegerField(default=6000)
-    demurrage_rate = models.PositiveSmallIntegerField(default=11000)
-    despatch_rate = models.PositiveSmallIntegerField(default=5500)
+    loading_terms = models.PositiveSmallIntegerField(
+        default=6000,
+        help_text='Agreed loading rate (tons per day).'
+    )
+    demurrage_rate = models.PositiveSmallIntegerField(
+        default=11000,
+        help_text='US Dollar per day'
+    )
+    despatch_rate = models.PositiveSmallIntegerField(
+        default=5500,
+        help_text='US Dollar per day'
+    )
     can_test = models.PositiveSmallIntegerField(
         default=0,
         help_text='Number of can tests performed.'
     )
-    time_allowed = models.DecimalField(
-        default=0, max_digits=7, decimal_places=5
-    )
-    time_used = models.DecimalField(
-        default=0, max_digits=7, decimal_places=5
-    )
+    time_allowed = models.DurationField(default=zero_time)
+    time_used = models.DurationField(default=zero_time)
     demurrage = models.DecimalField(
         default=0, max_digits=8, decimal_places=2
     )
@@ -117,20 +122,22 @@ class LayDaysStatement(models.Model):
     )
 
     def laytime_difference(self):
-        return round(self.time_allowed - self.time_used, 5)
+        return self.time_allowed - self.time_used
 
     def time_can_test(self):
-        return self.can_test / 576
+        return self.can_test * datetime.timedelta(minutes=2.5)
 
     def time_limit(self):
         if self.tonnage:
             return (
                 (
-                    (self.tonnage / self.loading_terms) + self.time_can_test()
-                ) or 0
+                    datetime.timedelta(
+                        days=self.tonnage / self.loading_terms
+                    ) + self.time_can_test()
+                ) or zero_time
             )
         else:
-            return 0
+            return zero_time
 
     def vessel(self):
         # pylint: disable=E1101
@@ -171,7 +178,7 @@ class LayDaysStatement(models.Model):
                     .interval_from
                 self.time_used = (
                     self.completed_loading - self.commenced_loading
-                ) / day_time
+                )
                 self.shipment.end_loading = self.completed_loading
             self.shipment.start_loading = self.commenced_loading
         if self.tonnage:
@@ -179,7 +186,7 @@ class LayDaysStatement(models.Model):
         self.shipment.save()
 
         _time_allowed = zero_time
-        _time_limit = datetime.timedelta(self.time_limit())
+        _time_limit = self.time_limit()
 
         for detail in self.laydaysdetail_set.all():
             if not detail.next():
@@ -204,17 +211,17 @@ class LayDaysStatement(models.Model):
         if _time_limit > zero_time:
             _time_allowed += _time_limit
 
-        self.time_allowed = _time_allowed / day_time
+        self.time_allowed = _time_allowed
         _laytime_difference = self.laytime_difference()
-        if _laytime_difference > 0:
+        if _laytime_difference > zero_time:
             self.demurrage = 0
             self.despatch = round(
-                _laytime_difference * self.despatch_rate, 2
+                (_laytime_difference / day_time) * self.despatch_rate, 2
             )
         else:
             self.despatch = 0
             self.demurrage = round(
-                _laytime_difference * self.demurrage_rate, 2
+                (_laytime_difference / day_time) * self.demurrage_rate, 2
             )
         super().save(*args, **kwargs)
 

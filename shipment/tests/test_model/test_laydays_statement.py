@@ -83,11 +83,11 @@ class  LayDaysStatementTest(TestCase):
             can_test=22
         )
         statement.save()
-        self.assertAlmostEqual(statement.time_can_test(), 0.03819, places=5)
         self.assertAlmostEqual(
-            statement.time_limit(),
-            timedelta(days=9, hours=5, minutes=19) / day_time,
-            places=5
+            statement.time_can_test() / day_time, 0.03819, places=5
+        )
+        self.assertAlmostEqual(
+            statement.time_limit(), timedelta(days=9, hours=5, minutes=19)
         )
 
         detail = LayDaysDetail(
@@ -219,7 +219,9 @@ class  LayDaysStatementTest(TestCase):
         statement.save()
         statement = LayDaysStatement.objects.all().first()
         self.assertAlmostEqual(
-            statement.laytime_difference(), Decimal(2.98889), places=5
+            statement.laytime_difference() / day_time,
+            2.98889,
+            places=5
         )
         self.assertAlmostEqual(statement.demurrage, Decimal(0), places=2)
-        self.assertAlmostEqual(statement.despatch, Decimal(16438.90), places=2)
+        self.assertAlmostEqual(statement.despatch, Decimal(16438.89), places=2)
