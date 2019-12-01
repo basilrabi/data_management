@@ -2,9 +2,10 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.html import mark_safe
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
-from custom.variables import day_time, zero_time
+from custom.variables import day_time, one_hour, one_minute, zero_time
 
 class LayDaysDetail(models.Model):
     """
@@ -17,15 +18,15 @@ class LayDaysDetail(models.Model):
     )
 
     CLASS_CHOICES = (
-        ('can_test', 'Can Test'),
+        ('can test', 'Can Test'),
         ('end', 'End'),
         ('loading', 'Continuous Loading'),
         ('others', '-'),
-        ('sun_dry', 'Cargo Sun Drying'),
+        ('sun dry', 'Cargo Sun Drying'),
         ('swell', 'Heavy Swell'),
         ('rain', 'Rain'),
-        ('rain_swell', 'Rain and Swell'),
-        ('waiting_for_cargo', 'Waiting for Cargo')
+        ('rain and swell', 'Rain and Swell'),
+        ('waiting for cargo', 'Waiting for Cargo')
     )
 
     interval_class = models.CharField(max_length=30, choices=CLASS_CHOICES)
@@ -34,6 +35,16 @@ class LayDaysDetail(models.Model):
     def interval(self):
         if self.next():
             return self.next().interval_from - self.interval_from
+
+    def interval_formated(self):
+        """
+        Time interval formatted in hours:minutes
+        """
+        if self.interval():
+            value = self.interval()
+            hours = value // one_hour
+            minutes = (value - (hours * one_hour)) // one_minute
+            return f'{hours:02d}:{minutes:02d}'
 
     def next(self):
         # pylint: disable=E1101
@@ -62,7 +73,7 @@ class LayDaysDetail(models.Model):
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Only one end is allowed.')
 
-        if self.loading_rate > 100:
+        if (self.loading_rate or 0) > 100:
             raise ValidationError("The limit of loading rate is 100.")
 
 class LayDaysStatement(models.Model):
@@ -70,7 +81,7 @@ class LayDaysStatement(models.Model):
     A vessel's laydays statement for a shipment loading.
     """
     shipment = models.OneToOneField('Shipment', on_delete=models.CASCADE)
-    vessel_voyage = models.CharField(max_length=20, null=True, blank=True)
+    vessel_voyage = models.PositiveSmallIntegerField(default=0)
     arrival_pilot = models.DateTimeField(
         null=True,
         blank=True,
@@ -120,9 +131,25 @@ class LayDaysStatement(models.Model):
     despatch = models.DecimalField(
         default=0, max_digits=8, decimal_places=2
     )
+    date_saved = models.DateField(null=True, blank=True)
+    report_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text='Date of statement. Defaults to date_saved.'
+    )
 
     def laytime_difference(self):
         return self.time_allowed - self.time_used
+
+    def PDF(self):
+        return mark_safe(
+            '<a class="grp-button" '
+            'href="/shipment/statement/{}" '
+            'target="_blank"'
+            '>'
+            'View Statement'
+            '</a>'.format(self.__str__())
+        )
 
     def time_can_test(self):
         return self.can_test * datetime.timedelta(minutes=2.5)
@@ -223,6 +250,7 @@ class LayDaysStatement(models.Model):
             self.demurrage = round(
                 (_laytime_difference / day_time) * self.demurrage_rate, 2
             )
+        self.date_saved = datetime.date.today()
         super().save(*args, **kwargs)
 
     class Meta:

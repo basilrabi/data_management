@@ -8,6 +8,9 @@ from .models.dso import LayDaysDetail, LayDaysStatement, Shipment, Vessel
 class LayDaysDetailInline(admin.TabularInline):
     model = LayDaysDetail
     extra = 0
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+    }
 
 class LCTContractInline(admin.TabularInline):
     model = LCTContract
@@ -23,7 +26,8 @@ class TripDetailInline(admin.StackedInline):
 @admin.register(LayDaysStatement)
 class LayDaysStatementAdmin(admin.ModelAdmin):
     inlines = [LayDaysDetailInline]
-    readonly_fields = ['commenced_laytime',
+    readonly_fields = ['date_saved',
+                       'commenced_laytime',
                        'commenced_loading',
                        'completed_loading',
                        'time_allowed',
@@ -35,7 +39,8 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
                     'commenced_laytime',
                     'completed_loading',
                     'demurrage',
-                    'despatch')
+                    'despatch',
+                    'PDF')
 
 @admin.register(LCT)
 class LCTAdmin(admin.ModelAdmin):
