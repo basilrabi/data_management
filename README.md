@@ -45,7 +45,7 @@ Clone the source code:
 
 ```bash
 cd
-git clone http://tmc:3000/basilrabi/data_management.git
+git clone http://datamanagement.tmc.nickelasia.com:3000/basilrabi/data_management.git
 ```
 
 Install the requirements:
