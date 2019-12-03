@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
-from custom.variables import day_time
+from custom.variables import one_day
 from shipment.models.dso import (LayDaysDetail,
                                  LayDaysStatement,
                                  Shipment,
@@ -84,7 +84,7 @@ class  LayDaysStatementTest(TestCase):
         )
         statement.save()
         self.assertAlmostEqual(
-            statement.time_can_test() / day_time, 0.03819, places=5
+            statement.time_can_test() / one_day, 0.03819, places=5
         )
         self.assertAlmostEqual(
             statement.time_limit(), timedelta(days=9, hours=5, minutes=19)
@@ -219,7 +219,7 @@ class  LayDaysStatementTest(TestCase):
         statement.save()
         statement = LayDaysStatement.objects.all().first()
         self.assertAlmostEqual(
-            statement.laytime_difference() / day_time,
+            statement.laytime_difference() / one_day,
             2.98889,
             places=5
         )

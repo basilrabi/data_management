@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.html import mark_safe
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
-from custom.variables import day_time, one_hour, one_minute, zero_time
+from custom.variables import one_day, one_hour, one_minute, zero_time
 
 class LayDaysDetail(models.Model):
     """
@@ -243,12 +243,12 @@ class LayDaysStatement(models.Model):
         if _laytime_difference > zero_time:
             self.demurrage = 0
             self.despatch = round(
-                (_laytime_difference / day_time) * self.despatch_rate, 2
+                (_laytime_difference / one_day) * self.despatch_rate, 2
             )
         else:
             self.despatch = 0
             self.demurrage = round(
-                (_laytime_difference / day_time) * self.demurrage_rate, 2
+                (_laytime_difference / one_day) * self.demurrage_rate, 2
             )
         self.date_saved = datetime.date.today()
         super().save(*args, **kwargs)
