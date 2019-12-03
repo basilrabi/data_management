@@ -62,7 +62,8 @@ Set-up your local settings
 cp data_management/local.py.sample data_management/local.py
 ```
 
-Edit your databse connection variables in `data_management/local.py`.
+Edit your databse connection variables and django superuser credentials (if
+you will use the automated bash scripts) in `data_management/local.py`.
 
 Set-up the django project
 
