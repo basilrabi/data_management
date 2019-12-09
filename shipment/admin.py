@@ -16,7 +16,7 @@ class LCTContractInline(admin.TabularInline):
     model = LCTContract
     extra = 0
 
-class TripDetailInline(admin.StackedInline):
+class TripDetailInline(admin.TabularInline):
     model = TripDetail
     extra = 0
     formfield_overrides = {
@@ -59,7 +59,7 @@ class ShipmentAdmin(admin.ModelAdmin):
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
     inlines = [TripDetailInline]
-    readonly_fields = ['interval_from', 'interval_to']
+    readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     list_display = ('lct',
                     'interval_from',
                     'interval_to',
