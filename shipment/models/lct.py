@@ -79,8 +79,11 @@ class Trip(models.Model):
                                           'shipment schedule.')
     continuous = models.BooleanField(
         default=False,
-        help_text='A continuous trip as its previous or next trip having '
-                  'adjacent time stamps.'
+        help_text='A continuous trip meets the following conditions: '
+                  '1) its `interval from` time stamp is equal to its previous '
+                  'trip\'s `interval to` time stamp and '
+                  '2) its `interval to` time stamp is equal to the its next '
+                  'trip\'s `interval from` time stamps.'
     )
 
     def cycle(self):
