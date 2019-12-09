@@ -10,5 +10,8 @@ with open('data/shipment_lct.csv', newline='') as csvfile:
             lct.clean()
             lct.save()
             print('LCT {} saved.'.format(lct.id))
+        except KeyboardInterrupt:
+            print('\nUploading interrupted.')
+            break
         except:
             print('LCT {} was not saved.'.format(lct.name))

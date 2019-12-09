@@ -16,6 +16,9 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
             detail.clean()
             detail.save()
             print('TripDetail {} saved.'.format(detail.id))
+        except KeyboardInterrupt:
+            print('\nUploading interrupted.')
+            break
         except:
             print('TripDetail {}:{} was not saved.'.format(
                 detail.trip.lct.__str__(),

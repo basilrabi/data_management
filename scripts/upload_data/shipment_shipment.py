@@ -17,5 +17,8 @@ with open('data/shipment_shipment.csv', newline='') as csvfile:
             shipment.clean()
             shipment.save()
             print('Shipment {} saved.'.format(shipment.id))
+        except KeyboardInterrupt:
+            print('\nUploading interrupted.')
+            break
         except:
             print('Shipment {} was not saved.'.format(shipment.name))
