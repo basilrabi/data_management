@@ -93,13 +93,13 @@ class  LayDaysStatementTest(TestCase):
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 02:50:00+0800'),
-            interval_class='loading',
+            interval_class='continuous loading',
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 08:20:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -111,13 +111,13 @@ class  LayDaysStatementTest(TestCase):
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 17:35:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 19:10:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -129,85 +129,85 @@ class  LayDaysStatementTest(TestCase):
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 21:00:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-12 23:45:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-13 13:50:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-13 18:20:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=0,
             interval_from=pdt('2019-08-13 22:30:00+0800'),
-            interval_class='swell'
+            interval_class='heavy swell'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-14 01:30:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-14 09:40:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-14 12:50:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-16 18:55:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-16 21:40:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-17 02:00:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-17 05:50:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-17 21:40:00+0800'),
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, loading_rate=100,
             interval_from=pdt('2019-08-18 03:10:00+0800'),
-            interval_class='loading'
+            interval_class='continuous loading'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -216,8 +216,13 @@ class  LayDaysStatementTest(TestCase):
             interval_class='end'
         )
         detail.save()
-        statement.save()
         statement = LayDaysStatement.objects.all().first()
+        self.assertEqual(
+            statement.completed_loading, pdt('2019-08-18 15:00:00+0800')
+        )
+        self.assertEqual(
+            statement.commenced_laytime, pdt('2019-08-12 02:50:00+0800')
+        )
         self.assertAlmostEqual(
             statement.laytime_difference() / one_day,
             2.98889,

@@ -18,19 +18,24 @@ class LayDaysDetail(models.Model):
     )
 
     CLASS_CHOICES = (
-        ('can test', 'Can Test'),
-        ('end', 'End'),
-        ('loading', 'Continuous Loading'),
-        ('others', '-'),
-        ('sun dry', 'Cargo Sun Drying'),
-        ('swell', 'Heavy Swell'),
+        ('continuous loading', 'Continuous Loading'),
+        ('sun drying', 'Sun Drying'),
+        ('heavy swell', 'Heavy Swell'),
         ('rain', 'Rain'),
-        ('rain and swell', 'Rain and Swell'),
-        ('waiting for cargo', 'Waiting for Cargo')
+        ('rain and heavy swell', 'Rain and Heavy Swell'),
+        ('waiting for cargo', 'Waiting for Cargo'),
+        ('waiting for cargo due to rejection', 'Waiting for Cargo (rejected)'),
+        ('end', 'End'),
+        ('can test', 'Can Test'),
+        ('others', '-')
     )
 
-    interval_class = models.CharField(max_length=30, choices=CLASS_CHOICES)
+    interval_class = models.CharField(max_length=50, choices=CLASS_CHOICES)
     remarks = models.TextField(null=True, blank=True)
+    pause_override = models.BooleanField(
+        default=False,
+        help_text='Exclude this detail as running lay time.'
+    )
 
     def interval(self):
         if self.next():
@@ -53,8 +58,16 @@ class LayDaysDetail(models.Model):
         )).order_by('interval_from').first()
 
     def running(self):
-        RUNNING_CLASS = ['loading', 'sun_dry', 'waiting_for_cargo']
-        if self.interval_class in RUNNING_CLASS:
+        """
+        Is the detail interval consuming lay time?
+        """
+        RUNNING_CLASS = [
+            'continuous loading',
+            'sun drying',
+            'waiting for cargo',
+            'waiting for cargo due to rejection'
+        ]
+        if self.interval_class in RUNNING_CLASS and not self.pause_override:
             return True
         return False
 
@@ -75,6 +88,10 @@ class LayDaysDetail(models.Model):
 
         if (self.loading_rate or 0) > 100:
             raise ValidationError("The limit of loading rate is 100.")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.laydays.save() # pylint: disable=no-member
 
 class LayDaysStatement(models.Model):
     """
@@ -194,62 +211,72 @@ class LayDaysStatement(models.Model):
         # pylint: disable=E1101
 
         # Copy shipment period
-        n_details = self.laydaysdetail_set.all().count()
-        if n_details >= 1:
-            self.commenced_laytime = self.laydaysdetail_set.first() \
-                .interval_from
-            self.commenced_loading = self.laydaysdetail_set \
-                .filter(interval_class='loading').first().interval_from
-            if n_details >= 2:
-                self.completed_loading = self.laydaysdetail_set.last() \
-                    .interval_from
-                self.time_used = (
-                    self.completed_loading - self.commenced_loading
-                )
-                self.shipment.end_loading = self.completed_loading
-            self.shipment.start_loading = self.commenced_loading
-        if self.tonnage:
-            self.shipment.tonnage = self.tonnage
-        self.shipment.save()
+        if self.laydaysdetail_set.all().count() >= 1:
+            commenced_laytime = self.laydaysdetail_set.first()
+            last_detail = self.laydaysdetail_set.last()
+            self.commenced_laytime = commenced_laytime.interval_from
+            commenced_loading = self.laydaysdetail_set \
+                .filter(interval_class='continuous loading').first()
+            if commenced_loading:
+                self.commenced_loading = commenced_loading.interval_from
+                self.shipment.start_loading = self.commenced_loading
+                try:
+                    end_laytime = self.laydaysdetail_set \
+                        .get(interval_class='end')
+                except:
+                    end_laytime = None
+                if end_laytime:
+                    self.completed_loading = end_laytime.interval_from
+                    if self.shipment.end_loading != self.completed_loading:
+                        self.shipment.end_loading = self.completed_loading
+                        self.shipment.save()
 
-        _time_allowed = zero_time
-        _time_limit = self.time_limit()
+            self.time_used = last_detail.interval_from - self.commenced_laytime
 
-        for detail in self.laydaysdetail_set.all():
-            if not detail.next():
-                break
+            _time_allowed = zero_time
+            _time_limit = self.time_limit()
 
-            detail_interval = detail.interval()
-            load_factor = detail.loading_rate / 100
-            if _time_limit > zero_time:
-                if detail.running():
-                    apparent_interval = detail_interval * load_factor
-                    if _time_limit >= apparent_interval:
-                        _time_limit -= apparent_interval
-                        _time_allowed += detail_interval
+            for detail in self.laydaysdetail_set.all():
+                if not detail.next():
+                    break
+
+                detail_interval = detail.interval()
+                load_factor = detail.loading_rate / 100
+                if _time_limit > zero_time:
+                    if detail.running():
+                        apparent_interval = detail_interval * load_factor
+                        if _time_limit >= apparent_interval:
+                            _time_limit -= apparent_interval
+                            _time_allowed += detail_interval
+                        else:
+                            _time_allowed += _time_limit / load_factor
+                            _time_limit = zero_time
                     else:
-                        _time_allowed += _time_limit / load_factor
-                        _time_limit = zero_time
+                        _time_allowed += detail_interval
                 else:
-                    _time_allowed += detail_interval
+                    break
+
+            if _time_limit > zero_time:
+                _time_allowed += _time_limit
+
+            self.time_allowed = _time_allowed
+            _laytime_difference = self.laytime_difference()
+            if _laytime_difference > zero_time:
+                self.demurrage = 0
+                self.despatch = round(
+                    (_laytime_difference / one_day) * self.despatch_rate, 2
+                )
             else:
-                break
+                self.despatch = 0
+                self.demurrage = round(
+                    (_laytime_difference / one_day) * self.demurrage_rate, 2
+                )
 
-        if _time_limit > zero_time:
-            _time_allowed += _time_limit
+        if self.tonnage:
+            if self.tonnage != self.shipment.tonnage:
+                self.shipment.tonnage = self.tonnage
+                self.shipment.save()
 
-        self.time_allowed = _time_allowed
-        _laytime_difference = self.laytime_difference()
-        if _laytime_difference > zero_time:
-            self.demurrage = 0
-            self.despatch = round(
-                (_laytime_difference / one_day) * self.despatch_rate, 2
-            )
-        else:
-            self.despatch = 0
-            self.demurrage = round(
-                (_laytime_difference / one_day) * self.demurrage_rate, 2
-            )
         self.date_saved = datetime.date.today()
         super().save(*args, **kwargs)
 

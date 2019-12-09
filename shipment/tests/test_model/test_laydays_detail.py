@@ -32,7 +32,7 @@ class  LayDaysDetailTest(TestCase):
             laydays=statement,
             interval_from=pdt('2019-08-17 12:00:00+0800'),
             loading_rate=101,
-            interval_class='waiting_for_cargo'
+            interval_class='waiting for cargo'
         )
         self.assertRaises(ValidationError, detail.clean)
 
@@ -68,6 +68,6 @@ class  LayDaysDetailTest(TestCase):
             laydays=statement,
             interval_from=pdt('2019-08-17 12:00:00+0800'),
             loading_rate=100,
-            interval_class='swell'
+            interval_class='heavy swell'
         )
         self.assertRaises(ValidationError, detail.clean)
