@@ -154,6 +154,10 @@ class LayDaysStatement(models.Model):
         blank=True,
         help_text='Date of statement. Defaults to date_saved.'
     )
+    revised = models.BooleanField(
+        default=False,
+        help_text='This lay days statement is revised from a previous version.'
+    )
 
     def laytime_difference(self):
         return self.time_allowed - self.time_used
