@@ -8,8 +8,7 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
                                                  'status',
                                                  'dump_truck_trips',
                                                  'vessel_grab',
-                                                 'interval_from',
-                                                 'interval_to'])
+                                                 'interval_from'])
     for row in reader:
         # pylint: disable=E1101
         lct = LCT.objects.get(name=row['lct'])

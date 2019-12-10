@@ -69,15 +69,13 @@ def export_shipment(request):
 
 def export_trip(request):
     # pylint: disable=no-member
-    # TODO: interval_to is not needed, remove
     rows = ([
         str(trip.lct.name),
         str(trip.vessel.name if trip.vessel else ''),
         str(trip.status),
         str(trip.dump_truck_trips),
         str(trip.vessel_grab),
-        str(print_localzone(trip.interval_from) or ''),
-        str(print_localzone(trip.interval_to) or '')
+        str(print_localzone(trip.interval_from) or '')
     ] for trip in Trip.objects.all())
     return export_csv(rows, 'shipment_trip')
 
