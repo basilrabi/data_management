@@ -3,7 +3,11 @@ from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.lct import Trip, TripDetail
 
 with open('data/shipment_tripdetail.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
+    reader = csv.DictReader(csvfile, fieldnames=['trip_lct',
+                                                 'trip_interval_from',
+                                                 'interval_from',
+                                                 'interval_class',
+                                                 'remarks'])
     for row in reader:
         # pylint: disable=E1101
         trip = Trip.objects.get(lct__name=row['trip_lct'],

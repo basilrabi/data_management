@@ -3,7 +3,12 @@ from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.dso import Shipment, Vessel
 
 with open('data/shipment_shipment.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
+    reader = csv.DictReader(csvfile, fieldnames=['vessel',
+                                                 'name',
+                                                 'start_loading',
+                                                 'end_loading',
+                                                 'dump_truck_trips',
+                                                 'tonnage'])
     for row in reader:
         # pylint: disable=E1101
         vessel = Vessel.objects.get(name=row['vessel'])

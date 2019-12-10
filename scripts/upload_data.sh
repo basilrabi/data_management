@@ -17,6 +17,10 @@ echo "Uploading shipment.LCTContract success." && \
 echo "Uploading shipment.Vessel success." && \
 ./manage.py shell < scripts/upload_data/shipment_shipment.py && \
 echo "Uploading shipment.Shipment success." && \
+./manage.py shell < scripts/upload_data/shipment_laydaysstatement.py && \
+echo "Uploading shipment.LayDaysStatement success." && \
+./manage.py shell < scripts/upload_data/shipment_laydaysdetail.py && \
+echo "Uploading shipment.LayDaysDetail success." && \
 ./manage.py shell < scripts/upload_data/shipment_trip.py && \
 echo "Uploading shipment.Trip success." && \
 ./manage.py shell < scripts/upload_data/shipment_tripdetail.py && \

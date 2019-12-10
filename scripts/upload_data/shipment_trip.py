@@ -3,7 +3,13 @@ from shipment.models.dso import Vessel
 from shipment.models.lct import LCT, Trip
 
 with open('data/shipment_trip.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile)
+    reader = csv.DictReader(csvfile, fieldnames=['lct',
+                                                 'vessel',
+                                                 'status',
+                                                 'dump_truck_trips',
+                                                 'vessel_grab',
+                                                 'interval_from',
+                                                 'interval_to'])
     for row in reader:
         # pylint: disable=E1101
         lct = LCT.objects.get(name=row['lct'])

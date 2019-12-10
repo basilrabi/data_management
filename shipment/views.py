@@ -69,6 +69,7 @@ def export_shipment(request):
 
 def export_trip(request):
     # pylint: disable=no-member
+    # TODO: interval_to is not needed, remove
     rows = ([
         str(trip.lct.name),
         str(trip.vessel.name if trip.vessel else ''),
