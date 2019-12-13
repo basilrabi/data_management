@@ -159,6 +159,10 @@ class LayDaysStatement(models.Model):
         help_text='This lay days statement is revised from a previous version.'
     )
 
+    def cargo_description_title(self):
+        # pylint: disable=no-member
+        return self.cargo_description.lower().title()
+
     def laytime_difference(self):
         return self.time_allowed - self.time_used
 
