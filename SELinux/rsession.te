@@ -43,6 +43,7 @@ allow init_t tmp_t:sock_file { create setattr };
 
 #!!!! This avc is allowed in the current policy
 allow init_t user_home_t:dir { create rename rmdir setattr };
+allow init_t user_home_t:file lock;
 
 #!!!! This avc is allowed in the current policy
 allow init_t user_home_t:file { append link setattr write };
