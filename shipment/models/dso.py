@@ -65,7 +65,8 @@ class LayDaysDetail(models.Model):
             'continuous loading',
             'sun drying',
             'waiting for cargo',
-            'waiting for cargo due to rejection'
+            'waiting for cargo due to rejection',
+            'others'
         ]
         if self.interval_class in RUNNING_CLASS and not self.pause_override:
             return True
