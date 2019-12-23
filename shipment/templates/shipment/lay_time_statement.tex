@@ -147,7 +147,7 @@ Zgo0NjczCiUlRU9GCg==
     {\Large \bfseries {% if statement.revised %}REVISED {% endif %}LAYDAYS STATEMENT}
 
     \vspace{5pt}
-    {\Large \bfseries {{ statement.shipment.name }} - Shipment}
+    {\Large \bfseries {{ statement.shipment_name_latex }} - Shipment}
 \end{center}
 
 {% firstof statement.report_date|date:"F j, Y" statement.date_saved|date:"F j, Y" %}

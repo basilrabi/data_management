@@ -4,7 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import mark_safe
 
-from custom.fields import AlphaNumeric, NameField, MarineVesselName
+from custom.fields import (AlphaNumeric,
+                           NameField,
+                           MarineVesselName,
+                           ordinal_suffix)
 from custom.variables import one_day, one_hour, one_minute, zero_time
 
 class LayDaysDetail(models.Model):
@@ -177,6 +180,12 @@ class LayDaysStatement(models.Model):
             '</a>'.format(self.__str__())
         )
 
+    def shipment_name_latex(self):
+        if self.shipment.name.isdigit():
+            return f'{self.shipment.name}$^\\mathrm{{\\text{{' + \
+                f'{ordinal_suffix(self.shipment.name)}}}}}$'
+        return self.shipment.name
+
     def time_can_test(self):
         return self.can_test * datetime.timedelta(minutes=2.5)
 
@@ -221,6 +230,7 @@ class LayDaysStatement(models.Model):
 
         # Copy shipment period
         if self.laydaysdetail_set.all().count() >= 1:
+            # TODO: clean details, there must be no adjacent duplicates
             commenced_laytime = self.laydaysdetail_set.first()
             last_detail = self.laydaysdetail_set.last()
             self.commenced_laytime = commenced_laytime.interval_from

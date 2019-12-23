@@ -94,6 +94,16 @@ def export_csv(rows, filename):
         f'filename="{filename}.csv"'
     return response
 
+def ordinal_suffix(x):
+    x = int(x)
+    if x % 100 in (11, 12, 13):
+        return 'th'
+    x %= 10
+    suffix = ['st', 'nd', 'rd']
+    if x in (0, 4, 5, 6, 7, 8, 9):
+        return 'th'
+    return suffix[x-1]
+
 def print_localzone(timestamp):
     if timestamp:
         return timestamp.astimezone(get_localzone())
