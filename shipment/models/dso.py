@@ -254,15 +254,16 @@ class LayDaysStatement(models.Model):
 
             _time_allowed = zero_time
             _time_limit = self.time_limit()
+            _time_paused = zero_time
 
             for detail in self.laydaysdetail_set.all():
                 if not detail.next():
                     break
 
                 detail_interval = detail.interval()
-                load_factor = detail.loading_rate / 100
                 if _time_limit > zero_time:
                     if detail.running():
+                        load_factor = detail.loading_rate / 100
                         apparent_interval = detail_interval * load_factor
                         if _time_limit >= apparent_interval:
                             _time_limit -= apparent_interval
@@ -273,12 +274,13 @@ class LayDaysStatement(models.Model):
                     else:
                         _time_allowed += detail_interval
                 else:
-                    break
+                    if detail.pause_override:
+                        _time_paused += detail_interval
 
             if _time_limit > zero_time:
                 _time_allowed += _time_limit
 
-            self.time_allowed = _time_allowed
+            self.time_allowed = _time_allowed + _time_paused
             _laytime_difference = self.laytime_difference()
             if _laytime_difference > zero_time:
                 self.demurrage = 0
@@ -288,7 +290,7 @@ class LayDaysStatement(models.Model):
             else:
                 self.despatch = 0
                 self.demurrage = round(
-                    (_laytime_difference / one_day) * self.demurrage_rate, 2
+                    (-_laytime_difference / one_day) * self.demurrage_rate, 2
                 )
 
         if self.tonnage:
