@@ -85,7 +85,8 @@ class LayDaysDetail(models.Model):
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Times should be unique.')
 
-        if self.laydays.laydaysdetail_set \
+
+        if self.interval_class == 'end' and self.laydays.laydaysdetail_set \
                 .filter(interval_class='end') \
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Only one end is allowed.')
