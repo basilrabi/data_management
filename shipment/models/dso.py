@@ -3,12 +3,16 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import mark_safe
+from django.utils.timezone import now
 
 from custom.fields import (AlphaNumeric,
                            NameField,
                            MarineVesselName,
-                           ordinal_suffix)
+                           ordinal_suffix,
+                           round_up_day)
 from custom.variables import one_day, one_hour, one_minute, zero_time
+
+# pylint: disable=no-member
 
 class LayDaysDetail(models.Model):
     """
@@ -29,62 +33,34 @@ class LayDaysDetail(models.Model):
         ('waiting for cargo', 'Waiting for Cargo'),
         ('waiting for cargo due to rejection', 'Waiting for Cargo (rejected)'),
         ('end', 'End'),
-        ('can test', 'Can Test'),
+        ('vessel arrived behind of schedule', 'Vessel Arrived Behind of Schedule'),
         ('others', '-')
     )
 
     interval_class = models.CharField(max_length=50, choices=CLASS_CHOICES)
     remarks = models.TextField(null=True, blank=True)
-    pause_override = models.BooleanField(
+    can_test = models.BooleanField(
         default=False,
-        help_text='Exclude this detail as running lay time.'
+        help_text='Can test was conducted in this interval.'
     )
 
     def interval(self):
         if self.next():
             return self.next().interval_from - self.interval_from
 
-    def interval_formated(self):
-        """
-        Time interval formatted in hours:minutes
-        """
-        if self.interval():
-            value = self.interval()
-            hours = value // one_hour
-            minutes = (value - (hours * one_hour)) // one_minute
-            return f'{hours:02d}:{minutes:02d}'
-
     def next(self):
-        # pylint: disable=E1101
         return self.laydays.laydaysdetail_set.filter(models.Q(
             interval_from__gt=self.interval_from
         )).order_by('interval_from').first()
-
-    def running(self):
-        """
-        Is the detail interval consuming lay time?
-        """
-        RUNNING_CLASS = [
-            'continuous loading',
-            'sun drying',
-            'waiting for cargo',
-            'waiting for cargo due to rejection',
-            'others'
-        ]
-        if self.interval_class in RUNNING_CLASS and not self.pause_override:
-            return True
-        return False
 
     class Meta:
         ordering = ['interval_from']
 
     def clean(self):
-        # pylint: disable=E1101
         if self.laydays.laydaysdetail_set \
                 .filter(interval_from=self.interval_from) \
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Times should be unique.')
-
 
         if self.interval_class == 'end' and self.laydays.laydaysdetail_set \
                 .filter(interval_class='end') \
@@ -94,9 +70,53 @@ class LayDaysDetail(models.Model):
         if (self.loading_rate or 0) > 100:
             raise ValidationError("The limit of loading rate is 100.")
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.laydays.save() # pylint: disable=no-member
+class LayDaysDetailComputed(models.Model):
+
+    laydays = models.ForeignKey('LayDaysStatement', on_delete=models.CASCADE)
+    interval_from = models.DateTimeField()
+    loading_rate = models.PositiveSmallIntegerField(
+        help_text='Percent available vessel grabs.'
+    )
+    time_remaining = models.DurationField()
+    interval_class = models.CharField(max_length=50)
+    remarks = models.TextField(null=True, blank=True)
+
+    def consumed(self):
+        """
+        Laytime consumption.
+        """
+        if self.previous():
+            return self.interval * (self.previous().loading_rate / 100)
+        return zero_time
+
+    def interval(self):
+        if self.previous():
+            return self.interval_from - self.previous().interval_from
+        return zero_time
+
+    def interval_formated(self):
+        """
+        Time interval formatted in hours:minutes
+        """
+        value = self.interval()
+        hours = value // one_hour
+        minutes = (value - (hours * one_hour)) // one_minute
+        return f'{hours:02d}:{minutes:02d}'
+
+    def is_new_day(self):
+        previous_detail = self.previous()
+        if previous_detail:
+            if round_up_day(previous_detail.interval_from) > self.interval_from:
+                return False
+        return True
+
+    def previous(self):
+        return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
+            interval_from__lt=self.interval_from
+        )).order_by('-interval_from').first()
+
+    class Meta:
+        ordering = ['interval_from']
 
 class LayDaysStatement(models.Model):
     """
@@ -146,14 +166,14 @@ class LayDaysStatement(models.Model):
         help_text='Number of can tests performed.'
     )
     time_allowed = models.DurationField(default=zero_time)
-    time_used = models.DurationField(default=zero_time)
+    additional_laytime = models.DurationField(default=zero_time)
     demurrage = models.DecimalField(
         default=0, max_digits=8, decimal_places=2
     )
     despatch = models.DecimalField(
         default=0, max_digits=8, decimal_places=2
     )
-    date_saved = models.DateField(null=True, blank=True)
+    date_saved = models.DateTimeField(null=True, blank=True)
     report_date = models.DateField(
         null=True,
         blank=True,
@@ -163,13 +183,154 @@ class LayDaysStatement(models.Model):
         default=False,
         help_text='This lay days statement is revised from a previous version.'
     )
+    date_computed = models.DateTimeField(null=True, blank=True)
+
+    def _clean(self):
+        """
+        Removes redundant details.
+        """
+        final = False
+        while not final:
+            for detail in self.laydaysdetail_set.all():
+                if not detail.next():
+                    final = True
+                    break
+
+                if detail.loading_rate == detail.next().loading_rate and \
+                        detail.interval_class == detail.next().interval_class and \
+                        detail.remarks == detail.next().remarks:
+                    detail.next().delete()
+                    break
+
+    def _compute(self):
+        if not self.date_computed or self.date_saved > self.date_computed:
+            self._clean()
+            details = self.laydaysdetailcomputed_set.all()
+            if details.exists():
+                details.delete()
+            if self.laydaysdetail_set.all().count() >= 1:
+                # Compute additional laytime
+                bonus_time = zero_time
+                for detail in self.laydaysdetail_set.filter(
+                    models.Q(interval_class='vessel arrived behind of schedule')
+                ):
+                    bonus_time += detail.interval()
+                if bonus_time > zero_time:
+                    self.additional_laytime = bonus_time
+
+                # Record commencement of laytime
+                details = self.laydaysdetail_set.exclude(interval_class='vessel arrived behind of schedule')
+                if details.exists():
+                    self.commenced_laytime = details.first().interval_from
+
+                loading_details = self.laydaysdetail_set.filter(interval_class='continuous loading')
+                # Proceed computation if loading details exist
+                if loading_details.exists():
+
+                    # Record start of loading operation
+                    self.commenced_loading = loading_details.first().interval_from
+                    if loading_details.first().can_test:
+                        self.commenced_loading += datetime.timedelta(minutes=5)
+
+                    end_details = self.laydaysdetail_set .filter(interval_class='end')
+                    #  Proceed computation if end of statement exists
+                    if end_details.exists():
+
+                        # Record end of loading operation
+                        self.completed_loading = loading_details.last().next().interval_from
+
+                        # Update shipment data with the update of laytime statement
+                        if self.shipment.end_loading != self.completed_loading or self.shipment.start_loading != self.commenced_loading:
+                            self.shipment.start_loading = self.commenced_loading
+                            self.shipment.end_loading = self.completed_loading
+                            self.shipment.save()
+
+                        _time_remaining = self.time_limit() + self.additional_laytime
+                        self.time_allowed = _time_remaining
+                        for detail in self.laydaysdetail_set.all():
+
+                            # Create initial computated detail object copied from the orignal detail
+                            computed_detail = LayDaysDetailComputed(
+                                laydays=detail.laydays,
+                                interval_from=detail.interval_from,
+                                loading_rate=detail.loading_rate,
+                                interval_class=detail.interval_class,
+                                remarks=detail.remarks
+                            )
+                            previous_detail = computed_detail.previous()
+                            if previous_detail:
+                                load_factor = previous_detail.loading_rate / 100
+
+                                # Check whether the time interval between the previous saved detail and the present detail crosses midnight.
+                                # If the interval crosses midnight, create a new time stamp at midnight after the previous detail.
+                                while round_up_day(previous_detail.interval_from) < detail.interval_from:
+
+                                    # Create a new time stamp by incrementing the previous time stamp
+                                    computed_detail_virtual = LayDaysDetailComputed(
+                                        laydays=detail.laydays,
+                                        interval_from=round_up_day(previous_detail.interval_from),
+                                        loading_rate=previous_detail.loading_rate,
+                                        interval_class=previous_detail.interval_class
+                                    )
+                                    time_remaining = _time_remaining - (computed_detail_virtual.interval() * load_factor)
+
+                                    # During lay time expiry, save a time stamp at the end of allowed laytime.
+                                    if _time_remaining > zero_time and time_remaining < zero_time:
+                                        computed_detail_virtual.interval_from = previous_detail.interval_from + (_time_remaining / load_factor)
+                                        computed_detail_virtual.remarks = 'laytime expires'
+                                        computed_detail_virtual.time_remaining = zero_time
+                                        _time_remaining = zero_time
+
+                                    # Save time stamp at midnight
+                                    else:
+                                        computed_detail_virtual.interval_from = round_up_day(previous_detail.interval_from)
+                                        computed_detail_virtual.time_remaining = time_remaining
+                                        _time_remaining = time_remaining
+
+                                    computed_detail_virtual.save()
+                                    previous_detail = computed_detail_virtual
+
+                                # If the previous time interval does not cross midnight, save the present detail as new computed detail.
+                                time_remaining = _time_remaining - (computed_detail.interval() * load_factor)
+
+                                # During lay time expiry, save a time stamp at the end of allowed laytime.
+                                if _time_remaining > zero_time and time_remaining < zero_time:
+                                    computed_detail_virtual = LayDaysDetailComputed(
+                                        laydays=detail.laydays,
+                                        interval_from=previous_detail.interval_from + (_time_remaining / previous_detail.loading_rate),
+                                        loading_rate=previous_detail.loading_rate,
+                                        interval_class=previous_detail.interval_class,
+                                        remarks='laytime expires',
+                                        time_remaining=zero_time
+                                    )
+                                    computed_detail_virtual.save()
+
+                                computed_detail.time_remaining = time_remaining
+                                computed_detail.save()
+                                _time_remaining = time_remaining
+
+                            # If start of statement, save time stamp right away
+                            else:
+                                computed_detail.time_remaining = _time_remaining
+                                computed_detail.save()
+
+                        if _time_remaining > zero_time:
+                            self.demurrage = 0
+                            self.despatch = round(
+                                (_time_remaining / one_day) * self.despatch_rate,
+                                2
+                            )
+                        else:
+                            self.despatch = 0
+                            self.demurrage = round(
+                                (-_time_remaining / one_day) * self.demurrage_rate,
+                                2
+                            )
+                        self.date_computed = now()
+                        self.save(compute=True)
 
     def cargo_description_title(self):
-        # pylint: disable=no-member
         return self.cargo_description.lower().title()
-
-    def laytime_difference(self):
-        return self.time_allowed - self.time_used
 
     def PDF(self):
         return mark_safe(
@@ -177,7 +338,7 @@ class LayDaysStatement(models.Model):
             'href="/shipment/statement/{}" '
             'target="_blank"'
             '>'
-            'View Statement'
+            'Compute and View Statement'
             '</a>'.format(self.__str__())
         )
 
@@ -192,18 +353,19 @@ class LayDaysStatement(models.Model):
 
     def time_limit(self):
         if self.tonnage:
-            return (
-                (
+            time_interval = (
                     datetime.timedelta(
                         days=self.tonnage / self.loading_terms
                     ) + self.time_can_test()
-                ) or zero_time
-            )
-        else:
-            return zero_time
+            ) or zero_time
+            minutes = time_interval // datetime.timedelta(minutes=1)
+            time_interval -= datetime.timedelta(minutes=minutes)
+            if time_interval.total_seconds() >= 30:
+                minutes += 1
+            return datetime.timedelta(minutes=minutes)
+        return zero_time
 
     def vessel(self):
-        # pylint: disable=E1101
         return self.shipment.vessel.name
 
     def clean(self):
@@ -226,80 +388,13 @@ class LayDaysStatement(models.Model):
                 raise ValidationError('Acceptance of Notice of Readiness must '
                                       'be later than its tender.')
 
-    def save(self, *args, **kwargs):
-        # pylint: disable=E1101
-
-        # Copy shipment period
-        if self.laydaysdetail_set.all().count() >= 1:
-            # TODO: clean details, there must be no adjacent duplicates
-            commenced_laytime = self.laydaysdetail_set.first()
-            last_detail = self.laydaysdetail_set.last()
-            self.commenced_laytime = commenced_laytime.interval_from
-            commenced_loading = self.laydaysdetail_set \
-                .filter(interval_class='continuous loading').first()
-            if commenced_loading:
-                self.commenced_loading = commenced_loading.interval_from
-                self.shipment.start_loading = self.commenced_loading
-                try:
-                    end_laytime = self.laydaysdetail_set \
-                        .get(interval_class='end')
-                except:
-                    end_laytime = None
-                if end_laytime:
-                    self.completed_loading = end_laytime.interval_from
-                    if self.shipment.end_loading != self.completed_loading:
-                        self.shipment.end_loading = self.completed_loading
-                        self.shipment.save()
-
-            self.time_used = last_detail.interval_from - self.commenced_laytime
-
-            _time_allowed = zero_time
-            _time_limit = self.time_limit()
-            _time_paused = zero_time
-
-            for detail in self.laydaysdetail_set.all():
-                if not detail.next():
-                    break
-
-                detail_interval = detail.interval()
-                if _time_limit > zero_time:
-                    if detail.running():
-                        load_factor = detail.loading_rate / 100
-                        apparent_interval = detail_interval * load_factor
-                        if _time_limit >= apparent_interval:
-                            _time_limit -= apparent_interval
-                            _time_allowed += detail_interval
-                        else:
-                            _time_allowed += _time_limit / load_factor
-                            _time_limit = zero_time
-                    else:
-                        _time_allowed += detail_interval
-                else:
-                    if detail.pause_override:
-                        _time_paused += detail_interval
-
-            if _time_limit > zero_time:
-                _time_allowed += _time_limit
-
-            self.time_allowed = _time_allowed + _time_paused
-            _laytime_difference = self.laytime_difference()
-            if _laytime_difference > zero_time:
-                self.demurrage = 0
-                self.despatch = round(
-                    (_laytime_difference / one_day) * self.despatch_rate, 2
-                )
-            else:
-                self.despatch = 0
-                self.demurrage = round(
-                    (-_laytime_difference / one_day) * self.demurrage_rate, 2
-                )
-
+    def save(self, compute=False, *args, **kwargs):
         if self.tonnage:
             if self.tonnage != self.shipment.tonnage:
                 self.shipment.tonnage = self.tonnage
                 self.shipment.save()
-
-        self.date_saved = datetime.date.today()
+        if not compute:
+            self.date_saved = now()
         super().save(*args, **kwargs)
 
     class Meta:
@@ -320,7 +415,6 @@ class Shipment(models.Model):
     tonnage = models.PositiveIntegerField(default=0)
 
     def clean(self):
-        # pylint: disable=E1101
         if self.end_loading:
             if self.end_loading < self.start_loading:
                 raise ValidationError(
@@ -339,7 +433,6 @@ class Shipment(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # pylint: disable=E1101
         for trip in self.vessel.trip_set.all():
             trip.save()
 

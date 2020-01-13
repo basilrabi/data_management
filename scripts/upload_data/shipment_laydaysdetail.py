@@ -1,8 +1,8 @@
 import csv
-
 from django.utils.dateparse import parse_datetime as pdt
-
 from shipment.models.dso import LayDaysDetail, LayDaysStatement
+
+# pylint: disable=no-member
 
 with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['shipment',
@@ -12,7 +12,6 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                                  'remarks',
                                                  'pause_override'])
     for row in reader:
-        # pylint: disable=E1101
         statement = LayDaysStatement.objects \
             .get(shipment__name=row['shipment'])
         detail = LayDaysDetail(laydays=statement,
@@ -23,7 +22,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                pause_override=row['pause_override'])
         try:
             detail.clean()
-            detail.save()
+            detail.save(upload=True)
             print(f'LayDaysDetail {detail.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
@@ -33,3 +32,6 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                 detail.laydays.shipment.__str__(),
                 str(detail.interval_from)
             ))
+
+for statement in LayDaysDetail.objects.all():
+    statement.save()

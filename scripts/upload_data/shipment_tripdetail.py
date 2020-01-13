@@ -2,6 +2,8 @@ import csv
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.lct import Trip, TripDetail
 
+# pylint: disable=no-member
+
 with open('data/shipment_tripdetail.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['trip_lct',
                                                  'trip_interval_from',
@@ -9,7 +11,6 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                                                  'interval_class',
                                                  'remarks'])
     for row in reader:
-        # pylint: disable=E1101
         trip = Trip.objects.get(lct__name=row['trip_lct'],
                                 interval_from=pdt(row['trip_interval_from']))
         detail = TripDetail(trip=trip,
@@ -18,7 +19,7 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                             remarks=row['remarks'])
         try:
             detail.clean()
-            detail.save()
+            detail.save(upload=True)
             print('TripDetail {} saved.'.format(detail.id))
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
@@ -28,3 +29,6 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                 detail.trip.lct.__str__(),
                 str(detail.interval_from)
             ))
+
+for trip in Trip.objects.all():
+    trip.save()

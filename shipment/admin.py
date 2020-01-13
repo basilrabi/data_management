@@ -31,7 +31,7 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
                        'commenced_loading',
                        'completed_loading',
                        'time_allowed',
-                       'time_used',
+                       'additional_laytime',
                        'demurrage',
                        'despatch']
     list_display = ('__str__',

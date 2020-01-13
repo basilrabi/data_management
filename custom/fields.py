@@ -1,9 +1,12 @@
 import csv
+import datetime
 
 from django.db import models
 from django.http import StreamingHttpResponse
 from re import sub
 from tzlocal import get_localzone
+
+from .variables import one_day
 
 class AlphaNumeric(models.CharField):
 
@@ -107,3 +110,8 @@ def ordinal_suffix(x):
 def print_localzone(timestamp):
     if timestamp:
         return timestamp.astimezone(get_localzone())
+
+def round_up_day(timestamp):
+    return timestamp.combine(
+        timestamp.date(), datetime.time(hour=0), timestamp.tzinfo
+    ) + one_day

@@ -224,7 +224,9 @@ class  LayDaysStatementTest(TestCase):
             interval_class='end'
         )
         detail.save()
+        statement._compute()
         statement = LayDaysStatement.objects.get(shipment__name='431-C')
+
         self.assertEqual(
             statement.completed_loading, pdt('2019-08-18 15:00:00+0800')
         )
@@ -232,7 +234,7 @@ class  LayDaysStatementTest(TestCase):
             statement.commenced_laytime, pdt('2019-08-12 02:50:00+0800')
         )
         self.assertAlmostEqual(
-            statement.laytime_difference() / one_day,
+            statement.laydaysdetailcomputed_set.all().last().time_remaining / one_day,
             2.98889,
             places=5
         )
@@ -260,7 +262,7 @@ class  LayDaysStatementTest(TestCase):
         )
         self.assertAlmostEqual(
             statement.time_limit() / one_day,
-            timedelta(days=9, hours=9, minutes=20.5) / one_day,
+            timedelta(days=9, hours=9, minutes=21) / one_day,
             places=5
         )
 
@@ -631,10 +633,9 @@ class  LayDaysStatementTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, loading_rate=100,
+            laydays=statement, loading_rate=0,
             interval_from=pdt('2019-10-24 08:00:00+0800'),
-            interval_class='sun drying',
-            pause_override=True
+            interval_class='sun drying'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -644,10 +645,9 @@ class  LayDaysStatementTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, loading_rate=100,
+            laydays=statement, loading_rate=0,
             interval_from=pdt('2019-10-24 11:10:00+0800'),
-            interval_class='sun drying',
-            pause_override=True
+            interval_class='sun drying'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -657,10 +657,9 @@ class  LayDaysStatementTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, loading_rate=100,
+            laydays=statement, loading_rate=0,
             interval_from=pdt('2019-10-24 14:00:00+0800'),
-            interval_class='sun drying',
-            pause_override=True
+            interval_class='sun drying'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -844,10 +843,9 @@ class  LayDaysStatementTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, loading_rate=100,
+            laydays=statement, loading_rate=0,
             interval_from=pdt('2019-11-02 15:10:00+0800'),
-            interval_class='waiting for cargo due to rejection',
-            pause_override=True
+            interval_class='waiting for cargo due to rejection'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -971,7 +969,8 @@ class  LayDaysStatementTest(TestCase):
         )
         detail.save()
 
+        statement._compute()
         statement = LayDaysStatement.objects.get(shipment__name='452-C')
         self.assertAlmostEqual(statement.demurrage,
-                               Decimal(275051.56),
+                               Decimal(278362.50),
                                places=2)

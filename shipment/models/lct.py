@@ -266,6 +266,7 @@ class TripDetail(models.Model):
         super().delete(*args, **kwargs)
         self.trip.save() # pylint: disable=E1101
 
-    def save(self, *args, **kwargs):
+    def save(self, upload=False, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.trip.save() # pylint: disable=E1101
+        if not upload:
+            self.trip.save() # pylint: disable=E1101
