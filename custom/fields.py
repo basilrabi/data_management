@@ -3,10 +3,11 @@ import datetime
 
 from django.db import models
 from django.http import StreamingHttpResponse
+from django.utils.dateparse import parse_datetime as pdt
 from re import sub
 from tzlocal import get_localzone
 
-from .variables import one_day
+from .variables import one_day, one_hour, one_minute, one_second, zero_time
 
 class AlphaNumeric(models.CharField):
 
@@ -111,7 +112,50 @@ def print_localzone(timestamp):
     if timestamp:
         return timestamp.astimezone(get_localzone())
 
+def round_second(duration):
+    seconds = duration.total_seconds()
+    return datetime.timedelta(seconds=round(seconds, 0))
+
 def round_up_day(timestamp):
-    return timestamp.combine(
-        timestamp.date(), datetime.time(hour=0), timestamp.tzinfo
-    ) + one_day
+    timestamp += one_day
+    timestamp = str(print_localzone(timestamp))
+    return pdt(f'{timestamp[0:10]} 00:00:00+{timestamp[-5:]}')
+
+def to_dhms(duration):
+    """
+    Converts a datetime.timedelta object to an dhms string.
+    """
+    negative = False
+    if duration < zero_time:
+        negative = True
+        duration = -duration
+    days = duration // one_day
+    duration -= days * one_day
+    hours = duration // one_hour
+    duration -= hours * one_hour
+    minutes = duration // one_minute
+    duration -= minutes * one_minute
+    seconds = duration // one_second
+    dhms = f'{days:02d} {hours:02d}:{minutes:02d}:{seconds:02d}'
+    if negative:
+        return '-' + dhms
+    return dhms
+
+def to_hm(duration):
+    """
+    Converts a datetime.timedelta object to an hm string.
+    """
+    hours = duration // one_hour
+    minutes = (duration - (hours * one_hour)) // one_minute
+    return f'{hours:02d}:{minutes:02d}'
+
+def to_hms(duration):
+    """
+    Converts a datetime.timedelta object to an hms string.
+    """
+    hours = duration // one_hour
+    duration -= hours * one_hour
+    minutes = duration // one_minute
+    duration -= minutes * one_minute
+    seconds = duration // one_second
+    return f'{hours:02d}:{minutes:02d}:{seconds:02d}'

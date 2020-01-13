@@ -9,8 +9,12 @@ from custom.fields import (AlphaNumeric,
                            NameField,
                            MarineVesselName,
                            ordinal_suffix,
-                           round_up_day)
-from custom.variables import one_day, one_hour, one_minute, zero_time
+                           round_second,
+                           round_up_day,
+                           to_dhms,
+                           to_hm,
+                           to_hms)
+from custom.variables import one_day, zero_time
 
 # pylint: disable=no-member
 
@@ -86,8 +90,16 @@ class LayDaysDetailComputed(models.Model):
         Laytime consumption.
         """
         if self.previous():
-            return self.interval * (self.previous().loading_rate / 100)
+            return round_second(
+                self.interval() * (self.previous().loading_rate / 100)
+            )
         return zero_time
+
+    def consumed_formated(self):
+        """
+        Laytime consumption formatted in hours:minutes:seconds
+        """
+        return to_hms(self.consumed())
 
     def interval(self):
         if self.previous():
@@ -98,10 +110,7 @@ class LayDaysDetailComputed(models.Model):
         """
         Time interval formatted in hours:minutes
         """
-        value = self.interval()
-        hours = value // one_hour
-        minutes = (value - (hours * one_hour)) // one_minute
-        return f'{hours:02d}:{minutes:02d}'
+        return to_hm(self.interval())
 
     def is_new_day(self):
         previous_detail = self.previous()
@@ -110,10 +119,21 @@ class LayDaysDetailComputed(models.Model):
                 return False
         return True
 
+    def next(self):
+        return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
+            interval_from__gt=self.interval_from
+        )).order_by('interval_from').first()
+
     def previous(self):
         return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
             interval_from__lt=self.interval_from
         )).order_by('-interval_from').first()
+
+    def remaining(self):
+        """
+        Time remaining in hms.
+        """
+        return to_dhms(self.time_remaining)
 
     class Meta:
         ordering = ['interval_from']
@@ -216,7 +236,7 @@ class LayDaysStatement(models.Model):
                 ):
                     bonus_time += detail.interval()
                 if bonus_time > zero_time:
-                    self.additional_laytime = bonus_time
+                    self.additional_laytime = round_second(bonus_time)
 
                 # Record commencement of laytime
                 details = self.laydaysdetail_set.exclude(interval_class='vessel arrived behind of schedule')
@@ -259,45 +279,66 @@ class LayDaysStatement(models.Model):
                             )
                             previous_detail = computed_detail.previous()
                             if previous_detail:
-                                load_factor = previous_detail.loading_rate / 100
 
                                 # Check whether the time interval between the previous saved detail and the present detail crosses midnight.
                                 # If the interval crosses midnight, create a new time stamp at midnight after the previous detail.
-                                while round_up_day(previous_detail.interval_from) < detail.interval_from:
+                                if round_up_day(previous_detail.interval_from) < detail.interval_from:
+                                    while round_up_day(previous_detail.interval_from) < detail.interval_from:
 
-                                    # Create a new time stamp by incrementing the previous time stamp
-                                    computed_detail_virtual = LayDaysDetailComputed(
-                                        laydays=detail.laydays,
-                                        interval_from=round_up_day(previous_detail.interval_from),
-                                        loading_rate=previous_detail.loading_rate,
-                                        interval_class=previous_detail.interval_class
-                                    )
-                                    time_remaining = _time_remaining - (computed_detail_virtual.interval() * load_factor)
+                                        # Create a new time stamp by incrementing the previous time stamp
+                                        computed_detail_virtual = LayDaysDetailComputed(
+                                            laydays=detail.laydays,
+                                            interval_from=round_up_day(previous_detail.interval_from),
+                                            loading_rate=previous_detail.loading_rate,
+                                            interval_class=previous_detail.interval_class
+                                        )
+                                        time_remaining = _time_remaining - computed_detail_virtual.consumed()
 
-                                    # During lay time expiry, save a time stamp at the end of allowed laytime.
-                                    if _time_remaining > zero_time and time_remaining < zero_time:
-                                        computed_detail_virtual.interval_from = previous_detail.interval_from + (_time_remaining / load_factor)
-                                        computed_detail_virtual.remarks = 'laytime expires'
-                                        computed_detail_virtual.time_remaining = zero_time
+                                        # During lay time expiry while using virtual time stamp, save a time stamp at the end of allowed laytime.
+                                        if _time_remaining > zero_time and time_remaining < zero_time:
+                                            computed_detail_virtual.interval_from = previous_detail.interval_from + (
+                                                round_second(
+                                                    _time_remaining / (computed_detail_virtual.previous().loading_rate / 100)
+                                                )
+                                            )
+                                            computed_detail_virtual.remarks = 'laytime expires'
+                                            computed_detail_virtual.time_remaining = zero_time
+                                            _time_remaining = zero_time
+
+                                        # Save time stamp at midnight
+                                        else:
+                                            computed_detail_virtual.interval_from = round_up_day(previous_detail.interval_from)
+                                            computed_detail_virtual.time_remaining = time_remaining
+                                            _time_remaining = time_remaining
+
+                                        computed_detail_virtual.save()
+                                        previous_detail = self.laydaysdetailcomputed_set.last()
+
+                                    # If while approaching the actual time stamp, the lay time expires, save a time stamp at the end of allowed laytime.
+                                    if _time_remaining > zero_time and computed_detail.consumed() > _time_remaining:
+                                        computed_detail_virtual = LayDaysDetailComputed(
+                                            laydays=detail.laydays,
+                                            interval_from=previous_detail.interval_from + (
+                                                round_second(
+                                                    _time_remaining / (previous_detail.loading_rate / 100)
+                                                )
+                                            ),
+                                            loading_rate=previous_detail.loading_rate,
+                                            interval_class=previous_detail.interval_class,
+                                            remarks='laytime expires',
+                                            time_remaining=zero_time
+                                        )
+                                        computed_detail_virtual.save()
                                         _time_remaining = zero_time
 
-                                    # Save time stamp at midnight
-                                    else:
-                                        computed_detail_virtual.interval_from = round_up_day(previous_detail.interval_from)
-                                        computed_detail_virtual.time_remaining = time_remaining
-                                        _time_remaining = time_remaining
-
-                                    computed_detail_virtual.save()
-                                    previous_detail = computed_detail_virtual
-
                                 # If the previous time interval does not cross midnight, save the present detail as new computed detail.
-                                time_remaining = _time_remaining - (computed_detail.interval() * load_factor)
+                                time_remaining = _time_remaining - computed_detail.consumed()
 
                                 # During lay time expiry, save a time stamp at the end of allowed laytime.
                                 if _time_remaining > zero_time and time_remaining < zero_time:
                                     computed_detail_virtual = LayDaysDetailComputed(
                                         laydays=detail.laydays,
-                                        interval_from=previous_detail.interval_from + (_time_remaining / previous_detail.loading_rate),
+                                        interval_from=previous_detail.interval_from + round_second(_time_remaining / previous_detail.loading_rate),
                                         loading_rate=previous_detail.loading_rate,
                                         interval_class=previous_detail.interval_class,
                                         remarks='laytime expires',
@@ -353,16 +394,13 @@ class LayDaysStatement(models.Model):
 
     def time_limit(self):
         if self.tonnage:
-            time_interval = (
+            return round_second(
+                (
                     datetime.timedelta(
                         days=self.tonnage / self.loading_terms
                     ) + self.time_can_test()
-            ) or zero_time
-            minutes = time_interval // datetime.timedelta(minutes=1)
-            time_interval -= datetime.timedelta(minutes=minutes)
-            if time_interval.total_seconds() >= 30:
-                minutes += 1
-            return datetime.timedelta(minutes=minutes)
+                ) or zero_time
+            )
         return zero_time
 
     def vessel(self):

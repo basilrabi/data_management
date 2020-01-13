@@ -1,6 +1,7 @@
 {% autoescape off %}
 {% load humanize %}
 \documentclass[10pt]{article}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{fancyhdr}
 \usepackage[a4paper,hmargin={20mm,20mm},top=20mm,bottom=25mm]{geometry}
@@ -11,6 +12,8 @@
 \usetikzlibrary{positioning}
 \linespread{1.05}
 \renewcommand*\rmdefault{ppl}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
 \begin{filecontents*}{\jobname.tmclogo}
 JVBERi0xLjQKJbXtrvsKNCAwIG9iago8PCAvTGVuZ3RoIDUgMCBSCiAgIC9GaWx0ZXIgL0ZsYXRl
@@ -215,44 +218,63 @@ Zgo0NjczCiUlRU9GCg==
     \end{tabular}
 \end{center}
 
+\begin{small}
 \begin{center}
-    \begin{longtable}{cccrp{5cm}}
+    \begin{longtable}{cccccrcrL{4.5cm}}
         \toprule
-        \bfseries From
+        \bfseries Date
+            & \bfseries Day
+            & \bfseries From
             & \bfseries To
             & \bfseries Duration
             & \multicolumn{1}{c}{\bfseries Rate}
-            & \multicolumn{1}{c}{\bfseries Remarks}  \\ \midrule
-        \multicolumn{5}{c}{--- Laytime Begin ---} \\
-        \endfirsthead
-        \toprule
-        \bfseries From
-            & \bfseries To
-            & \bfseries Duration
-            & \multicolumn{1}{c}{\bfseries Rate}
+            & \bfseries Used
+            & \bfseries Remaining
             & \multicolumn{1}{c}{\bfseries Remarks}  \\ \midrule
         \endhead
         \bottomrule
         \endfoot
-        \multicolumn{5}{c}{--- Laytime End ---} \\
-        \bottomrule
-        \endlastfoot
 {% for detail in details %}
     {% if detail.next %}
-        {{ detail.interval_from|date:"Y-m-d H:i" }}
-            & {{ detail.next.interval_from|date:"Y-m-d H:i" }}
-            & {{ detail.interval_formated }}
+        {% if detail.is_new_day %}
+        {{ detail.interval_from|date:"Y-m-d" }}
+            & {{ detail.interval_from|date:"D" }}
+        {% else %}
+            &
+        {% endif %}
+            & {{ detail.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_formated }}
             & {{ detail.loading_rate }}~\%
-            & {{ detail.interval_class }} \\
-        {% if detail.next.next %}
-            {% cycle '' '' '' '\rule{0pt}{3ex}' %}
+            & {{ detail.next.consumed_formated }}
+            & {{ detail.next.remaining }}
+        {% if detail.interval_class == 'others' %}
+            {% if detail.remarks %}
+            & {{ detail.remarks|title }} \\
+            {% else %}
+            & \\
+            {% endif %}
+        {% else %}
+            {% if detail.next.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \newline \emph{%
+                {{ detail.next.remarks|title }}
+            } \\
+            {% elif details.remarks %}
+            & {{ detail.interval_class|title }}. {{ detail.next.remarks|title }} \\
+            {% else %}
+            & {{ detail.interval_class|title }} \\
+            {% endif %}
+        {% endif %}
+        {% if detail.next.is_new_day %}
+            \rule{0pt}{3ex}
         {% endif %}
     {% endif %}
 {% empty %}
-        \multicolumn{5}{c}{No Details} \\
+        \multicolumn{9}{c}{No computation. Statement has not yet ended.} \\
 {% endfor %}
     \end{longtable}
 \end{center}
 
+\end{small}
 \end{document}
 {% endautoescape %}

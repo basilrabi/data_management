@@ -262,7 +262,7 @@ class  LayDaysStatementTest(TestCase):
         )
         self.assertAlmostEqual(
             statement.time_limit() / one_day,
-            timedelta(days=9, hours=9, minutes=21) / one_day,
+            timedelta(days=9, hours=9, minutes=20, seconds=30) / one_day,
             places=5
         )
 
@@ -972,5 +972,5 @@ class  LayDaysStatementTest(TestCase):
         statement._compute()
         statement = LayDaysStatement.objects.get(shipment__name='452-C')
         self.assertAlmostEqual(statement.demurrage,
-                               Decimal(278362.50),
+                               Decimal(278369.27),
                                places=2)

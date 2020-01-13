@@ -27,6 +27,7 @@ class TripDetailInline(admin.TabularInline):
 class LayDaysStatementAdmin(admin.ModelAdmin):
     inlines = [LayDaysDetailInline]
     readonly_fields = ['date_saved',
+                       'date_computed',
                        'commenced_laytime',
                        'commenced_loading',
                        'completed_loading',

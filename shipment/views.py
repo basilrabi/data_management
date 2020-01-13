@@ -101,7 +101,8 @@ def export_vessel(request):
 def lay_days_statement_pdf(request, name):
     # pylint: disable=E1101
     statement = LayDaysStatement.objects.get(shipment__name=name)
-    details = statement.laydaysdetail_set.all()
+    statement._compute()
+    details = statement.laydaysdetailcomputed_set.all()
     context = {
         'statement': statement,
         'details': details
