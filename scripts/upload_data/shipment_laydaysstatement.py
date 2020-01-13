@@ -30,7 +30,7 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
             nor_tender=pdt(row['nor_tender']),
             nor_accepted=pdt(row['nor_accepted']),
             cargo_description=row['cargo_description'],
-            tonnage=int(row['tonnage']),
+            tonnage=int(row['tonnage'] or 0),
             loading_terms=int(row['loading_terms']),
             demurrage_rate=int(row['demurrage_rate']),
             despatch_rate=int(row['despatch_rate']),
@@ -41,7 +41,7 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
         try:
             statement.clean()
             statement.save()
-            print('Lay Days Statement {} saved.'.format(statement.id))
+            print(f'Lay Days Statement {statement.shipment.__str__()} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
             break
