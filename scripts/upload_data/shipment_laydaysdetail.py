@@ -33,5 +33,10 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                 str(detail.interval_from)
             ))
 
-for statement in LayDaysDetail.objects.all():
-    statement.save()
+for statement in LayDaysStatement.objects.all():
+    try:
+        statement._compute()
+        print(f'Statement for {statement.__str__()} done.')
+    except KeyboardInterrupt:
+        print('\nComputing statement interrupted.')
+        break

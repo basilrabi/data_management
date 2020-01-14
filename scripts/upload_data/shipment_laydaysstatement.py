@@ -39,7 +39,6 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
         try:
             statement.clean()
             statement.save()
-            statement._compute()
             print(f'Lay Days Statement {statement.shipment.__str__()} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
