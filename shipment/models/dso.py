@@ -218,7 +218,8 @@ class LayDaysStatement(models.Model):
 
                 if detail.loading_rate == detail.next().loading_rate and \
                         detail.interval_class == detail.next().interval_class and \
-                        detail.remarks == detail.next().remarks:
+                        detail.remarks == detail.next().remarks and \
+                        detail.can_test == detail.next().can_test:
                     detail.next().delete()
                     break
 
