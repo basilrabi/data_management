@@ -274,7 +274,13 @@ Zgo0NjczCiUlRU9GCg==
 {% endfor %}
     \end{longtable}
 \end{center}
-
 \end{small}
+
+{% if statement.demurrage > 1 %}
+\textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage }}}
+{% else %}
+\textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch }}}
+{% endif %}
+
 \end{document}
 {% endautoescape %}
