@@ -13,20 +13,20 @@ from shipment.models.dso import (LayDaysDetail,
                                  Vessel)
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
+# pylint: disable=no-member
+
 def export_laydaysdetail(request):
-    # pylint: disable=no-member
     rows = ([
         str(detail.laydays.shipment.name),
         str(print_localzone(detail.interval_from) or ''),
         str(detail.loading_rate),
         str(detail.interval_class),
         str(detail.remarks),
-        str(detail.pause_override)
+        str(detail.can_test)
     ] for detail in LayDaysDetail.objects.all())
     return export_csv(rows, 'shipment_laydaysdetail')
 
 def export_laydaysstatement(request):
-    # pylint: disable=no-member
     rows = ([
         str(statement.shipment.name),
         str(statement.vessel_voyage),
@@ -46,19 +46,16 @@ def export_laydaysstatement(request):
     return export_csv(rows, 'shipment_laydaysstatement')
 
 def export_lct(request):
-    # pylint: disable=no-member
     rows = ([str(lct.name), str(lct.capacity)] for lct in LCT.objects.all())
     return export_csv(rows, 'shipment_lct')
 
 def export_lctcontract(request):
-    # pylint: disable=no-member
     rows = ([str(contract.lct.name),
              str(contract.start),
              str(contract.end or '')] for contract in LCTContract.objects.all())
     return export_csv(rows, 'shipment_lctcontract')
 
 def export_shipment(request):
-    # pylint: disable=no-member
     rows = ([str(shipment.vessel.name),
              str(shipment.name),
              str(print_localzone(shipment.start_loading)),
@@ -68,7 +65,6 @@ def export_shipment(request):
     return export_csv(rows, 'shipment_shipment')
 
 def export_trip(request):
-    # pylint: disable=no-member
     rows = ([
         str(trip.lct.name),
         str(trip.vessel.name if trip.vessel else ''),
@@ -80,7 +76,6 @@ def export_trip(request):
     return export_csv(rows, 'shipment_trip')
 
 def export_tripdetail(request):
-    # pylint: disable=no-member
     rows = ([
         str(detail.trip.lct.name),
         str(print_localzone(detail.trip.interval_from)),
@@ -94,12 +89,10 @@ def export_tripdetail(request):
     return export_csv(rows, 'shipment_tripdetail')
 
 def export_vessel(request):
-    # pylint: disable=no-member
     rows = ([str(vessel.name)] for vessel in Vessel.objects.all())
     return export_csv(rows, 'shipment_vessel')
 
 def lay_days_statement_pdf(request, name):
-    # pylint: disable=E1101
     statement = LayDaysStatement.objects.get(shipment__name=name)
     statement._compute()
     details = statement.laydaysdetailcomputed_set.all()

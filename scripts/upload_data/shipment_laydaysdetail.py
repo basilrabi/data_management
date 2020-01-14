@@ -10,7 +10,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                                  'loading_rate',
                                                  'interval_class',
                                                  'remarks',
-                                                 'pause_override'])
+                                                 'can_test'])
     for row in reader:
         statement = LayDaysStatement.objects \
             .get(shipment__name=row['shipment'])
@@ -18,7 +18,8 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                interval_from=pdt(row['interval_from']),
                                loading_rate=int(row['loading_rate']),
                                interval_class=row['interval_class'],
-                               remarks=row['remarks'])
+                               remarks=row['remarks'],
+                               can_test=row['can_test'])
         try:
             detail.clean()
             detail.save()

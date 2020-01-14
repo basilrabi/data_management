@@ -1,7 +1,5 @@
 import csv
-
 from django.utils.dateparse import parse_date as pd, parse_datetime as pdt
-
 from shipment.models.dso import LayDaysStatement, Shipment
 
 with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
@@ -41,6 +39,7 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
         try:
             statement.clean()
             statement.save()
+            statement._compute()
             print(f'Lay Days Statement {statement.shipment.__str__()} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
