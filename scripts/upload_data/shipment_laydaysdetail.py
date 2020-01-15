@@ -1,4 +1,5 @@
 import csv
+import sys
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.dso import LayDaysDetail, LayDaysStatement
 
@@ -32,11 +33,16 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                 detail.laydays.shipment.__str__(),
                 str(detail.interval_from)
             ))
+        sys.stdout.flush()
+        sys.stderr.flush()
 
 for statement in LayDaysStatement.objects.all():
     try:
+        print(f'Computing statement for {statement.__str__()}...')
         statement._compute()
-        print(f'Statement for {statement.__str__()} done.')
     except KeyboardInterrupt:
         print('\nComputing statement interrupted.')
         break
+    print('Done.')
+    sys.stdout.flush()
+    sys.stderr.flush()

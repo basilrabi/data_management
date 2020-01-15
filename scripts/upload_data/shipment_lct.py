@@ -1,4 +1,5 @@
 import csv
+import sys
 from shipment.models.lct import LCT
 
 with open('data/shipment_lct.csv', newline='') as csvfile:
@@ -15,3 +16,5 @@ with open('data/shipment_lct.csv', newline='') as csvfile:
             break
         except:
             print('LCT {} was not saved.'.format(lct.name))
+        sys.stdout.flush()
+        sys.stderr.flush()

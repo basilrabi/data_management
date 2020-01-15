@@ -1,4 +1,5 @@
 import csv
+import sys
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.dso import Shipment, Vessel
 
@@ -27,3 +28,5 @@ with open('data/shipment_shipment.csv', newline='') as csvfile:
             break
         except:
             print('Shipment {} was not saved.'.format(shipment.name))
+        sys.stdout.flush()
+        sys.stderr.flush()

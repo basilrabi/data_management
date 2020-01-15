@@ -1,4 +1,5 @@
 import csv
+import sys
 from django.utils.dateparse import parse_date as pd, parse_datetime as pdt
 from shipment.models.dso import LayDaysStatement, Shipment
 
@@ -46,3 +47,5 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
         except:
             print('Lay Days Statement of shipment ' + \
                 f'{statement.shipment.__str__()} was not saved.')
+        sys.stdout.flush()
+        sys.stderr.flush()

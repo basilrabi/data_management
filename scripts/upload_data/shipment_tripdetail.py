@@ -1,4 +1,5 @@
 import csv
+import sys
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.lct import Trip, TripDetail
 
@@ -29,6 +30,10 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                 detail.trip.lct.__str__(),
                 str(detail.interval_from)
             ))
+        sys.stdout.flush()
+        sys.stderr.flush()
 
+print('Resaving all LCT trips...')
 for trip in Trip.objects.all():
     trip.save()
+print('Done.')

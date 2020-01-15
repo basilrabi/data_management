@@ -1,4 +1,5 @@
 import csv
+import sys
 from django.utils.dateparse import parse_date as pd
 from shipment.models.lct import LCT, LCTContract
 
@@ -21,3 +22,5 @@ with open('data/shipment_lctcontract.csv', newline='') as csvfile:
             print('Contract {}:{} was not saved.'.format(
                 contract.lct.__str__(), str(contract.start)
             ))
+        sys.stdout.flush()
+        sys.stderr.flush()

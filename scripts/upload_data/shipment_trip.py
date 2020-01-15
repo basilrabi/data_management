@@ -1,4 +1,5 @@
 import csv
+import sys
 from shipment.models.dso import Vessel
 from shipment.models.lct import LCT, Trip
 
@@ -37,3 +38,5 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
             print('Trip {}-{} was not saved.'.format(
                 trip.lct.__str__(), trip.vessel.__str__()
             ))
+        sys.stdout.flush()
+        sys.stderr.flush()

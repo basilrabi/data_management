@@ -1,4 +1,5 @@
 import csv
+import sys
 from shipment.models.dso import Vessel
 
 with open('data/shipment_vessel.csv', newline='') as csvfile:
@@ -15,3 +16,5 @@ with open('data/shipment_vessel.csv', newline='') as csvfile:
             break
         except:
             print('Vessel {} was not saved.'.format(vessel.name))
+        sys.stdout.flush()
+        sys.stderr.flush()
