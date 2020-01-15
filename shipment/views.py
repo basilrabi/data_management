@@ -19,7 +19,7 @@ def export_laydaysdetail(request):
     rows = ([
         str(detail.laydays.shipment.name),
         str(print_localzone(detail.interval_from) or ''),
-        str(detail.loading_rate),
+        str(detail.laytime_rate),
         str(detail.interval_class),
         str(detail.remarks),
         str(detail.can_test)

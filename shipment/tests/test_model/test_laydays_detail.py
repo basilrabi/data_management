@@ -25,31 +25,20 @@ class  LayDaysDetailTest(TestCase):
         )
         statement.save()
 
-    def test_loading_rate_does_not_exceed_100(self):
-        # pylint: disable=E1101
-        statement = LayDaysStatement.objects.all().first()
-        detail = LayDaysDetail(
-            laydays=statement,
-            interval_from=pdt('2019-08-17 12:00:00+0800'),
-            loading_rate=101,
-            interval_class='waiting for cargo'
-        )
-        self.assertRaises(ValidationError, detail.clean)
-
     def test_only_one_end_per_statement(self):
         # pylint: disable=E1101
         statement = LayDaysStatement.objects.all().first()
         detail = LayDaysDetail(
             laydays=statement,
             interval_from=pdt('2019-08-17 12:00:00+0800'),
-            loading_rate=100,
+            laytime_rate=100,
             interval_class='end'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement,
             interval_from=pdt('2019-08-17 12:05:00+0800'),
-            loading_rate=100,
+            laytime_rate=100,
             interval_class='end'
         )
         self.assertRaises(ValidationError, detail.clean)
@@ -60,14 +49,14 @@ class  LayDaysDetailTest(TestCase):
         detail = LayDaysDetail(
             laydays=statement,
             interval_from=pdt('2019-08-17 12:00:00+0800'),
-            loading_rate=100,
+            laytime_rate=100,
             interval_class='rain'
         )
         detail.save()
         detail = LayDaysDetail(
             laydays=statement,
             interval_from=pdt('2019-08-17 12:00:00+0800'),
-            loading_rate=100,
+            laytime_rate=100,
             interval_class='heavy swell'
         )
         self.assertRaises(ValidationError, detail.clean)

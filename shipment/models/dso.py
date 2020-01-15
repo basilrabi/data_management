@@ -24,9 +24,15 @@ class LayDaysDetail(models.Model):
     """
     laydays = models.ForeignKey('LayDaysStatement', on_delete=models.CASCADE)
     interval_from = models.DateTimeField()
-    loading_rate = models.PositiveSmallIntegerField(
-        help_text='Percent available vessel grabs.'
+
+    RATE_CHOICES = (
+        (100, '100'),
+        (75, '75'),
+        (50, '50'),
+        (25, '25'),
+        (0, '0')
     )
+    laytime_rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
 
     CLASS_CHOICES = (
         ('continuous loading', 'Continuous Loading'),
@@ -40,7 +46,6 @@ class LayDaysDetail(models.Model):
         ('vessel arrived behind of schedule', 'Vessel Arrived Behind of Schedule'),
         ('others', '-')
     )
-
     interval_class = models.CharField(max_length=50, choices=CLASS_CHOICES)
     remarks = models.TextField(null=True, blank=True)
     can_test = models.BooleanField(
@@ -71,14 +76,11 @@ class LayDaysDetail(models.Model):
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Only one end is allowed.')
 
-        if (self.loading_rate or 0) > 100:
-            raise ValidationError("The limit of loading rate is 100.")
-
 class LayDaysDetailComputed(models.Model):
 
     laydays = models.ForeignKey('LayDaysStatement', on_delete=models.CASCADE)
     interval_from = models.DateTimeField()
-    loading_rate = models.PositiveSmallIntegerField(
+    laytime_rate = models.PositiveSmallIntegerField(
         help_text='Percent available vessel grabs.'
     )
     time_remaining = models.DurationField()
@@ -91,7 +93,7 @@ class LayDaysDetailComputed(models.Model):
         """
         if self.previous():
             return round_second(
-                self.interval() * (self.previous().loading_rate / 100)
+                self.interval() * (self.previous().laytime_rate / 100)
             )
         return zero_time
 
@@ -216,7 +218,7 @@ class LayDaysStatement(models.Model):
                     final = True
                     break
 
-                if detail.loading_rate == detail.next().loading_rate and \
+                if detail.laytime_rate == detail.next().laytime_rate and \
                         detail.interval_class == detail.next().interval_class and \
                         detail.remarks == detail.next().remarks and \
                         detail.can_test == detail.next().can_test:
@@ -274,7 +276,7 @@ class LayDaysStatement(models.Model):
                             computed_detail = LayDaysDetailComputed(
                                 laydays=detail.laydays,
                                 interval_from=detail.interval_from,
-                                loading_rate=detail.loading_rate,
+                                laytime_rate=detail.laytime_rate,
                                 interval_class=detail.interval_class,
                                 remarks=detail.remarks
                             )
@@ -290,7 +292,7 @@ class LayDaysStatement(models.Model):
                                         computed_detail_virtual = LayDaysDetailComputed(
                                             laydays=detail.laydays,
                                             interval_from=round_up_day(previous_detail.interval_from),
-                                            loading_rate=previous_detail.loading_rate,
+                                            laytime_rate=previous_detail.laytime_rate,
                                             interval_class=previous_detail.interval_class
                                         )
                                         time_remaining = _time_remaining - computed_detail_virtual.consumed()
@@ -299,7 +301,7 @@ class LayDaysStatement(models.Model):
                                         if _time_remaining > zero_time and time_remaining < zero_time:
                                             computed_detail_virtual.interval_from = previous_detail.interval_from + (
                                                 round_second(
-                                                    _time_remaining / (computed_detail_virtual.previous().loading_rate / 100)
+                                                    _time_remaining / (computed_detail_virtual.previous().laytime_rate / 100)
                                                 )
                                             )
                                             computed_detail_virtual.remarks = 'laytime expires'
@@ -321,10 +323,10 @@ class LayDaysStatement(models.Model):
                                             laydays=detail.laydays,
                                             interval_from=previous_detail.interval_from + (
                                                 round_second(
-                                                    _time_remaining / (previous_detail.loading_rate / 100)
+                                                    _time_remaining / (previous_detail.laytime_rate / 100)
                                                 )
                                             ),
-                                            loading_rate=previous_detail.loading_rate,
+                                            laytime_rate=previous_detail.laytime_rate,
                                             interval_class=previous_detail.interval_class,
                                             remarks='laytime expires',
                                             time_remaining=zero_time
@@ -339,8 +341,8 @@ class LayDaysStatement(models.Model):
                                 if _time_remaining > zero_time and time_remaining < zero_time:
                                     computed_detail_virtual = LayDaysDetailComputed(
                                         laydays=detail.laydays,
-                                        interval_from=previous_detail.interval_from + round_second(_time_remaining / previous_detail.loading_rate),
-                                        loading_rate=previous_detail.loading_rate,
+                                        interval_from=previous_detail.interval_from + round_second(_time_remaining / previous_detail.laytime_rate),
+                                        laytime_rate=previous_detail.laytime_rate,
                                         interval_class=previous_detail.interval_class,
                                         remarks='laytime expires',
                                         time_remaining=zero_time
