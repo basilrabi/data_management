@@ -17,7 +17,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
             .get(shipment__name=row['shipment'])
         detail = LayDaysDetail(laydays=statement,
                                interval_from=pdt(row['interval_from']),
-                               loading_rate=int(row['loading_rate']),
+                               laytime_rate=int(row['loading_rate']),
                                interval_class=row['interval_class'],
                                remarks=row['remarks'],
                                can_test=row['can_test'])
