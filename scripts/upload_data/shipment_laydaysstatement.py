@@ -16,6 +16,7 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
                                                  'demurrage_rate',
                                                  'despatch_rate',
                                                  'can_test',
+                                                 'pre_loading_can_test',
                                                  'report_date',
                                                  'revised'])
     for row in reader:
@@ -34,6 +35,7 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
             demurrage_rate=int(row['demurrage_rate']),
             despatch_rate=int(row['despatch_rate']),
             can_test=int(row['can_test']),
+            pre_loading_can_test=row['pre_loading_can_test'],
             report_date=pd(row['report_date']),
             revised=row['revised']
         )

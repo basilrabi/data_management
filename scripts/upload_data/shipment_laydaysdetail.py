@@ -10,8 +10,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                                  'interval_from',
                                                  'loading_rate',
                                                  'interval_class',
-                                                 'remarks',
-                                                 'can_test'])
+                                                 'remarks'])
     for row in reader:
         statement = LayDaysStatement.objects \
             .get(shipment__name=row['shipment'])
