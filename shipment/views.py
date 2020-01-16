@@ -103,12 +103,14 @@ def lay_days_statement_pdf(request, name):
     template = get_template('shipment/lay_time_statement.tex')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, 'texput.tex')
+        filename = os.path.join(tempdir, f'{statement.__str__()}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         latex_command = f'cd "{tempdir}" && pdflatex --shell-escape ' + \
             f'-interaction=batchmode {os.path.basename(filename)}'
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
-        return FileResponse(open(os.path.join(tempdir, 'texput.pdf'), 'rb'),
-                            content_type='application/pdf')
+        return FileResponse(
+            open(os.path.join(tempdir, f'{statement.__str__()}.pdf'), 'rb'),
+            content_type='application/pdf'
+        )
