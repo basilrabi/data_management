@@ -35,7 +35,8 @@ class  LayDaysStatement453CTest(TestCase):
             loading_terms=6000,
             demurrage_rate=20500,
             despatch_rate=10250,
-            can_test=18
+            can_test=9,
+            can_test_factor=1
         )
         statement.save()
         self.assertAlmostEqual(

@@ -188,6 +188,18 @@ class LayDaysStatement(models.Model):
         help_text='Is can test conducted before commencement of loading?',
         verbose_name='Pre-loading Can Test'
     )
+    CAN_TEST_FACTOR_CHOICES = (
+        (1, '1.0'),
+        (0.5, '0.5'),
+        (0, '0.0')
+    )
+    can_test_factor = models.DecimalField(
+        default=0.5,
+        max_digits=2,
+        decimal_places=1,
+        choices=CAN_TEST_FACTOR_CHOICES,
+        help_text='The number of can tests times this factor times 5 minutes will be deducted to laytime consumed.'
+    )
     time_allowed = models.DurationField(default=zero_time)
     additional_laytime = models.DurationField(default=zero_time)
     demurrage = models.DecimalField(
@@ -393,7 +405,9 @@ class LayDaysStatement(models.Model):
         return self.shipment.name
 
     def time_can_test(self):
-        return self.can_test * datetime.timedelta(minutes=2.5)
+        return self.can_test * \
+            datetime.timedelta(minutes=5) * \
+            self.can_test_factor
 
     def time_limit(self):
         if self.tonnage:
