@@ -48,10 +48,6 @@ class LayDaysDetail(models.Model):
     )
     interval_class = models.CharField(max_length=50, choices=CLASS_CHOICES)
     remarks = models.TextField(null=True, blank=True)
-    can_test = models.BooleanField(
-        default=False,
-        help_text='Can test was conducted in this interval.'
-    )
 
     def interval(self):
         if self.next():
@@ -187,6 +183,11 @@ class LayDaysStatement(models.Model):
         default=0,
         help_text='Number of can tests performed.'
     )
+    pre_loading_can_test = models.BooleanField(
+        default=False,
+        help_text='Is can test conducted before commencement of loading?',
+        verbose_name='Pre-loading Can Test'
+    )
     time_allowed = models.DurationField(default=zero_time)
     additional_laytime = models.DurationField(default=zero_time)
     demurrage = models.DecimalField(
@@ -220,8 +221,7 @@ class LayDaysStatement(models.Model):
 
                 if detail.laytime_rate == detail.next().laytime_rate and \
                         detail.interval_class == detail.next().interval_class and \
-                        detail.remarks == detail.next().remarks and \
-                        detail.can_test == detail.next().can_test:
+                        detail.remarks == detail.next().remarks:
                     detail.next().delete()
                     break
 
@@ -252,7 +252,7 @@ class LayDaysStatement(models.Model):
 
                     # Record start of loading operation
                     self.commenced_loading = loading_details.first().interval_from
-                    if loading_details.first().can_test:
+                    if self.pre_loading_can_test:
                         self.commenced_loading += datetime.timedelta(minutes=5)
 
                     end_details = self.laydaysdetail_set .filter(interval_class='end')

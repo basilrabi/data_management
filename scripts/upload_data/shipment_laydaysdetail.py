@@ -19,8 +19,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
                                interval_from=pdt(row['interval_from']),
                                laytime_rate=int(row['loading_rate']),
                                interval_class=row['interval_class'],
-                               remarks=row['remarks'],
-                               can_test=row['can_test'])
+                               remarks=row['remarks'])
         try:
             detail.clean()
             detail.save()

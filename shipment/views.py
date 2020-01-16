@@ -21,8 +21,7 @@ def export_laydaysdetail(request):
         str(print_localzone(detail.interval_from) or ''),
         str(detail.laytime_rate),
         str(detail.interval_class),
-        str(detail.remarks),
-        str(detail.can_test)
+        str(detail.remarks)
     ] for detail in LayDaysDetail.objects.all())
     return export_csv(rows, 'shipment_laydaysdetail')
 
@@ -40,6 +39,7 @@ def export_laydaysstatement(request):
         str(statement.demurrage_rate),
         str(statement.despatch_rate),
         str(statement.can_test),
+        str(statement.pre_loading_can_test),
         str(statement.report_date or ''),
         str(statement.revised)
     ] for statement in LayDaysStatement.objects.all())
