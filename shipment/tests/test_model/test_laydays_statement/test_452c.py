@@ -19,7 +19,7 @@ class  LayDaysStatement452CTest(TestCase):
         shipment = Shipment(
             name='452-C', vessel=vessel,
             start_loading=pdt('2019-10-10 23:50:00+0800'),
-            end_loading=pdt('2019-11-05 18:30:00+0800')
+            end_loading=pdt('2019-11-05 15:00:00+0800')
         )
         shipment.save()
 
@@ -264,12 +264,6 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-10-19 16:00:00+0800'),
-            interval_class='continuous loading'
-        )
-        detail.save()
-        detail = LayDaysDetail(
             laydays=statement, laytime_rate=0,
             interval_from=pdt('2019-10-19 16:30:00+0800'),
             interval_class='heavy swell'
@@ -331,7 +325,7 @@ class  LayDaysStatement452CTest(TestCase):
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-10-21 19:58:00+0800'),
+            interval_from=pdt('2019-10-21 23:04:00+0800'),
             interval_class='waiting for cargo'
         )
         detail.save()
@@ -439,7 +433,7 @@ class  LayDaysStatement452CTest(TestCase):
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, laytime_rate=0,
-            interval_from=pdt('2019-10-24 14:00:00+0800'),
+            interval_from=pdt('2019-10-24 14:10:00+0800'),
             interval_class='sun drying'
         )
         detail.save()
@@ -481,7 +475,7 @@ class  LayDaysStatement452CTest(TestCase):
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-10-25 15:20:00+0800'),
+            interval_from=pdt('2019-10-25 15:30:00+0800'),
             interval_class='rain'
         )
         detail.save()
@@ -543,12 +537,6 @@ class  LayDaysStatement452CTest(TestCase):
             laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-30 04:00:00+0800'),
             interval_class='rain'
-        )
-        detail.save()
-        detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-10-31 00:00:00+0800'),
-            interval_class='rain and heavy swell'
         )
         detail.save()
         detail = LayDaysDetail(
@@ -679,7 +667,7 @@ class  LayDaysStatement452CTest(TestCase):
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-11-03 22:55:00+0800'),
+            interval_from=pdt('2019-11-03 22:25:00+0800'),
             interval_class='continuous loading'
         )
         detail.save()
@@ -739,7 +727,7 @@ class  LayDaysStatement452CTest(TestCase):
         detail.save()
         detail = LayDaysDetail(
             laydays=statement, laytime_rate=100,
-            interval_from=pdt('2019-11-05 07:55:00+0800'),
+            interval_from=pdt('2019-11-05 07:45:00+0800'),
             interval_class='continuous loading'
         )
         detail.save()
@@ -753,5 +741,5 @@ class  LayDaysStatement452CTest(TestCase):
         statement._compute()
         statement = LayDaysStatement.objects.get(shipment__name='452-C')
         self.assertAlmostEqual(statement.demurrage,
-                               Decimal(278369.27),
+                               Decimal(275186.98),
                                places=2)

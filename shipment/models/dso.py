@@ -341,7 +341,7 @@ class LayDaysStatement(models.Model):
                                 if _time_remaining > zero_time and time_remaining < zero_time:
                                     computed_detail_virtual = LayDaysDetailComputed(
                                         laydays=detail.laydays,
-                                        interval_from=previous_detail.interval_from + round_second(_time_remaining / previous_detail.laytime_rate),
+                                        interval_from=previous_detail.interval_from + round_second(_time_remaining / (previous_detail.laytime_rate / 100)),
                                         laytime_rate=previous_detail.laytime_rate,
                                         interval_class=previous_detail.interval_class,
                                         remarks='laytime expires',
