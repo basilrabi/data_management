@@ -15,6 +15,29 @@ from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
 # pylint: disable=no-member
 
+def data_export_laydays(request):
+    rows = ([
+        str(detail.laydays.shipment.name),
+        str(print_localzone(detail.interval_from)),
+        str(print_localzone(detail.next().interval_from)),
+        str(detail.interval_class),
+        str(detail.remarks or ''),
+        str(detail.next().remarks or '')
+    ] for detail in LayDaysDetail.objects.all() if detail.next())
+    return export_csv(rows, 'laydaysdetail')
+
+def data_export_lct_trips(request):
+    rows = ([
+        str(detail.trip.id),
+        str(detail.trip.lct.name),
+        str(detail.trip.vessel.name or ''),
+        str(print_localzone(detail.interval_from)),
+        str(print_localzone(detail.interval_to())),
+        str(detail.interval_class),
+        str(detail.remarks or '')
+    ] for detail in TripDetail.objects.all() if detail.next())
+    return export_csv(rows, 'lct_trips')
+
 def export_laydaysdetail(request):
     rows = ([
         str(detail.laydays.shipment.name),

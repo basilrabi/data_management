@@ -94,8 +94,7 @@ def export_csv(rows, filename):
     writer = csv.writer(buffer)
     response = StreamingHttpResponse((writer.writerow(row) for row in rows),
                                      content_type="text/csv")
-    response['Content-Disposition'] = 'attachment; ' + \
-        f'filename="{filename}.csv"'
+    response['Content-Disposition'] = 'attachment; ' + f'filename="{filename}.csv"'
     return response
 
 def ordinal_suffix(x):
