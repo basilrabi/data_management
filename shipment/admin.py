@@ -25,7 +25,16 @@ class TripDetailInline(admin.TabularInline):
 
 @admin.register(LayDaysStatement)
 class LayDaysStatementAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['shipment']
     inlines = [LayDaysDetailInline]
+    list_display = ('__str__',
+                    'vessel',
+                    'commenced_laytime',
+                    'completed_loading',
+                    'demurrage',
+                    'despatch',
+                    'PDF')
+    list_filter = ['completed_loading']
     readonly_fields = ['date_saved',
                        'date_computed',
                        'commenced_laytime',
@@ -35,32 +44,25 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
                        'additional_laytime',
                        'demurrage',
                        'despatch']
-    list_display = ('__str__',
-                    'vessel',
-                    'commenced_laytime',
-                    'completed_loading',
-                    'demurrage',
-                    'despatch',
-                    'PDF')
+    search_fields = ['shipment__name']
 
 @admin.register(LCT)
 class LCTAdmin(admin.ModelAdmin):
     inlines = [LCTContractInline]
     list_display = ('name', 'capacity')
-
-@admin.register(Vessel)
-class VesselAdmin(admin.ModelAdmin):
-    list_display = ('__str__',)
-    exclude = ('stripped_name',)
+    list_filter = ['capacity']
+    search_fields = ['name']
 
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['vessel']
     list_display = ('name', 'vessel', 'start_loading', 'end_loading', 'tonnage')
+    search_fields = ['name', 'vessel__name']
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['lct', 'vessel']
     inlines = [TripDetailInline]
-    readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     list_display = ('lct',
                     'interval_from',
                     'interval_to',
@@ -69,3 +71,12 @@ class TripAdmin(admin.ModelAdmin):
                     'cycle',
                     'valid',
                     'continuous')
+    list_filter = ['continuous', 'status', 'valid']
+    readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
+    search_fields = ['lct__name', 'vessel__name']
+
+@admin.register(Vessel)
+class VesselAdmin(admin.ModelAdmin):
+    exclude = ('stripped_name',)
+    list_display = ('__str__',)
+    search_fields = ['name']
