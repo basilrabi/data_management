@@ -4,6 +4,8 @@ from django.db import models
 
 from custom.fields import NameField
 
+# pylint: disable=no-member
+
 class Designation(models.Model):
     name = NameField(max_length=100, unique=True)
 
@@ -27,11 +29,8 @@ class EmploymentRecord(models.Model):
         if self.end:
             if self.end <= self.effectivity:
                 raise ValidationError('Effectivity must be earlier than end.')
-        # pylint: disable=E1101
         if self.person.employmentrecord_set.filter(
-            models.Q(
-                effectivity__lte=self.end or self.effectivity + timedelta(9999)
-            ),
+            models.Q(effectivity__lte=self.end or self.effectivity + timedelta(9999)),
             models.Q(end__gte=self.effectivity) |
             models.Q(end__isnull=True)
         ).exclude(id=self.id).count() > 0:
@@ -41,8 +40,7 @@ class EmploymentRecord(models.Model):
         ordering = ['-effectivity']
 
     def __str__(self):
-        return '{} as {}'.format(self.person.__str__(),
-                                 self.designation.__str__())
+        return f'{self.person.__str__()} as {self.designation.__str__()}'
 
 class Person(models.Model):
     first_name = NameField(max_length=100)
@@ -54,7 +52,6 @@ class Person(models.Model):
     )
 
     def designation(self, date):
-        # pylint: disable=E1101
         if self.employmentrecord_set.all().count() > 0:
             return self.employmentrecord_set.filter(
                 models.Q(effectivity__lte=date),
@@ -70,7 +67,6 @@ class Person(models.Model):
 
     def __str__(self):
         if self.name_suffix:
-            return '{}, {} {}' \
-                .format(self.last_name, self.first_name, self.name_suffix)
+            return f'{self.last_name}, {self.first_name} {self.name_suffix}'
         else:
-            return '{}, {}'.format(self.last_name, self.first_name)
+            return f'{self.last_name}, {self.first_name}'

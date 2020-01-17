@@ -20,7 +20,7 @@ class MineBlock(models.Model):
         ordering = ['ridge', 'name']
 
     def __str__(self):
-        return '{} MB {}'.format(self.ridge, self.name)
+        return f'{self.ridge} MB {self.name}'
 
 class Stockyard(models.Model):
     name = PileField(max_length=20, unique=True)
@@ -30,4 +30,4 @@ class Stockyard(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return f'{self.name}'

@@ -12,6 +12,8 @@ from sampling.models.sample import (Material,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 
+# pylint: disable=no-member
+
 class MaterialTest(TestCase):
 
     def setUp(self):
@@ -99,7 +101,6 @@ class MiningSampleReportTest(TestCase):
         tx.save()
 
     def test_right_personnel_and_method_are_assigned(self):
-        # pylint: disable=E1101
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
         p3 = Person.objects.get(first_name='C')
@@ -172,7 +173,6 @@ class MiningSampleReportTest(TestCase):
         self.assertRaises(ValidationError, r4.clean)
 
     def mining_sample_increments_matches_the_samples(self):
-        # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
         mat1 = Material.objects.get(name='LF')
@@ -266,7 +266,6 @@ class MiningSampleReportTest(TestCase):
         self.assertRaises(ValidationError, i2.clean)
 
     def test_sample_reports_are_being_added_correctly(self):
-        # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
@@ -335,7 +334,6 @@ class MiningSampleReportTest(TestCase):
         self.assertEqual(True, hasattr(s1, 'assay'))
 
     def test_sample_is_not_duplicated_in_report(self):
-        # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
@@ -367,7 +365,6 @@ class MiningSampleReportTest(TestCase):
         self.assertRaises(IntegrityError, i1.save)
 
     def test_sample_is_not_ready_without_increments(self):
-        # pylint: disable=E1101
         m1 = PilingMethod.objects.get(name='PRE PILE')
         mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')

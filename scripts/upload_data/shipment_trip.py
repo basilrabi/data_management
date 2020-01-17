@@ -2,7 +2,7 @@ import csv
 import sys
 from shipment.models.dso import Vessel
 from shipment.models.lct import LCT, Trip
-
+# pylint: disable=no-member
 with open('data/shipment_trip.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['lct',
                                                  'vessel',
@@ -11,7 +11,6 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
                                                  'vessel_grab',
                                                  'interval_from'])
     for row in reader:
-        # pylint: disable=E1101
         lct = LCT.objects.get(name=row['lct'])
         vessel = Vessel.objects.get(name=row['vessel'])
         if row['interval_from'] != '':
@@ -30,13 +29,11 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
         try:
             trip.clean()
             trip.save()
-            print('Trip {} saved.'.format(trip.id))
+            print(f'Trip {trip.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
             break
         except:
-            print('Trip {}-{} was not saved.'.format(
-                trip.lct.__str__(), trip.vessel.__str__()
-            ))
+            print(f'Trip {trip.lct.__str__()}-{trip.vessel.__str__()} was not saved.')
         sys.stdout.flush()
         sys.stderr.flush()

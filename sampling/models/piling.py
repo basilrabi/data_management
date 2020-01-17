@@ -4,11 +4,12 @@ from django.db import models
 
 from custom.fields import NameField
 
+# pylint: disable=no-member
+
 class PilingMethod(models.Model):
     name = NameField(max_length=20, unique=True)
 
     def trip(self, date):
-        # pylint: disable=E1101
         if self.tripsperpile_set.all().count() > 0:
             return self.tripsperpile_set.filter(
                 models.Q(effectivity__lte=date),
@@ -32,13 +33,11 @@ class TripsPerPile(models.Model):
     trips = models.PositiveSmallIntegerField()
 
     def next(self):
-        # pylint: disable=E1101
         return self.piling_method.tripsperpile_set.filter(models.Q(
             effectivity__gt=self.effectivity
         )).order_by('effectivity').first()
 
     def previous(self):
-        # pylint: disable=E1101
         return self.piling_method.tripsperpile_set.filter(models.Q(
             effectivity__lt=self.effectivity
         )).order_by('-effectivity').first()
@@ -47,7 +46,6 @@ class TripsPerPile(models.Model):
         if self.end:
             if self.end <= self.effectivity:
                 raise ValidationError('Effectivity must be earlier than end.')
-        # pylint: disable=E1101
         if self.piling_method.tripsperpile_set.filter(
             models.Q(
                 effectivity__lte=self.end or self.effectivity + timedelta(9999)

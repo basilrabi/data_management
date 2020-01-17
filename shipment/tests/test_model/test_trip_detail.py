@@ -5,6 +5,8 @@ from django.utils.dateparse import parse_datetime as pd
 from shipment.models.dso import Shipment, Vessel
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
+# pylint: disable=no-member
+
 class  TripDetailTest(TestCase):
 
     @classmethod
@@ -25,7 +27,6 @@ class  TripDetailTest(TestCase):
         shipment.save()
 
     def setUp(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
         trip = Trip(lct=lct,
@@ -36,7 +37,6 @@ class  TripDetailTest(TestCase):
         trip.save()
 
     def test_trip_with_valid_inputs(self):
-        # pylint: disable=E1101
         trip = Trip.objects.all().first()
 
         trip_detail1 = TripDetail(
@@ -63,7 +63,6 @@ class  TripDetailTest(TestCase):
                          trip_detail2.interval_from)
 
     def test_trip_with_the_same_time(self):
-        # pylint: disable=E1101
         trip = Trip.objects.all().first()
         trip_detail = TripDetail(
             trip=trip,
@@ -79,7 +78,6 @@ class  TripDetailTest(TestCase):
         self.assertRaises(ValidationError, trip_detail.clean)
 
     def test_overlapping_lct_trips(self):
-        # pylint: disable=E1101
         trip = Trip.objects.all().first()
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
@@ -126,7 +124,7 @@ class  TripDetailTest(TestCase):
         self.assertRaises(ValidationError, trip_detail.clean)
 
     def test_lct_not_yet_rented(self):
-        trip = Trip.objects.all().first() # pylint: disable=E1101
+        trip = Trip.objects.all().first()
 
         trip_detail = TripDetail(
             trip=trip,
@@ -143,7 +141,6 @@ class  TripDetailTest(TestCase):
         self.assertRaises(ValidationError, trip_detail.clean)
 
     def test_only_one_end_per_detail(self):
-        # pylint: disable=E1101
         trip = Trip.objects.all().first()
         trip_detail = TripDetail(
             trip=trip,

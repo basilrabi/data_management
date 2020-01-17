@@ -7,4 +7,4 @@ class TrackedExcavator(models.Model):
         ordering = ['fleet_number']
 
     def __str__(self):
-        return 'TX-{}'.format(self.fleet_number)
+        return f'TX-{self.fleet_number}'

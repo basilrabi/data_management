@@ -12,6 +12,8 @@ from sampling.models.sample import (Material,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 
+# pylint: disable=no-member
+
 class MiningSampleAssayTest(TestCase):
 
     def setUp(self):
@@ -67,13 +69,12 @@ class MiningSampleAssayTest(TestCase):
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
-        r1.sampler.add(p3) # pylint: disable=E1101
+        r1.sampler.add(p3)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=10)
         i1.save()
 
     def test_assay_dates(self):
-        # pylint: disable=E1101
         assay = MiningSampleAssay.objects.all().first()
         self.assertEqual(None, assay.date_received_for_preparation)
         self.assertEqual(None, assay.date_prepared)
@@ -83,7 +84,6 @@ class MiningSampleAssayTest(TestCase):
         self.assertEqual(None, assay.fe)
         self.assertEqual(None, assay.co)
         self.assertEqual(None, assay.moisture)
-
         assay.ni = 1.05
         self.assertRaises(ValidationError, assay.clean)
         assay.date_analyzed = pd('2019-09-06')

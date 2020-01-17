@@ -5,6 +5,8 @@ from django.utils.dateparse import parse_datetime as pd
 from shipment.models.dso import Shipment, Vessel
 from shipment.models.lct import LCT, Trip, TripDetail
 
+# pylint: disable=no-member
+
 class  TripTest(TestCase):
 
     def setUp(self):
@@ -14,7 +16,6 @@ class  TripTest(TestCase):
         vessel.save()
 
     def test_continuity(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
 
@@ -94,7 +95,6 @@ class  TripTest(TestCase):
         self.assertEqual(trip._continuous(), False)
 
     def test_data_is_complete_if_not_rejected(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
         trip = Trip(lct=lct,
@@ -116,7 +116,6 @@ class  TripTest(TestCase):
         self.assertRaises(ValidationError, trip.clean)
 
     def test_data_is_okay_if_rejected(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
         trip = Trip(lct=lct, vessel=vessel, status='rejected')
@@ -125,7 +124,6 @@ class  TripTest(TestCase):
         self.assertEqual(trip.vessel_grab, 0)
 
     def test_if_trigger_works(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
 
@@ -192,7 +190,6 @@ class  TripTest(TestCase):
         self.assertEqual(trip.valid, False)
 
     def test_trip_validity_recheck_upon_shipment_detail_update(self):
-        # pylint: disable=E1101
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
         shipment = Shipment(

@@ -5,6 +5,8 @@ from django.utils.dateparse import parse_date as pd
 
 from personnel.models.person import Designation, EmploymentRecord, Person
 
+# pylint: disable=no-member
+
 class DesignationTest(TestCase):
 
     def setUp(self):
@@ -23,7 +25,7 @@ class EmploymentRecordTest(TestCase):
         person.save()
 
     def test_effectivity_end_is_later_than_start(self):
-        person = Person.objects.all().first() # pylint: disable=E1101
+        person = Person.objects.all().first()
 
         sampler = Designation(name='Sampler')
         sampler.save()
@@ -37,7 +39,7 @@ class EmploymentRecordTest(TestCase):
         self.assertRaises(ValidationError, employment.clean)
 
     def test_effectivity_do_not_overlap(self):
-        person = Person.objects.all().first() # pylint: disable=E1101
+        person = Person.objects.all().first()
 
         sampler = Designation(name='Sampler')
         sampler.save()

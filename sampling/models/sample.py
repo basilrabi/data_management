@@ -10,6 +10,8 @@ from custom.fields import NameField, SpaceLess
 
 from .piling import PilingMethod
 
+# pylint: disable=no-member
+
 def this_year():
     return datetime.today().year
 
@@ -36,40 +38,31 @@ class MiningSample(models.Model):
     harvested = models.BooleanField(default=False)
 
     def has_increment(self):
-        # pylint: disable=E1101
         if self.miningsampleincrement_set.all().count() > 0:
             return True
         return False
 
     def required_trips(self):
         if self.start_collection:
-            # pylint: disable=E1101
             return self.piling_method.trip(self.start_collection)
 
     def trips_without_increment_id(self, increment_id):
         if self.start_collection:
-            # pylint: disable=E1101
-            return self.miningsampleincrement_set.exclude(id=increment_id) \
-                .aggregate(models.Sum('trips'))['trips__sum'] or 0
+            return self.miningsampleincrement_set.exclude(id=increment_id).aggregate(models.Sum('trips'))['trips__sum'] or 0
 
     def clean(self):
         if self.ready_for_delivery and not self.has_increment():
-            raise ValidationError('Sample cannot be ready for delivery '
-                                  'without increments.')
+            raise ValidationError('Sample cannot be ready for delivery without increments.')
 
     def save(self, *args, **kwargs):
-        # pylint: disable=E1101
         if self.has_increment():
-            self.start_collection = self.miningsampleincrement_set.all() \
-                .order_by('report__date').first().report.date
+            self.start_collection = self.miningsampleincrement_set.all().order_by('report__date').first().report.date
             self.year = self.start_collection.year
-            self.trips = self.miningsampleincrement_set.all() \
-                .aggregate(models.Sum('trips'))['trips__sum']
+            self.trips = self.miningsampleincrement_set.all().aggregate(models.Sum('trips'))['trips__sum']
             if self.trips == self.required_trips():
                 self.ready_for_delivery = True
             if self.ready_for_delivery:
-                self.end_collection = self.miningsampleincrement_set.all() \
-                    .order_by('-report__date').first().report.date
+                self.end_collection = self.miningsampleincrement_set.all().order_by('-report__date').first().report.date
                 if not hasattr(self, 'assay'):
                     assay = MiningSampleAssay(mining_sample=self)
                     assay.save()
@@ -90,10 +83,7 @@ class MiningSample(models.Model):
         ]
 
     def __str__(self):
-        # pylint: disable=E1101
-        return '{}-{}-{:05d}'.format(self.piling_method.name,
-                                     self.ridge,
-                                     self.series_number)
+        return f'{self.piling_method.name}-{self.ridge}-{self.series_number:05d}'
 
 class MiningSampleAssay(models.Model):
     mining_sample = models.OneToOneField('MiningSample',
@@ -165,7 +155,6 @@ class MiningSampleIncrement(models.Model):
     trips = models.PositiveSmallIntegerField()
 
     def clean(self):
-        # pylint: disable=E1101
         if self.report.material != self.sample.material:
             raise ValidationError('Material classes do not match.')
         if self.report.piling_method != self.sample.piling_method:
@@ -173,13 +162,11 @@ class MiningSampleIncrement(models.Model):
         if self.report.dumping_area != self.sample.dumping_area:
             raise ValidationError('Dumping area do not match.')
         if self.sample.required_trips():
-            if self.trips + self.sample.trips_without_increment_id(self.id) > \
-                    self.sample.required_trips():
+            if self.trips + self.sample.trips_without_increment_id(self.id) > self.sample.required_trips():
                 raise ValidationError('Trips exceeded the required amount.')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # pylint: disable=E1101
         self.sample.save()
 
     class Meta:
@@ -225,27 +212,25 @@ class MiningSampleReport(gis_models.Model):
     )
 
     def clean(self):
-        # pylint: disable=E1101
         if self.id:
             for person in self.sampler.all():
                 if 'SAMPLER' not in str(person.designation(self.date)):
                     raise ValidationError(
-                        '{} is not a SAMPLER'.format(person.__str__())
+                        f'{person.__str__()} is not a SAMPLER'
                     )
         if self.supervisor:
             if 'SUPERVISOR' not in str(self.supervisor.designation(self.date)):
                 raise ValidationError(
-                    '{} is not a SUPERVISOR'.format(person.__str__())
+                    f'{person.__str__()} is not a SUPERVISOR'
                 )
         if self.foreman:
             if 'FOREMAN' not in str(self.foreman.designation(self.date)):
                 raise ValidationError(
-                    '{} is not a FOREMAN'.format(person.__str__())
+                    f'{person.__str__()} is not a FOREMAN'
                 )
         if self.piling_method:
             if not self.piling_method.trip(self.date):
-                raise ValidationError('No required trips set for piling method '
-                                      'selected.')
+                raise ValidationError('No required trips set for piling method selected.')
 
         # TODO: all polygons of 1 report must come from 1 ridge
 

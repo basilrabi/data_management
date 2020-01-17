@@ -10,6 +10,8 @@ from .models.sample import (Material,
                             MiningSampleIncrement,
                             MiningSampleReport)
 
+# pylint: disable=no-member
+
 class MiningSampleIncrementInline(admin.TabularInline):
     model = MiningSampleIncrement
     extra = 0
@@ -21,7 +23,6 @@ class MiningSampleIncrementInline(admin.TabularInline):
         return super().get_formset(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # pylint: disable=E1101
         if db_field.name == 'sample':
             kwargs["queryset"] = MiningSample.objects \
                 .filter(ready_for_delivery=False)
@@ -86,7 +87,6 @@ class MiningSampleReportAdmin(TMCLocationAdmin):
         )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # pylint: disable=E1101
         if db_field.name == 'supervisor':
             kwargs["queryset"] = Person.objects.distinct().filter(
                 employmentrecord__designation__name__contains='SUPERVISOR'
@@ -99,7 +99,6 @@ class MiningSampleReportAdmin(TMCLocationAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'sampler':
-            # pylint: disable=E1101
             kwargs["queryset"] = Person.objects.distinct().filter(
                 employmentrecord__designation__name__contains='SAMPLER'
             )

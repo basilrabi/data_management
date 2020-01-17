@@ -7,6 +7,8 @@ from shipment.models.dso import (LayDaysDetail,
                                  Shipment,
                                  Vessel)
 
+# pylint: disable=no-member
+
 class  LayDaysDetailTest(TestCase):
 
     def setUp(self):
@@ -26,7 +28,6 @@ class  LayDaysDetailTest(TestCase):
         statement.save()
 
     def test_only_one_end_per_statement(self):
-        # pylint: disable=E1101
         statement = LayDaysStatement.objects.all().first()
         detail = LayDaysDetail(
             laydays=statement,
@@ -44,7 +45,6 @@ class  LayDaysDetailTest(TestCase):
         self.assertRaises(ValidationError, detail.clean)
 
     def test_unique_interval_from(self):
-        # pylint: disable=E1101
         statement = LayDaysStatement.objects.all().first()
         detail = LayDaysDetail(
             laydays=statement,

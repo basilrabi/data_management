@@ -4,13 +4,14 @@ from django.test import TestCase
 
 from shipment.models.dso import Vessel
 
+# pylint: disable=no-member
+
 class  VesselTest(TestCase):
 
     def setUp(self):
         pass
 
     def test_name_is_capitalized(self):
-        # pylint: disable=E1101
         vesselA = Vessel(name='PM Hayabusa')
         vesselA.save()
         test_name = Vessel.objects.all().first().name

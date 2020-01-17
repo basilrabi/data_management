@@ -2,7 +2,7 @@ import csv
 import sys
 from django.utils.dateparse import parse_date as pd, parse_datetime as pdt
 from shipment.models.dso import LayDaysStatement, Shipment
-
+# pylint: disable=no-member
 with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['shipment',
                                                  'vessel_voyage',
@@ -20,7 +20,6 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
                                                  'report_date',
                                                  'revised'])
     for row in reader:
-        # pylint: disable=E1101
         shipment = Shipment.objects.get(name=row['shipment'])
         statement = LayDaysStatement(
             shipment=shipment,

@@ -2,9 +2,7 @@ import csv
 import sys
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.lct import Trip, TripDetail
-
 # pylint: disable=no-member
-
 with open('data/shipment_tripdetail.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['trip_lct',
                                                  'trip_interval_from',
@@ -21,19 +19,16 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
         try:
             detail.clean()
             detail.save(upload=True)
-            print('TripDetail {} saved.'.format(detail.id))
+            print(f'TripDetail {detail.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
             break
         except:
-            print('TripDetail {}:{} was not saved.'.format(
-                detail.trip.lct.__str__(),
-                str(detail.interval_from)
-            ))
+            print(f'TripDetail {detail.trip.lct.__str__()}:{str(detail.interval_from)} was not saved.')
         sys.stdout.flush()
         sys.stderr.flush()
 
-print('Resaving all LCT trips...')
+print('Resaving all LCT trips...', flush=True)
 for trip in Trip.objects.all():
     trip.save()
 print('Done.')

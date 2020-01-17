@@ -2,9 +2,7 @@ import csv
 import sys
 from django.utils.dateparse import parse_datetime as pdt
 from shipment.models.dso import LayDaysDetail, LayDaysStatement
-
 # pylint: disable=no-member
-
 with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['shipment',
                                                  'interval_from',
@@ -27,10 +25,7 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
             print('\nUploading interrupted.')
             break
         except:
-            print('LayDaysDetail {}:{} was not saved.'.format(
-                detail.laydays.shipment.__str__(),
-                str(detail.interval_from)
-            ))
+            print(f'LayDaysDetail {detail.laydays.shipment.__str__()}:{str(detail.interval_from)} was not saved.')
         sys.stdout.flush()
         sys.stderr.flush()
 

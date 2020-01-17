@@ -3,6 +3,8 @@ from django.test import TestCase
 
 from shipment.models.lct import LCT, LCTContract
 
+# pylint: disable=no-member
+
 class  LCTContractTest(TestCase):
 
     @classmethod
@@ -14,7 +16,7 @@ class  LCTContractTest(TestCase):
         pass
 
     def test_end_is_valid(self):
-        lct = LCT.objects.all().first() # pylint: disable=E1101
+        lct = LCT.objects.all().first()
         lct_contract = LCTContract(
             lct=lct, start='2019-08-17', end='2019-08-19'
         )
@@ -30,7 +32,7 @@ class  LCTContractTest(TestCase):
         self.assertRaises(ValidationError, lct_contract.clean)
 
     def test_contract_do_not_overlap(self):
-        lct = LCT.objects.all().first() # pylint: disable=E1101
+        lct = LCT.objects.all().first()
         lct_contract = LCTContract(
             lct = lct, start = '2019-08-17', end = '2019-08-19'
         )

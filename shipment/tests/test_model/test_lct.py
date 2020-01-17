@@ -4,13 +4,14 @@ from django.test import TestCase
 
 from shipment.models.lct import LCT
 
+# pylint: disable=no-member
+
 class  LCTTest(TestCase):
 
     def setUp(self):
         pass
 
     def test_name_is_capitalized(self):
-        # pylint: disable=E1101
         lctA = LCT(name='guagua', capacity=1000)
         lctA.save()
         test_name = LCT.objects.all().first().name
