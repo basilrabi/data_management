@@ -66,7 +66,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-11 19:30:00+0800'),
             interval_class='heavy swell'
         )
@@ -90,7 +90,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=75,
             interval_from=pdt('2019-10-13 01:30:00+0800'),
             interval_class='rain'
         )
@@ -108,7 +108,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=50,
             interval_from=pdt('2019-10-14 04:00:00+0800'),
             interval_class='rain'
         )
@@ -126,7 +126,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=25,
             interval_from=pdt('2019-10-14 07:00:00+0800'),
             interval_class='rain'
         )
@@ -588,7 +588,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
+            laydays=statement, laytime_rate=0,
             interval_from=pdt('2019-11-02 06:00:00+0800'),
             interval_class='rain'
         )
@@ -672,7 +672,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
+            laydays=statement, laytime_rate=25,
             interval_from=pdt('2019-11-04 00:50:00+0800'),
             interval_class='rain'
         )
@@ -708,7 +708,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
+            laydays=statement, laytime_rate=50,
             interval_from=pdt('2019-11-04 20:35:00+0800'),
             interval_class='rain'
         )
@@ -720,7 +720,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=100,
+            laydays=statement, laytime_rate=75,
             interval_from=pdt('2019-11-05 04:00:00+0800'),
             interval_class='rain'
         )

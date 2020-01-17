@@ -282,7 +282,25 @@ class LayDaysStatement(models.Model):
 
                         _time_remaining = self.time_limit() + self.additional_laytime
                         self.time_allowed = _time_remaining
+                        NATURAL_DELAYS = [
+                            'heavy swell',
+                            'rain',
+                            'rain and heavy swell',
+                            'vessel arrived behind of schedule'
+                        ]
                         for detail in self.laydaysdetail_set.all():
+
+                            # If laytime rates are mistakenly set, adjust.
+                            if _time_remaining > zero_time and \
+                                    detail.interval_class in NATURAL_DELAYS and \
+                                    detail.laytime_rate > 0:
+                                detail.laytime_rate = 0
+                                detail.save()
+                            if _time_remaining <= zero_time and \
+                                    detail.interval_class in NATURAL_DELAYS and \
+                                    detail.laytime_rate < 100:
+                                detail.laytime_rate = 100
+                                detail.save()
 
                             # Create initial computated detail object copied from the orignal detail
                             computed_detail = LayDaysDetailComputed(
