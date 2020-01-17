@@ -407,7 +407,7 @@ class LayDaysStatement(models.Model):
     def time_can_test(self):
         return self.can_test * \
             datetime.timedelta(minutes=5) * \
-            self.can_test_factor
+            float(self.can_test_factor)
 
     def time_limit(self):
         if self.tonnage:
