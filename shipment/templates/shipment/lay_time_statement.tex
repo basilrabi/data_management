@@ -220,7 +220,7 @@ Zgo0NjczCiUlRU9GCg==
 
 \begin{small}
 \begin{center}
-    \begin{longtable}{cccccrcrL{5cm}}
+    \begin{longtable}{cccccrcrL{5.2cm}}
         \toprule
         \bfseries Date
             & \bfseries Day
@@ -259,8 +259,8 @@ Zgo0NjczCiUlRU9GCg==
             & {{ detail.interval_class|title }} \newline \emph{%
                 {{ detail.next.remarks|title }}
             } \\
-            {% elif details.remarks %}
-            & {{ detail.interval_class|title }}. {{ detail.next.remarks|title }} \\
+            {% elif detail.remarks %}
+            & {{ detail.interval_class|title }}. {{ detail.remarks }} \\
             {% else %}
             & {{ detail.interval_class|title }} \\
             {% endif %}

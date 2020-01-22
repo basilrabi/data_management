@@ -40,6 +40,7 @@ class LayDaysDetail(models.Model):
         ('rain and heavy swell', 'Rain and Heavy Swell'),
         ('waiting for cargo', 'Waiting for Cargo'),
         ('waiting for cargo due to rejection', 'Waiting for Cargo (rejected)'),
+        ('waiting for loading commencement', 'Waiting for Loading Commencement'),
         ('end', 'End'),
         ('vessel arrived behind of schedule', 'Vessel Arrived Behind of Schedule'),
         ('others', '-')
