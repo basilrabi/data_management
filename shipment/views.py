@@ -6,7 +6,7 @@ from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
-from custom.fields import export_csv, print_localzone
+from custom.fields import export_csv, print_localzone, print_tz_manila
 from shipment.models.dso import (LayDaysDetail,
                                  LayDaysStatement,
                                  Shipment,
@@ -18,8 +18,8 @@ from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 def data_export_laydays(request):
     rows = ([
         str(detail.laydays.shipment.name),
-        str(print_localzone(detail.interval_from)),
-        str(print_localzone(detail.next().interval_from)),
+        str(print_tz_manila(detail.interval_from)),
+        str(print_tz_manila(detail.next().interval_from)),
         str(detail.interval_class),
         str(detail.remarks or ''),
         str(detail.next().remarks or '')
@@ -31,8 +31,8 @@ def data_export_lct_trips(request):
         str(detail.trip.id),
         str(detail.trip.lct.name),
         str(detail.trip.vessel.name or ''),
-        str(print_localzone(detail.interval_from)),
-        str(print_localzone(detail.interval_to())),
+        str(print_tz_manila(detail.interval_from)),
+        str(print_tz_manila(detail.interval_to())),
         str(detail.interval_class),
         str(detail.remarks or '')
     ] for detail in TripDetail.objects.all() if detail.next())

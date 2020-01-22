@@ -7,7 +7,12 @@ from django.utils.dateparse import parse_datetime as pdt
 from re import sub
 from tzlocal import get_localzone
 
-from .variables import one_day, one_hour, one_minute, one_second, zero_time
+from .variables import (one_day,
+                        one_hour,
+                        one_minute,
+                        one_second,
+                        tz_manila,
+                        zero_time)
 
 class AlphaNumeric(models.CharField):
 
@@ -110,6 +115,11 @@ def ordinal_suffix(x):
 def print_localzone(timestamp):
     if timestamp:
         return timestamp.astimezone(get_localzone())
+
+def print_tz_manila(timestamp):
+    if timestamp:
+        timestamp = str(timestamp.astimezone(tz_manila))
+        return timestamp[:-6]
 
 def round_second(duration):
     seconds = duration.total_seconds()
