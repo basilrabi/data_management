@@ -259,6 +259,8 @@ Zgo0NjczCiUlRU9GCg==
             & {{ detail.interval_class|title }} \newline \emph{%
                 {{ detail.next.remarks|title }}
             } \\
+            {% elif detail.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \\
             {% elif detail.remarks %}
             & {{ detail.interval_class|title }}. {{ detail.remarks }} \\
             {% else %}
