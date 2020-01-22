@@ -6,7 +6,7 @@ from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
-from custom.fields import export_csv, print_localzone, print_tz_manila
+from custom.functions import export_csv, print_localzone, print_tz_manila
 from shipment.models.dso import (LayDaysDetail,
                                  LayDaysStatement,
                                  Shipment,

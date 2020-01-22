@@ -5,15 +5,13 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.utils.timezone import now
 
-from custom.fields import (AlphaNumeric,
-                           NameField,
-                           MarineVesselName,
-                           ordinal_suffix,
-                           round_second,
-                           round_up_day,
-                           to_dhms,
-                           to_hm,
-                           to_hms)
+from custom.fields import AlphaNumeric, NameField, MarineVesselName
+from custom.functions import (ordinal_suffix,
+                              round_second,
+                              round_up_day,
+                              to_dhms,
+                              to_hm,
+                              to_hms)
 from custom.variables import one_day, zero_time
 
 # pylint: disable=no-member
