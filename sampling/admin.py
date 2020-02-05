@@ -50,8 +50,7 @@ class MiningSampleAdmin(admin.ModelAdmin):
                     'trips',
                     'ready_for_delivery',
                     'harvested',
-                    'year'
-    )
+                    'year')
     exclude = ('ridge',
                'start_collection',
                'year',

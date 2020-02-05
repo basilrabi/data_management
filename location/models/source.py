@@ -11,6 +11,24 @@ RIDGES = (
     ('KB', 'Kinalablaban')
 )
 
+class Cluster(models.Model):
+    """
+    A group of adjacent `inventory.Blocks` with the same elevation.
+    """
+    name = models.CharField(max_length=30)
+    ni = models.FloatField(default=0)
+    fe = models.FloatField(default=0)
+    co = models.FloatField(default=0)
+    excavation_start = models.DateField(null=True, blank=True)
+    excavation_end = models.DateField(null=True, blank=True)
+    with_layout = models.BooleanField(default=False)
+    excavated = models.BooleanField(default=False)
+    recommended_name = models.CharField(max_length=30, null=True, blank=True)
+    geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
 class MineBlock(models.Model):
     name = MineBlockField(max_length=20, unique=True)
     ridge = models.CharField(max_length=2, choices=RIDGES)
