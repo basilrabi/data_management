@@ -1,6 +1,6 @@
 import csv
 import sys
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, Permission, User
 
 with open('data/users.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['username',
@@ -29,5 +29,37 @@ with open('data/users.csv', newline='') as csvfile:
             break
         except:
             print(f'User {user.username} was not saved.')
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+with open('data/user_group.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile, fieldnames=['user', 'group'])
+    for row in reader:
+        user = User.objects.get(username=row['user'])
+        group = Group.objects.get(name=row['group'])
+        try:
+            user.groups.add(group)
+            print(f'Added User `{user.username}` to Group `{group.name}`.')
+        except KeyboardInterrupt:
+            print('\nUploading interrupted.')
+            break
+        except:
+            print(f'User `{user.username}` was not assigned to Group `{group.name}`.')
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+with open('data/user_permission.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile, fieldnames=['user', 'permission'])
+    for row in reader:
+        user = User.objects.get(username=row['user'])
+        permission = Permission.objects.get(codename=row['permission'])
+        try:
+            user.user_permissions.add(permission)
+            print(f'Added Permission `{permission.name}` to User `{user.username}`.')
+        except KeyboardInterrupt:
+            print('\nUploading interrupted.')
+            break
+        except:
+            print(f'Permission `{permission.name}` was not assigned to User `{user.username}`')
         sys.stdout.flush()
         sys.stderr.flush()
