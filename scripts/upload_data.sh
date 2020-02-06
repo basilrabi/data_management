@@ -34,4 +34,6 @@ echo "Uploading shipment.LayDaysDetail success." && \
 ./manage.py shell < scripts/upload_data/shipment_trip.py 2>&1 | tee -a log_upload_data && \
 echo "Uploading shipment.Trip success." && \
 ./manage.py shell < scripts/upload_data/shipment_tripdetail.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.TripDetail success."
+echo "Uploading shipment.TripDetail success." && \
+./manage.py shell < scripts/upload_data/users.py 2>&1 | tee -a log_upload_data && \
+echo "Uploading Users success."

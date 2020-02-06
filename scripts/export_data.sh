@@ -14,6 +14,7 @@ ogr2ogr -progress -f "GPKG" data/inventory_block.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     inventory_block
 
+curl datamanagement.tmc.nickelasia.com/custom/export/users -o data/users.csv
 curl datamanagement.tmc.nickelasia.com/shipment/export/lct -o data/shipment_lct.csv
 curl datamanagement.tmc.nickelasia.com/shipment/export/lctcontract -o data/shipment_lctcontract.csv
 curl datamanagement.tmc.nickelasia.com/shipment/export/vessel -o data/shipment_vessel.csv
