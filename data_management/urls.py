@@ -24,6 +24,7 @@ admin.site.index_title = 'Data Groups'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/map/')),
+    path('custom/', include('custom.urls')),
     path('inventory/', include('inventory.urls')),
     path('map/', include('map.urls')),
     path('shipment/', include('shipment.urls'))
