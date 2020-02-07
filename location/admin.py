@@ -8,12 +8,12 @@ class ClusterAdmin(TMCLocationAdmin):
     list_display = ('name',
                     'ni',
                     'fe',
-                    'co',
+                    'ore_class',
                     'with_layout',
                     'excavated')
     list_filter = ['with_layout', 'excavated']
-    readonly_fields = ['ni', 'fe', 'co','mine_block']
-    search_fields = ['name', 'mine_block', 'z']
+    readonly_fields = ['z', 'ni', 'fe', 'co', 'mine_block', 'ore_class']
+    search_fields = ['name', 'mine_block', 'z', 'ore_class']
 
 @admin.register(MineBlock)
 class MineBlockAdmin(TMCLocationAdmin):

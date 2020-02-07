@@ -16,7 +16,8 @@ class Cluster(models.Model):
     A group of adjacent `inventory.Blocks` with the same elevation.
     """
     name = models.CharField(max_length=30)
-    z = models.IntegerField(default=0)
+    z = models.SmallIntegerField(default=0)
+    ore_class = models.CharField(max_length=1, null=True, blank=True)
     mine_block = models.CharField(max_length=20, null=True, blank=True)
     ni = models.FloatField(default=0)
     fe = models.FloatField(default=0)
