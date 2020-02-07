@@ -7,7 +7,7 @@ RIDGES = (
     ('T1', 'Taga 1'),
     ('T2', 'Taga 2'),
     ('T3', 'Taga 3'),
-    ('UZ', 'Urbiztondo'),
+    ('UR', 'Urbiztondo'),
     ('KB', 'Kinalablaban')
 )
 
@@ -16,14 +16,13 @@ class Cluster(models.Model):
     A group of adjacent `inventory.Blocks` with the same elevation.
     """
     name = models.CharField(max_length=30)
+    z = models.IntegerField(default=0)
+    mine_block = models.CharField(max_length=20, null=True, blank=True)
     ni = models.FloatField(default=0)
     fe = models.FloatField(default=0)
     co = models.FloatField(default=0)
-    excavation_start = models.DateField(null=True, blank=True)
-    excavation_end = models.DateField(null=True, blank=True)
     with_layout = models.BooleanField(default=False)
     excavated = models.BooleanField(default=False)
-    recommended_name = models.CharField(max_length=30, null=True, blank=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     def __str__(self):
