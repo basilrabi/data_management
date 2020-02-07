@@ -5,7 +5,7 @@ from .models.insitu import Block
 @admin.register(Block)
 class BlockAdmin(TMCLocationAdmin):
     modifiable = False
-    list_display = ('__str__',
+    list_display = ('name',
                     'z',
                     'ni',
                     'fe',
