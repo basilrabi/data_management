@@ -14,9 +14,16 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_nam
 ./manage.py migrate
 ./manage.py createsuperuser --noinput
 
-# Set-up permission for qgis user `gradecontrol`
+echo "Setting up qgis user 'gradecontrol'..."
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists gradecontrol"
-psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create role gradecontrol password '$DATA_MANAGEMENT_GRADECONTROL'"
-psql -h $db_host -p $db_port -U tmcgis -w postgres -c "alter role gradecontrol login"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'"
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table inventory_block to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table location_cluster to gradecontrol"
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (excavated, cluster_id) on table inventory_block to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (excavated) on table location_cluster to gradecontrol"
+
+echo "Setting up qgis user 'survey'..."
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists survey"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table location_cluster to survey"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (with_layout) on table location_cluster to survey"

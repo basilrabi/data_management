@@ -38,4 +38,8 @@ echo "Uploading shipment.TripDetail success." && \
 ./manage.py shell < scripts/upload_data/groups.py 2>&1 | tee -a log_upload_data && \
 echo "Uploading Groups success." && \
 ./manage.py shell < scripts/upload_data/users.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading Users success."
+echo "Uploading Users success." && \
+echo "Adding postgres triggers..." && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql && \
+echo "Done."

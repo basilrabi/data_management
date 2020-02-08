@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION get_ore_class(val numeric)
-RETURNS text AS
+RETURNS character(1) AS
 $BODY$
 DECLARE ore_class text;
 BEGIN
