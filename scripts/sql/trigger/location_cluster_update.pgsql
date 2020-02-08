@@ -5,11 +5,11 @@ BEGIN
     WITH new_cluster as (
         SELECT
             ST_Multi(ST_Union(ST_Expand(geom, 5))) geom,
-	        mode() WITHIN GROUP (ORDER BY z) z,
-	        string_agg(distinct substring(name, 1, 5), ':') mine_block,
-	        round(avg(ni::numeric), 2) ni,
-	        round(avg(fe::numeric), 2) fe,
-	        round(avg(co::numeric), 2) co
+            mode() WITHIN GROUP (ORDER BY z) z,
+            string_agg(distinct substring(name, 1, 5), ':') mine_block,
+            round(avg(ni::numeric), 2) ni,
+            round(avg(fe::numeric), 2) fe,
+            round(avg(co::numeric), 2) co
         FROM inventory_block
         WHERE
             cluster_id IS NOT NULL AND
@@ -30,11 +30,11 @@ BEGIN
     WITH old_cluster as (
         SELECT
             ST_Multi(ST_Union(ST_Expand(geom, 5))) geom,
-	        mode() WITHIN GROUP (ORDER BY z) z,
-	        string_agg(distinct substring(name, 1, 5), ':') mine_block,
-	        round(avg(ni::numeric), 2) ni,
-	        round(avg(fe::numeric), 2) fe,
-	        round(avg(co::numeric), 2) co
+            mode() WITHIN GROUP (ORDER BY z) z,
+            string_agg(distinct substring(name, 1, 5), ':') mine_block,
+            round(avg(ni::numeric), 2) ni,
+            round(avg(fe::numeric), 2) fe,
+            round(avg(co::numeric), 2) co
         FROM inventory_block
         WHERE
             cluster_id IS NOT NULL AND
