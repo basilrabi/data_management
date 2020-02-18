@@ -106,6 +106,7 @@ WorkingDirectory=/home/$USER/data_management
 ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
+          --timeout 600 \
           --bind unix:/run/data_management.sock \
           data_management.wsgi:application
 
@@ -168,7 +169,7 @@ After=network.target
 User=$USER
 Group=nginx
 WorkingDirectory=/home/$USER/data_management
-ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
+ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --timeout 600 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
