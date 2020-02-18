@@ -26,6 +26,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/map/')),
     path('custom/', include('custom.urls')),
     path('inventory/', include('inventory.urls')),
+    path('location/', include('location.urls')),
     path('map/', include('map.urls')),
     path('shipment/', include('shipment.urls'))
 ]
