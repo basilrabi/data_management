@@ -49,13 +49,33 @@ BEGIN
         )
         UPDATE location_cluster
         SET
-            z = old_cluster.z::integer,
+            z = CASE
+                    WHEN old_cluster.geom IS NOT NULL
+                        THEN old_cluster.z::integer
+                    ELSE 0
+                END,
             geom = old_cluster.geom,
             mine_block = old_cluster.mine_block,
-            ni = old_cluster.ni::numeric,
-            fe = old_cluster.fe::numeric,
-            co = old_cluster.co::numeric,
-            ore_class = get_ore_class(old_cluster.ni::numeric)
+            ni = CASE
+                    WHEN old_cluster.geom IS NOT NULL
+                        THEN old_cluster.ni::numeric
+                    ELSE 0
+                END,
+            fe = CASE
+                    WHEN old_cluster.geom IS NOT NULL
+                        THEN old_cluster.fe::numeric
+                    ELSE 0
+                END,
+            co = CASE
+                    WHEN old_cluster.geom IS NOT NULL
+                        THEN old_cluster.co::numeric
+                    ELSE 0
+                END,
+            ore_class = CASE
+                    WHEN old_cluster.geom IS NOT NULL
+                        THEN get_ore_class(old_cluster.ni::numeric)
+                    ELSE NULL
+                END
         FROM old_cluster
         WHERE id = OLD.cluster_id;
     END IF;
