@@ -13,7 +13,7 @@ class Block(models.Model):
     co = models.FloatField()
     excavated = models.BooleanField(default=False)
     cluster = models.ForeignKey(
-        Cluster, null=True, blank=True, on_delete=models.SET_NULL
+        Cluster, null=True, blank=True, on_delete=models.PROTECT
     )
     geom = models.PointField(srid=3125)
 
