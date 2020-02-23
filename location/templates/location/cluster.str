@@ -1,0 +1,6 @@
+cluster,{% now "d-M-y" %},,ssi_styles:arcinfo.ssi
+0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000
+{% for cluster in clusters %}
+{{ cluster.feature_as_str }}
+{% endfor %}
+0, 0.000, 0.000, 0.000, END
