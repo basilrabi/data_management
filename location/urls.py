@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+app_name = 'location'
 urlpatterns = [
     path('data-export/cluster-str',
          views.export_cluster_str,

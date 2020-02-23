@@ -1,0 +1,26 @@
+{% extends "custom/base_generic.html" %}
+{% block title %}
+<title>Data Export</title>
+{% endblock %}
+{% load static %}
+{% block content %}
+<p class="ws1"></p>
+<div class="row">
+    <h3>Shipment</h3>
+</div>
+<div class="row">
+    <div class="list-group">
+        <a href="{% url 'shipment:data-export-lct-trips' %}" class="list-group-item-action">LCT Trips</a>
+        <a href="{% url 'shipment:data-export-laydays' %}" class="list-group-item-action">Laydays Detail</a>
+      </div>
+</div>
+<p class="ws1"></p>
+<div class="row">
+    <h3>Cluster</h3>
+</div>
+<div class="row">
+    <div class="list-group">
+        <a href="{% url 'location:data-export-cluster-str' %}" target="_blank" class="list-group-item-action">Block Cluster String File</a>
+      </div>
+</div>
+{% endblock %}

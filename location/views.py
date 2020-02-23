@@ -32,5 +32,7 @@ def export_cluster_str(request):
         filename = os.path.join(tempdir, 'cluster.str')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
-        return FileResponse(open(filename, 'rb'),
-                            content_type='text/plain')
+        response = FileResponse(open(filename, 'rb'),
+                                content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=cluster.str'
+        return response

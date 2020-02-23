@@ -1,6 +1,10 @@
 from django.contrib.auth.models import Group, User
+from django.shortcuts import render
 
 from .functions import export_csv
+
+def export(request):
+    return render(request, 'custom/export.html', {})
 
 def export_group_permission(request):
     rows = ([
