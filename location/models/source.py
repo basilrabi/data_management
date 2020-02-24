@@ -38,7 +38,7 @@ class Cluster(models.Model):
                 for shape in polygon:
                     for coords in shape:
                         feature_str += f'{self.id}, {coords[1]}, {coords[0]}, {self.z-3}, {self.name}, {self.ore_class}, {self.mine_block}, {self.ni}, {self.fe}, {self.co}\n'
-            feature_str += '0, 0, 0, 0,'
+                    feature_str += '0, 0, 0, 0,\n'
             return feature_str
 
     def __str__(self):
