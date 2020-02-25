@@ -166,16 +166,18 @@ BEGIN
             FROM a
         )
         UPDATE location_cluster
-        SET ni = ni_area / total_area,
-            fe = fe_area / total_area,
-            co = co_area / total_area
+        SET ni = round((ni_area / total_area)::numeric, 2),
+            fe = round((fe_area / total_area)::numeric, 2),
+            co = round((co_area / total_area)::numeric, 2),
+            ore_class = get_ore_class((ni_area / total_area)::numeric)
         FROM b
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster
         SET ni = 0,
             fe = 0,
-            co = 0
+            co = 0,
+            ore_class = NULL
         WHERE id = NEW.id;
     END IF;
 
