@@ -9,6 +9,11 @@ then
     mv log_upload_data log_upload_data_$(date +"%Y-%m-%d_%H-%M-%S")
 fi
 
+echo "Uploading area.road." 2>&1 | tee -a log_upload_data && \
+ogr2ogr -update -append -progress \
+    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
+    -fieldmap identity \
+    -nln area.road data/area.road.gpkg 2>&1 | tee -a log_upload_data && \
 echo "Uploading location_mineblock." 2>&1 | tee -a log_upload_data && \
 ogr2ogr -update -append -progress \
     -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
@@ -39,6 +44,6 @@ echo "Uploading Groups success." 2>&1 | tee -a log_upload_data && \
 ./manage.py shell < scripts/upload_data/users.py 2>&1 | tee -a log_upload_data && \
 echo "Uploading Users success." 2>&1 | tee -a log_upload_data && \
 echo "Adding postgres triggers..." 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql 2>&1 | tee -a log_upload_data && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql 2>&1 | tee -a log_upload_data && \
 echo "Done." 2>&1 | tee -a log_upload_data

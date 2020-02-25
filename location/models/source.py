@@ -24,9 +24,16 @@ class Cluster(models.Model):
     ni = models.FloatField(default=0)
     fe = models.FloatField(default=0)
     co = models.FloatField(default=0)
+    distance_from_road = models.FloatField(null=True, blank=True)
     with_layout = models.BooleanField(default=False)
     excavated = models.BooleanField(default=False)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(distance_from_road__gte=0),
+                                   name='non_negative_distance'),
+        ]
 
     def feature_as_str(self):
         """
