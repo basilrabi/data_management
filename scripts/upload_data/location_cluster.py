@@ -1,6 +1,8 @@
 import csv
 import sys
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.db.models import Q
+from custom.functions import point_to_box
 from inventory.models.insitu import Block
 from location.models.source import Cluster
 # pylint: disable=no-member
@@ -42,8 +44,11 @@ with open('data/inventory_clustered_block.csv', newline='') as csvfile:
     for row in reader:
         block = Block.objects.get(name=row['name'])
         try:
-            cluster = Cluster.objects.get(z=block.z,
-                                          geom__intersects=block.geom)
+            cluster = Cluster.objects.get(
+                Q(z=block.z),
+                Q(geom__intersects=block.geom) |
+                Q(geom__overlaps=point_to_box(block.geom))
+            )
             block.cluster = cluster
             block.save()
             print(f'Clustered Block {block.name} saved.')
@@ -51,6 +56,6 @@ with open('data/inventory_clustered_block.csv', newline='') as csvfile:
             print('\nUploading interrupted.')
             break
         except:
-            print(f'Cluster Block {block.name} was not saved.')
+            print(f'Clustered Block {block.name} was not saved.')
         sys.stdout.flush()
         sys.stderr.flush()

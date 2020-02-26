@@ -13,14 +13,3 @@ def export_clustered_block(request):
         str(block.name)
     ] for block in Block.objects.exclude(cluster__isnull=True))
     return export_csv(rows, 'inventory_clustered_block')
-
-def export_block(request):
-    rows = ([
-        str(block.name),
-        str(block.z),
-        str(block.ni),
-        str(block.fe),
-        str(block.co),
-        str(block.geom.ewkt)
-    ] for block in Block.objects.all())
-    return export_csv(rows, 'inventory_block')

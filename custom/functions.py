@@ -1,6 +1,7 @@
 import csv
 import datetime
 
+from django.contrib.gis.geos import GEOSGeometry
 from django.http import StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
 from tzlocal import get_localzone
@@ -41,6 +42,20 @@ def ordinal_suffix(x):
     if x in (0, 4, 5, 6, 7, 8, 9):
         return 'th'
     return suffix[x-1]
+
+def point_to_box(point_geom, distance=5):
+    """
+    Converts a point geometry to a square with lengh = 2 * distance.
+    """
+    if point_geom.geom_type != 'Point':
+        raise TypeError
+    ewkt = f'SRID={point_geom.srid};POLYGON ((' + \
+        f'{point_geom.coords[0] - distance} {point_geom.coords[1] - distance}, ' + \
+        f'{point_geom.coords[0] - distance} {point_geom.coords[1] + distance}, ' + \
+        f'{point_geom.coords[0] + distance} {point_geom.coords[1] + distance}, ' + \
+        f'{point_geom.coords[0] + distance} {point_geom.coords[1] - distance}, ' + \
+        f'{point_geom.coords[0] - distance} {point_geom.coords[1] - distance}))'
+    return GEOSGeometry(ewkt)
 
 def print_localzone(timestamp):
     if timestamp:

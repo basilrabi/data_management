@@ -10,6 +10,11 @@ ogr2ogr -progress -f "GPKG" data/area.road.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     area.road
 
+ogr2ogr -progress -f "GPKG" data/inventory_block.gpkg \
+    "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
+    -select name,z,ni,fe,co,excavated,geom \
+    inventory_block
+
 ogr2ogr -progress -f "GPKG" data/location_mineblock.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     location_mineblock
