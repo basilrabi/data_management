@@ -24,7 +24,6 @@ curl datamanagement.tmc.nickelasia.com/custom/export/groups -o data/groups.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/user-groups -o data/user_group.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/user-permissions -o data/user_permission.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/users -o data/users.csv
-curl datamanagement.tmc.nickelasia.com/inventory/export/block -o data/inventory_block.csv
 curl datamanagement.tmc.nickelasia.com/inventory/export/clustered-block -o data/inventory_clustered_block.csv
 curl datamanagement.tmc.nickelasia.com/location/export/cluster -o data/location_cluster.csv
 curl datamanagement.tmc.nickelasia.com/shipment/export/lct -o data/shipment_lct.csv
