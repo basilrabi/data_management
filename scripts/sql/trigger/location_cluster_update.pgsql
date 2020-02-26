@@ -41,7 +41,7 @@ BEGIN
             FROM area.road, location_cluster
             WHERE location_cluster.id = NEW.cluster_id;
 
-            SELECT ST_Multi(ST_Difference(cluster_geom, road_buffer))
+            SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
             INTO cluster_geom;
         END IF;
 
@@ -71,7 +71,7 @@ BEGIN
             FROM area.road, location_cluster
             WHERE location_cluster.id = OLD.cluster_id;
 
-            SELECT ST_Multi(ST_Difference(cluster_geom, road_buffer))
+            SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
             INTO cluster_geom;
         END IF;
 
@@ -119,7 +119,7 @@ BEGIN
             INTO road_buffer
             FROM area.road;
 
-            SELECT ST_Multi(ST_Difference(cluster_geom, road_buffer))
+            SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
             INTO cluster_geom;
         END IF;
 
