@@ -47,3 +47,19 @@ echo "Adding postgres triggers..." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql 2>&1 | tee -a log_upload_data && \
 echo "Done." 2>&1 | tee -a log_upload_data
+
+echo "Setting up qgis user 'gradecontrol'..."
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on all tables in schema area to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table inventory_block to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table location_cluster to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (excavated, cluster_id) on table inventory_block to gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (excavated, distance_from_road) on table location_cluster to gradecontrol"
+
+echo "Setting up qgis user 'survey'..."
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists survey"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on all tables in schema area to survey"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant select on table location_cluster to survey"
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "grant update (with_layout) on table location_cluster to survey"
