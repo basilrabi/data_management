@@ -48,7 +48,7 @@ def point_to_box(point_geom, distance=5):
     Converts a point geometry to a square with lengh = 2 * distance.
     """
     if point_geom.geom_type != 'Point':
-        raise TypeError
+        raise TypeError('Data is not a point geometry.')
     ewkt = f'SRID={point_geom.srid};POLYGON ((' + \
         f'{point_geom.coords[0] - distance} {point_geom.coords[1] - distance}, ' + \
         f'{point_geom.coords[0] - distance} {point_geom.coords[1] + distance}, ' + \
