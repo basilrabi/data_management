@@ -1,11 +1,16 @@
 import csv
 import sys
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.db.models import Q
+from django.utils.dateparse import parse_date as pd
+
 from custom.functions import point_to_box
 from inventory.models.insitu import Block
 from location.models.source import Cluster
+
 # pylint: disable=no-member
+
 with open('data/location_cluster.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['name',
                                                  'z',
@@ -15,6 +20,7 @@ with open('data/location_cluster.csv', newline='') as csvfile:
                                                  'fe',
                                                  'co',
                                                  'with_layout',
+                                                 'date_scheduled',
                                                  'excavated',
                                                  'geom'])
     for row in reader:
@@ -26,6 +32,7 @@ with open('data/location_cluster.csv', newline='') as csvfile:
                           fe=row['fe'],
                           co=row['co'],
                           with_layout=row['with_layout'],
+                          date_scheduled=pd(row['date_scheduled']),
                           excavated=row['excavated'],
                           geom=GEOSGeometry(row['geom']))
         try:

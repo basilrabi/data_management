@@ -5,7 +5,7 @@ GRANT UPDATE (geom) ON TABLE area.road TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;
 GRANT SELECT ON TABLE location_cluster TO gradecontrol;
 GRANT UPDATE (excavated, cluster_id) ON TABLE inventory_block TO gradecontrol;
-GRANT UPDATE (excavated, distance_from_road) ON TABLE location_cluster TO gradecontrol;
+GRANT UPDATE (excavated, distance_from_road, date_scheduled) ON TABLE location_cluster TO gradecontrol;
 
 -- survey
 GRANT USAGE ON SCHEMA area TO survey;

@@ -19,6 +19,7 @@ def export_cluster(request):
         str(cluster.fe),
         str(cluster.co),
         str(cluster.with_layout),
+        str(cluster.date_scheduled or ''),
         str(cluster.excavated),
         str(cluster.geom.ewkt)
     ] for cluster in Cluster.objects.exclude(ni__lt=0.01))
