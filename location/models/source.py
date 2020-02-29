@@ -26,6 +26,11 @@ class Cluster(models.Model):
     co = models.FloatField(default=0)
     distance_from_road = models.FloatField(null=True, blank=True)
     with_layout = models.BooleanField(default=False)
+    date_scheduled = models.DateField(
+        null=True,
+        blank=True,
+        help_text='Scheduled date of start of excavation'
+    )
     excavated = models.BooleanField(default=False)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
