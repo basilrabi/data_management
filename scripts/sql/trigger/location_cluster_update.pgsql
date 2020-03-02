@@ -76,7 +76,10 @@ BEGIN
         END IF;
 
         UPDATE location_cluster
-        SET z = elevation,
+        SET z = CASE
+                    WHEN elevation IS NOT NULL THEN elevation
+                    ELSE 0
+                END,
             geom = cluster_geom,
             mine_block = new_mine_block
         WHERE id = OLD.cluster_id;
