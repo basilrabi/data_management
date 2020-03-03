@@ -25,7 +25,7 @@ class Cluster(models.Model):
     ni = models.FloatField(default=0)
     fe = models.FloatField(default=0)
     co = models.FloatField(default=0)
-    distance_from_road = models.FloatField(null=True, blank=True)
+    distance_from_road = models.FloatField(default=0)
     road = models.ForeignKey(
         RoadArea,
         null=True,
