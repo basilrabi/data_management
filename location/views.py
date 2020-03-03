@@ -21,6 +21,8 @@ def export_cluster(request):
         str(cluster.ni),
         str(cluster.fe),
         str(cluster.co),
+        str(cluster.distance_from_road or ''),
+        str(cluster.road or ''),
         str(cluster.with_layout),
         str(cluster.date_scheduled or ''),
         str(cluster.excavated),
