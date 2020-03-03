@@ -32,13 +32,14 @@ BEGIN
         WHERE cluster_id = NEW.cluster_id;
 
         IF (
-            (SELECT distance_from_road
+            (SELECT road_id
              FROM location_cluster
              WHERE id = NEW.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_Buffer(area.road.geom, location_cluster.distance_from_road)
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
             INTO road_buffer
-            FROM area.road, location_cluster
+            FROM location_cluster INNER JOIN location_roadarea
+            ON location_cluster.road_id = location_roadarea.id
             WHERE location_cluster.id = NEW.cluster_id;
 
             SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
@@ -62,13 +63,14 @@ BEGIN
         WHERE cluster_id = OLD.cluster_id;
 
         IF (
-            (SELECT distance_from_road
+            (SELECT road_id
              FROM location_cluster
              WHERE id = OLD.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_Buffer(area.road.geom, location_cluster.distance_from_road)
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
             INTO road_buffer
-            FROM area.road, location_cluster
+            FROM location_cluster INNER JOIN location_roadarea
+            ON location_cluster.road_id = location_roadarea.id
             WHERE location_cluster.id = OLD.cluster_id;
 
             SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
@@ -98,8 +100,8 @@ FOR EACH ROW EXECUTE PROCEDURE update_location_cluster_geometry();
 CREATE OR REPLACE FUNCTION update_location_cluster_geometry_overlay()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the distance_from_road column of
- * location_cluster, the geom column is updated.
+/* Whenever there is a change in the distance_from_road or the road_id column
+ * of location_cluster, the geom column is updated.
  */
 DECLARE
     cluster_geom geometry;
@@ -117,17 +119,18 @@ BEGIN
         FROM inventory_block
         WHERE cluster_id = NEW.id;
 
-        IF (NEW.distance_from_road IS NOT NULL) THEN
-            SELECT ST_Buffer(area.road.geom, NEW.distance_from_road)
+        IF (NEW.road_id IS NOT NULL) THEN
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, NEW.distance_from_road))
             INTO road_buffer
-            FROM area.road;
+            FROM location_roadarea
+            WHERE id = NEW.road_id;
 
             SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
             INTO cluster_geom;
         END IF;
 
         UPDATE location_cluster
-        SET geom = cluster_geom
+        SET geom = ST_MakeValid(cluster_geom)
         WHERE id = NEW.id;
     END IF;
 
@@ -138,7 +141,7 @@ $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP TRIGGER IF EXISTS location_cluster_geometry_overlay_update
 ON location_cluster;
 CREATE TRIGGER location_cluster_geometry_overlay_update
-AFTER UPDATE OF distance_from_road ON location_cluster
+AFTER UPDATE OF distance_from_road, road_id ON location_cluster
 FOR EACH ROW EXECUTE PROCEDURE update_location_cluster_geometry_overlay();
 
 CREATE OR REPLACE FUNCTION update_location_cluster_property()
@@ -155,7 +158,7 @@ BEGIN
             SELECT
                 ST_Area(
                     ST_Intersection(
-                        ST_Expand(inventory_block.geom, 5), NEW.geom
+                        ST_Expand(inventory_block.geom, 5), ST_MakeValid(NEW.geom)
                     )
                 ) area, ni, fe, co
             FROM inventory_block

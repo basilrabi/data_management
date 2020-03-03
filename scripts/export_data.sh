@@ -6,10 +6,6 @@ then
 fi
 mkdir data
 
-ogr2ogr -progress -f "GPKG" data/area.road.gpkg \
-    "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
-    area.road
-
 ogr2ogr -progress -f "GPKG" data/inventory_block.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     -select name,z,ni,fe,co,excavated,geom \
@@ -18,6 +14,10 @@ ogr2ogr -progress -f "GPKG" data/inventory_block.gpkg \
 ogr2ogr -progress -f "GPKG" data/location_mineblock.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     location_mineblock
+
+ogr2ogr -progress -f "GPKG" data/location_roadarea.gpkg \
+    "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
+    location_roadarea
 
 curl datamanagement.tmc.nickelasia.com/custom/export/group-permissions -o data/group_permission.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/groups -o data/groups.csv

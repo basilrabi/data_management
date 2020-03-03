@@ -7,6 +7,7 @@ from django.utils.dateparse import parse_date as pd
 
 from custom.functions import point_to_box
 from inventory.models.insitu import Block
+from location.models.landuse import RoadArea
 from location.models.source import Cluster
 
 # pylint: disable=no-member
@@ -19,6 +20,8 @@ with open('data/location_cluster.csv', newline='') as csvfile:
                                                  'ni',
                                                  'fe',
                                                  'co',
+                                                 'distance_from_road',
+                                                 'road',
                                                  'with_layout',
                                                  'date_scheduled',
                                                  'excavated',
@@ -31,10 +34,13 @@ with open('data/location_cluster.csv', newline='') as csvfile:
                           ni=row['ni'],
                           fe=row['fe'],
                           co=row['co'],
+                          distance_from_road=row['distance_from_road'] or 0,
                           with_layout=row['with_layout'],
                           date_scheduled=pd(row['date_scheduled']),
                           excavated=row['excavated'],
                           geom=GEOSGeometry(row['geom']))
+        if RoadArea.objects.filter(date_surveyed=pd(row['road'])).exists():
+            cluster.road = RoadArea.objects.get(date_surveyed=pd(row['road']))
         try:
             cluster.save()
             print(f'Cluster {cluster.id} saved.')

@@ -9,11 +9,6 @@ then
     mv log_upload_data log_upload_data_$(date +"%Y-%m-%d_%H-%M-%S")
 fi
 
-echo "Uploading area.road." 2>&1 | tee -a log_upload_data && \
-ogr2ogr -update -append -progress \
-    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
-    -fieldmap identity \
-    -nln area.road data/area.road.gpkg 2>&1 | tee -a log_upload_data && \
 echo "Uploading inventory_block." 2>&1 | tee -a log_upload_data && \
 ogr2ogr -update -append -progress \
     -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
@@ -24,6 +19,11 @@ ogr2ogr -update -append -progress \
     -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
     -fieldmap identity \
     -nln location_mineblock data/location_mineblock.gpkg 2>&1 | tee -a log_upload_data && \
+echo "Uploading location_roadarea." 2>&1 | tee -a log_upload_data && \
+ogr2ogr -update -append -progress \
+    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
+    -fieldmap identity \
+    -nln location_roadarea data/location_roadarea.gpkg 2>&1 | tee -a log_upload_data && \
 ./manage.py shell < scripts/upload_data/location_cluster.py 2>&1 | tee -a log_upload_data && \
 echo "Uploading location.Cluster success." 2>&1 | tee -a log_upload_data && \
 ./manage.py shell < scripts/upload_data/shipment_lct.py 2>&1 | tee -a log_upload_data && \

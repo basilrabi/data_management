@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from custom.admin_gis import TMCLocationAdmin
+from .models.landuse import RoadArea
 from .models.source import Cluster, MineBlock, Stockyard
 
 @admin.register(Cluster)
@@ -19,6 +21,10 @@ class ClusterAdmin(TMCLocationAdmin):
 class MineBlockAdmin(TMCLocationAdmin):
     modifiable = False
     list_display = ('name', 'ridge')
+
+@admin.register(RoadArea)
+class RoadAreaAdmin(TMCLocationAdmin):
+    modifiable = False
 
 @admin.register(Stockyard)
 class StockyardAdmin(TMCLocationAdmin):
