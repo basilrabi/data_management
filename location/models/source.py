@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 
 from custom.fields import MineBlockField, PileField
+from .landuse import RoadArea
 
 # pylint: disable=no-member
 
@@ -25,6 +26,13 @@ class Cluster(models.Model):
     fe = models.FloatField(default=0)
     co = models.FloatField(default=0)
     distance_from_road = models.FloatField(null=True, blank=True)
+    road = models.ForeignKey(
+        RoadArea,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        help_text='Road used to adjust the cluster geometry.'
+    )
     with_layout = models.BooleanField(default=False)
     date_scheduled = models.DateField(
         null=True,
