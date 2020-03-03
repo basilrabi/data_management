@@ -1,10 +1,20 @@
+import os
+
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.shortcuts import render
 
 from .functions import export_csv
 
 def export(request):
-    return render(request, 'custom/export.html', {})
+    context = {
+        'db_host': settings.DB_HOST,
+        'db_port': settings.DB_PORT,
+        'db_name': settings.DB_NAME,
+        'gradecontrol': os.environ['DATA_MANAGEMENT_GRADECONTROL'],
+        'survey': os.environ['DATA_MANAGEMENT_SURVEY']
+    }
+    return render(request, 'custom/export.html', context=context)
 
 def export_group_permission(request):
     rows = ([

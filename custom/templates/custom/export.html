@@ -1,4 +1,5 @@
 {% extends "custom/base_generic.html" %}
+{% load custom_tags %}
 {% block title %}
 <title>Data Export</title>
 {% endblock %}
@@ -25,4 +26,53 @@
         <a href="{% url 'inventory:data-export-clustered-block' %}" target="_blank" class="list-group-item-action">Clustered Blocks CSV</a>
     </div>
 </div>
+    {% if user.is_authenticated %}
+<p class="ws1"></p>
+<div class="row">
+    <h3>PostGIS Credentials</h3>
+</div>
+<div class="row">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Paremeter</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Host</td>
+                <td>{{ db_host }}</td>
+            </tr>
+            <tr>
+                <td>Port</td>
+                <td>{{ db_port }}</td>
+            </tr>
+            <tr>
+                <td>Database</td>
+                <td>{{ db_name }}</td>
+            </tr>
+            {% if request.user|has_group:"gradecontrol" %}
+            <tr>
+                <td>User Name</td>
+                <td>gradecontrol</td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td>{{ gradecontrol }}</td>
+            </tr>
+            {% elif request.user|has_group:"survey" %}
+            <tr>
+                <td>User Name</td>
+                <td>survey</td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td>{{ survey }}</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+    {% endif %}
 {% endblock %}
