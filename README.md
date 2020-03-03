@@ -168,6 +168,7 @@ After=network.target
 [Service]
 User=$USER
 Group=nginx
+EnvironmentFile=/pathto/somefilewith_secrets
 WorkingDirectory=/home/$USER/data_management
 ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --timeout 600 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
 
