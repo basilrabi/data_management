@@ -1,5 +1,6 @@
 -- gradecontrol
 GRANT USAGE ON SCHEMA area TO gradecontrol;
+GRANT CREATE, USAGE ON SCHEMA staging TO gradecontrol;
 GRANT SELECT ON ALL TABLES IN SCHEMA area TO gradecontrol;
 GRANT UPDATE (geom) ON TABLE area.road TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;
@@ -14,6 +15,7 @@ GRANT UPDATE (
 
 -- survey
 GRANT USAGE ON SCHEMA area TO survey;
+GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT SELECT ON ALL TABLES IN SCHEMA area TO survey;
 GRANT UPDATE (geom) ON TABLE area.road TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
