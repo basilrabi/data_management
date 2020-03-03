@@ -19,6 +19,10 @@ ogr2ogr -progress -f "GPKG" data/location_mineblock.gpkg \
     "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
     location_mineblock
 
+ogr2ogr -progress -f "GPKG" data/location_roadarea.gpkg \
+    "PG:host=$DATA_MANAGEMENT_DB_HOST user=$DATA_MANAGEMENT_DB_USER dbname=$DATA_MANAGEMENT_DB_NAME" \
+    location_roadarea
+
 curl datamanagement.tmc.nickelasia.com/custom/export/group-permissions -o data/group_permission.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/groups -o data/groups.csv
 curl datamanagement.tmc.nickelasia.com/custom/export/user-groups -o data/user_group.csv

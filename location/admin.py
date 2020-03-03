@@ -24,7 +24,7 @@ class MineBlockAdmin(TMCLocationAdmin):
 
 @admin.register(RoadArea)
 class RoadAreaAdmin(TMCLocationAdmin):
-    pass
+    modifiable = False
 
 @admin.register(Stockyard)
 class StockyardAdmin(TMCLocationAdmin):
