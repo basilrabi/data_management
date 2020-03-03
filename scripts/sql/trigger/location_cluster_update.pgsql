@@ -36,7 +36,7 @@ BEGIN
              FROM location_cluster
              WHERE id = NEW.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road)
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
             INTO road_buffer
             FROM location_cluster INNER JOIN location_roadarea
             ON location_cluster.road_id = location_roadarea.id
@@ -67,7 +67,7 @@ BEGIN
              FROM location_cluster
              WHERE id = OLD.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road)
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
             INTO road_buffer
             FROM location_cluster INNER JOIN location_roadarea
             ON location_cluster.road_id = location_roadarea.id
@@ -120,7 +120,7 @@ BEGIN
         WHERE cluster_id = NEW.id;
 
         IF (NEW.road_id IS NOT NULL) THEN
-            SELECT ST_Buffer(location_roadarea.geom, NEW.distance_from_road)
+            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, NEW.distance_from_road))
             INTO road_buffer
             FROM location_roadarea
             WHERE id = NEW.road_id;
@@ -130,7 +130,7 @@ BEGIN
         END IF;
 
         UPDATE location_cluster
-        SET geom = cluster_geom
+        SET geom = ST_MakeValid(cluster_geom)
         WHERE id = NEW.id;
     END IF;
 
@@ -158,7 +158,7 @@ BEGIN
             SELECT
                 ST_Area(
                     ST_Intersection(
-                        ST_Expand(inventory_block.geom, 5), NEW.geom
+                        ST_Expand(inventory_block.geom, 5), ST_MakeValid(NEW.geom)
                     )
                 ) area, ni, fe, co
             FROM inventory_block
