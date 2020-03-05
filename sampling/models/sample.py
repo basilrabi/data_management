@@ -109,6 +109,7 @@ class DrillCoreSample(AssaySample):
         self.clean_base()
 
     class Meta:
+        ordering = ['interval_from']
         constraints = [
             models.CheckConstraint(check=models.Q(al__lte=100), name='al_max_100_drillcore'),
             models.CheckConstraint(check=models.Q(c__lte=100), name='c_max_100_drillcore'),
