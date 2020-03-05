@@ -75,6 +75,9 @@ def round_up_day(timestamp):
     timestamp = str(print_localzone(timestamp))
     return pdt(f'{timestamp[0:10]} 00:00:00+{timestamp[-5:]}')
 
+def this_year():
+    return datetime.datetime.today().year
+
 def to_dhms(duration):
     """
     Converts a datetime.timedelta object to an dhms string.

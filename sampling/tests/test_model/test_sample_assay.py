@@ -6,9 +6,9 @@ from fleet.models.equipment import TrackedExcavator
 from location.models.source import MineBlock, Stockyard
 from personnel.models.person import Designation, EmploymentRecord, Person
 from sampling.models.piling import PilingMethod, TripsPerPile
+from sampling.models.proxy import MiningSampleAssay
 from sampling.models.sample import (Material,
                                     MiningSample,
-                                    MiningSampleAssay,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 

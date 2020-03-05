@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 
-from custom.fields import MineBlockField, PileField
+from custom.fields import MineBlockField, NameField, PileField
 from .landuse import RoadArea
 
 # pylint: disable=no-member
@@ -60,6 +60,53 @@ class Cluster(models.Model):
                         feature_str += f'{self.id}, {coords[1]}, {coords[0]}, {self.z-3}, {self.name}, {self.ore_class}, {self.mine_block}, {self.ni}, {self.fe}, {self.co}\n'
                     feature_str += '0, 0, 0, 0,\n'
             return feature_str
+
+    def __str__(self):
+        return self.name
+
+class DrillHole(models.Model):
+    """
+    Drill hole collar technical descriptions.
+    """
+    name = NameField(max_length=20, unique=True)
+    date_drilled = models.DateField(null=True, blank=True)
+    local_block = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        help_text='block location in local coordinates'
+    )
+    local_easting = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        help_text='collar x-coordinates in local grid'
+    )
+    local_northing = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        help_text='collar y-coordinates in local grid'
+    )
+    local_z = models.FloatField(
+        null=True,
+        blank=True,
+        help_text='collar elevation prior to the use of SRID:3125'
+    )
+    x = models.FloatField(
+        null=True, blank=True, help_text='collar x-coordinates in SRID:3125'
+    )
+    y = models.FloatField(
+        null=True, blank=True, help_text='collar y-coordinates in SRID:3125'
+    )
+    z = models.FloatField(null=True, blank=True, help_text='collar elevation')
+    z_present = models.FloatField(
+        null=True, blank=True, help_text='present ground elevation'
+    )
+    geom = models.PointField(srid=3125, null=True, blank=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
