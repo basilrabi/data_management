@@ -16,6 +16,8 @@ BEGIN
         SET geom = ST_SetSRID(ST_MakePoint(NEW.x, NEW.y), 3125)
         WHERE id = NEW.id;
     END IF;
+
+    RETURN NULL;
 END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 

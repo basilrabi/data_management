@@ -104,9 +104,15 @@ class DrillCoreSample(AssaySample):
         Lithology, null=True, blank=True, on_delete=models.SET_NULL
     )
     description = models.TextField()
+    excavated_date = models.DateField(null=True, blank=True)
 
     def clean(self):
         self.clean_base()
+        if self.drill_hole.drillcoresample_set.filter(
+            models.Q(interval_from__lt=self.interval_to),
+            models.Q(interval_to__gt=self.interval_from)
+        ).exclude(id=self.id).count() > 0:
+            raise ValidationError('Core interval should not overlap')
 
     class Meta:
         ordering = ['interval_from']
