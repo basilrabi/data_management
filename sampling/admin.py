@@ -4,9 +4,9 @@ from custom.admin_gis import TMCLocationAdmin
 from personnel.models.person import Person
 
 from .models.piling import PilingMethod, TripsPerPile
+from .models.proxy import (AcquiredMiningSample, MiningSampleAssay)
 from .models.sample import (Material,
                             MiningSample,
-                            MiningSampleAssay,
                             MiningSampleIncrement,
                             MiningSampleReport)
 
@@ -43,8 +43,8 @@ class TripsPerPileInline(admin.TabularInline):
 class MaterialAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(MiningSample)
-class MiningSampleAdmin(admin.ModelAdmin):
+@admin.register(AcquiredMiningSample)
+class AcquiredMiningSampleAdmin(admin.ModelAdmin):
     list_display = ('__str__',
                     'dumping_area',
                     'trips',

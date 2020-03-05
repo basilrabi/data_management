@@ -331,7 +331,6 @@ class MiningSampleReportTest(TestCase):
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=5)
         self.assertRaises(ValidationError, i1.clean)
         self.assertEqual(True, s1.ready_for_delivery)
-        self.assertEqual(True, hasattr(s1, 'assay'))
 
     def test_sample_is_not_duplicated_in_report(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')

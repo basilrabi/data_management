@@ -1,7 +1,37 @@
+from django.db import connection
+from django.contrib.gis.geos import GEOSGeometry
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from location.models.source import MineBlock, Stockyard
+from location.models.source import MineBlock, Stockyard, DrillHole
+
+# pylint: disable=no-member
+
+class DrillHoleTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        with open('scripts/sql/trigger/location_drillhole_update.pgsql', 'r') as file:
+            query = file.read()
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+
+    def setUp(self):
+        drillhole = DrillHole(name='MyHole')
+        drillhole.save()
+
+    def test_auto_geom_update(self):
+        drillhole = DrillHole.objects.all().first()
+        drillhole.x = 591070
+        drillhole.save()
+
+        drillhole = DrillHole.objects.all().first()
+        self.assertEqual(drillhole.geom, None)
+
+        drillhole.y = 1051100
+        drillhole.save()
+
+        drillhole = DrillHole.objects.all().first()
+        self.assertEqual(drillhole.geom, GEOSGeometry('SRID=3125;POINT (591070 1051100)'))
 
 class MineBlockTest(TestCase):
 
