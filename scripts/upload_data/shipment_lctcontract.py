@@ -16,8 +16,10 @@ with open('data/shipment_lctcontract.csv', newline='') as csvfile:
             print(f'Contract {contract.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Contract {contract.lct.__str__()}:{str(contract.start)} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

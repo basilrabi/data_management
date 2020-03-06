@@ -26,9 +26,10 @@ with open('data/users.csv', newline='') as csvfile:
             print(f'User {user.username} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'User {user.username} was not saved.')
+            print(e)
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -42,9 +43,10 @@ with open('data/user_group.csv', newline='') as csvfile:
             print(f'Added User `{user.username}` to Group `{group.name}`.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'User `{user.username}` was not assigned to Group `{group.name}`.')
+            print(e)
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -58,8 +60,9 @@ with open('data/user_permission.csv', newline='') as csvfile:
             print(f'Added Permission `{permission.name}` to User `{user.username}`.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Permission `{permission.name}` was not assigned to User `{user.username}`')
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

@@ -23,9 +23,11 @@ with open('data/shipment_laydaysdetail.csv', newline='') as csvfile:
             print(f'LayDaysDetail {detail.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'LayDaysDetail {detail.laydays.shipment.__str__()}:{str(detail.interval_from)} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -35,7 +37,7 @@ for statement in LayDaysStatement.objects.all():
         statement._compute()
     except KeyboardInterrupt:
         print('\nComputing statement interrupted.')
-        break
+        sys.exit(1)
     print('Done.')
     sys.stdout.flush()
     sys.stderr.flush()

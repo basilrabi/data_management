@@ -46,9 +46,11 @@ with open('data/location_cluster.csv', newline='') as csvfile:
             print(f'Cluster {cluster.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Cluster {cluster.name}-{cluster.z} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -67,8 +69,10 @@ with open('data/inventory_clustered_block.csv', newline='') as csvfile:
             print(f'Clustered Block {block.name} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Clustered Block {block.name} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

@@ -12,9 +12,11 @@ with open('data/groups.csv', newline='') as csvfile:
             print(f'Group {group.name} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Group {group.name} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()
 
@@ -28,8 +30,10 @@ with open('data/group_permission.csv', newline='') as csvfile:
             print(f'Permission `{permission.name}` assigned to Group `{group.name}`.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Permission `{permission.name}` not assigned to Group `{group.name}`.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

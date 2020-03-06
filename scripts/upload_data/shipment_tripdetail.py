@@ -17,14 +17,16 @@ with open('data/shipment_tripdetail.csv', newline='') as csvfile:
                             interval_class=row['interval_class'],
                             remarks=row['remarks'])
         try:
-            detail.clean()
+            #detail.clean()
             detail.save(upload=True)
             print(f'TripDetail {detail.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'TripDetail {detail.trip.lct.__str__()}:{str(detail.interval_from)} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()
 

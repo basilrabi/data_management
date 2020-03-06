@@ -12,8 +12,10 @@ with open('data/shipment_vessel.csv', newline='') as csvfile:
             print(f'Vessel {vessel.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Vessel {vessel.name} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

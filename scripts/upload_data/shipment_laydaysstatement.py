@@ -44,9 +44,11 @@ with open('data/shipment_laydaysstatement.csv', newline='') as csvfile:
             print(f'Lay Days Statement {statement.shipment.__str__()} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print('Lay Days Statement of shipment ' + \
                 f'{statement.shipment.__str__()} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

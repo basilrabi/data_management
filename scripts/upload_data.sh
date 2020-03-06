@@ -53,7 +53,11 @@ psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/loc
 echo "Done." 2>&1 | tee -a log_upload_data && \
 echo "Snapping cluster geometries..." 2>&1 | tee -a log_upload_data && \
 ./manage.py shell < scripts/upload_data/location_cluster_snap.py 2>&1 | tee -a log_upload_data && \
-echo "Snapping cluster geometries success." 2>&1 | tee -a log_upload_data
+echo "Snapping cluster geometries success." 2>&1 | tee -a log_upload_data && \
+./manage.py shell < scripts/upload_data/location_drillhole.py 2>&1 | tee -a log_upload_data && \
+echo "Uploading location.DrillHole success." 2>&1 | tee -a log_upload_data && \
+./manage.py shell < scripts/upload_data/sampling_drillcoresample.py 2>&1 | tee -a log_upload_data && \
+echo "Uploading sampling.DrillCoreSample success." 2>&1 | tee -a log_upload_data
 
 echo "Setting up QGIS users'..."
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'"

@@ -32,8 +32,10 @@ with open('data/shipment_trip.csv', newline='') as csvfile:
             print(f'Trip {trip.id} saved.')
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            break
-        except:
+            sys.exit(1)
+        except Exception as e:
             print(f'Trip {trip.lct.__str__()}-{trip.vessel.__str__()} was not saved.')
+            print(e)
+            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()
