@@ -11,4 +11,5 @@ urlpatterns = [
          views.export_cluster_str,
          name='data-export-cluster-str'),
     path('export/cluster', views.export_cluster, name='export-cluster'),
+    path('export/drillhole', views.export_drillhole, name='export-drillhole'),
 ]
