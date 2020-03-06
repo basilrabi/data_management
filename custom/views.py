@@ -20,27 +20,27 @@ def export_group_permission(request):
     rows = ([
         str(group.name),
         str(permission.codename)
-    ] for group in Group.objects.all() for permission in group.permissions.all())
+    ] for group in Group.objects.all().order_by('name') for permission in group.permissions.all().order_by('codename'))
     return export_csv(rows, 'group_permission')
 
 def export_groups(request):
     rows = ([
         str(group.name)
-    ] for group in Group.objects.all())
+    ] for group in Group.objects.all().order_by('name'))
     return export_csv(rows, 'groups')
 
 def export_user_group(request):
     rows = ([
         str(user.get_username()),
         str(group.name)
-    ] for user in User.objects.all() for group in user.groups.all())
+    ] for user in User.objects.all().order_by('username') for group in user.groups.all().order_by('name'))
     return export_csv(rows, 'user_group')
 
 def export_user_permission(request):
     rows = ([
         str(user.get_username()),
         str(permission.codename)
-    ] for user in User.objects.all() for permission in user.user_permissions.all())
+    ] for user in User.objects.all().order_by('username') for permission in user.user_permissions.all().order_by('codename'))
     return export_csv(rows, 'user_permission')
 
 def export_users(request):
@@ -53,5 +53,5 @@ def export_users(request):
         str(user.is_staff),
         str(user.is_active),
         str(user.is_superuser)
-    ] for user in User.objects.all())
+    ] for user in User.objects.all().order_by('username'))
     return export_csv(rows, 'users')

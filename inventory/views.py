@@ -11,11 +11,11 @@ def index(request):
 def export_clustered_block(request):
     """
     Names of the block with foreign key relation to `location_cluster`. This is
-    intended for data importation of the foreign key relation to the database.
+    intended for importation of the foreign key relation to the database.
     """
     rows = ([
         str(block.name)
-    ] for block in Block.objects.exclude(cluster__isnull=True))
+    ] for block in Block.objects.exclude(cluster__isnull=True).order_by('name'))
     return export_csv(rows, 'inventory_clustered_block')
 
 def export_clustered_block2(request):
@@ -45,7 +45,8 @@ def export_clustered_block2(request):
             ) * 3 volume
         FROM location_cluster cluster INNER JOIN inventory_block block
         ON cluster.id = block.cluster_id
-        WHERE cluster.excavated = false;
+        WHERE cluster.excavated = false
+        ORDER BY "name";
         '''
     ))
 
