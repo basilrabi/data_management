@@ -125,6 +125,15 @@ class DrillHoleTest(TestCase):
         drillhole = DrillHole(name='MyHole')
         drillhole.save()
 
+    def test_auto_geom_creation(self):
+        drillhole = DrillHole(name='MyOtherHole',
+                              x=591070,
+                              y=1051100)
+        drillhole.save()
+
+        drillhole = DrillHole.objects.get(name='MyOtherHole')
+        self.assertEqual(drillhole.geom, GEOSGeometry('SRID=3125;POINT (591070 1051100)'))
+
     def test_auto_geom_update(self):
         drillhole = DrillHole.objects.all().first()
         drillhole.x = 591070

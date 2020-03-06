@@ -24,5 +24,5 @@ $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP TRIGGER IF EXISTS location_drillhole_geometry_update
 ON location_drillhole;
 CREATE TRIGGER location_drillhole_geometry_update
-AFTER UPDATE OF x, y ON location_drillhole
+AFTER INSERT OR UPDATE OF x, y ON location_drillhole
 FOR EACH ROW EXECUTE PROCEDURE update_location_drillhole_geometry();
