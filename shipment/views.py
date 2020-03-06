@@ -143,7 +143,7 @@ def export_tripdetail(request):
     ] for detail in TripDetail.objects.all() \
         .annotate(siblings=Count('trip__tripdetail')) \
         .filter(siblings__gt=1) \
-        .order_by('interval_from', 'trip__interval_from'))
+        .order_by('interval_from', 'trip__interval_from', 'trip__lct__name'))
     return export_csv(rows, 'shipment_tripdetail')
 
 def export_vessel(request):
