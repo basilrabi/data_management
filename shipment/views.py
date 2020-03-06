@@ -16,6 +16,9 @@ from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 # pylint: disable=no-member
 
 def data_export_laydays(request):
+    """
+    CSV view of LayDaysDetail intended for user's perusal.
+    """
     rows = ([
         str(detail.laydays.shipment.name),
         str(print_tz_manila(detail.interval_from)),
@@ -27,6 +30,9 @@ def data_export_laydays(request):
     return export_csv(rows, 'laydaysdetail')
 
 def data_export_lct_trips(request):
+    """
+    CSV view of TripDetail intended for user's perusal.
+    """
     rows = ([
         str(detail.trip.id),
         str(detail.trip.lct.name),
@@ -39,16 +45,22 @@ def data_export_lct_trips(request):
     return export_csv(rows, 'lct_trips')
 
 def export_laydaysdetail(request):
+    """
+    CSV view of LayDaysDetial intended for importation to database.
+    """
     rows = ([
         str(detail.laydays.shipment.name),
         str(print_localzone(detail.interval_from) or ''),
         str(detail.laytime_rate),
         str(detail.interval_class),
         str(detail.remarks)
-    ] for detail in LayDaysDetail.objects.all())
+    ] for detail in LayDaysDetail.objects.all().order_by('laydays__completed_loading', 'laydays__shipment__name', 'interval_from'))
     return export_csv(rows, 'shipment_laydaysdetail')
 
 def export_laydaysstatement(request):
+    """
+    CSV view of LayDaysStatement intended for importation to database.
+    """
     rows = ([
         str(statement.shipment.name),
         str(statement.vessel_voyage),
@@ -65,29 +77,48 @@ def export_laydaysstatement(request):
         str(statement.pre_loading_can_test),
         str(statement.report_date or ''),
         str(statement.revised)
-    ] for statement in LayDaysStatement.objects.all())
+    ] for statement in LayDaysStatement.objects.all().order_by('completed_loading', 'shipment__name'))
     return export_csv(rows, 'shipment_laydaysstatement')
 
 def export_lct(request):
-    rows = ([str(lct.name), str(lct.capacity)] for lct in LCT.objects.all())
+    """
+    CSV view of LCT intended for importation to database.
+    """
+    rows = ([
+        str(lct.name),
+        str(lct.capacity)
+    ] for lct in LCT.objects.all().order_by('name'))
     return export_csv(rows, 'shipment_lct')
 
 def export_lctcontract(request):
-    rows = ([str(contract.lct.name),
-             str(contract.start),
-             str(contract.end or '')] for contract in LCTContract.objects.all())
+    """
+    CSV view of LCTContract intended for importation to database.
+    """
+    rows = ([
+        str(contract.lct.name),
+        str(contract.start),
+        str(contract.end or '')
+    ] for contract in LCTContract.objects.all().order_by('lct__name', 'start'))
     return export_csv(rows, 'shipment_lctcontract')
 
 def export_shipment(request):
-    rows = ([str(shipment.vessel.name),
-             str(shipment.name),
-             str(print_localzone(shipment.start_loading)),
-             str(print_localzone(shipment.end_loading) or ''),
-             str(shipment.dump_truck_trips),
-             str(shipment.tonnage)] for shipment in Shipment.objects.all())
+    """
+    CSV view of Shipment intended for importation to database.
+    """
+    rows = ([
+        str(shipment.vessel.name),
+        str(shipment.name),
+        str(print_localzone(shipment.start_loading)),
+        str(print_localzone(shipment.end_loading) or ''),
+        str(shipment.dump_truck_trips),
+        str(shipment.tonnage)
+    ] for shipment in Shipment.objects.all().order_by('end_loading', 'name'))
     return export_csv(rows, 'shipment_shipment')
 
 def export_trip(request):
+    """
+    CSV view of Trip (a trip of LCT) intended for importation to database.
+    """
     rows = ([
         str(trip.lct.name),
         str(trip.vessel.name if trip.vessel else ''),
@@ -95,10 +126,14 @@ def export_trip(request):
         str(trip.dump_truck_trips),
         str(trip.vessel_grab),
         str(print_localzone(trip.interval_from) or '')
-    ] for trip in Trip.objects.all())
+    ] for trip in Trip.objects.all().order_by('lct__name', 'interval_from'))
     return export_csv(rows, 'shipment_trip')
 
 def export_tripdetail(request):
+    """
+    CSV view of TripDetail (a detail of an LCT trip) intended for imporation to
+    database.
+    """
     rows = ([
         str(detail.trip.lct.name),
         str(print_localzone(detail.trip.interval_from)),
@@ -108,11 +143,16 @@ def export_tripdetail(request):
     ] for detail in TripDetail.objects.all() \
         .annotate(siblings=Count('trip__tripdetail')) \
         .filter(siblings__gt=1) \
-        .order_by('interval_from'))
+        .order_by('interval_from', 'trip__interval_from', 'trip__lct__name'))
     return export_csv(rows, 'shipment_tripdetail')
 
 def export_vessel(request):
-    rows = ([str(vessel.name)] for vessel in Vessel.objects.all())
+    """
+    CSV view of Vessel intended for importation to database.
+    """
+    rows = ([
+        str(vessel.name)
+    ] for vessel in Vessel.objects.all().order_by('name'))
     return export_csv(rows, 'shipment_vessel')
 
 def lay_days_statement_pdf(request, name):

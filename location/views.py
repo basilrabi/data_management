@@ -11,7 +11,7 @@ from location.models.source import Cluster
 
 def export_cluster(request):
     """
-    CSV view of Cluster intended for data importion to database.
+    CSV view of Cluster intended for importion to database.
     """
     rows = ([
         str(cluster.name),
@@ -27,7 +27,7 @@ def export_cluster(request):
         str(cluster.date_scheduled or ''),
         str(cluster.excavated),
         str(cluster.geom.ewkt)
-    ] for cluster in Cluster.objects.exclude(ni__lt=0.01))
+    ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('date_scheduled', 'name'))
     return export_csv(rows, 'location_cluster')
 
 def export_cluster2(request):
