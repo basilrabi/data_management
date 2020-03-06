@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import models
+from django.forms import Textarea
 
 from custom.admin_gis import TMCLocationAdmin
 from sampling.models.proxy import DrillCore
@@ -7,7 +9,22 @@ from .models.source import Cluster, DrillHole, MineBlock, Stockyard
 
 class DrillCoreInline(admin.TabularInline):
     model = DrillCore
+    exclude = ('al',
+               'c',
+               'cr',
+               'mg',
+               'sc',
+               'si',
+               'moisture',
+               'date_received_for_preparation',
+               'date_prepared',
+               'date_received_for_analysis',
+               'date_analyzed')
     extra = 0
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+    }
+    readonly_fields = ['ni', 'fe', 'co']
 
 @admin.register(Cluster)
 class ClusterAdmin(TMCLocationAdmin):
@@ -27,6 +44,7 @@ class DrillHoleAdmin(TMCLocationAdmin):
     modifiable = False
     inlines = [DrillCoreInline]
     list_display = ('name', 'date_drilled')
+    search_fields = ['name']
 
 @admin.register(MineBlock)
 class MineBlockAdmin(TMCLocationAdmin):

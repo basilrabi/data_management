@@ -8,7 +8,8 @@ from .models.proxy import (AcquiredMiningSample, MiningSampleAssay)
 from .models.sample import (Material,
                             MiningSample,
                             MiningSampleIncrement,
-                            MiningSampleReport)
+                            MiningSampleReport,
+                            Lithology)
 
 # pylint: disable=no-member
 
@@ -39,10 +40,6 @@ class TripsPerPileInline(admin.TabularInline):
     model = TripsPerPile
     extra = 0
 
-@admin.register(Material)
-class MaterialAdmin(admin.ModelAdmin):
-    pass
-
 @admin.register(AcquiredMiningSample)
 class AcquiredMiningSampleAdmin(admin.ModelAdmin):
     list_display = ('__str__',
@@ -57,6 +54,14 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
                'end_collection',
                'trips',
                'ready_for_delivery')
+
+@admin.register(Lithology)
+class LithologyAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(MiningSampleAssay)
 class MiningSampleAssayAdmin(admin.ModelAdmin):
