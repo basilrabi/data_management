@@ -33,3 +33,16 @@ class DrillCoreTest(TestCase):
                          interval_from=1.5,
                          interval_to=2.5)
         self.assertEqual(core.clean(), None)
+
+    def test_to_is_greater_than_from(self):
+        drillhole = DrillHole.objects.all().first()
+
+        core = DrillCore(drill_hole=drillhole,
+                         interval_from=1.5,
+                         interval_to=1.5)
+        self.assertRaises(ValidationError, core.clean)
+
+        core = DrillCore(drill_hole=drillhole,
+                         interval_from=2,
+                         interval_to=1.5)
+        self.assertRaises(ValidationError, core.clean)

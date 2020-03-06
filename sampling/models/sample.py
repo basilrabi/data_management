@@ -113,6 +113,8 @@ class DrillCoreSample(AssaySample):
             models.Q(interval_to__gt=self.interval_from)
         ).exclude(id=self.id).count() > 0:
             raise ValidationError('Core interval should not overlap')
+        if self.interval_from >= self.interval_to:
+            raise ValidationError('interval_to should be greater than interval_from')
 
     class Meta:
         ordering = ['interval_from']
