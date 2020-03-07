@@ -1,3 +1,12 @@
+-- geology
+GRANT CREATE, USAGE ON SCHEMA staging TO geology;
+GRANT USAGE ON SCHEMA topography TO geology;
+GRANT SELECT ON ALL TABLES IN SCHEMA topography TO geology;
+GRANT SELECT ON TABLE location_drillhole TO geology;
+GRANT UPDATE (z_present) ON TABLE location_drillhole TO geology;
+GRANT SELECT ON TABLE sampling_drillcoresample TO geology;
+GRANT UPDATE (excavated_date) ON TABLE sampling_drillcoresample TO geology;
+
 -- gradecontrol
 GRANT CREATE, USAGE ON SCHEMA staging TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;

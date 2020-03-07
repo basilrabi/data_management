@@ -5,6 +5,7 @@ set -a
 set +a
 
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists $db_name"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists geology"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists gradecontrol"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists survey"
 

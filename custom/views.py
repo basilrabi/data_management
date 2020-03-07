@@ -11,6 +11,7 @@ def export(request):
         'db_host': settings.DB_HOST,
         'db_port': settings.DB_PORT,
         'db_name': settings.DB_NAME,
+        'geology': os.environ['DATA_MANAGEMENT_GEOLOGY'],
         'gradecontrol': os.environ['DATA_MANAGEMENT_GRADECONTROL'],
         'survey': os.environ['DATA_MANAGEMENT_SURVEY']
     }

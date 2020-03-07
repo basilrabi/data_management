@@ -52,6 +52,16 @@
                 <td>Database</td>
                 <td>{{ db_name }}</td>
             </tr>
+            {% if request.user|has_group:"geology" %}
+            <tr>
+                <td>User Name</td>
+                <td>geology</td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td>{{ geology }}</td>
+            </tr>
+            {% endif %}
             {% if request.user|has_group:"gradecontrol" %}
             <tr>
                 <td>User Name</td>
@@ -61,7 +71,8 @@
                 <td>Password</td>
                 <td>{{ gradecontrol }}</td>
             </tr>
-            {% elif request.user|has_group:"survey" %}
+            {% endif %}
+            {% if request.user|has_group:"survey" %}
             <tr>
                 <td>User Name</td>
                 <td>survey</td>

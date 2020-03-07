@@ -60,6 +60,7 @@ echo "Uploading location.DrillHole success." 2>&1 | tee -a log_upload_data && \
 echo "Uploading sampling.DrillCoreSample success." 2>&1 | tee -a log_upload_data
 
 echo "Setting up QGIS users'..."
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user geology with encrypted password '$DATA_MANAGEMENT_GEOLOGY'"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'"
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/permissions.pgsql
