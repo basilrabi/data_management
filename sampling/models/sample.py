@@ -103,7 +103,7 @@ class DrillCoreSample(AssaySample):
     lithology = models.ForeignKey(
         Lithology, null=True, blank=True, on_delete=models.SET_NULL
     )
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     excavated_date = models.DateField(null=True, blank=True)
 
     def clean(self):
