@@ -2,12 +2,10 @@
 module postgres 1.0;
 
 require {
+	class tcp_socket name_connect;
 	type init_t;
 	type postgresql_port_t;
-	class tcp_socket name_connect;
 }
 
 #============= init_t ==============
-
-#!!!! This avc is allowed in the current policy
 allow init_t postgresql_port_t:tcp_socket name_connect;

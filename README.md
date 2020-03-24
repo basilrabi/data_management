@@ -179,7 +179,7 @@ WantedBy=multi-user.target
 ##### SELinux Adventures
 
 If you want SELinux activated, running the service might fail since SELinux will prevent a lot of things.
-You may [compile](http://www.ryanchapin.com/fv-b-4-826/HowTo-Compile-and-Install-New-SELinux-Plicy-Modules.html) the type enforcement files in the `SELinux/` directory.
+You may [compile](https://relativkreativ.at/articles/how-to-compile-a-selinux-policy-package) the type enforcement files in the `SELinux/` directory.
 
 See [this](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-fixing_problems-allowing_access_audit2allow)
 for further clarification of SELinux.

@@ -2,21 +2,21 @@
 module mynginx 1.0;
 
 require {
-	type user_home_t;
 	type httpd_t;
 	type reserved_port_t;
-	class tcp_socket name_bind;
+	type unlabeled_t;
+	type user_home_t;
+	class dir read;
+	class file { read getattr open };
 	class sock_file write;
-	class file read;
+	class tcp_socket name_bind;
 }
 
 #============= httpd_t ==============
-
-#!!!! This avc is allowed in the current policy
 allow httpd_t reserved_port_t:tcp_socket name_bind;
-
-#!!!! This avc is allowed in the current policy
+allow httpd_t unlabeled_t:dir read;
+allow httpd_t unlabeled_t:file getattr;
+allow httpd_t unlabeled_t:file open;
+allow httpd_t unlabeled_t:file read;
 allow httpd_t user_home_t:file read;
-
-#!!!! This avc is allowed in the current policy
 allow httpd_t user_home_t:sock_file write;

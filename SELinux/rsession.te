@@ -2,48 +2,28 @@
 module rsession 1.0;
 
 require {
-        type devpts_t;
-        type init_t;
-        type ptmx_t;
-        type user_home_t;
-        type initrc_tmp_t;
-        type tmp_t;
-        type ntop_port_t;
+        class chr_file { ioctl open read write };
         class dir { create rename rmdir setattr };
         class file { append create link setattr unlink write };
-        class sock_file { create setattr };
-        class chr_file { ioctl open read write };
         class process execmem;
+        class sock_file { create setattr };
         class tcp_socket name_connect;
+        type devpts_t;
+        type init_t;
+        type initrc_tmp_t;
+        type ntop_port_t;
+        type ptmx_t;
+        type tmp_t;
+        type user_home_t;
 }
 
 #============= init_t ==============
-
-#!!!! This avc is allowed in the current policy
 allow init_t devpts_t:chr_file open;
-
-#!!!! This avc is allowed in the current policy
 allow init_t initrc_tmp_t:dir rmdir;
-
-#!!!! This avc is allowed in the current policy
 allow init_t initrc_tmp_t:file { create unlink write };
-
-#!!!! This avc is allowed in the current policy
 allow init_t ntop_port_t:tcp_socket name_connect;
-
-#!!!! This avc is allowed in the current policy
-#!!!! This av rule may have been overridden by an extended permission av rule
 allow init_t ptmx_t:chr_file { ioctl open read write };
-
-#!!!! This avc is allowed in the current policy
 allow init_t self:process execmem;
-
-#!!!! This avc is allowed in the current policy
 allow init_t tmp_t:sock_file { create setattr };
-
-#!!!! This avc is allowed in the current policy
 allow init_t user_home_t:dir { create rename rmdir setattr };
-allow init_t user_home_t:file lock;
-
-#!!!! This avc is allowed in the current policy
-allow init_t user_home_t:file { append link setattr write };
+allow init_t user_home_t:file { append link lock setattr write };

@@ -2,25 +2,17 @@
 module rserver 1.0;
 
 require {
-	type ups_port_t;
-	type unreserved_port_t;
-	type tmp_t;
-	type init_t;
 	class process setpgid;
 	class sock_file write;
 	class tcp_socket name_connect;
+	type init_t;
+	type tmp_t;
+	type unreserved_port_t;
+	type ups_port_t;
 }
 
 #============= init_t ==============
-
-#!!!! This avc is allowed in the current policy
 allow init_t self:process setpgid;
-
-#!!!! This avc is allowed in the current policy
 allow init_t tmp_t:sock_file write;
-
-#!!!! This avc is allowed in the current policy
 allow init_t unreserved_port_t:tcp_socket name_connect;
-
-#!!!! This avc is allowed in the current policy
 allow init_t ups_port_t:tcp_socket name_connect;

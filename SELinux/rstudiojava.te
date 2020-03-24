@@ -2,13 +2,10 @@
 module rstudiojava 1.0;
 
 require {
+	class sock_file rename;
 	type init_t;
 	type tmp_t;
-	class sock_file rename;
 }
 
 #============= init_t ==============
-
-#!!!! This avc is allowed in the current policy
 allow init_t tmp_t:sock_file rename;
-
