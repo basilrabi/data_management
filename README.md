@@ -192,7 +192,7 @@ Configure nginx to proxy pass to gunicorn by adding a new `server` block to `/et
 # Change $USER to your user name
 server {
     listen 80;
-    server_name server_domain_or_IP;
+    server_name $SERVER_DOMAIN_OR_IP;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
@@ -200,11 +200,23 @@ server {
     }
 
     location / {
+        proxy_temp_path /home/$USER/tmp 1 2;
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_pass http://unix:/home/$USER/data_management/data_management.sock;
+    }
+}
+
+server {
+    listen 81;
+    server_name $SERVER_DOMAIN_OR_IP;
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location / {
+        root /media/tmc/nginx/81;
+        index index.html;
+        autoindex on;
     }
 }
 ```
