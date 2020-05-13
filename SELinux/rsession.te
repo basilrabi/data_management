@@ -4,7 +4,7 @@ module rsession 1.0;
 require {
         class chr_file { ioctl open read write };
         class dir { create rename rmdir setattr };
-        class file { append create link setattr unlink write };
+        class file { append create link lock setattr unlink write };
         class process execmem;
         class sock_file { create setattr };
         class tcp_socket name_connect;
