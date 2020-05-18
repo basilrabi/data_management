@@ -6,6 +6,7 @@ require {
 	class tcp_socket name_connect;
 	type http_port_t;
 	type init_t;
+	type init_tmp_t;
 	type initrc_tmp_t;
 	type unlabeled_t;
 }
@@ -14,4 +15,5 @@ require {
 allow init_t http_port_t:tcp_socket name_connect;
 allow init_t unlabeled_t:dir add_name;
 allow init_t unlabeled_t:file { append create execute map unlink write };
+allow init_t init_tmp_t:file execute;
 allow init_t initrc_tmp_t:file { execute map};
