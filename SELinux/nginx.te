@@ -1,22 +1,22 @@
 
-module mynginx 1.0;
+module nginx 1.0;
 
 require {
+    class dir read;
+	class file { getattr open read };
+	class lnk_file read;
+	class sock_file write;
+	class tcp_socket name_bind;
 	type httpd_t;
 	type reserved_port_t;
 	type unlabeled_t;
 	type user_home_t;
-	class dir read;
-	class file { read getattr open };
-	class sock_file write;
-	class tcp_socket name_bind;
 }
 
 #============= httpd_t ==============
 allow httpd_t reserved_port_t:tcp_socket name_bind;
 allow httpd_t unlabeled_t:dir read;
-allow httpd_t unlabeled_t:file getattr;
-allow httpd_t unlabeled_t:file open;
-allow httpd_t unlabeled_t:file read;
+allow httpd_t unlabeled_t:file { getattr open read };
+allow httpd_t unlabeled_t:lnk_file read;
 allow httpd_t user_home_t:file read;
 allow httpd_t user_home_t:sock_file write;
