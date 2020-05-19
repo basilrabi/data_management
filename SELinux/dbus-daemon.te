@@ -1,0 +1,11 @@
+
+module dbus-daemon 1.0;
+
+require {
+    class file { execute open };
+	type gkeyringd_exec_t;
+	type system_dbusd_t
+}
+
+#============= system_dbusd_t ==============
+allow system_dbusd_t gkeyringd_exec_t:file { execute open };
