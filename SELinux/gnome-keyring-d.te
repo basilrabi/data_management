@@ -1,0 +1,24 @@
+
+module gnome-keyring-d 1.0;
+
+require {
+    class dir { add_name create read write };
+    class file { getattr map open };
+    class lnk_file read;
+    class process setsched;
+    class sock_file create;
+    type gkeyringd_exec_t;
+    type gkeyringd_gnome_home_t;
+    type system_dbusd_t;
+    type unlabeled_t;
+    type user_home_t;
+}
+
+#============= system_dbusd_t ==============
+allow system_dbusd_t gkeyringd_exec_t:file map;
+allow system_dbusd_t gkeyringd_gnome_home_t:dir read;
+allow system_dbusd_t gkeyringd_gnome_home_t:file { getattr open };
+allow system_dbusd_t self:process setsched;
+allow system_dbusd_t unlabeled_t:dir { add_name create write };
+allow system_dbusd_t unlabeled_t:sock_file create;
+allow system_dbusd_t user_home_t:lnk_file read;
