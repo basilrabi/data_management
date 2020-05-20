@@ -3,7 +3,7 @@ module rsession 1.0;
 
 require {
     class chr_file { ioctl open read write };
-    class dir { add_name create remove_name rename rmdir setattr };
+    class dir { add_name create remove_name rename reparent rmdir setattr };
     class file { append create execute link lock map open read rename setattr unlink write };
     class lnk_file read;
     class process execmem;
@@ -34,7 +34,7 @@ allow init_t self:process execmem;
 allow init_t tmp_t:sock_file { create setattr };
 allow init_t unlabeled_t:dir { add_name remove_name rename rmdir };
 allow init_t unlabeled_t:file { create execute link map rename setattr unlink write };
-allow init_t user_home_t:dir { create rename rmdir setattr };
+allow init_t user_home_t:dir { create rename reparent rmdir setattr };
 allow init_t user_home_t:file { append create link lock open read rename setattr write };
 allow init_t user_home_t:lnk_file read;
 allow init_t user_tmp_t:file { create map write };
