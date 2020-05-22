@@ -6,12 +6,14 @@ require {
 	class sock_file write;
 	class tcp_socket name_connect;
 	type init_t;
+	type salt_port_t;
 	type tmp_t;
 	type unreserved_port_t;
 	type ups_port_t;
 }
 
 #============= init_t ==============
+allow init_t salt_port_t:tcp_socket name_connect;
 allow init_t self:process setpgid;
 allow init_t tmp_t:sock_file write;
 allow init_t unreserved_port_t:tcp_socket name_connect;
