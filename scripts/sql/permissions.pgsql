@@ -1,6 +1,6 @@
 -- geology
 GRANT CREATE, USAGE ON SCHEMA staging TO geology;
-GRANT USAGE ON SCHEMA topography TO geology;
+GRANT CREATE, USAGE ON SCHEMA topography TO geology;
 GRANT SELECT ON ALL TABLES IN SCHEMA topography TO geology;
 GRANT SELECT ON TABLE location_drillhole TO geology;
 GRANT UPDATE (z_present) ON TABLE location_drillhole TO geology;
@@ -25,6 +25,6 @@ GRANT UPDATE (
 -- survey
 GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
-GRANT SELECT ON TABLE location_roadarea TO gradecontrol;
+GRANT SELECT ON TABLE location_roadarea TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
 GRANT UPDATE (with_layout) ON TABLE location_cluster TO survey;
