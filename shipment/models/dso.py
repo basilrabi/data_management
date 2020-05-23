@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import mark_safe
 from django.utils.timezone import now
+from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (ordinal_suffix,
@@ -523,14 +524,21 @@ class Vessel(models.Model):
         max_length=50, unique=True, null=True, blank=True
     )
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.refresh_from_db()
-        self.stripped_name = self.name
-        super().save(*args, **kwargs)
-
     class Meta:
         ordering = ['name']
+
+    def clean(self):
+        stripped_name = sub(r'\s+', ' ', str(self.name).upper().strip())
+        stripped_name = sub(r'^M[^a-zA-Z]*V\s*', '', stripped_name)
+        stripped_name = sub(r'[^\w]', '', str(stripped_name))
+        if Vessel.objects.all().filter(stripped_name = stripped_name).exists():
+            raise ValidationError("Vessel name exists.")
+
+    def save(self, *args, **kwargs):
+        stripped_name = sub(r'\s+', ' ', str(self.name).upper().strip())
+        stripped_name = sub(r'^M[^a-zA-Z]*V\s*', '', stripped_name)
+        self.stripped_name = stripped_name
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
