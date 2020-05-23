@@ -524,6 +524,8 @@ class Vessel(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.refresh_from_db()
         self.stripped_name = self.name
         super().save(*args, **kwargs)
 
