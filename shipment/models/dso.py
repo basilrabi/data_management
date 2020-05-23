@@ -8,6 +8,7 @@ from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (ordinal_suffix,
+                              print_tz_manila,
                               round_second,
                               round_up_day,
                               to_dhms,
@@ -65,7 +66,7 @@ class LayDaysDetail(models.Model):
         if self.laydays.laydaysdetail_set \
                 .filter(interval_from=self.interval_from) \
                 .exclude(id=self.id).count() > 0:
-            raise ValidationError('Times should be unique.')
+            raise ValidationError(f'{str(print_tz_manila(self.interval_from))} is duplicated.')
 
         if self.interval_class == 'end' and self.laydays.laydaysdetail_set \
                 .filter(interval_class='end') \

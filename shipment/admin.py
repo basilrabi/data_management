@@ -1,9 +1,29 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import Textarea
+from django.forms.models import BaseInlineFormSet
+
+from custom.functions import print_tz_manila
 
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import LayDaysDetail, LayDaysStatement, Shipment, Vessel
+
+# pylint: disable=no-member
+
+class IntervalFromInlineFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        if any(self.errors):
+            return
+        timestamps = []
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            timestamp = form.cleaned_data.get('interval_from')
+            if timestamp in timestamps:
+                raise ValidationError(f'{str(print_tz_manila(timestamp))} is duplicated.')
+            timestamps.append(timestamp)
 
 class LayDaysDetailInline(admin.TabularInline):
     model = LayDaysDetail
@@ -11,6 +31,7 @@ class LayDaysDetailInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
+    formset = IntervalFromInlineFormSet
 
 class LCTContractInline(admin.TabularInline):
     model = LCTContract
@@ -22,6 +43,7 @@ class TripDetailInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
+    formset = IntervalFromInlineFormSet
 
 @admin.register(LayDaysStatement)
 class LayDaysStatementAdmin(admin.ModelAdmin):

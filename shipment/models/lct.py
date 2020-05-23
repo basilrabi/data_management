@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from custom.fields import NameField
+from custom.functions import print_tz_manila
 
 # pylint: disable=no-member
 
@@ -203,7 +204,7 @@ class TripDetail(models.Model):
         if not self.interval_from:
             raise ValidationError('Date and time should not be empty.')
         if self.trip.tripdetail_set.filter(interval_from=self.interval_from).exclude(id=self.id).count() > 0:
-            raise ValidationError('Times should be different.')
+            raise ValidationError(f'{str(print_tz_manila(self.interval_from))} is duplicated.')
         if self.trip.tripdetail_set.filter(interval_class='end').exclude(id=self.id).count() > 0:
             raise ValidationError('Only one end is allowed.')
         for trip in self.trip.lct.trip_set.all().exclude(id=self.trip.id):
