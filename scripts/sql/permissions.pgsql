@@ -11,7 +11,7 @@ GRANT UPDATE (excavated_date) ON TABLE sampling_drillcoresample TO geology;
 -- gradecontrol
 GRANT CREATE, USAGE ON SCHEMA staging TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;
-GRANT SELECT ON TABLE location_cluster TO gradecontrol;
+GRANT INSERT, SELECT ON TABLE location_cluster TO gradecontrol;
 GRANT SELECT ON TABLE location_roadarea TO gradecontrol;
 GRANT UPDATE (cluster_id, excavated) ON TABLE inventory_block TO gradecontrol;
 GRANT UPDATE (
