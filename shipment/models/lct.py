@@ -199,6 +199,7 @@ class TripDetail(models.Model):
 
     class Meta:
         ordering = ['interval_from']
+        constraints = [models.UniqueConstraint(fields=['trip', 'interval_from'], name='unique_lct_trip_timestamp')]
 
     def clean(self):
         if not self.interval_from:

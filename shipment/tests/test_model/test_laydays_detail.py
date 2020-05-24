@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
@@ -44,7 +45,24 @@ class  LayDaysDetailTest(TestCase):
         )
         self.assertRaises(ValidationError, detail.clean)
 
-    def test_unique_interval_from(self):
+    def test_unique_interval_from_integrity(self):
+        statement = LayDaysStatement.objects.all().first()
+        detail = LayDaysDetail(
+            laydays=statement,
+            interval_from=pdt('2019-08-17 12:00:00+0800'),
+            laytime_rate=100,
+            interval_class='rain'
+        )
+        detail.save()
+        detail = LayDaysDetail(
+            laydays=statement,
+            interval_from=pdt('2019-08-17 12:00:00+0800'),
+            laytime_rate=100,
+            interval_class='heavy swell'
+        )
+        self.assertRaises(IntegrityError, detail.save)
+
+    def test_unique_interval_from_validation(self):
         statement = LayDaysStatement.objects.all().first()
         detail = LayDaysDetail(
             laydays=statement,

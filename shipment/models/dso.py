@@ -61,6 +61,7 @@ class LayDaysDetail(models.Model):
 
     class Meta:
         ordering = ['interval_from']
+        constraints = [models.UniqueConstraint(fields=['laydays', 'interval_from'], name='unique_vessel_trip_timestamp')]
 
     def clean(self):
         if self.laydays.laydaysdetail_set \

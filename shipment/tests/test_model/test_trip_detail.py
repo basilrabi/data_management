@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
@@ -62,7 +63,22 @@ class  TripDetailTest(TestCase):
         self.assertEqual(trip._interval_to(),
                          trip_detail2.interval_from)
 
-    def test_trip_with_the_same_time(self):
+    def test_trip_with_the_same_time_integrity(self):
+        trip = Trip.objects.all().first()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        self.assertRaises(IntegrityError, trip_detail.save)
+
+    def test_trip_with_the_same_time_validation(self):
         trip = Trip.objects.all().first()
         trip_detail = TripDetail(
             trip=trip,
