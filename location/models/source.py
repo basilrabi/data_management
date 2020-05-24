@@ -16,7 +16,8 @@ RIDGES = (
 
 class Cluster(models.Model):
     """
-    A group of adjacent `inventory.Blocks` with the same elevation.
+    A group of adjacent `inventory.Blocks` with the same elevation at the same
+    mine block.
     """
     name = models.CharField(max_length=30)
     z = models.SmallIntegerField(default=0)

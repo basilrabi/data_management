@@ -148,9 +148,10 @@ CREATE OR REPLACE FUNCTION update_location_cluster_property()
 RETURNS trigger AS
 $BODY$
 /* Whenever there is a change in the geom column of location_cluster, the
- * columns ni, fe, and co are also updated based on a weighted average property
- * of all the child inventory_block rows. The weight of each row is based on
- * their area of influence that intersects the geom column of location_cluster.
+ * columns ni, fe, co, mine_block and ore_class are also updated based on a
+ * weighted average property of all the child inventory_block rows. The weight
+ * of each row is based on their area of influence that intersects the geom
+ * column of location_cluster.
  */
 BEGIN
     IF (NEW.geom IS NOT NULL) THEN
@@ -158,7 +159,8 @@ BEGIN
             SELECT
                 ST_Area(
                     ST_Intersection(
-                        ST_Expand(inventory_block.geom, 5), ST_MakeValid(NEW.geom)
+                        ST_Expand(inventory_block.geom, 5),
+                        ST_MakeValid(NEW.geom)
                     )
                 ) area, ni, fe, co
             FROM inventory_block
@@ -170,19 +172,36 @@ BEGIN
                    SUM(fe * area) fe_area,
                    SUM(co * area) co_area
             FROM a
+        ),
+        c as (
+            SELECT name,
+                   ST_Area(ST_Intersection(
+                       ST_MakeValid(NEW.geom),
+                       location_mineblock.geom
+                    )) area
+            FROM location_mineblock
+            WHERE ST_Intersects(ST_MakeValid(NEW.geom), location_mineblock.geom)
+        ),
+        d as (
+            SELECT name, area
+            FROM c
+            ORDER BY area DESC
+            LIMIT 1
         )
         UPDATE location_cluster
-        SET ni = round((ni_area / total_area)::numeric, 2),
-            fe = round((fe_area / total_area)::numeric, 2),
-            co = round((co_area / total_area)::numeric, 2),
-            ore_class = get_ore_class((ni_area / total_area)::numeric)
-        FROM b
+        SET ni = round((b.ni_area / b.total_area)::numeric, 2),
+            fe = round((b.fe_area / b.total_area)::numeric, 2),
+            co = round((b.co_area / b.total_area)::numeric, 2),
+            mine_block = d.name,
+            ore_class = get_ore_class((b.ni_area / b.total_area)::numeric)
+        FROM b, d
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster
         SET ni = 0,
             fe = 0,
             co = 0,
+            mine_block = NULL,
             ore_class = NULL
         WHERE id = NEW.id;
     END IF;
