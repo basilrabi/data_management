@@ -2,14 +2,13 @@ CREATE OR REPLACE FUNCTION update_location_cluster_geometry()
 RETURNS trigger AS
 $BODY$
 /* Whenever there is a change in the referred location_cluster in the foreign
- * key column of `inventory_block`, the geom colummn of location_cluster is
- * updated.
+ * key column of `inventory_block`, the geom and elevation colummns of
+  * location_cluster is updated.
  */
 DECLARE
     cluster_geom geometry;
     elevation integer;
     is_multi_elevation boolean;
-    new_mine_block text;
     road_buffer geometry;
 BEGIN
     IF (NEW.cluster_id IS NOT NULL) THEN
@@ -25,9 +24,8 @@ BEGIN
 
         SELECT
             ST_Multi(ST_Union(ST_Expand(geom, 5))),
-            mode() WITHIN GROUP (ORDER BY z),
-            string_agg(distinct substring(name, 1, 5), ':')
-        INTO cluster_geom, elevation, new_mine_block
+            mode() WITHIN GROUP (ORDER BY z)
+        INTO cluster_geom, elevation
         FROM inventory_block
         WHERE cluster_id = NEW.cluster_id;
 
@@ -36,29 +34,33 @@ BEGIN
              FROM location_cluster
              WHERE id = NEW.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
+            SELECT ST_MakeValid(ST_Buffer(
+                location_roadarea.geom,
+                location_cluster.distance_from_road
+            ))
             INTO road_buffer
             FROM location_cluster INNER JOIN location_roadarea
             ON location_cluster.road_id = location_roadarea.id
             WHERE location_cluster.id = NEW.cluster_id;
 
-            SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
+            SELECT ST_Multi(ST_MakeValid(ST_Difference(
+                cluster_geom,
+                ST_MakeValid(road_buffer)
+            )))
             INTO cluster_geom;
         END IF;
 
         UPDATE location_cluster
         SET z = elevation,
-            geom = cluster_geom,
-            mine_block = new_mine_block
+            geom = cluster_geom
         WHERE id = NEW.cluster_id;
     END IF;
 
     IF (OLD.cluster_id IS NOT NULL) THEN
         SELECT
             ST_Multi(ST_Union(ST_Expand(geom, 5))),
-            mode() WITHIN GROUP (ORDER BY z),
-            string_agg(distinct substring(name, 1, 5), ':')
-        INTO cluster_geom, elevation, new_mine_block
+            mode() WITHIN GROUP (ORDER BY z)
+        INTO cluster_geom, elevation
         FROM inventory_block
         WHERE cluster_id = OLD.cluster_id;
 
@@ -67,13 +69,19 @@ BEGIN
              FROM location_cluster
              WHERE id = OLD.cluster_id) IS NOT NULL
         ) THEN
-            SELECT ST_MakeValid(ST_Buffer(location_roadarea.geom, location_cluster.distance_from_road))
+            SELECT ST_MakeValid(ST_Buffer(
+                location_roadarea.geom,
+                location_cluster.distance_from_road
+            ))
             INTO road_buffer
             FROM location_cluster INNER JOIN location_roadarea
             ON location_cluster.road_id = location_roadarea.id
             WHERE location_cluster.id = OLD.cluster_id;
 
-            SELECT ST_Multi(ST_MakeValid(ST_Difference(cluster_geom, ST_MakeValid(road_buffer))))
+            SELECT ST_Multi(ST_MakeValid(ST_Difference(
+                cluster_geom,
+                ST_MakeValid(road_buffer)
+            )))
             INTO cluster_geom;
         END IF;
 
@@ -82,8 +90,7 @@ BEGIN
                     WHEN elevation IS NOT NULL THEN elevation
                     ELSE 0
                 END,
-            geom = cluster_geom,
-            mine_block = new_mine_block
+            geom = cluster_geom
         WHERE id = OLD.cluster_id;
     END IF;
 
@@ -95,7 +102,11 @@ DROP TRIGGER IF EXISTS location_cluster_geometry_update
 ON inventory_block;
 CREATE TRIGGER location_cluster_geometry_update
 AFTER UPDATE ON inventory_block
-FOR EACH ROW EXECUTE PROCEDURE update_location_cluster_geometry();
+FOR EACH ROW
+WHEN (NEW.cluster_id <> OLD.cluster_id OR
+      (NEW.cluster_id IS NOT NULL AND OLD.cluster_id IS NULL) OR
+      (NEW.cluster_id IS NULL AND OLD.cluster_id IS NOT NULL))
+EXECUTE PROCEDURE update_location_cluster_geometry();
 
 CREATE OR REPLACE FUNCTION update_location_cluster_geometry_overlay()
 RETURNS trigger AS
@@ -142,7 +153,82 @@ DROP TRIGGER IF EXISTS location_cluster_geometry_overlay_update
 ON location_cluster;
 CREATE TRIGGER location_cluster_geometry_overlay_update
 AFTER UPDATE OF distance_from_road, road_id ON location_cluster
-FOR EACH ROW EXECUTE PROCEDURE update_location_cluster_geometry_overlay();
+FOR EACH ROW
+WHEN (NEW.distance_from_road <> OLD.distance_from_road OR
+      NEW.road_id <> OLD.road_id OR
+      (NEW.road_id IS NOT NULL AND OLD.road_id IS NULL) OR
+      (NEW.road_id IS NULL AND OLD.road_id IS NOT NULL))
+EXECUTE PROCEDURE update_location_cluster_geometry_overlay();
+
+CREATE OR REPLACE FUNCTION update_location_cluster_name()
+RETURNS trigger AS
+$BODY$
+/* Whenever there is a change in the ore_class and mine_block columns of
+ * location_cluster, the columns count and name are updated.
+ */
+DECLARE
+    new_count integer;
+    new_name text;
+BEGIN
+    IF (NEW.ore_class IS NOT NULL) THEN
+        SELECT max(count) + 1
+        FROM location_cluster
+        WHERE id <> NEW.id AND
+              ore_class = NEW.ore_class AND
+              mine_block = NEW.mine_block
+        INTO new_count;
+
+        IF (new_count IS NULL) THEN
+            new_count = 1;
+        END IF;
+
+        SELECT concat(NEW.ore_class,
+                      new_count::text,
+                      '-',
+                      lpad(NEW.z::text, 3, '0'),
+                      '-',
+                      substring(NEW.mine_block from '\d+'))
+        INTO new_name;
+
+        UPDATE location_cluster
+        SET name = new_name,
+            count = new_count
+        WHERE id = NEW.id;
+
+        PERFORM insert_dummy_cluster();
+    ELSE
+        SELECT max(count) + 1
+        FROM location_cluster
+        WHERE id <> NEW.id AND
+              name = 'XXX'
+        INTO new_count;
+
+        IF (new_count IS NULL) THEN
+            new_count = 1;
+        END IF;
+
+        UPDATE location_cluster
+        SET name = 'XXX',
+            count = new_count
+        WHERE id = NEW.id;
+    END IF;
+
+    RETURN NULL;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS location_cluster_name_update
+ON location_cluster;
+CREATE TRIGGER location_cluster_name_update
+AFTER UPDATE OF ore_class, mine_block ON location_cluster
+FOR EACH ROW
+WHEN (NEW.ore_class <> OLD.ore_class OR
+      (NEW.ore_class IS NOT NULL AND OLD.ore_class IS NULL) OR
+      (NEW.ore_class IS NULL AND OLD.ore_class IS NOT NULL) OR
+      NEW.mine_block <> OLD.mine_block OR
+      (NEW.mine_block IS NOT NULL AND OLD.mine_block IS NULL) OR
+      (NEW.mine_block IS NULL AND OLD.mine_block IS NOT NULL))
+EXECUTE PROCEDURE update_location_cluster_name();
 
 CREATE OR REPLACE FUNCTION update_location_cluster_property()
 RETURNS trigger AS
@@ -214,4 +300,8 @@ DROP TRIGGER IF EXISTS location_cluster_property_update
 ON location_cluster;
 CREATE TRIGGER location_cluster_property_update
 AFTER UPDATE OF geom ON location_cluster
-FOR EACH ROW EXECUTE PROCEDURE update_location_cluster_property();
+FOR EACH ROW
+WHEN (ST_AsText(NEW.geom) <> ST_AsText(OLD.geom) OR
+      (NEW.geom IS NOT NULL AND OLD.geom IS NULL) OR
+      (NEW.geom IS NULL AND OLD.geom IS NOT NULL))
+EXECUTE PROCEDURE update_location_cluster_property();

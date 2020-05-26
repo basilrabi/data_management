@@ -16,6 +16,10 @@ class ClusterTest(TestCase):
             query = file.read()
             with connection.cursor() as cursor:
                 cursor.execute(query)
+        with open('scripts/sql/function/insert_dummy_cluster.pgsql', 'r') as file:
+            query = file.read()
+            with connection.cursor() as cursor:
+                cursor.execute(query)
         with open('scripts/sql/trigger/location_cluster_update.pgsql', 'r') as file:
             query = file.read()
             with connection.cursor() as cursor:
@@ -55,35 +59,43 @@ class ClusterTest(TestCase):
         block.cluster = cluster
         block.save()
 
-        # 1 block assigned
-        cluster = Cluster.objects.get(name='c1')
+        # 1 block assigned with grade lower than 1.45
+        cluster = Cluster.objects.get(name='W1-099-104')
         self.assertEqual(cluster.geom.area, 100)
-        self.assertEqual(cluster.mine_block, '104')
+        self.assertEqual(cluster.ni, 1)
+        self.assertEqual(cluster.fe, 40)
+        self.assertEqual(cluster.co, 0.1)
 
         block = Block.objects.get(name='b2')
         block.cluster = cluster
         block.save()
 
-        # 2 blocks assigned
-        cluster = Cluster.objects.get(name='c1')
+        # 2 blocks assigned with grade of 1.5
+        cluster = Cluster.objects.get(name='F1-099-104')
         self.assertEqual(cluster.geom.area, 200)
-        self.assertEqual(cluster.mine_block, '104')
+        self.assertEqual(cluster.ni, 1.5)
+        self.assertEqual(cluster.fe, 41)
+        self.assertEqual(cluster.co, 0.15)
 
         cluster.road = road
         cluster.save()
 
         # Road assigned without buffer
-        cluster = Cluster.objects.get(name='c1')
+        cluster = Cluster.objects.get(name='F1-099-104')
         self.assertEqual(cluster.geom.area, 200)
-        self.assertEqual(cluster.mine_block, '104')
+        self.assertEqual(cluster.ni, 1.5)
+        self.assertEqual(cluster.fe, 41)
+        self.assertEqual(cluster.co, 0.15)
 
         cluster.distance_from_road = 5
         cluster.save()
 
         # Road assigned with buffer
-        cluster = Cluster.objects.get(name='c1')
+        cluster = Cluster.objects.get(name='W1-099-104')
         self.assertEqual(cluster.geom.area, 150)
-        self.assertEqual(cluster.mine_block, '104')
+        self.assertEqual(cluster.ni, 1.33)
+        self.assertEqual(cluster.fe, 40.67)
+        self.assertEqual(cluster.co, 0.13)
 
     def test_invalid_cluster_if_different_elevation(self):
         cluster = Cluster.objects.get(name='c1')
@@ -108,9 +120,11 @@ class ClusterTest(TestCase):
         block.save()
 
         # With cluster
-        cluster = Cluster.objects.get(name='c1')
+        cluster = Cluster.objects.get(name='F1-099-104')
         self.assertEqual(cluster.geom.area, 200)
-        self.assertEqual(cluster.mine_block, '104')
+        self.assertEqual(cluster.ni, 1.5)
+        self.assertEqual(cluster.fe, 41)
+        self.assertEqual(cluster.co, 0.15)
 
         block = Block.objects.get(name='b1')
         block.cluster = None
@@ -120,9 +134,22 @@ class ClusterTest(TestCase):
         block.save()
 
         # Without cluster
-        cluster = Cluster.objects.get(name='c1')
+        clusters = Cluster.objects.all().filter(name='XXX')
+        self.assertEqual(clusters.count(), 2)
+
+        cluster = clusters[0]
         self.assertEqual(cluster.geom, None)
         self.assertEqual(cluster.mine_block, None)
+        self.assertEqual(cluster.ni, 0)
+        self.assertEqual(cluster.fe, 0)
+        self.assertEqual(cluster.co, 0)
+
+        cluster = clusters[1]
+        self.assertEqual(cluster.geom, None)
+        self.assertEqual(cluster.mine_block, None)
+        self.assertEqual(cluster.ni, 0)
+        self.assertEqual(cluster.fe, 0)
+        self.assertEqual(cluster.co, 0)
 
 class DrillHoleTest(TestCase):
     @classmethod

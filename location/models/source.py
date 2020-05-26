@@ -21,6 +21,11 @@ class Cluster(models.Model):
     """
     name = models.CharField(max_length=30)
     z = models.SmallIntegerField(default=0)
+    count = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='A unique number for the cluster at the same grade classification and at the same mine block.'
+    )
     ore_class = models.CharField(max_length=1, null=True, blank=True)
     mine_block = models.CharField(max_length=20, null=True, blank=True)
     ni = models.FloatField(default=0)
@@ -48,6 +53,8 @@ class Cluster(models.Model):
         constraints = [
             models.CheckConstraint(check=models.Q(distance_from_road__gte=0),
                                    name='non_negative_distance'),
+            models.UniqueConstraint(fields=['count', 'ore_class', 'mine_block'],
+                                    name='unique_cluster_name')
         ]
 
     def feature_as_str(self):
