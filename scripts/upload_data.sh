@@ -48,6 +48,7 @@ echo "Uploading Groups success." 2>&1 | tee -a log_upload_data && \
 echo "Uploading Users success." 2>&1 | tee -a log_upload_data && \
 echo "Adding postgres triggers..." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql 2>&1 | tee -a log_upload_data && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/insert_dummy_cluster.pgsql 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_drillhole_update.pgsql 2>&1 | tee -a log_upload_data && \
 echo "Done." 2>&1 | tee -a log_upload_data && \

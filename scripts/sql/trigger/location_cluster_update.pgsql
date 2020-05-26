@@ -163,27 +163,16 @@ EXECUTE PROCEDURE update_location_cluster_geometry_overlay();
 CREATE OR REPLACE FUNCTION update_location_cluster_name()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the ore_class and mine_block columns of
- * location_cluster, the columns count and name are updated.
+/* Whenever there is a change in the ore_class, mine_block and count columns of
+ * location_cluster, the column name is updated.
  */
 DECLARE
-    new_count integer;
     new_name text;
 BEGIN
     IF (NEW.ore_class IS NOT NULL) THEN
-        SELECT max(count) + 1
-        FROM location_cluster
-        WHERE id <> NEW.id AND
-              ore_class = NEW.ore_class AND
-              mine_block = NEW.mine_block
-        INTO new_count;
-
-        IF (new_count IS NULL) THEN
-            new_count = 1;
-        END IF;
 
         SELECT concat(NEW.ore_class,
-                      new_count::text,
+                      NEW.count,
                       '-',
                       lpad(NEW.z::text, 3, '0'),
                       '-',
@@ -191,25 +180,13 @@ BEGIN
         INTO new_name;
 
         UPDATE location_cluster
-        SET name = new_name,
-            count = new_count
+        SET name = new_name
         WHERE id = NEW.id;
 
         PERFORM insert_dummy_cluster();
     ELSE
-        SELECT max(count) + 1
-        FROM location_cluster
-        WHERE id <> NEW.id AND
-              name = 'XXX'
-        INTO new_count;
-
-        IF (new_count IS NULL) THEN
-            new_count = 1;
-        END IF;
-
         UPDATE location_cluster
-        SET name = 'XXX',
-            count = new_count
+        SET name = 'XXX'
         WHERE id = NEW.id;
     END IF;
 
@@ -220,14 +197,17 @@ $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP TRIGGER IF EXISTS location_cluster_name_update
 ON location_cluster;
 CREATE TRIGGER location_cluster_name_update
-AFTER UPDATE OF ore_class, mine_block ON location_cluster
+AFTER UPDATE OF ore_class, mine_block, count ON location_cluster
 FOR EACH ROW
 WHEN (NEW.ore_class <> OLD.ore_class OR
       (NEW.ore_class IS NOT NULL AND OLD.ore_class IS NULL) OR
       (NEW.ore_class IS NULL AND OLD.ore_class IS NOT NULL) OR
       NEW.mine_block <> OLD.mine_block OR
       (NEW.mine_block IS NOT NULL AND OLD.mine_block IS NULL) OR
-      (NEW.mine_block IS NULL AND OLD.mine_block IS NOT NULL))
+      (NEW.mine_block IS NULL AND OLD.mine_block IS NOT NULL) OR
+      NEW.count <> OLD.count OR
+      (NEW.count IS NOT NULL AND OLD.count IS NULL) OR
+      (NEW.count IS NULL AND OLD.count IS NOT NULL))
 EXECUTE PROCEDURE update_location_cluster_name();
 
 CREATE OR REPLACE FUNCTION update_location_cluster_property()
@@ -273,14 +253,36 @@ BEGIN
             FROM c
             ORDER BY area DESC
             LIMIT 1
+        ),
+        e as (
+            SELECT round((b.ni_area / b.total_area)::numeric, 2) ni,
+                   round((b.fe_area / b.total_area)::numeric, 2) fe,
+                   round((b.co_area / b.total_area)::numeric, 2) co,
+                   d.name mine_block
+            FROM b, d
+        ),
+        f as (
+            SELECT get_ore_class(ni) ore_class
+            FROM e
+        ),
+        g as (
+            SELECT max(location_cluster.count) + 1 count
+            FROM location_cluster, e, f
+            WHERE location_cluster.id <> NEW.id AND
+                  location_cluster.ore_class = f.ore_class AND
+                  substring(location_cluster.mine_block from '\d+') = substring(e.mine_block from '\d+')
         )
         UPDATE location_cluster
-        SET ni = round((b.ni_area / b.total_area)::numeric, 2),
-            fe = round((b.fe_area / b.total_area)::numeric, 2),
-            co = round((b.co_area / b.total_area)::numeric, 2),
-            mine_block = d.name,
-            ore_class = get_ore_class((b.ni_area / b.total_area)::numeric)
-        FROM b, d
+        SET ni = e.ni,
+            fe = e.fe,
+            co = e.co,
+            mine_block = e.mine_block,
+            ore_class = f.ore_class,
+            count = CASE
+                WHEN g.count IS NULL THEN 1
+                ELSE g.count
+            END
+        FROM e, f, g
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster
@@ -288,7 +290,8 @@ BEGIN
             fe = 0,
             co = 0,
             mine_block = NULL,
-            ore_class = NULL
+            ore_class = NULL,
+            count = NULL
         WHERE id = NEW.id;
     END IF;
 
