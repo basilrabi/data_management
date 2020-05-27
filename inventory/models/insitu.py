@@ -3,17 +3,36 @@ from location.models.source import Cluster, DrillHole
 
 class Block(models.Model):
     """
-    A rectangular cuboid representing a volume of in-situ material with
-    an assumed uniform chemical and physical characteristics.
+    A rectangular prism representing a volume of in-situ material with
+    an assumed uniform chemical and physical characteristics. The present
+    dimensions used are:
+    10 meter length along x (Easting)
+    10 meter length along y (Northing)
+    3 meter length along z (Elevation)
+    However, geometry is only saved as a 2-dimensional square in the database.
     """
     name = models.CharField(max_length=20)
-    z = models.SmallIntegerField()
-    ni = models.FloatField()
-    fe = models.FloatField()
-    co = models.FloatField()
-    excavated = models.BooleanField(default=False)
+    z = models.SmallIntegerField(
+        help_text='Elevation of the top face of the block.'
+    )
+    ni = models.FloatField(
+        help_text='Estimated nickel content of the block in percent.'
+    )
+    fe = models.FloatField(
+        help_text='Estimated iron content of the block in percent.'
+    )
+    co = models.FloatField(
+        help_text='Estimated cobalt content of the block in percent.'
+    )
     cluster = models.ForeignKey(
         Cluster, null=True, blank=True, on_delete=models.PROTECT
+    )
+    depth = models.FloatField(
+        null=True,
+        blank=True,
+        help_text='''Distance of the centroid from the surface. A positive
+        value means that the centroid is still below the surface.
+        '''
     )
     geom = models.PointField(srid=3125)
 

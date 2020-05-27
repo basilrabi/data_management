@@ -11,7 +11,7 @@ class BlockAdmin(TMCLocationAdmin):
                     'ni',
                     'fe',
                     'co',
-                    'excavated')
+                    'depth')
     readonly_fields = ['name',
                        'cluster',
                        'z',
