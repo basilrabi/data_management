@@ -10,14 +10,14 @@ class BlockAdmin(TMCLocationAdmin):
                     'z',
                     'ni',
                     'fe',
-                    'co',
-                    'depth')
+                    'co')
     readonly_fields = ['name',
                        'cluster',
                        'z',
                        'ni',
                        'fe',
-                       'co']
+                       'co',
+                       'depth']
     search_fields = ['name']
 
 @admin.register(DrillArea)
