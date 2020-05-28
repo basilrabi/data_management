@@ -13,11 +13,10 @@ GRANT CREATE, USAGE ON SCHEMA staging TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;
 GRANT INSERT, SELECT ON TABLE location_cluster TO gradecontrol;
 GRANT SELECT ON TABLE location_roadarea TO gradecontrol;
-GRANT UPDATE (cluster_id, excavated) ON TABLE inventory_block TO gradecontrol;
+GRANT UPDATE (cluster_id) ON TABLE inventory_block TO gradecontrol;
 GRANT UPDATE (
     date_scheduled,
     distance_from_road,
-    excavated,
     name,
     road_id
 ) ON TABLE location_cluster TO gradecontrol;
