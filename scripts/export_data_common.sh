@@ -10,7 +10,7 @@ cmd="\COPY ($sql) TO '$(pwd)/$datadir/sampling_drillcoresample.csv' WITH CSV"
 
 ogr2ogr -progress -f "GPKG" $datadir/inventory_block.gpkg \
     "PG:host=$db_host user=$db_user dbname=$db_name" \
-    -select name,z,ni,fe,co,excavated,geom \
+    -select name,z,ni,fe,co,depth,geom \
     inventory_block && \
 ogr2ogr -progress -f "GPKG" $datadir/location_mineblock.gpkg \
     "PG:host=$db_host user=$db_user dbname=$db_name" \
