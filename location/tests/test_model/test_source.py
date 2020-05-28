@@ -60,7 +60,7 @@ class ClusterTest(TestCase):
         block.save()
 
         # 1 block assigned with grade lower than 1.45
-        cluster = Cluster.objects.get(name='W1-099-104')
+        cluster = Cluster.objects.get(name='L1-099-104')
         self.assertEqual(cluster.geom.area, 100)
         self.assertEqual(cluster.ni, 1)
         self.assertEqual(cluster.fe, 40)
@@ -91,7 +91,7 @@ class ClusterTest(TestCase):
         cluster.save()
 
         # Road assigned with buffer
-        cluster = Cluster.objects.get(name='W1-099-104')
+        cluster = Cluster.objects.get(name='L1-099-104')
         self.assertEqual(cluster.geom.area, 150)
         self.assertEqual(cluster.ni, 1.33)
         self.assertEqual(cluster.fe, 40.67)

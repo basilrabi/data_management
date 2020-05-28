@@ -262,7 +262,7 @@ BEGIN
             FROM b, d
         ),
         f as (
-            SELECT get_ore_class(ni) ore_class
+            SELECT get_ore_class(ni, fe) ore_class
             FROM e
         ),
         g as (
