@@ -12,7 +12,7 @@ fi
 echo "Uploading inventory_block." 2>&1 | tee -a log_upload_data && \
 ogr2ogr -update -append -progress \
     -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
-    -fieldmap "0,1,2,3,4,6" \
+    -fieldmap "0,1,2,3,4,5" \
     -nln inventory_block data/inventory_block.gpkg 2>&1 | tee -a log_upload_data && \
 echo "Uploading location_mineblock." 2>&1 | tee -a log_upload_data && \
 ogr2ogr -update -append -progress \

@@ -186,7 +186,7 @@ BEGIN
         PERFORM insert_dummy_cluster();
     ELSE
         UPDATE location_cluster
-        SET name = 'XXX'
+        SET name = '***'
         WHERE id = NEW.id;
     END IF;
 

@@ -49,13 +49,14 @@ class Cluster(models.Model):
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
-        ordering = ['-date_scheduled', 'ore_class', 'name']
         constraints = [
             models.CheckConstraint(check=models.Q(distance_from_road__gte=0),
                                    name='non_negative_distance'),
             models.UniqueConstraint(fields=['count', 'ore_class', 'mine_block'],
                                     name='unique_cluster_name')
         ]
+        indexes = [models.Index(fields=['z'])]
+        ordering = ['-date_scheduled', 'ore_class', 'name']
 
     def feature_as_str(self):
         """

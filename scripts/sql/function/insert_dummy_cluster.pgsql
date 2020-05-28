@@ -6,7 +6,7 @@ BEGIN
     SELECT exists(
         SELECT 1
         FROM location_cluster
-        WHERE name = 'XXX'
+        WHERE name = '***'
     )
     INTO has_dummy;
     IF NOT has_dummy THEN
@@ -18,7 +18,7 @@ BEGIN
                                       excavated,
                                       distance_from_road,
                                       with_layout)
-        VALUES ('XXX', 0, 0, 0, 0, false, 0, false);
+        VALUES ('***', 0, 0, 0, 0, false, 0, false);
     END IF;
 END;
 $BODY$ LANGUAGE plpgsql;

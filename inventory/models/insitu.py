@@ -37,9 +37,7 @@ class Block(models.Model):
     geom = models.PointField(srid=3125)
 
     class Meta:
-        indexes = [
-            models.Index(fields=['z', 'ni'])
-        ]
+        indexes = [models.Index(fields=['z', 'depth'])]
 
     def __str__(self):
         return self.name

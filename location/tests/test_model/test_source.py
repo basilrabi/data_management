@@ -134,7 +134,7 @@ class ClusterTest(TestCase):
         block.save()
 
         # Without cluster
-        clusters = Cluster.objects.all().filter(name='XXX')
+        clusters = Cluster.objects.all().filter(name='***')
         self.assertEqual(clusters.count(), 2)
 
         cluster = clusters[0]
