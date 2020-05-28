@@ -27,7 +27,7 @@ def export_cluster(request):
         str(cluster.date_scheduled or ''),
         str(cluster.excavated),
         str(cluster.geom.ewkt)
-    ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('date_scheduled', 'name'))
+    ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('count', 'mine_block', 'ore_class'))
     return export_csv(rows, 'location_cluster')
 
 def export_cluster2(request):
