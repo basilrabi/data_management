@@ -56,7 +56,7 @@ class Cluster(models.Model):
                                     name='unique_cluster_name')
         ]
         indexes = [models.Index(fields=['z'])]
-        ordering = ['-date_scheduled', 'ore_class', 'name']
+        ordering = ['ore_class', 'count']
 
     def feature_as_str(self):
         """

@@ -15,29 +15,15 @@ from location.models.source import Cluster
 with open('data/location_cluster.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['name',
                                                  'z',
-                                                 'ore_class',
-                                                 'mine_block',
-                                                 'ni',
-                                                 'fe',
-                                                 'co',
                                                  'distance_from_road',
                                                  'road',
-                                                 'with_layout',
                                                  'date_scheduled',
-                                                 'excavated',
                                                  'geom'])
     for row in reader:
         cluster = Cluster(name=row['name'],
                           z=row['z'],
-                          ore_class=row['ore_class'],
-                          mine_block=row['mine_block'],
-                          ni=row['ni'],
-                          fe=row['fe'],
-                          co=row['co'],
                           distance_from_road=row['distance_from_road'] or 0,
-                          with_layout=row['with_layout'],
                           date_scheduled=pd(row['date_scheduled']),
-                          excavated=row['excavated'],
                           geom=GEOSGeometry(row['geom']))
         if RoadArea.objects.filter(date_surveyed=pd(row['road'])).exists():
             cluster.road = RoadArea.objects.get(date_surveyed=pd(row['road']))
