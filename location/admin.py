@@ -33,10 +33,18 @@ class ClusterAdmin(TMCLocationAdmin):
                     'ni',
                     'fe',
                     'ore_class',
-                    'with_layout',
+                    'date_scheduled',
+                    'layout_date',
                     'excavated')
-    list_filter = ['with_layout', 'excavated']
-    readonly_fields = ['z', 'ni', 'fe', 'co', 'mine_block', 'ore_class']
+    list_filter = ['excavated']
+    readonly_fields = ['z',
+                       'ni',
+                       'fe',
+                       'co',
+                       'mine_block',
+                       'ore_class',
+                       'date_scheduled',
+                       'layout_date']
     search_fields = ['name', 'mine_block', 'z', 'ore_class']
 
 @admin.register(DrillHole)

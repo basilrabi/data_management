@@ -16,9 +16,8 @@ BEGIN
                                       fe,
                                       co,
                                       excavated,
-                                      distance_from_road,
-                                      with_layout)
-        VALUES ('***', 0, 0, 0, 0, false, 0, false);
+                                      distance_from_road)
+        VALUES ('***', 0, 0, 0, 0, false, 0);
     END IF;
 END;
 $BODY$ LANGUAGE plpgsql;

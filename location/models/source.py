@@ -39,21 +39,36 @@ class Cluster(models.Model):
         on_delete=models.PROTECT,
         help_text='Road used to adjust the cluster geometry.'
     )
-    with_layout = models.BooleanField(default=False)
     date_scheduled = models.DateField(
         null=True,
         blank=True,
-        help_text='Scheduled date of start of excavation'
+        help_text='''Date when the cluster geometry is finalized. When this
+        date is set, the geometry cannot be changed.'''
+    )
+    layout_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text='''Date when the cluster is laid out on the field. When this
+        date is set, the date scheduled cannot be changed. This date cannot be
+        filled out when the date scheduled is still empty.'''
     )
     excavated = models.BooleanField(default=False)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
         constraints = [
-            models.CheckConstraint(check=models.Q(distance_from_road__gte=0),
-                                   name='non_negative_distance'),
-            models.UniqueConstraint(fields=['count', 'ore_class', 'mine_block'],
-                                    name='unique_cluster_name')
+            models.CheckConstraint(
+                check=models.Q(distance_from_road__gte=0),
+                name='non_negative_distance'
+            ),
+            models.CheckConstraint(
+                check=models.Q(layout_date__gte=models.F('date_scheduled')),
+                name='layout_later_than_schedule'
+            ),
+            models.UniqueConstraint(
+                fields=['count', 'ore_class', 'mine_block'],
+                name='unique_cluster_name'
+            )
         ]
         indexes = [models.Index(fields=['z'])]
         ordering = ['ore_class', 'count']

@@ -97,6 +97,54 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.fe, 40.67)
         self.assertEqual(cluster.co, 0.13)
 
+    def test_date_scheduled_lock_if_layout_date(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.refresh_from_db()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        cluster.refresh_from_db()
+        cluster.layout_date = '2020-05-31'
+
+        # Okay if same date
+        cluster.date_scheduled = '2020-05-30'
+        self.assertEqual(None, cluster.save())
+
+        # Fails if updated
+        cluster.date_scheduled = '2020-05-19'
+        self.assertRaises(InternalError, cluster.save)
+
+    def test_date_scheduled_lock_if_no_geom(self):
+        cluster = Cluster.objects.get(name='c1')
+        cluster.date_scheduled = '2020-05-30'
+        self.assertRaises(InternalError, cluster.save)
+
+    def test_geom_lock_if_date_scheduled(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.refresh_from_db()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        block = Block.objects.get(name='b2')
+        block.cluster = cluster
+        self.assertRaises(InternalError, block.save)
+
+    def test_geom_lock_if_excavated(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.refresh_from_db()
+        cluster.excavated = True
+        cluster.save()
+        block = Block.objects.get(name='b2')
+        block.cluster = cluster
+        self.assertRaises(InternalError, block.save)
+
     def test_invalid_cluster_if_different_elevation(self):
         cluster = Cluster.objects.get(name='c1')
 
@@ -109,6 +157,38 @@ class ClusterTest(TestCase):
         block = Block.objects.get(name='b3')
         block.cluster = cluster
         self.assertRaises(InternalError, block.save)
+
+    def test_layout_date_lock_if_earlier_than_scheduled(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        cluster.layout_date = '2020-05-29'
+        self.assertRaises(IntegrityError, cluster.save)
+
+    def test_layout_date_lock_if_no_schedule(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.layout_date = '2020-05-30'
+        self.assertRaises(InternalError, cluster.save)
+
+    def test_layout_date_null_lock_if_excavated(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        cluster.layout_date = '2020-05-30'
+        cluster.save()
+        cluster.excavated = True
+        cluster.save()
+        cluster.layout_date = None
+        self.assertRaises(InternalError, cluster.save)
 
     def test_removal_of_cluster(self):
         cluster = Cluster.objects.get(name='c1')
