@@ -16,16 +16,9 @@ def export_cluster(request):
     rows = ([
         str(cluster.name),
         str(cluster.z),
-        str(cluster.ore_class),
-        str(cluster.mine_block),
-        str(cluster.ni),
-        str(cluster.fe),
-        str(cluster.co),
         str(cluster.distance_from_road or ''),
         str(cluster.road or ''),
-        str(cluster.with_layout),
         str(cluster.date_scheduled or ''),
-        str(cluster.excavated),
         str(cluster.geom.ewkt)
     ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('count', 'mine_block', 'ore_class'))
     return export_csv(rows, 'location_cluster')
