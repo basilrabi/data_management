@@ -17,7 +17,7 @@ END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS location_cluster_date_scheduled_lock
-ON inventory_block;
+ON location_cluster;
 CREATE TRIGGER location_cluster_date_scheduled_lock
 BEFORE UPDATE OF date_scheduled ON location_cluster
 FOR EACH ROW
@@ -44,7 +44,7 @@ END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS location_cluster_geometry_lock
-ON inventory_block;
+ON location_cluster;
 CREATE TRIGGER location_cluster_geometry_lock
 BEFORE UPDATE OF geom ON location_cluster
 FOR EACH ROW
@@ -71,7 +71,7 @@ END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS location_cluster_layout_date_lock
-ON inventory_block;
+ON location_cluster;
 CREATE TRIGGER location_cluster_layout_date_lock
 BEFORE UPDATE OF layout_date ON location_cluster
 FOR EACH ROW
