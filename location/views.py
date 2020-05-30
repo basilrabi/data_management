@@ -48,7 +48,7 @@ def export_cluster_str(request):
     file format fully compatible with Surpac.
     https://www.cse.unr.edu/~fredh/papers/working/vr-mining/string.html
     """
-    context = {'clusters': Cluster.objects.all()}
+    context = {'clusters': Cluster.objects.all().exclude(geom=None)}
     template = get_template('location/cluster.str')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
