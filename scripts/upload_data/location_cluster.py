@@ -18,12 +18,14 @@ with open('data/location_cluster.csv', newline='') as csvfile:
                                                  'distance_from_road',
                                                  'road',
                                                  'date_scheduled',
+                                                 'layout_date',
                                                  'geom'])
     for row in reader:
         cluster = Cluster(name=row['name'],
                           z=row['z'],
                           distance_from_road=row['distance_from_road'] or 0,
                           date_scheduled=pd(row['date_scheduled']),
+                          layout_date=pd(row['layout_date']),
                           geom=GEOSGeometry(row['geom']))
         if RoadArea.objects.filter(date_surveyed=pd(row['road'])).exists():
             cluster.road = RoadArea.objects.get(date_surveyed=pd(row['road']))

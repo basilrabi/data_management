@@ -19,6 +19,7 @@ def export_cluster(request):
         str(cluster.distance_from_road or ''),
         str(cluster.road or ''),
         str(cluster.date_scheduled or ''),
+        str(cluster.layout_date or ''),
         str(cluster.geom.ewkt)
     ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('count', 'mine_block', 'ore_class'))
     return export_csv(rows, 'location_cluster')
@@ -35,8 +36,8 @@ def export_cluster2(request):
         str(cluster.ni),
         str(cluster.fe),
         str(cluster.co),
-        str(cluster.with_layout),
         str(cluster.date_scheduled or ''),
+        str(cluster.layout_date or ''),
         str(round(cluster.geom.area * 3, 2))
     ] for cluster in Cluster.objects.exclude(excavated=True))
     return export_csv(rows, 'location_cluster')
