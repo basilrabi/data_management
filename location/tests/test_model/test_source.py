@@ -20,6 +20,10 @@ class ClusterTest(TestCase):
             query = file.read()
             with connection.cursor() as cursor:
                 cursor.execute(query)
+        with open('scripts/sql/lock/location_cluster.pgsql', 'r') as file:
+            query = file.read()
+            with connection.cursor() as cursor:
+                cursor.execute(query)
         with open('scripts/sql/trigger/location_cluster_update.pgsql', 'r') as file:
             query = file.read()
             with connection.cursor() as cursor:
