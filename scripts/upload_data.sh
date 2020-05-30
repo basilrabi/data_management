@@ -9,60 +9,65 @@ then
     mv log_upload_data log_upload_data_$(date +"%Y-%m-%d_%H-%M-%S")
 fi
 
-echo "Uploading inventory_block." 2>&1 | tee -a log_upload_data && \
-ogr2ogr -update -append -progress \
-    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
-    -fieldmap "0,1,2,3,4,5" \
-    -nln inventory_block data/inventory_block.gpkg 2>&1 | tee -a log_upload_data && \
-echo "Uploading location_mineblock." 2>&1 | tee -a log_upload_data && \
-ogr2ogr -update -append -progress \
-    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
-    -fieldmap identity \
-    -nln location_mineblock data/location_mineblock.gpkg 2>&1 | tee -a log_upload_data && \
-echo "Uploading location_roadarea." 2>&1 | tee -a log_upload_data && \
-ogr2ogr -update -append -progress \
-    -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
-    -fieldmap identity \
-    -nln location_roadarea data/location_roadarea.gpkg 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/location_cluster.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading location.Cluster success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_lct.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.LCT success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_lctcontract.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.LCTContract success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_vessel.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.Vessel success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_shipment.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.Shipment success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_laydaysstatement.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.LayDaysStatement success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_laydaysdetail.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.LayDaysDetail success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_trip.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.Trip success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/shipment_tripdetail.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading shipment.TripDetail success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/groups.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading Groups success." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/users.py 2>&1 | tee -a log_upload_data && \
-echo "Uploading Users success." 2>&1 | tee -a log_upload_data && \
-echo "Adding postgres triggers..." 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/get_ore_class.pgsql 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/function/insert_dummy_cluster.pgsql 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_cluster_update.pgsql 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/trigger/location_drillhole_update.pgsql 2>&1 | tee -a log_upload_data && \
-echo "Done." 2>&1 | tee -a log_upload_data && \
-echo "Snapping cluster geometries..." 2>&1 | tee -a log_upload_data && \
-./manage.py shell < scripts/upload_data/location_cluster_snap.py 2>&1 | tee -a log_upload_data && \
-echo "Snapping cluster geometries success." 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U $db_user -d $db_name -f scripts/upload_data/location_drillhole.pgsql 2>&1 | tee -a log_upload_data && \
-echo "Uploading location.DrillHole success." 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U $db_user -d $db_name -f scripts/upload_data/sampling_drillcoresample.pgsql 2>&1 | tee -a log_upload_data && \
-echo "Uploading sampling.DrillCoreSample success." 2>&1 | tee -a log_upload_data && \
-echo "Setting up postGIS table locks..." 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/lock/location_cluster.pgsql 2>&1 | tee -a log_upload_data && \
+if [ -f "log_upload_data_time.csv" ]
+then
+    mv log_upload_data_time.csv log_upload_data_time_$(date +"%Y-%m-%d_%H-%M-%S").csv
+fi
+
+upload_ogr () {
+    echo "Uploading $1." 2>&1 | tee -a log_upload_data && \
+    time_start=$(date +%s) && \
+    ogr2ogr -update -append -progress \
+        -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
+        -fieldmap "$2" \
+        -nln $1 data/$1.gpkg 2>&1 | tee -a log_upload_data && \
+    time_end=$(date +%s) && \
+    time_elapsed=$(($time_end - $time_start)) && \
+    echo "ogr $1, $time_elapsed" >> log_upload_data_time.csv
+}
+
+upload_orm () {
+    echo "Running $1 script." 2>&1 | tee -a log_upload_data && \
+    time_start=$(date +%s) && \
+    python3 manage.py shell < scripts/upload_data/$1.py 2>&1 | tee -a log_upload_data && \
+    time_end=$(date +%s) && \
+    time_elapsed=$(($time_end - $time_start)) && \
+    echo "orm $1, $time_elapsed" >> log_upload_data_time.csv
+}
+
+sql_script () {
+    echo "Running $1/$2 script." 2>&1 | tee -a log_upload_data && \
+    time_start=$(date +%s) && \
+    psql -h $db_host -p $db_port -U $db_user -w $db_name -a -f scripts/sql/$1/$2.pgsql 2>&1 | tee -a log_upload_data && \
+    time_end=$(date +%s) && \
+    time_elapsed=$(($time_end - $time_start)) && \
+    echo "sql $1-$2, $time_elapsed" >> log_upload_data_time.csv
+}
+
+upload_ogr inventory_block 0,1,2,3,4,5 && \
+upload_ogr location_mineblock identity && \
+upload_ogr location_roadarea identity && \
+upload_orm location_cluster && \
+upload_orm shipment_lct && \
+upload_orm shipment_lctcontract && \
+upload_orm shipment_vessel && \
+upload_orm shipment_shipment && \
+upload_orm shipment_laydaysstatement && \
+upload_orm shipment_laydaysdetail && \
+upload_orm shipment_trip && \
+upload_orm shipment_tripdetail && \
+upload_orm groups && \
+upload_orm users && \
+sql_script "function" "get_ore_class" && \
+sql_script "function" "insert_dummy_cluster" && \
+sql_script "trigger" "location_cluster_update" && \
+sql_script "trigger" "location_drillhole_update" && \
+upload_orm location_cluster_snap && \
+sql_script "upload_data" "location_drillhole" && \
+sql_script "upload_data" "sampling_drillcoresample" && \
+sql_script "lock" "location_cluster" && \
 echo "Setting up QGIS users'..." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user geology with encrypted password '$DATA_MANAGEMENT_GEOLOGY'" 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'" 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'" 2>&1 | tee -a log_upload_data && \
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/permissions.pgsql 2>&1 | tee -a log_upload_data
+sql_script "permission" "all"

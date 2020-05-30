@@ -6,11 +6,16 @@ set +a
 
 template=data_management_template
 
-if [ $1 == light ]
+if [ $# -gt 0 ]
 then
-    echo "Using light database."
-    template=data_management_template_no_topo
-
+    if [ $1 == light ]
+    then
+        echo "Using light database."
+        template=data_management_template_no_topo
+    else
+        echo "Only accepted argument is 'light'."
+        exit 1
+    fi
 fi
 
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists $db_name"

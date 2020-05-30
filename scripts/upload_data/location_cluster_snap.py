@@ -9,4 +9,8 @@ for cluster in Cluster.objects.all():
         block.cluster = cluster
         block.save()
         cluster.refresh_from_db()
-        print(f'Cluster {old_name} snapped and converted to {cluster.name}.', flush=True)
+        new_name = cluster.name
+        if old_name == new_name:
+            print(f'{old_name} snapped.', flush=True)
+        else:
+            print(f'{old_name} -> {new_name}.', flush=True)
