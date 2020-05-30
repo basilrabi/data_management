@@ -59,6 +59,8 @@ psql -h $db_host -p $db_port -U $db_user -d $db_name -f scripts/upload_data/loca
 echo "Uploading location.DrillHole success." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U $db_user -d $db_name -f scripts/upload_data/sampling_drillcoresample.pgsql 2>&1 | tee -a log_upload_data && \
 echo "Uploading sampling.DrillCoreSample success." 2>&1 | tee -a log_upload_data && \
+echo "Setting up postGIS table locks..." 2>&1 | tee -a log_upload_data && \
+psql -h $db_host -p $db_port -U tmcgis -w $db_name -a -f scripts/sql/lock/location_cluster.pgsql 2>&1 | tee -a log_upload_data && \
 echo "Setting up QGIS users'..." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user geology with encrypted password '$DATA_MANAGEMENT_GEOLOGY'" 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'" 2>&1 | tee -a log_upload_data && \

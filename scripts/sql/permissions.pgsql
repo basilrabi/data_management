@@ -26,4 +26,4 @@ GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
 GRANT SELECT ON TABLE location_roadarea TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
-GRANT UPDATE (with_layout) ON TABLE location_cluster TO survey;
+GRANT UPDATE (layout_date) ON TABLE location_cluster TO survey;
