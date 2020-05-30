@@ -60,6 +60,22 @@ def export_cluster_str(request):
         response['Content-Disposition'] = 'attachment; filename=cluster.str'
         return response
 
+def export_cluster_str_for_survey(request):
+    """
+    Export clusters relevant to survey.
+    """
+    context = {'clusters': Cluster.objects.all().filter(layout_date=None).exclude(date_scheduled=None)}
+    template = get_template('location/cluster.str')
+    rendered_tpl = template.render(context)
+    with tempfile.TemporaryDirectory() as tempdir:
+        filename = os.path.join(tempdir, 'cluster.str')
+        with open(filename, 'x', encoding='utf-8') as f:
+            f.write(rendered_tpl)
+        response = FileResponse(open(filename, 'rb'),
+                                content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=cluster.str'
+        return response
+
 def export_drillhole(request):
     """
     CSV view of DrillHole intended for importation to database.
