@@ -29,7 +29,7 @@ def export_clustered_block2(request):
         str(block.ni),
         str(block.fe),
         str(block.co),
-        str(round(block.volume, 2))
+        str(block.volume)
     ] for block in Block.objects.raw(
         '''
         SELECT
@@ -40,13 +40,24 @@ def export_clustered_block2(request):
             block.ni ni,
             block.fe fe,
             block.co co,
-            ST_Area(
-                ST_Intersection(ST_Expand(block.geom, 5), cluster.geom)
-            ) * 3 volume
-        FROM location_cluster cluster INNER JOIN inventory_block block
+            round(
+                (
+                    ST_Area(
+                        ST_Intersection(
+                            ST_Expand(block.geom, 5),
+                            cluster.geom
+                        )
+                    ) * 3
+                )::numeric,
+                2
+            ) volume
+        FROM inventory_block block LEFT JOIN location_cluster cluster
         ON cluster.id = block.cluster_id
-        WHERE cluster.excavated = false
-        ORDER BY "name";
+        WHERE block.cluster_id IS NOT NULL
+        ORDER BY cluster.ore_class,
+                 cluster.count,
+                 cluster_name,
+                 "name";
         '''
     ))
 
