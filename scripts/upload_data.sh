@@ -44,7 +44,7 @@ sql_script () {
     echo "sql $1-$2, $time_elapsed" >> log_upload_data_time.csv
 }
 
-upload_ogr inventory_block 0,1,2,3,4,5 && \
+sql_script "upload_data" "inventory_block" && \
 upload_ogr location_mineblock identity && \
 upload_ogr location_roadarea identity && \
 upload_orm location_cluster && \

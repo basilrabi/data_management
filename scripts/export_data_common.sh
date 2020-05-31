@@ -5,20 +5,20 @@ then
 fi
 mkdir $datadir
 
-sql=$(cat scripts/sql/select/sampling_drillcoresample.pgsql | tr "[[:space:]]+" " " | tr -s " ")
-cmd="\COPY ($sql) TO '$(pwd)/$datadir/sampling_drillcoresample.csv' WITH CSV"
+download_sql () {
+    sql=$(cat scripts/sql/select/$1.pgsql | tr "[[:space:]]+" " " | tr -s " ") && \
+    cmd="\COPY ($sql) TO '$(pwd)/$datadir/$1.csv' WITH CSV" && \
+    psql -h $db_host -U $db_user $db_name -c "$cmd"
+}
 
-ogr2ogr -progress -f "GPKG" $datadir/inventory_block.gpkg \
-    "PG:host=$db_host user=$db_user dbname=$db_name" \
-    -select name,z,ni,fe,co,depth,geom \
-    inventory_block && \
 ogr2ogr -progress -f "GPKG" $datadir/location_mineblock.gpkg \
     "PG:host=$db_host user=$db_user dbname=$db_name" \
     location_mineblock && \
 ogr2ogr -progress -f "GPKG" $datadir/location_roadarea.gpkg \
     "PG:host=$db_host user=$db_user dbname=$db_name" \
     location_roadarea && \
-psql -h $db_host -U $db_user $db_name -c "$cmd" && \
+download_sql inventory_block && \
+download_sql sampling_drillcoresample && \
 curl $address/custom/export/group-permissions -o $datadir/group_permission.csv && \
 curl $address/custom/export/groups -o $datadir/groups.csv && \
 curl $address/custom/export/user-groups -o $datadir/user_group.csv && \
