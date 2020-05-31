@@ -29,15 +29,22 @@ class DrillCoreInline(admin.TabularInline):
 @admin.register(Cluster)
 class ClusterAdmin(TMCLocationAdmin):
     modifiable = False
+    exclude = ('count',)
     list_display = ('name',
+                    'mine_block',
+                    'z',
                     'ni',
                     'fe',
                     'ore_class',
                     'date_scheduled',
                     'layout_date',
                     'excavated')
-    list_filter = ['excavated']
-    readonly_fields = ['z',
+    list_filter = ['excavated', 'ore_class', 'mine_block']
+    readonly_fields = ['name',
+                       'distance_from_road',
+                       'road',
+                       'excavated',
+                       'z',
                        'ni',
                        'fe',
                        'co',
