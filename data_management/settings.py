@@ -15,7 +15,9 @@ from .local import db_host, db_name, db_password, db_user, db_port
 
 DB_HOST = db_host
 DB_NAME = db_name
+DB_PSWD = db_password
 DB_PORT = db_port
+DB_USER = db_user
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

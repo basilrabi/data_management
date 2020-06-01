@@ -1,8 +1,10 @@
 import os
 import tempfile
 
+from django.conf import settings
 from django.http import FileResponse
 from django.template.loader import get_template
+from subprocess import PIPE, run
 
 from custom.functions import export_csv
 from location.models.source import Cluster, DrillHole
@@ -41,6 +43,28 @@ def export_cluster2(request):
         str(round(cluster.geom.area * 3, 2))
     ] for cluster in Cluster.objects.exclude(excavated=True))
     return export_csv(rows, 'location_cluster')
+
+def export_cluster_dxf_for_survey(request):
+    """
+    Export clusters relevant to survey in dxf format.
+    """
+    with open('scripts/sql/select/export_cluster_dxf.pgsql', 'r') as file:
+        query = file.read().replace('\n', ' ')
+        with tempfile.TemporaryDirectory() as tempdir:
+            command = f'cd "{tempdir}" && ' + \
+                f'ogr2ogr -f "DXF" cluster.dxf PG:"' + \
+                f'host={settings.DB_HOST} ' + \
+                f'dbname={settings.DB_NAME} ' + \
+                f'user={settings.DB_USER} ' + \
+                f'password={settings.DB_PSWD}" ' + \
+                '-zfield Elevation ' + \
+                f'-sql "{query}"'
+            filename = os.path.join(tempdir, 'cluster.dxf')
+            run(command, shell=True, stdout=PIPE, stderr=PIPE)
+            return FileResponse(
+                open(filename, 'rb'),
+                content_type='application/dxf'
+            )
 
 def export_cluster_str(request):
     """
