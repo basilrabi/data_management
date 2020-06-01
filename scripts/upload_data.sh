@@ -48,6 +48,7 @@ sql_script "upload_data" "inventory_block" && \
 upload_ogr location_mineblock identity && \
 upload_ogr location_roadarea identity && \
 upload_orm location_cluster && \
+sql_script "upload_data" "inventory_clustered_block" && \
 upload_orm shipment_lct && \
 upload_orm shipment_lctcontract && \
 upload_orm shipment_vessel && \
