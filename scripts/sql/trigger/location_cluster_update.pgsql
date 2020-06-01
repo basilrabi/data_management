@@ -266,11 +266,23 @@ BEGIN
             FROM e
         ),
         g as (
-            SELECT max(location_cluster.count) + 1 count
+            SELECT location_cluster.count
             FROM location_cluster, e, f
             WHERE location_cluster.id <> NEW.id AND
                   location_cluster.ore_class = f.ore_class AND
                   substring(location_cluster.mine_block from '\d+') = substring(e.mine_block from '\d+')
+        ),
+        h as (
+            SELECT generate_series(1, max(g.count) + 1, 1) counts
+            FROM g
+        ),
+        i as (
+            SELECT min(counts) count
+            FROM h
+            WHERE counts NOT IN (
+                SELECT count
+                FROM g
+            )
         )
         UPDATE location_cluster
         SET ni = e.ni,
@@ -279,10 +291,10 @@ BEGIN
             mine_block = e.mine_block,
             ore_class = f.ore_class,
             count = CASE
-                WHEN g.count IS NULL THEN 1
-                ELSE g.count
+                WHEN i.count IS NULL THEN 1
+                ELSE i.count
             END
-        FROM e, f, g
+        FROM e, f, i
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster

@@ -43,6 +43,12 @@ class ClusterTest(TestCase):
         block = Block(name='b3', z=102, ni=2, fe=42, co=0.2,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
+        block = Block(name='b4', z=99, ni=1, fe=40, co=0.1,
+                      geom=GEOSGeometry('SRID=3125;POINT (591100 1051090)'))
+        block.save()
+        block = Block(name='b5', z=99, ni=1, fe=40, co=0.1,
+                      geom=GEOSGeometry('SRID=3125;POINT (591110 1051090)'))
+        block.save()
         road = RoadArea(
             date_surveyed='2020-03-06',
             geom=GEOSGeometry('SRID=3125;MULTIPOLYGON (((591115 1051105, 591125 1051105, 591125 1051095, 591115 1051095, 591115 1051105)))')
@@ -193,6 +199,32 @@ class ClusterTest(TestCase):
         cluster.save()
         cluster.layout_date = None
         self.assertRaises(InternalError, cluster.save)
+
+    def test_name_is_reused(self):
+        cluster = Cluster.objects.get(name='c1')
+
+        b1 = Block.objects.get(name='b1')
+        b1.cluster = cluster
+        b1.save()
+        b1.refresh_from_db()
+        self.assertEqual(b1.cluster.name, 'L1-099-104')
+
+        cluster = Cluster.objects.get(name='111')
+        b4 = Block.objects.get(name='b4')
+        b4.cluster = cluster
+        b4.save()
+        b4.refresh_from_db()
+        self.assertEqual(b4.cluster.name, 'L2-099-104')
+
+        b1.cluster = None
+        b1.save()
+
+        cluster = Cluster.objects.filter(name='111')[0]
+        b5 = Block.objects.get(name='b5')
+        b5.cluster = cluster
+        b5.save()
+        b5.refresh_from_db()
+        self.assertEqual(b5.cluster.name, 'L1-099-104')
 
     def test_removal_of_cluster(self):
         cluster = Cluster.objects.get(name='c1')
