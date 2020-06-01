@@ -39,6 +39,7 @@ class ClusterAdmin(TMCLocationAdmin):
                     'date_scheduled',
                     'layout_date',
                     'excavated')
+    list_editable = ('date_scheduled',)
     list_filter = ['excavated', 'ore_class', 'mine_block']
     readonly_fields = ['name',
                        'distance_from_road',
