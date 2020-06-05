@@ -10,6 +10,7 @@ require {
     class sock_file { create setattr };
     class tcp_socket name_connect;
     type devpts_t;
+    type dosfs_t;
     type init_t;
     type init_tmp_t;
     type initrc_tmp_t;
@@ -24,6 +25,7 @@ require {
 
 #============= init_t ==============
 allow init_t devpts_t:chr_file open;
+allow init_t dosfs_t:file { open read };
 allow init_t init_tmp_t:file map;
 allow init_t initrc_tmp_t:dir rmdir;
 allow init_t initrc_tmp_t:file { create unlink write };
