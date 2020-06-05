@@ -200,6 +200,7 @@ server {
     }
 
     location / {
+        client_body_temp_path /home/$USER/client_body_temp 1 2;
         proxy_temp_path /home/$USER/tmp 1 2;
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
