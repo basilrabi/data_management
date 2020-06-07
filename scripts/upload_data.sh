@@ -44,10 +44,21 @@ sql_script () {
     echo "sql $1-$2, $time_elapsed" >> log_upload_data_time.csv
 }
 
+vacuum () {
+    echo "Running vacuum analyze on $1." 2>&1 | tee -a log_upload_data && \
+    time_start=$(date +%s) && \
+    psql -h $db_host -p $db_port -U $db_user -w $db_name -a -c "VACUUM ANALYZE $1" 2>&1 | tee -a log_upload_data && \
+    time_end=$(date +%s) && \
+    time_elapsed=$(($time_end - $time_start)) && \
+    echo "vacuum $1, $time_elapsed" >> log_upload_data_time.csv
+}
+
 sql_script "upload_data" "inventory_block" && \
 upload_ogr location_mineblock identity && \
 upload_ogr location_roadarea identity && \
 upload_orm location_cluster && \
+vacuum "inventory_block" && \
+vacuum "location_cluster" && \
 sql_script "upload_data" "inventory_clustered_block" && \
 upload_orm shipment_lct && \
 upload_orm shipment_lctcontract && \
