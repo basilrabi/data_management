@@ -1,5 +1,6 @@
 from django.db import connection
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError, InternalError
 from django.test import TestCase
 
@@ -124,6 +125,7 @@ class ClusterTest(TestCase):
 
         # Fails if updated
         cluster.date_scheduled = '2020-05-19'
+        self.assertRaises(ValidationError, cluster.clean)
         self.assertRaises(InternalError, cluster.save)
 
     def test_date_scheduled_lock_if_no_geom(self):

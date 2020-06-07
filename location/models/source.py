@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.core.exceptions import ValidationError
 
 from custom.fields import MineBlockField, NameField, PileField
 from .landuse import RoadArea
@@ -54,6 +55,12 @@ class Cluster(models.Model):
     )
     excavated = models.BooleanField(default=False)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+
+    def clean(self):
+        if self.layout_date:
+            old_cluster = Cluster.objects.get(id=self.id)
+            if self.date_scheduled != old_cluster.date_scheduled:
+                raise ValidationError('Cannot change date_scheduled if layout_date is already set.')
 
     class Meta:
         constraints = [
