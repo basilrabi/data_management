@@ -44,19 +44,6 @@ def data_export_lct_trips(request):
     ] for detail in TripDetail.objects.all() if detail.next())
     return export_csv(rows, 'lct_trips')
 
-def export_laydaysdetail(request):
-    """
-    CSV view of LayDaysDetial intended for importation to database.
-    """
-    rows = ([
-        str(detail.laydays.shipment.name),
-        str(print_localzone(detail.interval_from) or ''),
-        str(detail.laytime_rate),
-        str(detail.interval_class),
-        str(detail.remarks)
-    ] for detail in LayDaysDetail.objects.all().order_by('laydays__completed_loading', 'laydays__shipment__name', 'interval_from'))
-    return export_csv(rows, 'shipment_laydaysdetail')
-
 def export_laydaysstatement(request):
     """
     CSV view of LayDaysStatement intended for importation to database.

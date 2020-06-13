@@ -32,7 +32,7 @@ with open('data/group_permission.csv', newline='') as csvfile:
             print('\nUploading interrupted.')
             sys.exit(1)
         except Exception as e:
-            print(f'Permission `{permission.name}` not assigned to Group `{group.name}`.')
+            print(f"Permission `{row['permission']}` not assigned to Group `{group.name}`.")
             print(e)
         sys.stdout.flush()
         sys.stderr.flush()

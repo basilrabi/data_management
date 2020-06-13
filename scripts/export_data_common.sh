@@ -44,7 +44,7 @@ curl $address/shipment/export/lct -o $datadir/shipment_lct.csv && \
 echo "Exporting shipment_lctcontract..." && \
 curl $address/shipment/export/lctcontract -o $datadir/shipment_lctcontract.csv && \
 echo "Exporting shipment_laydaysdetail..." && \
-curl $address/shipment/export/laydaysdetail -o $datadir/shipment_laydaysdetail.csv && \
+download_sql shipment_laydaysdetail && \
 echo "Exporting shipment_laydaysstatement..." && \
 curl $address/shipment/export/laydaysstatement -o $datadir/shipment_laydaysstatement.csv && \
 echo "Exporting shipment_shipment..." && \

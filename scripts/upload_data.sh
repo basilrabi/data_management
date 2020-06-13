@@ -65,6 +65,10 @@ upload_orm shipment_lctcontract && \
 upload_orm shipment_vessel && \
 upload_orm shipment_shipment && \
 upload_orm shipment_laydaysstatement && \
+vacuum "shipment_shipment" && \
+vacuum "shipment_laydaysstatement" && \
+sql_script "upload_data" "shipment_laydaysdetail" && \
+vacuum "shipment_laydaysdetail" && \
 upload_orm shipment_laydaysdetail && \
 upload_orm shipment_trip && \
 upload_orm shipment_tripdetail && \

@@ -512,6 +512,7 @@ class Shipment(models.Model):
             trip.save()
 
     class Meta:
+        indexes = [models.Index(fields=['name'])]
         ordering = ['-start_loading', 'name']
 
     def __str__(self):
