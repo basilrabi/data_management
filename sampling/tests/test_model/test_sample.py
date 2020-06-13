@@ -7,23 +7,11 @@ from fleet.models.equipment import TrackedExcavator
 from location.models.source import MineBlock, Stockyard
 from personnel.models.person import Designation, EmploymentRecord, Person
 from sampling.models.piling import PilingMethod, TripsPerPile
-from sampling.models.sample import (Material,
-                                    MiningSample,
+from sampling.models.sample import (MiningSample,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 
 # pylint: disable=no-member
-
-class MaterialTest(TestCase):
-
-    def setUp(self):
-        pass
-
-    def test_name_is_unique(self):
-        mat = Material(name="LGO")
-        mat.save()
-        mat = Material(name='LGO ')
-        self.assertRaises(IntegrityError, mat.save)
 
 class MiningSampleReportTest(TestCase):
 
@@ -84,11 +72,6 @@ class MiningSampleReportTest(TestCase):
         e4.save()
         e5.save()
 
-        mat1 = Material(name='LF')
-        mat2 = Material(name='LA')
-        mat1.save()
-        mat2.save()
-
         mb1 = MineBlock(name='101', ridge='T3')
         mb2 = MineBlock(name='201', ridge='T1')
         mb1.save()
@@ -108,75 +91,67 @@ class MiningSampleReportTest(TestCase):
         p5 = Person.objects.get(first_name='E')
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
-        mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
         r1 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         self.assertEqual(None, r1.clean())
 
         r2 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='N',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p4)
         r2.save()
+        r2.tx.add(tx)
         r2.sampler.add(p5)
         self.assertRaises(ValidationError, r2.clean)
 
         r3 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p3,
                                 foreman=p1)
         r3.save()
+        r3.tx.add(tx)
         r3.sampler.add(p5)
         self.assertRaises(ValidationError, r3.clean)
 
         r4 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r4.save()
+        r4.tx.add(tx)
         r4.sampler.add(p3)
         self.assertRaises(ValidationError, r4.clean)
 
         r5 = MiningSampleReport(date=pd('2019-05-05'),
                                 shift_collected='D',
                                 piling_method=m2,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r5.save()
+        r5.tx.add(tx)
         r5.sampler.add(p5)
         self.assertRaises(ValidationError, r4.clean)
 
     def mining_sample_increments_matches_the_samples(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
-        mat1 = Material.objects.get(name='LF')
-        mat2 = Material.objects.get(name='LA')
         my1 = Stockyard.objects.get(name='MY201')
         my2 = Stockyard.objects.get(name='MY301')
         p1 = Person.objects.get(first_name='A')
@@ -185,7 +160,6 @@ class MiningSampleReportTest(TestCase):
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
         s1 = MiningSample(series_number=1,
-                          material=mat1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -193,12 +167,11 @@ class MiningSampleReportTest(TestCase):
         r1 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='N',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         r1.save()
 
@@ -208,12 +181,11 @@ class MiningSampleReportTest(TestCase):
         r2 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='D',
                                 piling_method=m2,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r2.save()
+        r2.tx.add(tx)
         r2.sampler.add(p5)
         r2.save()
 
@@ -223,12 +195,11 @@ class MiningSampleReportTest(TestCase):
         r2 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat2,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r2.save()
+        r2.tx.add(tx)
         r2.sampler.add(p5)
         r2.save()
 
@@ -238,12 +209,11 @@ class MiningSampleReportTest(TestCase):
         r2 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r2.save()
+        r2.tx.add(tx)
         r2.sampler.add(p5)
         r2.save()
 
@@ -253,12 +223,11 @@ class MiningSampleReportTest(TestCase):
         r2 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my2,
                                 supervisor=p2,
                                 foreman=p1)
         r2.save()
+        r2.tx.add(tx)
         r2.sampler.add(p5)
         r2.save()
 
@@ -267,7 +236,6 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_reports_are_being_added_correctly(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
@@ -275,7 +243,6 @@ class MiningSampleReportTest(TestCase):
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
         s1 = MiningSample(series_number=1,
-                          material=mat1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -283,12 +250,11 @@ class MiningSampleReportTest(TestCase):
         r1 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='N',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=5)
@@ -304,12 +270,11 @@ class MiningSampleReportTest(TestCase):
         r1 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='D',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=5)
@@ -320,12 +285,11 @@ class MiningSampleReportTest(TestCase):
         r1 = MiningSampleReport(date=pd('2019-09-06'),
                                 shift_collected='N',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=5)
@@ -334,7 +298,6 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_is_not_duplicated_in_report(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
@@ -342,7 +305,6 @@ class MiningSampleReportTest(TestCase):
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
         s1 = MiningSample(series_number=1,
-                          material=mat1,
                           dumping_area=my1,
                           piling_method=m1)
         s1.save()
@@ -350,12 +312,11 @@ class MiningSampleReportTest(TestCase):
         r1 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='N',
                                 piling_method=m1,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p5)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=5)
@@ -365,11 +326,8 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_is_not_ready_without_increments(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        mat1 = Material.objects.get(name='LF')
         my1 = Stockyard.objects.get(name='MY201')
-
         s1 = MiningSample(series_number=1,
-                          material=mat1,
                           dumping_area=my1,
                           piling_method=m1,
                           ready_for_delivery=True)

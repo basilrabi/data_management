@@ -24,8 +24,8 @@ with open('data/group_permission.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['group', 'permission'])
     for row in reader:
         group = Group.objects.get(name=row['group'])
-        permission = Permission.objects.get(codename=row['permission'])
         try:
+            permission = Permission.objects.get(codename=row['permission'])
             group.permissions.add(permission)
             print(f'Permission `{permission.name}` assigned to Group `{group.name}`.')
         except KeyboardInterrupt:
@@ -34,6 +34,5 @@ with open('data/group_permission.csv', newline='') as csvfile:
         except Exception as e:
             print(f'Permission `{permission.name}` not assigned to Group `{group.name}`.')
             print(e)
-            sys.exit(1)
         sys.stdout.flush()
         sys.stderr.flush()

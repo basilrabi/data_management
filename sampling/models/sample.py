@@ -31,17 +31,10 @@ class Lithology(Classification):
     """
     pass
 
-class Material(Classification):
-    """
-    Ore classification
-    """
-    pass
-
 class AssaySample(models.Model):
     """
     A model for all samples prepared and analyzed by Assay.
     """
-
     date_received_for_preparation = models.DateField(null=True, blank=True)
     date_prepared = models.DateField(null=True, blank=True)
     date_received_for_analysis = models.DateField(null=True, blank=True)
@@ -143,16 +136,15 @@ class DrillCoreSample(AssaySample):
 
 class MiningSample(AssaySample):
     series_number = models.PositiveSmallIntegerField()
-    material = models.ForeignKey('Material', on_delete=models.CASCADE)
+    material = models.CharField(max_length=1, null=True, blank=True)
     ridge = models.CharField(max_length=2, null=True, blank=True)
     dumping_area = models.ForeignKey(Stockyard, on_delete=models.CASCADE)
     piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
     start_collection = models.DateField(null=True, blank=True)
-    year = models.PositiveSmallIntegerField(default=this_year)
+    month = models.PositiveSmallIntegerField(null=True, blank=True)
     end_collection = models.DateField(null=True, blank=True)
     trips = models.PositiveSmallIntegerField(default=0)
     ready_for_delivery = models.BooleanField(default=False)
-    harvested = models.BooleanField(default=False)
 
     def has_increment(self):
         if self.miningsampleincrement_set.all().count() > 0:
@@ -184,16 +176,16 @@ class MiningSample(AssaySample):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ['-start_collection__year', '-series_number']
+        ordering = ['-start_collection__year', '-month', '-series_number']
         constraints = [
             models.UniqueConstraint(
                 fields=[
                     'ridge',
-                    'year',
-                    'piling_method',
+                    'material',
+                    'month',
                     'series_number'
                 ],
-                name='mining_sample_series_constraint'
+                name='mining_sample_constraint'
             ),
             models.CheckConstraint(check=models.Q(al__lte=100), name='al_max_100_miningsample'),
             models.CheckConstraint(check=models.Q(c__lte=100), name='c_max_100_miningsample'),
@@ -226,8 +218,6 @@ class MiningSampleIncrement(models.Model):
     trips = models.PositiveSmallIntegerField()
 
     def clean(self):
-        if self.report.material != self.sample.material:
-            raise ValidationError('Material classes do not match.')
         if self.report.piling_method != self.sample.piling_method:
             raise ValidationError('Piling method do not match.')
         if self.report.dumping_area != self.sample.dumping_area:
@@ -258,10 +248,7 @@ class MiningSampleReport(models.Model):
     )
     shift_collected = models.CharField(max_length=1, choices=SHIFT)
     piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
-    material = models.ForeignKey('Material', on_delete=models.CASCADE)
-    tx = models.ForeignKey(TrackedExcavator,
-                           on_delete=models.CASCADE,
-                           verbose_name='TX')
+    tx = models.ManyToManyField(TrackedExcavator, verbose_name='TX')
     source = models.ForeignKey(
         Cluster, on_delete=models.SET_NULL, null=True, blank=True
     )

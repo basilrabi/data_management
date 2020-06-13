@@ -7,8 +7,7 @@ from location.models.source import MineBlock, Stockyard
 from personnel.models.person import Designation, EmploymentRecord, Person
 from sampling.models.piling import PilingMethod, TripsPerPile
 from sampling.models.proxy import MiningSampleAssay
-from sampling.models.sample import (Material,
-                                    MiningSample,
+from sampling.models.sample import (MiningSample,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 
@@ -47,8 +46,6 @@ class MiningSampleAssayTest(TestCase):
         e1.save()
         e2.save()
         e3.save()
-        mat1 = Material(name='LF')
-        mat1.save()
         mb1 = MineBlock(name='101', ridge='T3')
         mb1.save()
         my1 = Stockyard(name='MY201')
@@ -56,19 +53,17 @@ class MiningSampleAssayTest(TestCase):
         tx = TrackedExcavator(fleet_number=1)
         tx.save()
         s1 = MiningSample(series_number=1,
-                          material=mat1,
                           dumping_area=my1,
                           piling_method=method)
         s1.save()
         r1 = MiningSampleReport(date=pd('2019-09-05'),
                                 shift_collected='N',
                                 piling_method=method,
-                                material=mat1,
-                                tx=tx,
                                 dumping_area=my1,
                                 supervisor=p2,
                                 foreman=p1)
         r1.save()
+        r1.tx.add(tx)
         r1.sampler.add(p3)
         r1.save()
         i1 = MiningSampleIncrement(sample=s1, report=r1, trips=10)

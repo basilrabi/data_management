@@ -5,8 +5,7 @@ from personnel.models.person import Person
 
 from .models.piling import PilingMethod, TripsPerPile
 from .models.proxy import (AcquiredMiningSample, MiningSampleAssay)
-from .models.sample import (Material,
-                            MiningSample,
+from .models.sample import (MiningSample,
                             MiningSampleIncrement,
                             MiningSampleReport,
                             Lithology)
@@ -45,22 +44,15 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
     list_display = ('__str__',
                     'dumping_area',
                     'trips',
-                    'ready_for_delivery',
-                    'harvested',
-                    'year')
+                    'ready_for_delivery')
     exclude = ('ridge',
                'start_collection',
-               'year',
                'end_collection',
                'trips',
                'ready_for_delivery')
 
 @admin.register(Lithology)
 class LithologyAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(Material)
-class MaterialAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(MiningSampleAssay)
@@ -72,11 +64,10 @@ class MiningSampleAssayAdmin(admin.ModelAdmin):
                     'date_analyzed')
 
 @admin.register(MiningSampleReport)
-class MiningSampleReportAdmin(TMCLocationAdmin):
+class MiningSampleReportAdmin(admin.ModelAdmin):
     list_display = ('date',
                     'shift_collected',
                     'piling_method',
-                    'material',
                     'dumping_area')
 
     def add_view(self, request, form_url='', extra_context=None):
