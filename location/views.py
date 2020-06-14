@@ -6,7 +6,7 @@ from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
-from custom.functions import export_csv
+from custom.functions import export_csv, export_sql
 from location.models.source import Cluster, DrillHole
 
 # pylint: disable=no-member
@@ -30,19 +30,7 @@ def export_cluster2(request):
     """
     CSV view of Cluster intended for user's perusal.
     """
-    rows = ([
-        str(cluster.name),
-        str(cluster.z),
-        str(cluster.ore_class),
-        str(cluster.mine_block),
-        str(cluster.ni),
-        str(cluster.fe),
-        str(cluster.co),
-        str(cluster.date_scheduled or ''),
-        str(cluster.layout_date or ''),
-        str(round(cluster.geom.area * 3, 2))
-    ] for cluster in Cluster.objects.exclude(excavated=True))
-    return export_csv(rows, 'location_cluster')
+    return export_sql('export_clusters', 'clusters')
 
 def export_cluster_dxf_for_survey(request):
     """
