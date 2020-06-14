@@ -5,9 +5,11 @@ from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
-from custom.functions import export_csv, print_localzone, print_tz_manila
-from shipment.models.dso import (LayDaysDetail,
-                                 LayDaysStatement,
+from custom.functions import (export_csv,
+                              export_sql,
+                              print_localzone,
+                              print_tz_manila)
+from shipment.models.dso import (LayDaysStatement,
                                  Shipment,
                                  Vessel)
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
@@ -18,15 +20,7 @@ def data_export_laydays(request):
     """
     CSV view of LayDaysDetail intended for user's perusal.
     """
-    rows = ([
-        str(detail.laydays.shipment.name),
-        str(print_tz_manila(detail.interval_from)),
-        str(print_tz_manila(detail.next().interval_from)),
-        str(detail.interval_class),
-        str(detail.remarks or ''),
-        str(detail.next().remarks or '')
-    ] for detail in LayDaysDetail.objects.all() if detail.next())
-    return export_csv(rows, 'laydaysdetail')
+    return export_sql('export_laydays', 'laydaysdetail')
 
 def data_export_lct_trips(request):
     """

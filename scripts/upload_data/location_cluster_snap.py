@@ -1,4 +1,3 @@
-# pylint: disable=anomalous-backslash-in-string
 # pylint: disable=import-error
 # pylint: disable=no-member
 from location.models.source import Cluster
@@ -7,9 +6,9 @@ for cluster in Cluster.objects.raw(
     SELECT
         id,
         name,
-        substring(name, '^[A-Z](\d+)-\d+-\d+$')::int count,
-        substring(name, '^[A-Z]\d+-\d+-(\d+)$') mine_block,
-        substring(name, '^([A-Z])\d+-\d+-\d+$') ore_class
+        substring(name, '^[A-Z](\\d+)-\\d+-\\d+$')::int count,
+        substring(name, '^[A-Z]\\d+-\\d+-(\\d+)$') mine_block,
+        substring(name, '^([A-Z])\\d+-\\d+-\\d+$') ore_class
     FROM location_cluster
     WHERE geom IS NOT NULL
     ORDER BY count, mine_block, ore_class;

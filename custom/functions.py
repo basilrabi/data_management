@@ -1,9 +1,13 @@
 import csv
 import datetime
+import os
+import tempfile
 
+from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.http import StreamingHttpResponse
+from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
+from subprocess import PIPE, run
 from tzlocal import get_localzone
 
 from .variables import (one_day,
@@ -32,6 +36,26 @@ def export_csv(rows, filename):
                                      content_type="text/csv")
     response['Content-Disposition'] = 'attachment; ' + f'filename="{filename}.csv"'
     return response
+
+def export_sql(sql, csvfile, header=True):
+    if header:
+        head='HEADER'
+    else:
+        head=''
+    with open(f'scripts/sql/select/{sql}.pgsql', 'r') as file:
+        query = file.read().replace('\n', ' ')
+        with tempfile.TemporaryDirectory() as tempdir:
+            command = f'cd "{tempdir}" && ' + \
+                f'cmd="\\COPY ({query}) TO \'{csvfile}.csv\' ' + \
+                f'WITH CSV {head}" && ' + \
+                f'psql ' + \
+                f'-h {settings.DB_HOST} ' + \
+                f'-U  {settings.DB_USER} ' + \
+                f'{settings.DB_NAME} ' + \
+                f'-c "$cmd"'
+            filename = os.path.join(tempdir, f'{csvfile}.csv')
+            run(command, shell=True, stdout=PIPE, stderr=PIPE)
+            return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
 def ordinal_suffix(x):
     x = int(x)
