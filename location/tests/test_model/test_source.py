@@ -171,6 +171,39 @@ class ClusterTest(TestCase):
         cluster.refresh_from_db()
         self.assertEqual(True, cluster.excavated)
 
+    def test_excavated_is_set_on_update(self):
+        b4 = Block.objects.get(name='b4')
+        b5 = Block.objects.get(name='b5')
+        cluster = Cluster.objects.get(name='c1')
+
+        # All blocks not excavated
+        b4.depth = 1
+        b4.cluster = cluster
+        b4.save()
+        b5.depth = 1
+        b5.cluster = cluster
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(False, cluster.excavated)
+
+        # Blocks partially excavated
+        b4.depth = -1
+        b4.save()
+        cluster.refresh_from_db()
+        self.assertEqual(False, cluster.excavated)
+
+        # Blocks fully excavated
+        b5.depth = -1
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(True, cluster.excavated)
+
+        # Blocks editted
+        b5.depth = 1
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(False, cluster.excavated)
+
     def test_date_scheduled_lock_if_no_geom(self):
         cluster = Cluster.objects.get(name='c1')
         cluster.date_scheduled = '2020-05-30'

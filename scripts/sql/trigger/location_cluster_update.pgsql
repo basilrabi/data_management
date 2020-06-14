@@ -1,9 +1,53 @@
+CREATE OR REPLACE FUNCTION update_location_cluster_excavated()
+RETURNS trigger AS
+$BODY$
+/* Whenever there is a change in the depth field of a clustered block, the
+ * cluster is flagged as excavated if all blocks are already excavated.
+ */
+BEGIN
+    IF (NEW.cluster_id IS NOT NULL) THEN
+
+        WITH a as (
+            SELECT CASE
+                    WHEN depth IS NULL THEN 1
+                    ELSE depth
+                END as assumed_depth
+            FROM inventory_block
+            WHERE cluster_id = NEW.cluster_id
+        ),
+        b as (
+            SELECT MAX(assumed_depth) depth
+            FROM a
+        )
+        UPDATE location_cluster
+        SET excavated = CASE
+                WHEN b.depth > 0 THEN false
+                ELSE true
+            END
+        FROM b
+        WHERE id = NEW.cluster_id;
+    END IF;
+
+    RETURN NULL;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS location_cluster_excavated_update
+ON inventory_block;
+CREATE TRIGGER location_cluster_excavated_update
+AFTER UPDATE ON inventory_block
+FOR EACH ROW
+WHEN (NEW.depth <> OLD.depth OR
+      (NEW.depth IS NOT NULL AND OLD.depth IS NULL) OR
+      (NEW.depth IS NULL AND OLD.cluster_id IS NOT NULL))
+EXECUTE PROCEDURE update_location_cluster_excavated();
+
 CREATE OR REPLACE FUNCTION update_location_cluster_geometry()
 RETURNS trigger AS
 $BODY$
 /* Whenever there is a change in the referred location_cluster in the foreign
  * key column of `inventory_block`, the geom and elevation colummns of
-  * location_cluster is updated.
+ * location_cluster is updated.
  */
 DECLARE
     cluster_geom geometry;
@@ -299,13 +343,13 @@ BEGIN
             mine_block = e.mine_block,
             ore_class = f.ore_class,
             count = CASE
-                WHEN i.count IS NULL THEN 1
-                ELSE i.count
-            END,
+                    WHEN i.count IS NULL THEN 1
+                    ELSE i.count
+                END,
             excavated = CASE
-                WHEN b.depth > 0 THEN false
-                ELSE true
-            END
+                    WHEN b.depth > 0 THEN false
+                    ELSE true
+                END
         FROM b, e, f, i
         WHERE id = NEW.id;
     ELSE
