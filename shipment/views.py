@@ -1,7 +1,6 @@
 import os
 import tempfile
 
-from django.db.models import Count
 from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
@@ -115,23 +114,6 @@ def export_trip(request):
         str(print_localzone(trip.interval_from) or '')
     ] for trip in Trip.objects.all().order_by('lct__name', 'interval_from'))
     return export_csv(rows, 'shipment_trip')
-
-def export_tripdetail(request):
-    """
-    CSV view of TripDetail (a detail of an LCT trip) intended for imporation to
-    database.
-    """
-    rows = ([
-        str(detail.trip.lct.name),
-        str(print_localzone(detail.trip.interval_from)),
-        str(print_localzone(detail.interval_from)),
-        str(detail.interval_class),
-        str(detail.remarks or '')
-    ] for detail in TripDetail.objects.all() \
-        .annotate(siblings=Count('trip__tripdetail')) \
-        .filter(siblings__gt=1) \
-        .order_by('interval_from', 'trip__interval_from', 'trip__lct__name'))
-    return export_csv(rows, 'shipment_tripdetail')
 
 def export_vessel(request):
     """

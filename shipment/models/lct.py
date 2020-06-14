@@ -17,6 +17,7 @@ class LCT(models.Model):
     capacity = models.PositiveSmallIntegerField(help_text='Capacity in tons')
 
     class Meta:
+        indexes = [models.Index(fields=['name'])]
         verbose_name = "LCT"
         verbose_name_plural = "LCT's"
         ordering = ['name']
