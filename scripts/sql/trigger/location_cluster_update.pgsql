@@ -228,7 +228,14 @@ BEGIN
                         ST_Expand(inventory_block.geom, 5),
                         ST_MakeValid(NEW.geom)
                     )
-                ) area, ni, fe, co
+                ) area,
+                ni,
+                fe,
+                co,
+                CASE
+                    WHEN depth IS NULL THEN 1
+                    ELSE depth
+                END assumed_depth
             FROM inventory_block
             WHERE inventory_block.cluster_id = NEW.id
         ),
@@ -236,7 +243,8 @@ BEGIN
             SELECT SUM(area) total_area,
                    SUM(ni * area) ni_area,
                    SUM(fe * area) fe_area,
-                   SUM(co * area) co_area
+                   SUM(co * area) co_area,
+                   MAX(assumed_depth) depth
             FROM a
         ),
         c as (
@@ -293,8 +301,12 @@ BEGIN
             count = CASE
                 WHEN i.count IS NULL THEN 1
                 ELSE i.count
+            END,
+            excavated = CASE
+                WHEN b.depth > 0 THEN false
+                ELSE true
             END
-        FROM e, f, i
+        FROM b, e, f, i
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster

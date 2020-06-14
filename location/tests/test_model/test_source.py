@@ -128,6 +128,49 @@ class ClusterTest(TestCase):
         self.assertRaises(ValidationError, cluster.clean)
         self.assertRaises(InternalError, cluster.save)
 
+    def test_excavated_is_set(self):
+        b4 = Block.objects.get(name='b4')
+        b5 = Block.objects.get(name='b5')
+        cluster = Cluster.objects.get(name='c1')
+
+        # All blocks not excavated
+        b4.depth = 1
+        b4.cluster = cluster
+        b4.save()
+        b5.depth = 1
+        b5.cluster = cluster
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(False, cluster.excavated)
+
+        b4.cluster = None
+        b4.save()
+        b5.cluster = None
+        b5.save()
+
+        # Blocks partially excavated
+        b4.depth = -1
+        b4.cluster = cluster
+        b4.save()
+        b5.cluster = cluster
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(False, cluster.excavated)
+
+        b4.cluster = None
+        b4.save()
+        b5.cluster = None
+        b5.save()
+
+        # Blocks fully excavated
+        b4.cluster = cluster
+        b4.save()
+        b5.depth = -1
+        b5.cluster = cluster
+        b5.save()
+        cluster.refresh_from_db()
+        self.assertEqual(True, cluster.excavated)
+
     def test_date_scheduled_lock_if_no_geom(self):
         cluster = Cluster.objects.get(name='c1')
         cluster.date_scheduled = '2020-05-30'
@@ -140,18 +183,6 @@ class ClusterTest(TestCase):
         block.save()
         cluster.refresh_from_db()
         cluster.date_scheduled = '2020-05-30'
-        cluster.save()
-        block = Block.objects.get(name='b2')
-        block.cluster = cluster
-        self.assertRaises(InternalError, block.save)
-
-    def test_geom_lock_if_excavated(self):
-        cluster = Cluster.objects.get(name='c1')
-        block = Block.objects.get(name='b1')
-        block.cluster = cluster
-        block.save()
-        cluster.refresh_from_db()
-        cluster.excavated = True
         cluster.save()
         block = Block.objects.get(name='b2')
         block.cluster = cluster

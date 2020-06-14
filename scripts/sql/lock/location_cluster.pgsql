@@ -34,11 +34,6 @@ BEGIN
         RAISE EXCEPTION 'Geometry cannot be modified if date_scheduled is set.';
     END IF;
 
-    IF (OLD.excavated) THEN
-        RAISE EXCEPTION
-            'Cluster is already excavated. Cannot modify.';
-    END IF;
-
     RETURN NEW;
 END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
