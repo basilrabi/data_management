@@ -26,25 +26,33 @@ def export_cluster_dxf_for_survey(request):
         .order_by('date_scheduled') \
         .values('date_scheduled').distinct()
     with tempfile.TemporaryDirectory() as tempdir:
-        run(f'cd "{tempdir}" && mkdir dxf', shell=True, stdout=PIPE, stderr=PIPE)
-        for item in scheduled_dates:
-            date = f"{item['date_scheduled']}"
-            context = {'the_date': date}
-            template = get_template('location/cluster_dxf.pgsql')
-            query = template.render(context).replace('\n', ' ')
-            command = f'cd "{tempdir}" && cd dxf && ' + \
-                f'ogr2ogr -f "DXF" {date}.dxf PG:"' + \
-                f'host={settings.DB_HOST} ' + \
-                f'dbname={settings.DB_NAME} ' + \
-                f'user={settings.DB_USER} ' + \
-                f'password={settings.DB_PSWD}" ' + \
-                '-zfield Elevation ' + \
-                f'-sql "{query}"'
+        if scheduled_dates.count() > 0:
+            run(f'cd "{tempdir}" && mkdir dxf', shell=True, stdout=PIPE, stderr=PIPE)
+            for item in scheduled_dates:
+                date = f"{item['date_scheduled']}"
+                context = {'the_date': date}
+                template = get_template('location/cluster_dxf.pgsql')
+                query = template.render(context).replace('\n', ' ')
+                command = f'cd "{tempdir}" && cd dxf && ' + \
+                    f'ogr2ogr -f "DXF" {date}.dxf PG:"' + \
+                    f'host={settings.DB_HOST} ' + \
+                    f'dbname={settings.DB_NAME} ' + \
+                    f'user={settings.DB_USER} ' + \
+                    f'password={settings.DB_PSWD}" ' + \
+                    '-zfield Elevation ' + \
+                    f'-sql "{query}"'
+                run(command, shell=True, stdout=PIPE, stderr=PIPE)
+            command = f'cd "{tempdir}" && zip clusters.zip dxf/*'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
-        command = f'cd "{tempdir}" && zip clusters.zip dxf/*'
-        run(command, shell=True, stdout=PIPE, stderr=PIPE)
-        filename = os.path.join(tempdir, 'clusters.zip')
-        return FileResponse(open(filename, 'rb'), content_type='application/zip')
+            filename = os.path.join(tempdir, 'clusters.zip')
+            return FileResponse(open(filename, 'rb'), content_type='application/zip')
+        else:
+            command = f'cd "{tempdir}" && ' + \
+                'echo "There is no un-excavated scheduled block." > output.txt'
+            run(command, shell=True, stdout=PIPE, stderr=PIPE)
+            filename = os.path.join(tempdir, 'output.txt')
+            return FileResponse(open(filename, 'rb'), content_type='text/plain')
+
 
 def export_cluster_str(request):
     """
