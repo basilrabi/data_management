@@ -21,23 +21,30 @@ def export_cluster_dxf_for_survey(request):
     """
     Export clusters relevant to survey in dxf format.
     """
-    with open('scripts/sql/select/export_cluster_dxf.pgsql', 'r') as file:
-        query = file.read().replace('\n', ' ')
-        with tempfile.TemporaryDirectory() as tempdir:
-            command = f'cd "{tempdir}" && ' + \
-                f'ogr2ogr -f "DXF" cluster.dxf PG:"' + \
+    scheduled_dates = Cluster.objects \
+        .filter(excavated=False, date_scheduled__isnull=False, geom__isnull=False) \
+        .order_by('date_scheduled') \
+        .values('date_scheduled').distinct()
+    with tempfile.TemporaryDirectory() as tempdir:
+        run(f'cd "{tempdir}" && mkdir dxf', shell=True, stdout=PIPE, stderr=PIPE)
+        for item in scheduled_dates:
+            date = f"{item['date_scheduled']}"
+            context = {'the_date': date}
+            template = get_template('location/cluster_dxf.pgsql')
+            query = template.render(context).replace('\n', ' ')
+            command = f'cd "{tempdir}" && cd dxf && ' + \
+                f'ogr2ogr -f "DXF" {date}.dxf PG:"' + \
                 f'host={settings.DB_HOST} ' + \
                 f'dbname={settings.DB_NAME} ' + \
                 f'user={settings.DB_USER} ' + \
                 f'password={settings.DB_PSWD}" ' + \
                 '-zfield Elevation ' + \
                 f'-sql "{query}"'
-            filename = os.path.join(tempdir, 'cluster.dxf')
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
-            return FileResponse(
-                open(filename, 'rb'),
-                content_type='application/dxf'
-            )
+        command = f'cd "{tempdir}" && zip clusters.zip dxf/*'
+        run(command, shell=True, stdout=PIPE, stderr=PIPE)
+        filename = os.path.join(tempdir, 'clusters.zip')
+        return FileResponse(open(filename, 'rb'), content_type='application/zip')
 
 def export_cluster_str(request):
     """
