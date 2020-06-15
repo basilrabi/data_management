@@ -36,7 +36,7 @@ curl $address/custom/export/users -o $datadir/users.csv && \
 echo "Exporting clustered_block..." && \
 curl $address/inventory/export/clustered-block -o $datadir/inventory_clustered_block.csv && \
 echo "Exporting cluster..." && \
-curl $address/location/export/cluster -o $datadir/location_cluster.csv && \
+download_sql location_cluster && \
 echo "Exporting location_drillhole..." && \
 curl $address/location/export/drillhole -o $datadir/location_drillhole.csv && \
 echo "Exporting shipment_lct..." && \

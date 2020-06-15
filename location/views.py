@@ -13,21 +13,6 @@ from location.models.source import Cluster, DrillHole
 
 def export_cluster(request):
     """
-    CSV view of Cluster intended for importation to database.
-    """
-    rows = ([
-        str(cluster.name),
-        str(cluster.z),
-        str(cluster.distance_from_road or ''),
-        str(cluster.road or ''),
-        str(cluster.date_scheduled or ''),
-        str(cluster.layout_date or ''),
-        str(cluster.geom.ewkt)
-    ] for cluster in Cluster.objects.exclude(ni__lt=0.01).order_by('count', 'mine_block', 'ore_class'))
-    return export_csv(rows, 'location_cluster')
-
-def export_cluster2(request):
-    """
     CSV view of Cluster intended for user's perusal.
     """
     return export_sql('export_clusters', 'clusters')
