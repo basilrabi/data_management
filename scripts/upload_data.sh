@@ -70,7 +70,7 @@ upload_orm shipment_laydaysstatement && \
 vacuum "shipment_laydaysstatement" && \
 sql_script "upload_data" "shipment_laydaysdetail" && \
 vacuum "shipment_laydaysdetail" && \
-upload_orm shipment_trip && \
+sql_script "upload_data" "shipment_trip" && \
 vacuum "shipment_trip" && \
 sql_script "upload_data" "shipment_tripdetail" && \
 vacuum "shipment_tripdetail" && \

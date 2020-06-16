@@ -81,20 +81,6 @@ def export_shipment(request):
     ] for shipment in Shipment.objects.all().order_by('end_loading', 'name'))
     return export_csv(rows, 'shipment_shipment')
 
-def export_trip(request):
-    """
-    CSV view of Trip (a trip of LCT) intended for importation to database.
-    """
-    rows = ([
-        str(trip.lct.name),
-        str(trip.vessel.name if trip.vessel else ''),
-        str(trip.status),
-        str(trip.dump_truck_trips),
-        str(trip.vessel_grab),
-        str(print_localzone(trip.interval_from) or '')
-    ] for trip in Trip.objects.all().order_by('lct__name', 'interval_from'))
-    return export_csv(rows, 'shipment_trip')
-
 def export_vessel(request):
     """
     CSV view of Vessel intended for importation to database.

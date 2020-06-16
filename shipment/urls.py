@@ -18,7 +18,6 @@ urlpatterns = [
           views.export_lctcontract,
           name='export-lctcontract'),
      path('export/shipment', views.export_shipment, name='export-shipment'),
-     path('export/trip', views.export_trip, name='export-trip'),
      path('export/vessel', views.export_vessel, name='export-vessel'),
      path('statement/<slug:name>',
           views.lay_days_statement_pdf,

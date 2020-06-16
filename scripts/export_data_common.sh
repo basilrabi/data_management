@@ -50,7 +50,7 @@ curl $address/shipment/export/laydaysstatement -o $datadir/shipment_laydaysstate
 echo "Exporting shipment_shipment..." && \
 curl $address/shipment/export/shipment -o $datadir/shipment_shipment.csv && \
 echo "Exporting shipment_trip..." && \
-curl $address/shipment/export/trip -o $datadir/shipment_trip.csv && \
+download_sql shipment_trip && \
 echo "Exporting shipment_tripdetail..." && \
 download_sql shipment_tripdetail && \
 echo "Exporting shipment_vessel..." && \
