@@ -31,6 +31,7 @@ class ClusterAdmin(TMCLocationAdmin):
     modifiable = False
     exclude = ('count',)
     list_display = ('name',
+                    'blocks',
                     'mine_block',
                     'z',
                     'ni',

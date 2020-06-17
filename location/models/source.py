@@ -80,6 +80,9 @@ class Cluster(models.Model):
         indexes = [models.Index(fields=['z'])]
         ordering = ['ore_class', 'count']
 
+    def blocks(self):
+        return self.block_set.count()
+
     def feature_as_str(self):
         """
         String file representation of the feature.
