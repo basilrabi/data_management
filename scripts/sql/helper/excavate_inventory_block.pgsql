@@ -17,16 +17,14 @@ BEGIN
         '                   topo.geom'
         '               )'
         '           ) - (block.z - 1.5) depth'
-        '       FROM inventory_block block'
-        '           LEFT JOIN %I.%I topo'
-        '               ON ST_Intersects(block.geom, topo.geom)'
+        '       FROM inventory_block block, %I.%I topo'
+        '       WHERE ST_Intersects(block.geom, topo.geom)'
         '   )'
         '   UPDATE inventory_block'
         '   SET depth = a.depth'
         '   FROM a'
         '   WHERE inventory_block.id = a.id'
-        '       AND (a.depth < inventory_block.depth'
-        '           OR inventory_block.depth IS NULL)',
+        '       AND a.depth < inventory_block.depth',
         topo_schema,
         topo_table
     );

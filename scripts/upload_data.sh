@@ -89,4 +89,4 @@ psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user geology with 
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol with encrypted password '$DATA_MANAGEMENT_GRADECONTROL'" 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'" 2>&1 | tee -a log_upload_data && \
 sql_script "permission" "all"
-sql_script "helper" "excavate_block"
+sql_script "helper" "excavate_inventory_block"
