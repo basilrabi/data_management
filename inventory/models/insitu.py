@@ -34,6 +34,7 @@ class Block(models.Model):
         value means that the centroid is still below the surface.
         '''
     )
+    planned_excavation_date = models.DateField(null=True, blank=True)
     geom = models.PointField(srid=3125)
 
     class Meta:
