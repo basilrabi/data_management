@@ -90,3 +90,5 @@ psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user gradecontrol 
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "create user survey with encrypted password '$DATA_MANAGEMENT_SURVEY'" 2>&1 | tee -a log_upload_data && \
 sql_script "permission" "all"
 sql_script "helper" "excavate_inventory_block"
+sql_script "helper" "excavate_sampling_drillcoresample"
+sql_script "helper" "update_location_drillhole_z_present"
