@@ -6,6 +6,7 @@ CREATE TEMPORARY TABLE temp_inventory_block
     fe double precision,
     co double precision,
     depth double precision,
+    planned_excavation_date date,
     x double precision,
     y double precision
 );
@@ -19,6 +20,7 @@ INSERT INTO inventory_block (
     fe,
     co,
     depth,
+    planned_excavation_date,
     geom
 )
 SELECT
@@ -28,5 +30,6 @@ SELECT
     fe,
     co,
     depth,
+    planned_excavation_date,
     ST_SetSRID(ST_MakePoint(x, y), 3125)
 FROM temp_inventory_block;
