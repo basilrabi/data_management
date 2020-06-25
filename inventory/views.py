@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from custom.functions import export_csv
+from custom.functions import export_csv, export_sql
 from inventory.models.insitu import Block
 
 # pylint: disable=no-member
@@ -62,3 +62,9 @@ def export_clustered_block2(request):
     ))
 
     return export_csv(rows, 'clustered_block')
+
+def scheduled_block(request):
+    """
+    CSV view for number of scheduled blocks in MineSched.
+    """
+    return export_sql('view_plan_vs_cluster', 'plan_vs_cluster')
