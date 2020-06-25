@@ -234,16 +234,6 @@ class ClusterTest(TestCase):
         block.cluster = cluster
         self.assertRaises(InternalError, block.save)
 
-    def test_layout_date_lock_if_earlier_than_scheduled(self):
-        cluster = Cluster.objects.get(name='c1')
-        block = Block.objects.get(name='b1')
-        block.cluster = cluster
-        block.save()
-        cluster.date_scheduled = '2020-05-30'
-        cluster.save()
-        cluster.layout_date = '2020-05-29'
-        self.assertRaises(IntegrityError, cluster.save)
-
     def test_layout_date_lock_if_no_schedule(self):
         cluster = Cluster.objects.get(name='c1')
         block = Block.objects.get(name='b1')

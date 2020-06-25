@@ -68,10 +68,6 @@ class Cluster(models.Model):
                 check=models.Q(distance_from_road__gte=0),
                 name='non_negative_distance'
             ),
-            models.CheckConstraint(
-                check=models.Q(layout_date__gte=models.F('date_scheduled')),
-                name='layout_later_than_schedule'
-            ),
             models.UniqueConstraint(
                 fields=['count', 'ore_class', 'mine_block'],
                 name='unique_cluster_name'
