@@ -73,7 +73,10 @@ class Cluster(models.Model):
                 name='unique_cluster_name'
             )
         ]
-        indexes = [models.Index(fields=['z'])]
+        indexes = [
+            models.Index(fields=['z']),
+            models.Index(fields=['mine_block', 'z'])
+        ]
         ordering = ['ore_class', 'count']
 
     def blocks(self):
