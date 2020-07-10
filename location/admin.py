@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin.views.main import ChangeList
 from django.db import models
 from django.forms import Textarea
 from import_export.admin import ExportMixin
@@ -39,8 +40,16 @@ class DrillCoreInline(admin.TabularInline):
     }
     readonly_fields = ['ni', 'fe', 'co']
 
+class ClusterChangeList(ChangeList):
+    def get_results(self, request):
+        super().get_results(request)
+        self.blocks = self.result_list \
+            .annotate(blocks=models.Count('block')) \
+            .aggregate(models.Sum('blocks'))['blocks__sum']
+
 @admin.register(Cluster)
 class ClusterAdmin(ExportMixin, admin.ModelAdmin):
+    change_list_template = 'location/cluster_list.html'
     date_hierarchy = 'date_scheduled'
     exclude = ('count', 'geom')
     list_display = ('name',
@@ -73,6 +82,9 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
                        'layout_date']
     resource_class = ClusterResource
     search_fields = ['name', 'mine_block', 'z', 'ore_class']
+
+    def get_changelist(self, request):
+        return ClusterChangeList
 
 @admin.register(DrillHole)
 class DrillHoleAdmin(TMCLocationAdmin):
