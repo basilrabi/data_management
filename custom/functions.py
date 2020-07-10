@@ -5,6 +5,7 @@ import tempfile
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
+from django.db import connection
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
 from subprocess import PIPE, run
@@ -98,6 +99,25 @@ def round_up_day(timestamp):
     timestamp += one_day
     timestamp = str(print_localzone(timestamp))
     return pdt(f'{timestamp[0:10]} 00:00:00+{timestamp[-5:]}')
+
+def run_sql(pgsql):
+    with open(f'scripts/sql/{pgsql}.pgsql', 'r') as file:
+        query = file.read()
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+
+def setup_triggers():
+    pgsql = [
+        'dump/location_mineblock',
+        'function/get_ore_class',
+        'function/insert_dummy_cluster',
+        'lock/location_cluster',
+        'trigger/inventory_block_excavated',
+        'trigger/location_cluster_update',
+        'trigger/location_drillhole_update'
+    ]
+    for query in pgsql:
+        run_sql(query)
 
 def this_year():
     return datetime.datetime.today().year

@@ -1,9 +1,9 @@
-from django.db import connection
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError, InternalError
 from django.test import TestCase
 
+from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.landuse import RoadArea
 from location.models.source import Cluster, DrillHole, MineBlock, Stockyard
@@ -13,26 +13,7 @@ from location.models.source import Cluster, DrillHole, MineBlock, Stockyard
 class ClusterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        with open('scripts/sql/function/get_ore_class.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-        with open('scripts/sql/function/insert_dummy_cluster.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-        with open('scripts/sql/lock/location_cluster.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-        with open('scripts/sql/trigger/location_cluster_update.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-        with open('scripts/sql/dump/location_mineblock.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
+        setup_triggers()
 
     def setUp(self):
         block = Block(name='b1', z=99, ni=1, fe=40, co=0.1,
@@ -326,10 +307,7 @@ class ClusterTest(TestCase):
 class DrillHoleTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        with open('scripts/sql/trigger/location_drillhole_update.pgsql', 'r') as file:
-            query = file.read()
-            with connection.cursor() as cursor:
-                cursor.execute(query)
+        setup_triggers()
 
     def setUp(self):
         drillhole = DrillHole(name='MyHole')
