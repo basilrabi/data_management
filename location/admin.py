@@ -41,15 +41,14 @@ class DrillCoreInline(admin.TabularInline):
     readonly_fields = ['ni', 'fe', 'co']
 
 class ClusterChangeList(ChangeList):
-    def get_results(self, request):
-        super().get_results(request)
-        self.blocks = self.result_list \
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.blocks = self.queryset \
             .annotate(blocks=models.Count('block')) \
             .aggregate(models.Sum('blocks'))['blocks__sum']
 
 @admin.register(Cluster)
 class ClusterAdmin(ExportMixin, admin.ModelAdmin):
-    change_list_template = 'location/cluster_list.html'
     date_hierarchy = 'date_scheduled'
     exclude = ('count', 'geom')
     list_display = ('name',
