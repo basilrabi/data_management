@@ -12,13 +12,13 @@ from .models.landuse import RoadArea
 from .models.source import Cluster, DrillHole, MineBlock, Stockyard
 
 class ClusterResource(ModelResource):
-    cluster_count = Field()
+    block_count = Field()
 
     class Meta:
         model = Cluster
         exclude = ('count', 'distance_from_road', 'id', 'geom', 'road')
 
-    def dehydrate_cluster_count(self, cluster):
+    def dehydrate_block_count(self, cluster):
         return cluster.block_set.count()
 
 class DrillCoreInline(admin.TabularInline):
@@ -84,6 +84,14 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
 
     def get_changelist(self, request):
         return ClusterChangeList
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(blocks=models.Count('block'))
+        return qs
+
+    def blocks(self, obj):
+        return obj.blocks
 
 @admin.register(DrillHole)
 class DrillHoleAdmin(TMCLocationAdmin):
