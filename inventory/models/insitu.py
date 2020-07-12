@@ -35,13 +35,13 @@ class Block(models.Model):
         '''
     )
     planned_excavation_date = models.DateField(null=True, blank=True)
-    excavated = models.BooleanField(null=True, blank=True)
+    exposed = models.BooleanField(null=True, blank=True)
     geom = models.PointField(srid=3125)
 
     class Meta:
         indexes = [
             models.Index(fields=['z']),
-            models.Index(fields=['excavated', 'z', 'planned_excavation_date'])
+            models.Index(fields=['exposed', 'z', 'planned_excavation_date'])
         ]
 
     def __str__(self):

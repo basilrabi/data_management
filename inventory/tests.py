@@ -12,38 +12,38 @@ class BlockTest(TestCase):
     def setUp(self):
         pass
 
-    def test_excavated_is_set(self):
+    def test_exposed_is_set(self):
         block = Block(name='b1', z=99, ni=1, fe=40, co=0.1,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
         block.refresh_from_db()
-        self.assertEqual(None, block.excavated)
+        self.assertEqual(None, block.exposed)
 
         block = Block(name='b2', z=99, ni=1, fe=40, co=0.1, depth = 1,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
         block.refresh_from_db()
-        self.assertEqual(False, block.excavated)
+        self.assertEqual(True, block.exposed)
 
         block = Block(name='b2', z=99, ni=1, fe=40, co=0.1, depth = 0,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
         block.refresh_from_db()
-        self.assertEqual(True, block.excavated)
+        self.assertEqual(False, block.exposed)
 
-    def test_excavated_is_updated(self):
+    def test_exposed_is_updated(self):
         block = Block(name='b1', z=99, ni=1, fe=40, co=0.1,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
         block.refresh_from_db()
-        self.assertEqual(None, block.excavated)
+        self.assertEqual(None, block.exposed)
 
         block.depth = 1
         block.save()
         block.refresh_from_db()
-        self.assertEqual(False, block.excavated)
+        self.assertEqual(True, block.exposed)
 
         block.depth = 0
         block.save()
         block.refresh_from_db()
-        self.assertEqual(True, block.excavated)
+        self.assertEqual(False, block.exposed)
