@@ -7,6 +7,7 @@ from import_export.fields import Field
 from import_export.resources import ModelResource
 
 from custom.admin_gis import TMCLocationAdmin
+from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
 from .models.landuse import RoadArea
 from .models.source import Cluster, DrillHole, MineBlock, Stockyard
@@ -66,7 +67,7 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
                    'ore_class',
                    'date_scheduled',
                    'layout_date',
-                   'mine_block']
+                   MineBlockListFilter]
     readonly_fields = ['name',
                        'distance_from_road',
                        'road',

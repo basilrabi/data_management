@@ -11,6 +11,7 @@ from django.utils.dateparse import parse_datetime as pdt
 from subprocess import PIPE, run
 from tzlocal import get_localzone
 
+from location.models.source import Cluster
 from .variables import (one_day,
                         one_hour,
                         one_minute,
@@ -57,6 +58,15 @@ def export_sql(sql, csvfile, header=True):
             filename = os.path.join(tempdir, f'{csvfile}.csv')
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
+
+def mine_blocks_with_clusters():
+    # pylint: disable=no-member
+    clustered_mine_blocks = set(
+        Cluster.objects.values_list('mine_block', flat=True).distinct()
+    )
+    mine_blocks = list(filter(None, clustered_mine_blocks))
+    mine_blocks.sort()
+    return mine_blocks
 
 def ordinal_suffix(x):
     x = int(x)
