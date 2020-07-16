@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 
 from custom.fields import MineBlockField, NameField, PileField
+from custom.variables import ACI
 from .landuse import RoadArea
 
 # pylint: disable=no-member
@@ -92,6 +93,9 @@ class Cluster(models.Model):
                         feature_str += f'{self.id}, {coords[1]}, {coords[0]}, {self.z-3}, {self.name}, {self.ore_class}, {self.mine_block}, {self.ni}, {self.fe}, {self.co}, {self.date_scheduled or ""}, {self.layout_date or ""}, {(self.geom.area * 3 * 1.5) or 0}\n'
                     feature_str += '0, 0, 0, 0,\n'
             return feature_str
+
+    def getACI(self):
+        return ACI[self.ore_class]
 
     def __str__(self):
         return self.name

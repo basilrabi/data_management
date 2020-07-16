@@ -1,7 +1,7 @@
+import ezdxf
 import os
 import tempfile
 
-from django.conf import settings
 from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
@@ -30,18 +30,24 @@ def export_cluster_dxf_for_survey(request):
             run(f'cd "{tempdir}" && mkdir dxf', shell=True, stdout=PIPE, stderr=PIPE)
             for item in scheduled_dates:
                 date = f"{item['date_scheduled']}"
-                context = {'the_date': date}
-                template = get_template('location/cluster_dxf.pgsql')
-                query = template.render(context).replace('\n', ' ')
-                command = f'cd "{tempdir}" && cd dxf && ' + \
-                    f'ogr2ogr -f "DXF" {date}.dxf PG:"' + \
-                    f'host={settings.DB_HOST} ' + \
-                    f'dbname={settings.DB_NAME} ' + \
-                    f'user={settings.DB_USER} ' + \
-                    f'password={settings.DB_PSWD}" ' + \
-                    '-zfield Elevation ' + \
-                    f'-sql "{query}"'
-                run(command, shell=True, stdout=PIPE, stderr=PIPE)
+                clusters = Cluster.objects.filter(date_scheduled=date)
+                doc = ezdxf.new('R2013')
+                for cluster in clusters:
+                    msp = doc.modelspace()
+                    doc.layers.new(name=f'{cluster.name}')
+                    geom = cluster.geom.tuple
+                    for multi_polygon in geom:
+                        for polygon in multi_polygon:
+                            msp.add_lwpolyline(
+                                list(polygon),
+                                dxfattribs={
+                                    'layer': f'{cluster.name}',
+                                    'linetype': 'CONTINUOUS',
+                                    'color': cluster.getACI(),
+                                    'elevation': cluster.z - 3
+                                }
+                            )
+                doc.saveas(os.path.join(tempdir, 'dxf', f'{date}.dxf'))
             command = f'cd "{tempdir}" && zip clusters.zip dxf/*'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             filename = os.path.join(tempdir, 'clusters.zip')
