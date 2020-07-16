@@ -20,6 +20,7 @@ INSERT INTO inventory_block (
     fe,
     co,
     depth,
+    exposed,
     planned_excavation_date,
     geom
 )
@@ -30,6 +31,7 @@ SELECT
     fe,
     co,
     depth,
+    depth > 0 and depth <= 3,
     planned_excavation_date,
     ST_SetSRID(ST_MakePoint(x, y), 3125)
 FROM temp_inventory_block;
