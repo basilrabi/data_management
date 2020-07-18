@@ -19,5 +19,5 @@ allow httpd_t unlabeled_t:dir read;
 allow httpd_t unlabeled_t:file { getattr open read };
 allow httpd_t unlabeled_t:lnk_file read;
 allow httpd_t user_home_t:dir { add_name create remove_name write };
-allow httpd_t user_home_t:file { create read unlink write };
+allow httpd_t user_home_t:file { create read open unlink write };
 allow httpd_t user_home_t:sock_file write;
