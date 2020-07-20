@@ -75,6 +75,16 @@
                 <td>{{ gradecontrol }}</td>
             </tr>
             {% endif %}
+            {% if request.user|has_group:"planning" %}
+            <tr>
+                <td>User Name</td>
+                <td>planning</td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td>{{ planning }}</td>
+            </tr>
+            {% endif %}
             {% if request.user|has_group:"survey" %}
             <tr>
                 <td>User Name</td>
