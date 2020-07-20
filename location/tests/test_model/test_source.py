@@ -6,7 +6,7 @@ from django.test import TestCase
 from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.landuse import RoadArea
-from location.models.source import Cluster, DrillHole, MineBlock, Stockyard
+from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
 
 # pylint: disable=no-member
 
@@ -359,13 +359,13 @@ class MineBlockTest(TestCase):
         mb = MineBlock(ridge='T2', name='1 A')
         self.assertEqual(None, mb.save())
 
-class StockyardTest(TestCase):
+class StockpileTest(TestCase):
 
     def setUp(self):
         pass
 
     def test_name_is_unique_per_ridge_part(self):
-        yard = Stockyard(name='LDA 1')
+        yard = Stockpile(name='LDA 1')
         yard.save()
-        yard = Stockyard(name='LDA-1')
+        yard = Stockpile(name='LDA-1')
         self.assertRaises(IntegrityError, yard.save)

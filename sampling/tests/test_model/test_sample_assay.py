@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.dateparse import parse_date as pd
 
 from fleet.models.equipment import TrackedExcavator
-from location.models.source import MineBlock, Stockyard
+from location.models.source import MineBlock, Stockpile
 from personnel.models.person import Designation, EmploymentRecord, Person
 from sampling.models.piling import PilingMethod, TripsPerPile
 from sampling.models.proxy import MiningSampleAssay
@@ -48,7 +48,7 @@ class MiningSampleAssayTest(TestCase):
         e3.save()
         mb1 = MineBlock(name='101', ridge='T3')
         mb1.save()
-        my1 = Stockyard(name='MY201')
+        my1 = Stockpile(name='MY201')
         my1.save()
         tx = TrackedExcavator(fleet_number=1)
         tx.save()

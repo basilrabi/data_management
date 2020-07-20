@@ -4,7 +4,7 @@ from django.db import models
 from custom.fields import NameField, SpaceLess
 from custom.functions import this_year
 from fleet.models.equipment import TrackedExcavator
-from location.models.source import Cluster, DrillHole, MineBlock, Stockyard
+from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
 from personnel.models.person import Person
 
 from .piling import PilingMethod
@@ -138,7 +138,7 @@ class MiningSample(AssaySample):
     series_number = models.PositiveSmallIntegerField()
     material = models.CharField(max_length=1, null=True, blank=True)
     ridge = models.CharField(max_length=2, null=True, blank=True)
-    dumping_area = models.ForeignKey(Stockyard, on_delete=models.CASCADE)
+    dumping_area = models.ForeignKey(Stockpile, on_delete=models.CASCADE)
     piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
     start_collection = models.DateField(null=True, blank=True)
     month = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -252,7 +252,7 @@ class MiningSampleReport(models.Model):
     source = models.ForeignKey(
         Cluster, on_delete=models.SET_NULL, null=True, blank=True
     )
-    dumping_area = models.ForeignKey(Stockyard, on_delete=models.CASCADE)
+    dumping_area = models.ForeignKey(Stockpile, on_delete=models.CASCADE)
     sampler = models.ManyToManyField(Person,
                                      related_name='samplereport',
                                      blank=True)

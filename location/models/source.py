@@ -178,7 +178,11 @@ class Slice(models.Model):
         indexes = [models.Index(fields=['z'])]
 
 
-class Stockyard(models.Model):
+class Stockpile(models.Model):
+    """
+    A pile of material with the measured chemical characteristics assumed to be
+    uniform throughout the pile.
+    """
     name = PileField(max_length=20, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
