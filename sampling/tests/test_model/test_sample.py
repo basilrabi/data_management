@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils.dateparse import parse_date as pd
 
 from fleet.models.equipment import TrackedExcavator
-from location.models.source import MineBlock, Stockyard
+from location.models.source import MineBlock, Stockpile
 from personnel.models.person import Designation, EmploymentRecord, Person
 from sampling.models.piling import PilingMethod, TripsPerPile
 from sampling.models.sample import (MiningSample,
@@ -76,8 +76,8 @@ class MiningSampleReportTest(TestCase):
         mb2 = MineBlock(name='201', ridge='T1')
         mb1.save()
         mb2.save()
-        my1 = Stockyard(name='MY201')
-        my2 = Stockyard(name='MY301')
+        my1 = Stockpile(name='MY201')
+        my2 = Stockpile(name='MY301')
         my1.save()
         my2.save()
         tx = TrackedExcavator(fleet_number=1)
@@ -91,7 +91,7 @@ class MiningSampleReportTest(TestCase):
         p5 = Person.objects.get(first_name='E')
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
-        my1 = Stockyard.objects.get(name='MY201')
+        my1 = Stockpile.objects.get(name='MY201')
         tx = TrackedExcavator.objects.get(fleet_number=1)
 
         r1 = MiningSampleReport(date=pd('2019-09-05'),
@@ -152,8 +152,8 @@ class MiningSampleReportTest(TestCase):
     def mining_sample_increments_matches_the_samples(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
         m2 = PilingMethod.objects.get(name='DIRECT DUMP')
-        my1 = Stockyard.objects.get(name='MY201')
-        my2 = Stockyard.objects.get(name='MY301')
+        my1 = Stockpile.objects.get(name='MY201')
+        my2 = Stockpile.objects.get(name='MY301')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
         p5 = Person.objects.get(first_name='E')
@@ -236,7 +236,7 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_reports_are_being_added_correctly(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        my1 = Stockyard.objects.get(name='MY201')
+        my1 = Stockpile.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
         p5 = Person.objects.get(first_name='E')
@@ -298,7 +298,7 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_is_not_duplicated_in_report(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        my1 = Stockyard.objects.get(name='MY201')
+        my1 = Stockpile.objects.get(name='MY201')
         p1 = Person.objects.get(first_name='A')
         p2 = Person.objects.get(first_name='B')
         p5 = Person.objects.get(first_name='E')
@@ -326,7 +326,7 @@ class MiningSampleReportTest(TestCase):
 
     def test_sample_is_not_ready_without_increments(self):
         m1 = PilingMethod.objects.get(name='PRE PILE')
-        my1 = Stockyard.objects.get(name='MY201')
+        my1 = Stockpile.objects.get(name='MY201')
         s1 = MiningSample(series_number=1,
                           dumping_area=my1,
                           piling_method=m1,

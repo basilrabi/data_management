@@ -15,6 +15,7 @@ RIDGES = (
     ('KB', 'Kinalablaban')
 )
 
+
 class Cluster(models.Model):
     """
     A group of adjacent `inventory.Blocks` with the same elevation at the same
@@ -95,6 +96,7 @@ class Cluster(models.Model):
     def __str__(self):
         return self.name
 
+
 class DrillHole(models.Model):
     """
     Drill hole collar technical descriptions.
@@ -142,6 +144,7 @@ class DrillHole(models.Model):
     def __str__(self):
         return self.name
 
+
 class MineBlock(models.Model):
     name = MineBlockField(max_length=20, unique=True)
     ridge = models.CharField(max_length=2, choices=RIDGES)
@@ -153,7 +156,33 @@ class MineBlock(models.Model):
     def __str__(self):
         return f'{self.ridge} MB {self.name}'
 
-class Stockyard(models.Model):
+
+class Slice(models.Model):
+    """
+    A line string representing an element of a mine plan.
+    """
+    z = models.IntegerField(help_text="Target elevation of the slice.")
+    layer = models.IntegerField(help_text="""String id.
+        2: Crest Line (closed line string)
+        7: Road
+        8: Toe Line""")
+    geom = models.LineStringField(srid=3125, dim=3)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(layer__in=[2, 7, 8]),
+                name='valid_layer'
+            ),
+        ]
+        indexes = [models.Index(fields=['z'])]
+
+
+class Stockpile(models.Model):
+    """
+    A pile of material with the measured chemical characteristics assumed to be
+    uniform throughout the pile.
+    """
     name = PileField(max_length=20, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 

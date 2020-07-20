@@ -10,7 +10,7 @@ from custom.admin_gis import TMCLocationAdmin
 from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
 from .models.landuse import RoadArea
-from .models.source import Cluster, DrillHole, MineBlock, Stockyard
+from .models.source import Cluster, DrillHole, MineBlock, Stockpile
 
 class ClusterResource(ModelResource):
     block_count = Field()
@@ -110,6 +110,6 @@ class MineBlockAdmin(TMCLocationAdmin):
 class RoadAreaAdmin(TMCLocationAdmin):
     modifiable = False
 
-@admin.register(Stockyard)
-class StockyardAdmin(TMCLocationAdmin):
+@admin.register(Stockpile)
+class StockpileAdmin(TMCLocationAdmin):
     pass

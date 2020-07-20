@@ -13,6 +13,7 @@ def export(request):
         'db_name': settings.DB_NAME,
         'geology': os.environ['DATA_MANAGEMENT_GEOLOGY'],
         'gradecontrol': os.environ['DATA_MANAGEMENT_GRADECONTROL'],
+        'planning': os.environ['DATA_MANAGEMENT_PLANNING'],
         'survey': os.environ['DATA_MANAGEMENT_SURVEY']
     }
     return render(request, 'custom/export.html', context=context)

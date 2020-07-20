@@ -118,6 +118,7 @@ def run_sql(pgsql):
 
 def setup_triggers():
     pgsql = [
+        'constraint/location_slice',
         'dump/location_mineblock',
         'function/get_ore_class',
         'function/insert_dummy_cluster',

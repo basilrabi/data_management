@@ -21,6 +21,7 @@ fi
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists $db_name"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists geology"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists gradecontrol"
+psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists planning"
 psql -h $db_host -p $db_port -U tmcgis -w postgres -c "drop role if exists survey"
 
 # The database data_management_template must exist in $db_host. This database
@@ -33,4 +34,5 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_nam
 ./manage.py migrate
 ./manage.py createsuperuser --noinput
 
-psql -h $db_host -p $db_port -U tmcgis -w $db_name -c "create schema staging"
+psql -h $db_host -p $db_port -U $db_user -w $db_name -c "create schema staging"
+psql -h $db_host -p $db_port -U $db_user -w $db_name -a -f scripts/sql/constraint/location_slice.pgsql
