@@ -37,3 +37,4 @@ GRANT gradecontrol TO planning;
 GRANT survey TO planning;
 GRANT INSERT ON TABLE location_slice TO planning;
 GRANT UPDATE (layer, z) ON TABLE location_slice TO planning;
+GRANT USAGE, SELECT ON SEQUENCE location_slice_id_seq TO planning;
