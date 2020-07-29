@@ -7,16 +7,26 @@ from django.utils.timezone import now
 from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
-from custom.functions import (ordinal_suffix,
-                              print_tz_manila,
-                              round_second,
-                              round_up_day,
-                              to_dhms,
-                              to_hm,
-                              to_hms)
+from custom.functions import (
+    ordinal_suffix, print_tz_manila, round_second, round_up_day,
+    to_dhms, to_hm, to_hms
+)
+from custom.models import Classification
 from custom.variables import one_day, zero_time
 
 # pylint: disable=no-member
+
+
+class Buyer(Classification):
+    pass
+
+
+class Destination(Classification):
+    """
+    Discharging port.
+    """
+    pass
+
 
 class LayDaysDetail(models.Model):
     """
@@ -61,7 +71,12 @@ class LayDaysDetail(models.Model):
 
     class Meta:
         ordering = ['interval_from']
-        constraints = [models.UniqueConstraint(fields=['laydays', 'interval_from'], name='unique_vessel_trip_timestamp')]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['laydays', 'interval_from'],
+                name='unique_vessel_trip_timestamp'
+            )
+        ]
 
     def clean(self):
         if self.laydays.laydaysdetail_set \
@@ -73,6 +88,7 @@ class LayDaysDetail(models.Model):
                 .filter(interval_class='end') \
                 .exclude(id=self.id).count() > 0:
             raise ValidationError('Only one end is allowed.')
+
 
 class LayDaysDetailComputed(models.Model):
 
@@ -138,6 +154,7 @@ class LayDaysDetailComputed(models.Model):
     class Meta:
         ordering = ['interval_from']
 
+
 class LayDaysStatement(models.Model):
     """
     A vessel's laydays statement for a shipment loading.
@@ -200,7 +217,8 @@ class LayDaysStatement(models.Model):
         max_digits=2,
         decimal_places=1,
         choices=CAN_TEST_FACTOR_CHOICES,
-        help_text='The number of can tests times this factor times 5 minutes will be deducted to laytime consumed.'
+        help_text="""The number of can tests times this factor times 5 minutes
+            will be deducted to laytime consumed."""
     )
     time_allowed = models.DurationField(default=zero_time)
     additional_laytime = models.DurationField(default=zero_time)
@@ -275,12 +293,6 @@ class LayDaysStatement(models.Model):
 
                         # Record end of loading operation
                         self.completed_loading = loading_details.last().next().interval_from
-
-                        # Update shipment data with the update of laytime statement
-                        if self.shipment.end_loading != self.completed_loading or self.shipment.start_loading != self.commenced_loading:
-                            self.shipment.start_loading = self.commenced_loading
-                            self.shipment.end_loading = self.completed_loading
-                            self.shipment.save()
 
                         _time_remaining = self.time_limit() + self.additional_laytime
                         self.time_allowed = _time_remaining
@@ -464,19 +476,20 @@ class LayDaysStatement(models.Model):
                                       'be later than its tender.')
 
     def save(self, compute=False, *args, **kwargs):
-        if self.tonnage:
-            if self.tonnage != self.shipment.tonnage:
-                self.shipment.tonnage = self.tonnage
-                self.shipment.save()
         if not compute:
             self.date_saved = now()
         super().save(*args, **kwargs)
+        self.shipment.save()
 
     class Meta:
-        ordering = ['-completed_loading']
+        ordering = [
+            models.F('completed_loading').desc(nulls_last=False),
+            models.F('arrival_tmc').desc(nulls_last=False)
+        ]
 
     def __str__(self):
         return self.shipment.name
+
 
 class Shipment(models.Model):
     """
@@ -484,27 +497,62 @@ class Shipment(models.Model):
     """
     name = NameField(max_length=10, unique=True)
     vessel = models.ForeignKey('Vessel', on_delete=models.CASCADE)
-    start_loading = models.DateTimeField()
-    end_loading = models.DateTimeField(null=True, blank=True)
+    destination = models.ForeignKey(
+        Destination, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    buyer = models.ForeignKey(
+        Buyer, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    spec_tonnage = models.PositiveIntegerField(
+        help_text='Tonnage in sales contract.',
+        null=True, blank=True
+    )
+    spec_moisture = models.DecimalField(
+        '%H₂O Spec', max_digits=4, decimal_places=2, null=True, blank=True
+    )
+    spec_ni = models.DecimalField(
+        '%Ni Spec', max_digits=4, decimal_places=2, null=True, blank=True
+    )
+    spec_fe = models.DecimalField(
+        '%Fe Spec', max_digits=4, decimal_places=2, null=True, blank=True
+    )
+    target_tonnage = models.PositiveIntegerField(
+        help_text='Determined during initial draft survey.',
+        null=True, blank=True
+    )
     dump_truck_trips = models.PositiveSmallIntegerField(default=0)
-    tonnage = models.PositiveIntegerField(default=0)
-
-    def clean(self):
-        if self.end_loading:
-            if self.end_loading < self.start_loading:
-                raise ValidationError(
-                    'End of loading should not be earlier than start of loading'
-                )
-
-        if self.vessel.shipment_set.filter(
-            models.Q(
-                start_loading__lte=self.end_loading or
-                    self.start_loading + datetime.timedelta(30)
-            ),
-            models.Q(end_loading__gte=self.start_loading) |
-            models.Q(end_loading__isnull=True)
-        ).exclude(id=self.id).count() > 0:
-            raise ValidationError('Vessel trip should not overlap.')
+    final_ni = models.DecimalField(
+        '%Ni', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    final_fe = models.DecimalField(
+        '%Fe', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    final_moisture = models.DecimalField(
+        '%H₂O', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    base_price = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
+    final_price = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
+    boulders_tonnage = models.PositiveIntegerField(null=True, blank=True)
+    boulders_processing_cost = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
+    boulders_freight_cost = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
+    boulders_freight_cost = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
+    demurrage = models.DecimalField(
+        null=True, blank=True, max_digits=8, decimal_places=2
+    )
+    despatch = models.DecimalField(
+        null=True, blank=True, max_digits=8, decimal_places=2
+    )
+    remarks = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -513,10 +561,14 @@ class Shipment(models.Model):
 
     class Meta:
         indexes = [models.Index(fields=['name'])]
-        ordering = ['-start_loading', 'name']
+        ordering = [
+            models.F('laydaysstatement__completed_loading').desc(nulls_last=False),
+            models.F('laydaysstatement__arrival_tmc').desc(nulls_last=False)
+        ]
 
     def __str__(self):
         return self.name
+
 
 class Vessel(models.Model):
     """

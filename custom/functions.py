@@ -5,7 +5,7 @@ import tempfile
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.db import connection
+from django.db import connection, models
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
 from subprocess import PIPE, run
@@ -19,6 +19,7 @@ from .variables import (one_day,
                         tz_manila,
                         zero_time)
 
+
 class Echo:
     """
     An object that implements just the write method of the file-like interface.
@@ -30,6 +31,12 @@ class Echo:
         Write the value by returning it, instead of storing in a buffer.
         """
         return value
+
+
+class Round(models.Func):
+    function = 'ROUND'
+    arity = 2
+
 
 def export_csv(rows, filename):
     buffer = Echo()
@@ -58,6 +65,46 @@ def export_sql(sql, csvfile, header=True):
             filename = os.path.join(tempdir, f'{csvfile}.csv')
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
+
+def get_assay_constraints(data):
+    return [
+        models.CheckConstraint(check=models.Q(al__lte=100), name=f'al_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(al2o3__lte=100), name=f'al2o3_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(c__lte=100), name=f'c_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(cao__lte=100), name=f'cao_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(co__lte=100), name=f'co_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(cr__lte=100), name=f'cr_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(fe__lte=100), name=f'fe_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(mg__lte=100), name=f'mg_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(mgo__lte=100), name=f'mgo_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(mn__lte=100), name=f'mn_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(ni__lte=100), name=f'ni_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(p__lte=100), name=f'p_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(s__lte=100), name=f's_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(sc__lte=100), name=f'sc_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(si__lte=100), name=f'si_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(sio2__lte=100), name=f'sio2_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(ignition_loss__lte=100), name=f'ignition_loss_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(moisture__lte=100), name=f'moisture_max_100_{data}'),
+        models.CheckConstraint(check=models.Q(al__gte=0), name=f'al_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(al2o3__gte=0), name=f'al2o3_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(c__gte=0), name=f'c_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(cao__gte=0), name=f'cao_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(co__gte=0), name=f'co_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(cr__gte=0), name=f'cr_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(fe__gte=0), name=f'fe_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(mg__gte=0), name=f'mg_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(mgo__gte=0), name=f'mgo_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(mn__gte=0), name=f'mn_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(ni__gte=0), name=f'ni_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(p__gte=0), name=f'p_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(s__gte=0), name=f's_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(sc__gte=0), name=f'sc_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(si__gte=0), name=f'si_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(sio2__gte=0), name=f'sio2_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(ignition_loss__gte=0), name=f'ignition_loss_min_0_{data}'),
+        models.CheckConstraint(check=models.Q(moisture__gte=0), name=f'moisture_min_0_{data}')
+    ]
 
 def mine_blocks_with_clusters():
     # pylint: disable=no-member

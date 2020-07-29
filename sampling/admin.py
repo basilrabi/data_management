@@ -1,16 +1,29 @@
 from django.contrib import admin
+from django.db.models import F
 
 from custom.admin_gis import TMCLocationAdmin
 from personnel.models.person import Person
 
 from .models.piling import PilingMethod, TripsPerPile
-from .models.proxy import (AcquiredMiningSample, MiningSampleAssay)
-from .models.sample import (MiningSample,
-                            MiningSampleIncrement,
-                            MiningSampleReport,
-                            Lithology)
+from .models.proxy import (
+    AcquiredMiningSample,
+    ChinaShipmentAssay,
+    MiningSampleAssay,
+    PamcoShipmentAssay
+)
+from .models.sample import (
+    MiningSample,
+    MiningSampleIncrement,
+    MiningSampleReport,
+    Laboratory,
+    Lithology,
+    ShipmentDischargeLotAssay,
+    ShipmentLoadingAssay,
+    ShipmentLoadingLotAssay
+)
 
 # pylint: disable=no-member
+
 
 class MiningSampleIncrementInline(admin.TabularInline):
     model = MiningSampleIncrement
@@ -35,9 +48,25 @@ class MiningSampleIncrementInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class ShipmentDischargeLotAssayInline(admin.TabularInline):
+    model = ShipmentDischargeLotAssay
+    extra = 0
+    fields = ('lot', 'wmt', 'moisture', 'ni')
+
+
+class ShipmentLoadingLotAssayInline(ShipmentDischargeLotAssayInline):
+    model = ShipmentLoadingLotAssay
+
+
 class TripsPerPileInline(admin.TabularInline):
     model = TripsPerPile
     extra = 0
+
+
+@admin.register(Laboratory)
+class LaboratoryAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
 
 @admin.register(AcquiredMiningSample)
 class AcquiredMiningSampleAdmin(admin.ModelAdmin):
@@ -51,9 +80,23 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
                'trips',
                'ready_for_delivery')
 
+
+@admin.register(ChinaShipmentAssay)
+class ChinaShipmentAssayAdmin(admin.ModelAdmin):
+    fields = (
+        'shipment', 'laboratory', 'wmt', 'dmt', 'moisture',
+        'ni', 'fe', 'sio2', 'al2o3', 'mgo', 'p', 's'
+    )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).exclude(laboratory__name='PAMCO')
+        return qs
+
+
 @admin.register(Lithology)
 class LithologyAdmin(admin.ModelAdmin):
     pass
+
 
 @admin.register(MiningSampleAssay)
 class MiningSampleAssayAdmin(admin.ModelAdmin):
@@ -62,6 +105,7 @@ class MiningSampleAssayAdmin(admin.ModelAdmin):
                     'date_prepared',
                     'date_received_for_analysis',
                     'date_analyzed')
+
 
 @admin.register(MiningSampleReport)
 class MiningSampleReportAdmin(admin.ModelAdmin):
@@ -99,7 +143,31 @@ class MiningSampleReportAdmin(admin.ModelAdmin):
             )
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+
 @admin.register(PilingMethod)
 class PilingMethodAdmin(admin.ModelAdmin):
     inlines = [TripsPerPileInline]
     list_display = ('name', 'present_required_trip')
+
+
+@admin.register(PamcoShipmentAssay)
+class PamcoShipmentAssayAdmin(admin.ModelAdmin):
+    fields = (
+        'shipment', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p',
+        's', 'ignition_loss'
+    )
+    inlines = [ShipmentDischargeLotAssayInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).filter(laboratory__name='PAMCO')
+        return qs
+
+
+@admin.register(ShipmentLoadingAssay)
+class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
+    fields = (
+        'date', 'shipment', 'wmt', 'dmt', 'moisture', 'ni',
+        'fe', 'mgo', 'sio2', 'cr', 'co'
+    )
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni')
+    inlines = [ShipmentLoadingLotAssayInline]

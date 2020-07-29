@@ -24,18 +24,10 @@ class ClusterResource(ModelResource):
 
 class DrillCoreInline(admin.TabularInline):
     model = DrillCore
-    exclude = ('al',
-               'c',
-               'cr',
-               'mg',
-               'sc',
-               'si',
-               'moisture',
-               'date_received_for_preparation',
-               'date_prepared',
-               'date_received_for_analysis',
-               'date_analyzed')
     extra = 0
+    fields = ('interval_from', 'interval_to',
+              'lithology', 'description', 'excavated_date',
+              'ni', 'fe', 'co')
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }

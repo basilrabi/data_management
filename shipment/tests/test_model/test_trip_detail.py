@@ -20,11 +20,7 @@ class  TripDetailTest(TestCase):
         lct_contract.save()
         vessel = Vessel(name='guagua')
         vessel.save()
-        shipment = Shipment(
-            name='284', vessel=vessel,
-            start_loading=pd('2019-08-17 00:00:00+0800'),
-            end_loading=pd('2019-08-19 00:00:00+0800')
-        )
+        shipment = Shipment(name='284', vessel=vessel)
         shipment.save()
 
     def setUp(self):

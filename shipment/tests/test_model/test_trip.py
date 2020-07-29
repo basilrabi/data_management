@@ -2,7 +2,9 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
-from shipment.models.dso import Shipment, Vessel
+from shipment.models.dso import (
+    LayDaysDetail, LayDaysStatement, Shipment, Vessel
+)
 from shipment.models.lct import LCT, Trip, TripDetail
 
 # pylint: disable=no-member
@@ -164,12 +166,14 @@ class  TripTest(TestCase):
         self.assertEqual(trip.valid, False)
 
         # Valid shipment
-        shipment = Shipment(
-            name='284', vessel=vessel,
-            start_loading=pd('2019-08-16 10:00:00+0800'),
-            end_loading=pd('2019-08-16 20:00:00+0800')
-        )
+        shipment = Shipment(name='284', vessel=vessel)
         shipment.save()
+        statement = LayDaysStatement(
+            shipment=shipment,
+            commenced_loading=pd('2019-08-16 10:00:00+0800'),
+            completed_loading=pd('2019-08-16 20:00:00+0800')
+        )
+        statement.save()
         trip_detail = TripDetail(
             trip=trip,
             interval_from=pd('2019-08-16 10:05:00+0800'),
@@ -192,12 +196,14 @@ class  TripTest(TestCase):
     def test_trip_validity_recheck_upon_shipment_detail_update(self):
         lct = LCT.objects.all().first()
         vessel = Vessel.objects.all().first()
-        shipment = Shipment(
-            name='284', vessel=vessel,
-            start_loading=pd('2019-08-16 10:00:00+0800'),
-            end_loading=pd('2019-08-16 20:00:00+0800')
-        )
+        shipment = Shipment(name='284', vessel=vessel)
         shipment.save()
+        statement = LayDaysStatement(
+            shipment=shipment,
+            commenced_loading=pd('2019-08-16 10:00:00+0800'),
+            completed_loading=pd('2019-08-16 20:00:00+0800')
+        )
+        statement.save()
 
         trip = Trip(lct=lct,
                     vessel=vessel,
@@ -219,7 +225,7 @@ class  TripTest(TestCase):
         trip_detail.save()
 
         self.assertEqual(trip.valid, True)
-        shipment.start_loading=pd('2019-08-16 10:06:00+0800')
-        shipment.save()
+        statement.commenced_loading=pd('2019-08-16 10:06:00+0800')
+        statement.save()
         trip = Trip.objects.all().first()
         self.assertEqual(trip.valid, False)

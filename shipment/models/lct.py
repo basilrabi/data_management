@@ -124,9 +124,9 @@ class Trip(models.Model):
         """
         if self.interval_to:
             if self.vessel.shipment_set.filter(
-                models.Q(start_loading__lte=self.interval_to),
-                models.Q(end_loading__gte=self.interval_from) |
-                models.Q(end_loading__isnull=True)
+                models.Q(laydaysstatement__commenced_loading__lte=self.interval_to),
+                models.Q(laydaysstatement__completed_loading__gte=self.interval_from) |
+                models.Q(laydaysstatement__completed_loading__isnull=True)
             ).count() > 0:
                 return True
         return False

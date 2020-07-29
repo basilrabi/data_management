@@ -1,35 +1,26 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from custom.fields import NameField, SpaceLess
-from custom.functions import this_year
+from custom.fields import NameField
+from custom.functions import Round, get_assay_constraints, this_year
+from custom.models import Classification
 from fleet.models.equipment import TrackedExcavator
 from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
 from personnel.models.person import Person
+from shipment.models.dso import Shipment
 
 from .piling import PilingMethod
 
 # pylint: disable=no-member
 
-class Classification(models.Model):
-    """
-    Template for any classification.
-    """
-    name = SpaceLess(max_length=10, unique=True)
-    description = models.TextField(null=True, blank=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
 
 class Lithology(Classification):
     """
     Rock-type classification. Usually used in drill core sample.
     """
-    pass
+    class Meta:
+        verbose_name_plural = 'lithologies'
+
 
 class AssaySample(models.Model):
     """
@@ -40,31 +31,51 @@ class AssaySample(models.Model):
     date_received_for_analysis = models.DateField(null=True, blank=True)
     date_analyzed = models.DateField(null=True, blank=True)
     al = models.DecimalField('%Al', max_digits=6, decimal_places=4, null=True, blank=True)
+    al2o3 = models.DecimalField('%Al₂O₃', max_digits=6, decimal_places=4, null=True, blank=True)
     c = models.DecimalField('%C', max_digits=6, decimal_places=4, null=True, blank=True)
+    cao = models.DecimalField('%CaO', max_digits=6, decimal_places=4, null=True, blank=True)
     co = models.DecimalField('%Co', max_digits=6, decimal_places=4, null=True, blank=True)
     cr = models.DecimalField('%Cr', max_digits=6, decimal_places=4, null=True, blank=True)
     fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
     mg = models.DecimalField('%Mg', max_digits=6, decimal_places=4, null=True, blank=True)
+    mgo = models.DecimalField('%MgO', max_digits=6, decimal_places=4, null=True, blank=True)
+    mn = models.DecimalField('%Mn', max_digits=6, decimal_places=4, null=True, blank=True)
     ni = models.DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
+    p = models.DecimalField('%P', max_digits=6, decimal_places=4, null=True, blank=True)
+    s = models.DecimalField('%S', max_digits=6, decimal_places=4, null=True, blank=True)
     sc = models.DecimalField('%Sc', max_digits=6, decimal_places=4, null=True, blank=True)
     si = models.DecimalField('%Si', max_digits=6, decimal_places=4, null=True, blank=True)
+    sio2 = models.DecimalField('%SiO₂', max_digits=6, decimal_places=4, null=True, blank=True)
+    ignition_loss = models.DecimalField(max_digits=6, decimal_places=4, null=True, blank=True)
     moisture = models.DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
 
     def has_analysis(self):
         if (
                 self.al is not None or \
+                self.al2o3 is not None or \
                 self.c is not None or \
+                self.cao is not None or \
                 self.co is not None or \
                 self.cr is not None or \
                 self.fe is not None or \
                 self.mg is not None or \
+                self.mgo is not None or \
+                self.mn is not None or \
                 self.ni is not None or \
+                self.p is not None or \
+                self.s is not None or \
                 self.sc is not None or \
                 self.si is not None or \
+                self.sio2 is not None or \
+                self.ignition_loss is not None or \
                 self.moisture is not None
         ):
             return True
         return False
+
+    def bc(self):
+        if self.mgo and self.sio2:
+            return round(self.mgo / self.sio2, 2)
 
     def clean_base(self):
         if self.has_analysis() and not self.date_analyzed:
@@ -89,6 +100,7 @@ class AssaySample(models.Model):
     class Meta:
         abstract = True
 
+
 class DrillCoreSample(AssaySample):
     drill_hole = models.ForeignKey(DrillHole, on_delete=models.CASCADE)
     interval_from = models.DecimalField(max_digits=5, decimal_places=3)
@@ -110,29 +122,14 @@ class DrillCoreSample(AssaySample):
             raise ValidationError('interval_to should be greater than interval_from')
 
     class Meta:
+        constraints = get_assay_constraints('drillcore')
         ordering = ['interval_from']
-        constraints = [
-            models.CheckConstraint(check=models.Q(al__lte=100), name='al_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(c__lte=100), name='c_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(co__lte=100), name='co_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(cr__lte=100), name='cr_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(fe__lte=100), name='fe_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(mg__lte=100), name='mg_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(ni__lte=100), name='ni_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(sc__lte=100), name='sc_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(si__lte=100), name='si_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(moisture__lte=100), name='moisture_max_100_drillcore'),
-            models.CheckConstraint(check=models.Q(al__gte=0), name='al_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(c__gte=0), name='c_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(co__gte=0), name='co_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(cr__gte=0), name='cr_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(fe__gte=0), name='fe_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(mg__gte=0), name='mg_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(ni__gte=0), name='ni_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(sc__gte=0), name='sc_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(si__gte=0), name='si_min_0_drillcore'),
-            models.CheckConstraint(check=models.Q(moisture__gte=0), name='moisture_min_0_drillcore')
-        ]
+
+
+class Laboratory(Classification):
+    class Meta:
+        verbose_name_plural = 'laboratories'
+
 
 class MiningSample(AssaySample):
     series_number = models.PositiveSmallIntegerField()
@@ -176,41 +173,17 @@ class MiningSample(AssaySample):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ['-start_collection__year', '-month', '-series_number']
-        constraints = [
+        constraints = get_assay_constraints('miningsample') + [
             models.UniqueConstraint(
-                fields=[
-                    'ridge',
-                    'material',
-                    'month',
-                    'series_number'
-                ],
+                fields=['ridge', 'material', 'month', 'series_number'],
                 name='mining_sample_constraint'
-            ),
-            models.CheckConstraint(check=models.Q(al__lte=100), name='al_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(c__lte=100), name='c_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(co__lte=100), name='co_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(cr__lte=100), name='cr_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(fe__lte=100), name='fe_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(mg__lte=100), name='mg_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(ni__lte=100), name='ni_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(sc__lte=100), name='sc_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(si__lte=100), name='si_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(moisture__lte=100), name='moisture_max_100_miningsample'),
-            models.CheckConstraint(check=models.Q(al__gte=0), name='al_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(c__gte=0), name='c_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(co__gte=0), name='co_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(cr__gte=0), name='cr_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(fe__gte=0), name='fe_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(mg__gte=0), name='mg_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(ni__gte=0), name='ni_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(sc__gte=0), name='sc_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(si__gte=0), name='si_min_0_miningsample'),
-            models.CheckConstraint(check=models.Q(moisture__gte=0), name='moisture_min_0_miningsample')
+            )
         ]
+        ordering = ['-start_collection__year', '-month', '-series_number']
 
     def __str__(self):
         return f'{self.piling_method.name}-{self.ridge}-{self.series_number:05d}'
+
 
 class MiningSampleIncrement(models.Model):
     sample = models.ForeignKey('MiningSample', on_delete=models.CASCADE)
@@ -231,13 +204,14 @@ class MiningSampleIncrement(models.Model):
         self.sample.save()
 
     class Meta:
-        ordering = ['sample__series_number']
         constraints = [
             models.UniqueConstraint(
                 fields=['sample', 'report'],
                 name='sample_increment_report_constraint'
             )
         ]
+        ordering = ['sample__series_number']
+
 
 class MiningSampleReport(models.Model):
     date = models.DateField()
@@ -294,3 +268,92 @@ class MiningSampleReport(models.Model):
 
     class Meta:
         ordering = ['-date', '-shift_collected']
+
+
+class ShipmentDischargeAssay(AssaySample):
+    laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
+    shipment = models.OneToOneField(Shipment, on_delete=models.PROTECT)
+    wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
+    dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
+
+    def save(self, *args, **kwargs):
+        if self.laboratory.name == 'PAMCO':
+            qs = self.shipmentdischargelotassay_set.all() \
+                .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
+                .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
+                .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
+            self.wmt = qs['wmt__sum']
+            self.dmt = qs['dmt__sum']
+            if self.wmt and self.dmt:
+                self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+                self.ni_ton = qs['ni_ton__sum']
+                if self.ni_ton:
+                    self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = get_assay_constraints('dischargeassay')
+        ordering = ['-shipment__laydaysstatement__completed_loading']
+
+    def __str__(self):
+        return self.shipment.name
+
+
+class ShipmentDischargeLotAssay(AssaySample):
+    """
+    Only used by PAMCO laboratory. No lot assays are seen in China discharge port asssays.
+    """
+    shipment_assay = models.ForeignKey(ShipmentDischargeAssay, on_delete=models.CASCADE)
+    lot = models.PositiveSmallIntegerField(unique=True)
+    wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.shipment_assay.save()
+
+    class Meta:
+        constraints = get_assay_constraints('dischargelotassay')
+        ordering = ['lot']
+
+
+class ShipmentLoadingAssay(AssaySample):
+    date = models.DateField()
+    shipment = models.OneToOneField(Shipment, on_delete=models.CASCADE)
+    wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
+    dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
+    ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
+
+    def save(self, *args, **kwargs):
+        qs = self.shipmentloadinglotassay_set.all() \
+            .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
+            .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
+            .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
+        self.wmt = qs['wmt__sum']
+        self.dmt = qs['dmt__sum']
+        if self.wmt and self.dmt:
+            self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+            self.ni_ton = qs['ni_ton__sum']
+            if self.ni_ton:
+                self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = get_assay_constraints('loadingassay')
+        ordering = ['-shipment__laydaysstatement__completed_loading']
+
+    def __str__(self):
+        return self.shipment.name
+
+
+class ShipmentLoadingLotAssay(AssaySample):
+    shipment_assay = models.ForeignKey(ShipmentLoadingAssay, on_delete=models.CASCADE)
+    lot = models.PositiveSmallIntegerField(unique=True)
+    wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.shipment_assay.save()
+
+    class Meta:
+        constraints = get_assay_constraints('loadinglotassay')
+        ordering = ['lot']

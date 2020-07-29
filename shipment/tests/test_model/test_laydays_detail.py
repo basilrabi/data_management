@@ -15,11 +15,7 @@ class  LayDaysDetailTest(TestCase):
     def setUp(self):
         vessel = Vessel(name='guagua')
         vessel.save()
-        shipment = Shipment(
-            name='284', vessel=vessel,
-            start_loading=pdt('2019-08-17 00:00:00+0800'),
-            end_loading=pdt('2019-08-19 00:00:00+0800')
-        )
+        shipment = Shipment(name='284', vessel=vessel)
         shipment.save()
         statement = LayDaysStatement(
             shipment=shipment,

@@ -13,11 +13,7 @@ class  LayDaysStatementTest(TestCase):
     def setUp(self):
         vessel = Vessel(name='Chang Shun II')
         vessel.save()
-        shipment = Shipment(
-            name='431-C', vessel=vessel,
-            start_loading=pdt('2019-08-17 00:00:00+0800'),
-            end_loading=pdt('2019-08-19 00:00:00+0800')
-        )
+        shipment = Shipment(name='431-C', vessel=vessel)
         shipment.save()
 
     def test_arrival_at_tmc_should_be_later_than_arrival_at_surigao(self):

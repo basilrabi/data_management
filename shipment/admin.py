@@ -5,11 +5,13 @@ from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
 
 from custom.functions import print_tz_manila
-
 from .models.lct import LCT, LCTContract, Trip, TripDetail
-from .models.dso import LayDaysDetail, LayDaysStatement, Shipment, Vessel
+from .models.dso import (
+    Buyer, Destination, LayDaysDetail, LayDaysStatement, Shipment, Vessel
+)
 
 # pylint: disable=no-member
+
 
 class IntervalFromInlineFormSet(BaseInlineFormSet):
     def clean(self):
@@ -25,6 +27,7 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
                 raise ValidationError(f'{str(print_tz_manila(timestamp))} is duplicated.')
             timestamps.append(timestamp)
 
+
 class LayDaysDetailInline(admin.TabularInline):
     model = LayDaysDetail
     extra = 0
@@ -33,9 +36,11 @@ class LayDaysDetailInline(admin.TabularInline):
     }
     formset = IntervalFromInlineFormSet
 
+
 class LCTContractInline(admin.TabularInline):
     model = LCTContract
     extra = 0
+
 
 class TripDetailInline(admin.TabularInline):
     model = TripDetail
@@ -44,6 +49,17 @@ class TripDetailInline(admin.TabularInline):
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
     formset = IntervalFromInlineFormSet
+
+
+@admin.register(Buyer)
+class BuyerAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Destination)
+class DestinationAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+
 
 @admin.register(LayDaysStatement)
 class LayDaysStatementAdmin(admin.ModelAdmin):
@@ -68,6 +84,7 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
                        'despatch']
     search_fields = ['shipment__name']
 
+
 @admin.register(LCT)
 class LCTAdmin(admin.ModelAdmin):
     inlines = [LCTContractInline]
@@ -75,11 +92,13 @@ class LCTAdmin(admin.ModelAdmin):
     list_filter = ['capacity']
     search_fields = ['name']
 
+
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):
     autocomplete_fields = ['vessel']
-    list_display = ('name', 'vessel', 'start_loading', 'end_loading', 'tonnage')
+    list_display = ('name', 'vessel')
     search_fields = ['name', 'vessel__name']
+
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
@@ -96,6 +115,7 @@ class TripAdmin(admin.ModelAdmin):
     list_filter = ['continuous', 'status', 'valid']
     readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     search_fields = ['lct__name', 'vessel__name']
+
 
 @admin.register(Vessel)
 class VesselAdmin(admin.ModelAdmin):

@@ -16,11 +16,7 @@ class  LayDaysStatement452CTest(TestCase):
     def setUp(self):
         vessel = Vessel(name='Jia Yu Shan')
         vessel.save()
-        shipment = Shipment(
-            name='452-C', vessel=vessel,
-            start_loading=pdt('2019-10-10 23:50:00+0800'),
-            end_loading=pdt('2019-11-05 15:00:00+0800')
-        )
+        shipment = Shipment(name='452-C', vessel=vessel)
         shipment.save()
 
     def test_laydays_computation_452c(self):

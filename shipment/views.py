@@ -74,11 +74,9 @@ def export_shipment(request):
     rows = ([
         str(shipment.vessel.name),
         str(shipment.name),
-        str(print_localzone(shipment.start_loading)),
-        str(print_localzone(shipment.end_loading) or ''),
         str(shipment.dump_truck_trips),
         str(shipment.tonnage)
-    ] for shipment in Shipment.objects.all().order_by('end_loading', 'name'))
+    ] for shipment in Shipment.objects.all().order_by('laydaysstatement__completed_loading', 'name'))
     return export_csv(rows, 'shipment_shipment')
 
 def export_vessel(request):
