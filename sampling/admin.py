@@ -83,9 +83,10 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
 
 @admin.register(ChinaShipmentAssay)
 class ChinaShipmentAssayAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['shipment']
     fields = (
         'shipment', 'laboratory', 'wmt', 'dmt', 'moisture',
-        'ni', 'fe', 'sio2', 'al2o3', 'mgo', 'p', 's'
+        'ni', 'fe', 'sio2', 'al2o3', 'mgo', 'p', 's', 'cao'
     )
 
     def get_queryset(self, request):
@@ -152,6 +153,7 @@ class PilingMethodAdmin(admin.ModelAdmin):
 
 @admin.register(PamcoShipmentAssay)
 class PamcoShipmentAssayAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['shipment']
     fields = (
         'shipment', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p',
         's', 'ignition_loss'
@@ -165,6 +167,7 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 
 @admin.register(ShipmentLoadingAssay)
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['shipment']
     fields = (
         'date', 'shipment', 'wmt', 'dmt', 'moisture', 'ni',
         'fe', 'mgo', 'sio2', 'cr', 'co'

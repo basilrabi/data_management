@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from sampling.models.proxy import PamcoShipmentAssay
+from sampling.models.proxy import ChinaShipmentAssay, PamcoShipmentAssay
 from sampling.models.sample import (
     Laboratory,
     ShipmentDischargeLotAssay,
@@ -10,6 +10,43 @@ from sampling.models.sample import (
 from shipment.models.dso import Destination, Shipment, Vessel
 
 # pylint: disable=no-member
+
+
+class ChinaShipmentAssayTest(TestCase):
+
+    def setUp(self):
+        vessel = Vessel(name='Aqua Atlantic')
+        vessel.save()
+        shipment = Shipment(name='460-C', vessel=vessel)
+        shipment.save()
+        laboratory = Laboratory(name='Intertek')
+        laboratory.save()
+
+    def test_dmt_trigger(self):
+        shipment = Shipment.objects.first()
+        laboratory = Laboratory.objects.first()
+        assay = ChinaShipmentAssay(
+            laboratory=laboratory, shipment=shipment, ni=1.43, fe=14.4,
+            sio2=35.38, mgo=27.43, p=0.0021, al2o3=0.9, s=0.007, cao=0.046,
+            wmt=53649, moisture=29.92
+        )
+        assay.save()
+        assay.refresh_from_db()
+
+        self.assertEqual(float(assay.dmt), 37597.219)
+
+    def test_moisture_trigger(self):
+        shipment = Shipment.objects.first()
+        laboratory = Laboratory.objects.first()
+        assay = ChinaShipmentAssay(
+            laboratory=laboratory, shipment=shipment, ni=1.43, fe=14.4,
+            sio2=35.38, mgo=27.43, p=0.0021, al2o3=0.9, s=0.007, cao=0.046,
+            wmt=53649, dmt=37597.219
+        )
+        assay.save()
+        assay.refresh_from_db()
+
+        self.assertEqual(float(assay.moisture), 29.92)
 
 
 class PamcoShipmentAssayTest(TestCase):
@@ -28,7 +65,6 @@ class PamcoShipmentAssayTest(TestCase):
             laboratory=laboratory, shipment=shipment, co=0.07, cr=0.92, mn=0.30,
             fe=16.49, sio2=33.7, cao=0.02, mgo=25.38, al2o3=0.93, p=0.0004,
             s=0.015, ignition_loss=12.26
-
         )
         assay.save()
         lot = ShipmentDischargeLotAssay(shipment_assay=assay, lot=1, wmt=4901.5, moisture=32.92, ni=1.73)

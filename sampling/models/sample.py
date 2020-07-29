@@ -289,6 +289,11 @@ class ShipmentDischargeAssay(AssaySample):
                 self.ni_ton = qs['ni_ton__sum']
                 if self.ni_ton:
                     self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+        else:
+            if (self.dmt and self.wmt) and not self.moisture:
+                self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+            if (self.wmt and self.moisture) and not self.dmt:
+                self.dmt = round(self.wmt * (100 - self.moisture) * 0.01, 3)
         super().save(*args, **kwargs)
 
     class Meta:

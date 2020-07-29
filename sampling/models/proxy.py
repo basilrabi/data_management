@@ -9,6 +9,7 @@ class AcquiredMiningSample(MiningSample):
 class ChinaShipmentAssay(ShipmentDischargeAssay):
     class Meta:
         proxy = True
+        verbose_name = 'China Shipment Discharge Assay'
 
 
 class DrillCore(DrillCoreSample):
@@ -29,4 +30,4 @@ class MiningSampleAssay(MiningSample):
 class PamcoShipmentAssay(ShipmentDischargeAssay):
     class Meta:
         proxy = True
-        verbose_name = 'PAMCO Shipment Assay'
+        verbose_name = 'PAMCO Shipment Discharge Assay'
