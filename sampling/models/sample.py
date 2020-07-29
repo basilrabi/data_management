@@ -317,7 +317,12 @@ class ShipmentDischargeLotAssay(AssaySample):
         self.shipment_assay.save()
 
     class Meta:
-        constraints = get_assay_constraints('dischargelotassay')
+        constraints = get_assay_constraints('dischargelotassay') + [
+            models.UniqueConstraint(
+                fields=['shipment_assay', 'lot'],
+                name='unique_pamco_assay_lot'
+            )
+        ]
         ordering = ['lot']
 
 
@@ -352,7 +357,7 @@ class ShipmentLoadingAssay(AssaySample):
 
 class ShipmentLoadingLotAssay(AssaySample):
     shipment_assay = models.ForeignKey(ShipmentLoadingAssay, on_delete=models.CASCADE)
-    lot = models.PositiveSmallIntegerField(unique=True)
+    lot = models.PositiveSmallIntegerField()
     wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
 
     def save(self, *args, **kwargs):
@@ -360,5 +365,10 @@ class ShipmentLoadingLotAssay(AssaySample):
         self.shipment_assay.save()
 
     class Meta:
-        constraints = get_assay_constraints('loadinglotassay')
+        constraints = get_assay_constraints('loadinglotassay') + [
+            models.UniqueConstraint(
+                fields=['shipment_assay', 'lot'],
+                name='unique_loading_assay_lot'
+            )
+        ]
         ordering = ['lot']
