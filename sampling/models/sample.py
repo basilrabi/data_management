@@ -293,7 +293,7 @@ class ShipmentDischargeAssay(AssaySample):
             if (self.dmt and self.wmt) and not self.moisture:
                 self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
             if (self.wmt and self.moisture) and not self.dmt:
-                self.dmt = round(self.wmt * (100 - self.moisture) * 0.01, 3)
+                self.dmt = round(float(self.wmt * (100 - self.moisture)) * 0.01, 3)
         super().save(*args, **kwargs)
 
     class Meta:
