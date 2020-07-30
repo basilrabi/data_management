@@ -1,5 +1,8 @@
-from .sample import DrillCoreSample, MiningSample, ShipmentDischargeAssay
+from .sample import (
+    DrillCoreSample, Laboratory, MiningSample, ShipmentDischargeAssay
+)
 
+# pylint: disable=no-member
 
 class AcquiredMiningSample(MiningSample):
     class Meta:
@@ -28,6 +31,11 @@ class MiningSampleAssay(MiningSample):
 
 
 class PamcoShipmentAssay(ShipmentDischargeAssay):
+
+    def save(self, *args, **kwargs):
+        self.laboratory = Laboratory.objects.get(name='PAMCO')
+        super().save(*args, **kwargs)
+
     class Meta:
         proxy = True
         verbose_name = 'PAMCO Shipment Discharge Assay'

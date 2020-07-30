@@ -52,17 +52,17 @@ class ChinaShipmentAssayTest(TestCase):
 class PamcoShipmentAssayTest(TestCase):
 
     def setUp(self):
+        lab = Laboratory(name='PAMCO')
+        lab.save()
         vessel = Vessel(name='New Beginning')
         vessel.save()
         shipment = Shipment(name='282', vessel=vessel)
         shipment.save()
 
     def test_correct_computation(self):
-        laboratory = Laboratory(name='PAMCO')
-        laboratory.save()
         shipment = Shipment.objects.first()
         assay = PamcoShipmentAssay(
-            laboratory=laboratory, shipment=shipment, co=0.07, cr=0.92, mn=0.30,
+            shipment=shipment, co=0.07, cr=0.92, mn=0.30,
             fe=16.49, sio2=33.7, cao=0.02, mgo=25.38, al2o3=0.93, p=0.0004,
             s=0.015, ignition_loss=12.26
         )
@@ -93,6 +93,7 @@ class PamcoShipmentAssayTest(TestCase):
         self.assertEqual(float(assay.dmt), 32987.586)
         self.assertEqual(float(assay.moisture), 32.7)
         self.assertEqual(float(assay.ni), 1.74)
+        self.assertEqual(assay.laboratory.name, 'PAMCO')
         self.assertEqual(assay.wmt, 49015)
 
 
