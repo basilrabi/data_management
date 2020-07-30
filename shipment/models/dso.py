@@ -501,7 +501,9 @@ class Shipment(models.Model):
     A shipment of nickel or iron ore.
     """
     name = NameField(max_length=10, unique=True)
-    vessel = models.ForeignKey('Vessel', on_delete=models.CASCADE)
+    vessel = models.ForeignKey(
+        'Vessel', null=True, blank=True, on_delete=models.SET_NULL
+    )
     destination = models.ForeignKey(
         Destination, null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -528,7 +530,7 @@ class Shipment(models.Model):
         help_text='Determined during initial draft survey.',
         null=True, blank=True
     )
-    dump_truck_trips = models.PositiveSmallIntegerField(default=0)
+    dump_truck_trips = models.PositiveSmallIntegerField(null=True, blank=True)
     final_ni = models.DecimalField(
         '%Ni', max_digits=6, decimal_places=4, null=True, blank=True
     )
