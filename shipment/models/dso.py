@@ -1,6 +1,8 @@
 import datetime
 
+from decimal import Decimal
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.html import mark_safe
 from django.utils.timezone import now
@@ -557,12 +559,21 @@ class Shipment(models.Model):
         max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
     )
     demurrage = models.DecimalField(
-        null=True, blank=True, max_digits=8, decimal_places=2
+        null=True, blank=True, max_digits=8, decimal_places=2,
+        validators=[MinValueValidator(Decimal(0.00))]
     )
     despatch = models.DecimalField(
-        null=True, blank=True, max_digits=8, decimal_places=2
+        null=True, blank=True, max_digits=8, decimal_places=2,
+        validators=[MinValueValidator(Decimal(0.00))]
     )
     remarks = models.TextField(null=True, blank=True)
+
+    def clean(self):
+        if self.despatch and self.demurrage:
+            if self.demurrage > 0 and self.despatch > 0:
+                raise ValidationError(
+                    'Demurrage and despatch cannot have values at the same time.'
+                )
 
     def save(self, *args, **kwargs):
         if self.product:
@@ -577,6 +588,12 @@ class Shipment(models.Model):
             trip.save()
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(demurrage=0) | models.Q(despatch=0),
+                name='dem_des_with_zero'
+            )
+        ]
         indexes = [models.Index(fields=['name'])]
         ordering = [
             models.F('laydaysstatement__completed_loading').desc(nulls_last=False),
