@@ -26,14 +26,15 @@ INSERT INTO location_drillhole (
     z,
     z_present
 )
-SELECT name,
-       date_drilled,
-       local_block,
-       local_easting,
-       local_northing,
-       local_z,
-       x,
-       y,
-       z,
-       z_present
+SELECT
+    name,
+    date_drilled,
+    local_block,
+    local_easting,
+    local_northing,
+    local_z,
+    x,
+    y,
+    z,
+    z_present
 FROM temp_location_drillhole;

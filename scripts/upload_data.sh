@@ -61,13 +61,24 @@ sql_script "upload_data" "location_cluster" && \
 vacuum "inventory_block" && \
 vacuum "location_cluster" && \
 sql_script "upload_data" "inventory_clustered_block" && \
-upload_orm shipment_lct && \
+vacuum "inventory_block" && \
+sql_script "upload_data" "sampling_laboratory" && \
+vacuum "sampling_laboratory" && \
+sql_script "upload_data" "shipment_buyer" && \
+vacuum "shipment_buyer" && \
+sql_script "upload_data" "shipment_destination" && \
+vacuum "shipment_destination" && \
+sql_script "upload_data" "shipment_product" && \
+vacuum "shipment_product" && \
+sql_script "upload_data" "shipment_lct" && \
 vacuum "shipment_lct" && \
-upload_orm shipment_lctcontract && \
-upload_orm shipment_vessel && \
-upload_orm shipment_shipment && \
+sql_script "upload_data" "shipment_lctcontract" && \
+vacuum "shipment_lctcontract" && \
+sql_script "upload_data" "shipment_vessel" && \
+vacuum "shipment_vessel" && \
+sql_script "upload_data" "shipment_shipment" && \
 vacuum "shipment_shipment" && \
-upload_orm shipment_laydaysstatement && \
+sql_script "upload_data" "shipment_laydaysstatement" && \
 vacuum "shipment_laydaysstatement" && \
 sql_script "upload_data" "shipment_laydaysdetail" && \
 vacuum "shipment_laydaysdetail" && \
@@ -75,6 +86,14 @@ sql_script "upload_data" "shipment_trip" && \
 vacuum "shipment_trip" && \
 sql_script "upload_data" "shipment_tripdetail" && \
 vacuum "shipment_tripdetail" && \
+sql_script "upload_data" "sampling_shipmentdischargeassay" && \
+vacuum "sampling_shipmentdischargeassay" && \
+sql_script "upload_data" "sampling_shipmentdischargelotassay" && \
+vacuum "sampling_shipmentdischargelotassay" && \
+sql_script "upload_data" "sampling_shipmentloadingassay" && \
+vacuum "sampling_shipmentloadingassay" && \
+sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
+vacuum "sampling_shipmentloadinglotassay" && \
 upload_orm groups && \
 upload_orm users && \
 sql_script "function" "get_ore_class" && \

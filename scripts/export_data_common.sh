@@ -21,7 +21,26 @@ download_ogr location_mineblock && \
 download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql inventory_block && \
+download_sql inventory_clustered_block && \
+download_sql location_cluster && \
+download_sql location_drillhole && \
 download_sql sampling_drillcoresample && \
+download_sql sampling_laboratory && \
+download_sql sampling_shipmentdischargeassay && \
+download_sql sampling_shipmentdischargelotassay && \
+download_sql sampling_shipmentloadingassay && \
+download_sql sampling_shipmentloadinglotassay && \
+download_sql shipment_buyer && \
+download_sql shipment_destination && \
+download_sql shipment_laydaysdetail && \
+download_sql shipment_laydaysstatement && \
+download_sql shipment_lct && \
+download_sql shipment_lctcontract && \
+download_sql shipment_product && \
+download_sql shipment_shipment && \
+download_sql shipment_trip && \
+download_sql shipment_tripdetail && \
+download_sql shipment_vessel && \
 echo "Exporting group_permission..." && \
 curl $address/custom/export/group-permissions -o $datadir/group_permission.csv && \
 echo "Exporting groups..." && \
@@ -31,22 +50,4 @@ curl $address/custom/export/user-groups -o $datadir/user_group.csv && \
 echo "Exporting user_permissions..." && \
 curl $address/custom/export/user-permissions -o $datadir/user_permission.csv && \
 echo "Exporting users..." && \
-curl $address/custom/export/users -o $datadir/users.csv && \
-echo "Exporting clustered_block..." && \
-curl $address/inventory/export/clustered-block -o $datadir/inventory_clustered_block.csv && \
-download_sql location_cluster && \
-echo "Exporting location_drillhole..." && \
-curl $address/location/export/drillhole -o $datadir/location_drillhole.csv && \
-echo "Exporting shipment_lct..." && \
-curl $address/shipment/export/lct -o $datadir/shipment_lct.csv && \
-echo "Exporting shipment_lctcontract..." && \
-curl $address/shipment/export/lctcontract -o $datadir/shipment_lctcontract.csv && \
-download_sql shipment_laydaysdetail && \
-echo "Exporting shipment_laydaysstatement..." && \
-curl $address/shipment/export/laydaysstatement -o $datadir/shipment_laydaysstatement.csv && \
-echo "Exporting shipment_shipment..." && \
-curl $address/shipment/export/shipment -o $datadir/shipment_shipment.csv && \
-download_sql shipment_trip && \
-download_sql shipment_tripdetail && \
-echo "Exporting shipment_vessel..." && \
-curl $address/shipment/export/vessel -o $datadir/shipment_vessel.csv
+curl $address/custom/export/users -o $datadir/users.csv

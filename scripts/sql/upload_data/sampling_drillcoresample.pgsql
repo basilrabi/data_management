@@ -46,26 +46,27 @@ INSERT INTO sampling_drillcoresample (
     drill_hole_id,
     lithology_id
 )
-SELECT core.date_received_for_preparation,
-       core.date_prepared,
-       core.date_received_for_analysis,
-       core.date_analyzed,
-       core.al,
-       core.c,
-       core.co,
-       core.cr,
-       core.fe,
-       core.mg,
-       core.ni,
-       core.sc,
-       core.si,
-       core.moisture,
-       core.interval_from,
-       core.interval_to,
-       core.description,
-       core.excavated_date,
-       dh.id drill_hole_id,
-       litho.id lithology_id
+SELECT
+    core.date_received_for_preparation,
+    core.date_prepared,
+    core.date_received_for_analysis,
+    core.date_analyzed,
+    core.al,
+    core.c,
+    core.co,
+    core.cr,
+    core.fe,
+    core.mg,
+    core.ni,
+    core.sc,
+    core.si,
+    core.moisture,
+    core.interval_from,
+    core.interval_to,
+    core.description,
+    core.excavated_date,
+    dh.id drill_hole_id,
+    litho.id lithology_id
 FROM temp_sampling_drillcoresample core
     LEFT JOIN location_drillhole dh
         ON dh.name = core.drillhole

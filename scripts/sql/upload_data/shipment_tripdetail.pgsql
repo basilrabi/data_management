@@ -10,10 +10,7 @@ CREATE TEMPORARY TABLE temp_shipment_tripdetail
 \copy temp_shipment_tripdetail FROM 'data/shipment_tripdetail.csv' DELIMITER ',' CSV;
 
 INSERT INTO shipment_tripdetail (
-    interval_from,
-    interval_class,
-    remarks,
-    trip_id
+    interval_from, interval_class, remarks, trip_id
 )
 SELECT
     temp_shipment_tripdetail.detail,

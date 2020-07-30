@@ -6,8 +6,8 @@ from django.http import FileResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
-from custom.functions import export_csv, export_sql
-from location.models.source import Cluster, DrillHole
+from custom.functions import export_sql
+from location.models.source import Cluster
 
 # pylint: disable=no-member
 
@@ -93,21 +93,3 @@ def export_cluster_str_for_survey(request):
                                 content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=cluster.str'
         return response
-
-def export_drillhole(request):
-    """
-    CSV view of DrillHole intended for importation to database.
-    """
-    rows = ([
-        str(dh.name),
-        str(dh.date_drilled or ''),
-        str(dh.local_block or ''),
-        str(dh.local_easting or ''),
-        str(dh.local_northing or ''),
-        str(dh.local_z or ''),
-        str(dh.x or ''),
-        str(dh.y or ''),
-        str(dh.z or ''),
-        str(dh.z_present or '')
-    ] for dh in DrillHole.objects.all().order_by('name'))
-    return export_csv(rows, 'location_drillhole')

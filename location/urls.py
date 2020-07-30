@@ -16,5 +16,4 @@ urlpatterns = [
      path('data-export/cluster-str-survey',
           views.export_cluster_str_for_survey,
           name='data-export-cluster-str-survey'),
-     path('export/drillhole', views.export_drillhole, name='export-drillhole'),
 ]
