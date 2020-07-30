@@ -491,6 +491,11 @@ class LayDaysStatement(models.Model):
         return self.shipment.name
 
 
+class Product(Classification):
+    moisture = models.DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
+    ni = models.DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
+    fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
+
 class Shipment(models.Model):
     """
     A shipment of nickel or iron ore.
@@ -502,6 +507,9 @@ class Shipment(models.Model):
     )
     buyer = models.ForeignKey(
         Buyer, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    product = models.ForeignKey(
+        Product, null=True, blank=True, on_delete=models.SET_NULL
     )
     spec_tonnage = models.PositiveIntegerField(
         help_text='Tonnage in sales contract.',
@@ -555,6 +563,13 @@ class Shipment(models.Model):
     remarks = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        if self.product:
+            if not self.spec_moisture:
+                self.spec_moisture = self.product.moisture
+            if not self.spec_ni:
+                self.spec_ni = self.product.ni
+            if not self.spec_fe:
+                self.spec_fe = self.product.fe
         super().save(*args, **kwargs)
         for trip in self.vessel.trip_set.all():
             trip.save()

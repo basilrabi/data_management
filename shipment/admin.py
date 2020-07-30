@@ -7,7 +7,13 @@ from django.forms.models import BaseInlineFormSet
 from custom.functions import print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import (
-    Buyer, Destination, LayDaysDetail, LayDaysStatement, Shipment, Vessel
+    Buyer,
+    Destination,
+    LayDaysDetail,
+    LayDaysStatement,
+    Product,
+    Shipment,
+    Vessel
 )
 
 # pylint: disable=no-member
@@ -91,6 +97,11 @@ class LCTAdmin(admin.ModelAdmin):
     list_display = ('name', 'capacity')
     list_filter = ['capacity']
     search_fields = ['name']
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Shipment)
