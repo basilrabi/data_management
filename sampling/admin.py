@@ -155,11 +155,11 @@ class PilingMethodAdmin(admin.ModelAdmin):
 class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
-        'shipment', 'wmt', 'dmt', 'moisture', 'ni', 'co', 'cr', 'mn', 'fe',
-        'sio2', 'cao', 'mgo', 'al2o3', 'p', 's', 'ignition_loss'
+        'shipment', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'co', 'cr', 'mn',
+        'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p', 's', 'ignition_loss'
     )
     inlines = [ShipmentDischargeLotAssayInline]
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni')
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).filter(laboratory__name='PAMCO')

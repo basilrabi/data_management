@@ -275,6 +275,7 @@ class ShipmentDischargeAssay(AssaySample):
     shipment = models.OneToOneField(Shipment, on_delete=models.PROTECT)
     wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
     dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
+    ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
 
     def save(self, *args, **kwargs):
         if self.laboratory.name == 'PAMCO':
@@ -293,7 +294,9 @@ class ShipmentDischargeAssay(AssaySample):
             if (self.dmt and self.wmt) and not self.moisture:
                 self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
             if (self.wmt and self.moisture) and not self.dmt:
-                self.dmt = round(float(self.wmt * (100 - self.moisture)) * 0.01, 3)
+                  self.dmt = round(float(self.wmt * (100 - self.moisture)) * 0.01, 3)
+            if self.dmt and self.ni:
+                self.ni_ton = round(float(self.ni * self.dmt) * 0.01, 3)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -309,7 +312,7 @@ class ShipmentDischargeLotAssay(AssaySample):
     Only used by PAMCO laboratory. No lot assays are seen in China discharge port asssays.
     """
     shipment_assay = models.ForeignKey(ShipmentDischargeAssay, on_delete=models.CASCADE)
-    lot = models.PositiveSmallIntegerField(unique=True)
+    lot = models.PositiveSmallIntegerField()
     wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
 
     def save(self, *args, **kwargs):
