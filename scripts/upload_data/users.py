@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group, Permission
 with open('data/users.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['username',
                                                  'first_name',
+                                                 'middle_name',
                                                  'last_name',
                                                  'email',
                                                  'password',
@@ -17,6 +18,7 @@ with open('data/users.csv', newline='') as csvfile:
     for row in reader:
         user = User(username=row['username'],
                     first_name=row['first_name'],
+                    middle_name=row['middle_name'],
                     last_name=row['last_name'],
                     email=row['email'],
                     password=row['password'],

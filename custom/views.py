@@ -50,6 +50,7 @@ def export_users(request):
     rows = ([
         str(user.get_username()),
         str(user.first_name),
+        str(user.middle_name),
         str(user.last_name),
         str(user.email),
         str(user.password),
