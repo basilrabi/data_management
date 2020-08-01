@@ -1,7 +1,8 @@
 import os
 
+from custom.models import User
 from django.conf import settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.shortcuts import render
 
 from .functions import export_csv
