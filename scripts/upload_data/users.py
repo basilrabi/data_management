@@ -1,6 +1,9 @@
+# pylint: disable=import-error
+
 import csv
 import sys
-from django.contrib.auth.models import Group, Permission, User
+from custom.models import User
+from django.contrib.auth.models import Group, Permission
 
 with open('data/users.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['username',

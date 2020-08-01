@@ -1,5 +1,6 @@
 from django.contrib.gis import admin
 
+
 class TMCLocationAdmin(admin.GeoModelAdmin):
     default_lon = 125.8313
     default_lat = 9.5235
