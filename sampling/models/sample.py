@@ -3,7 +3,7 @@ from django.db import models
 
 from custom.fields import NameField
 from custom.functions import Round, get_assay_constraints, this_year
-from custom.models import Classification
+from custom.models import Classification, User
 from fleet.models.equipment import TrackedExcavator
 from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
 from personnel.models.person import Person
@@ -329,12 +329,26 @@ class ShipmentDischargeLotAssay(AssaySample):
         ordering = ['lot']
 
 
+class ApprovedShipmentLoadingAssay(models.Model):
+    assay = models.OneToOneField('ShipmentLoadingAssay', on_delete=models.PROTECT)
+    approved = models.BooleanField(null=True, blank=True)
+
+    def __str__(self):
+        return self.assay.__str__()
+
+
 class ShipmentLoadingAssay(AssaySample):
     date = models.DateField()
     shipment = models.OneToOneField(Shipment, on_delete=models.CASCADE)
     wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
     dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
     ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
+    chemist = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def clean(self):
+        if hasattr(self, 'approvedshipmentloadingassay'):
+            if self.approvedshipmentloadingassay.approved:
+                raise ValidationError('Approved assay cannot be changed.')
 
     def save(self, *args, **kwargs):
         qs = self.shipmentloadinglotassay_set.all() \
@@ -349,6 +363,9 @@ class ShipmentLoadingAssay(AssaySample):
             if self.ni_ton:
                 self.ni = round(self.ni_ton * 100 / self.dmt, 2)
         super().save(*args, **kwargs)
+        if not hasattr(self, 'approvedshipmentloadingassay'):
+            approval = ApprovedShipmentLoadingAssay(assay=self)
+            approval.save()
 
     class Meta:
         constraints = get_assay_constraints('loadingassay')

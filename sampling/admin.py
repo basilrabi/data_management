@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import F
 
 from custom.admin_gis import TMCLocationAdmin
+from custom.models import User
 from personnel.models.person import Person
 
 from .models.piling import PilingMethod, TripsPerPile
@@ -12,6 +13,7 @@ from .models.proxy import (
     PamcoShipmentAssay
 )
 from .models.sample import (
+    ApprovedShipmentLoadingAssay,
     MiningSample,
     MiningSampleIncrement,
     MiningSampleReport,
@@ -170,8 +172,18 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
-        'date', 'shipment', 'wmt', 'dmt', 'moisture', 'ni',
+        'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
         'fe', 'mgo', 'sio2', 'cr', 'co'
     )
     inlines = [ShipmentLoadingLotAssayInline]
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'chemist':
+            kwargs["queryset"] = User.objects.filter(groups__name='chemist')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(ApprovedShipmentLoadingAssay)
+class ApprovedShipmentLoadingAssayAdmin(admin.ModelAdmin):
+    pass
