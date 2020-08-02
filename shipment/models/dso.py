@@ -10,8 +10,8 @@ from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
-    ordinal_suffix, print_tz_manila, round_second, round_up_day,
-    to_dhms, to_hm, to_hms
+    ordinal_suffix, print_localzone, print_tz_manila, round_second,
+    round_up_day, to_dhms, to_hm, to_hms
 )
 from custom.models import Classification
 from custom.variables import one_day, zero_time
@@ -595,8 +595,8 @@ class Shipment(models.Model):
 
     def loading_period(self):
         if self.laydaysstatement:
-            start = self.laydaysstatement.commenced_loading
-            end = self.laydaysstatement.completed_loading
+            start = print_localzone(self.laydaysstatement.commenced_loading)
+            end = print_localzone(self.laydaysstatement.completed_loading)
             if start and end:
                 start_day = start.strftime('%-d')
                 start_month = start.strftime('%B')
