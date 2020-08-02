@@ -118,7 +118,47 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):
     autocomplete_fields = ['vessel']
-    list_display = ('name', 'vessel')
+    fieldsets = (
+        (None, {'fields': (
+            'name',
+            'product',
+            'vessel',
+            'destination',
+            'target_tonnage',
+            'dump_truck_trips'
+        )}),
+        ('Laytime', {'fields': ('demurrage','despatch',)}),
+        ('Sales Contract', {
+            'classes': ('collapse',),
+            'fields': (
+                'buyer',
+                'base_price',
+                'spec_tonnage',
+                'spec_ni',
+                'spec_fe',
+                'spec_moisture'
+            )
+        }),
+        ('Boulders', {
+            'classes': ('collapse',),
+            'fields': (
+                'boulders_tonnage',
+                'boulders_processing_cost',
+                'boulders_freight_cost'
+            )
+        }),
+        ('Final Specification', {
+            'classes': ('collapse',),
+            'fields': (
+                'final_price',
+                'final_ni',
+                'final_fe',
+                'final_moisture',
+                'remarks'
+            )
+        })
+    )
+    list_display = ('name', 'vessel', 'dump_truck_trips')
     search_fields = ['name', 'vessel__name']
 
 
