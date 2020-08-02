@@ -364,7 +364,7 @@ class ShipmentLoadingAssay(AssaySample):
                 self.ni = round(self.ni_ton * 100 / self.dmt, 2)
         super().save(*args, **kwargs)
         if not hasattr(self, 'approvedshipmentloadingassay'):
-            approval = ApprovedShipmentLoadingAssay(assay=self)
+            approval = ApprovedShipmentLoadingAssay(assay=self, approved=False)
             approval.save()
 
     class Meta:

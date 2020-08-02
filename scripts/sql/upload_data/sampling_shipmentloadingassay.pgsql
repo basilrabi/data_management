@@ -22,7 +22,8 @@ CREATE TEMPORARY TABLE temp_sampling_shipmentloadingassay
     moisture numeric(6,4),
     wmt numeric(8,3),
     dmt numeric(8,3),
-    shipment_name character varying(10)
+    shipment_name character varying(10),
+    username character varying(150)
 );
 
 \copy temp_sampling_shipmentloadingassay FROM 'data/sampling_shipmentloadingassay.csv' DELIMITER ',' CSV;
@@ -50,7 +51,8 @@ INSERT INTO sampling_shipmentloadingassay (
     moisture,
     wmt,
     dmt,
-    shipment_id
+    shipment_id,
+    chemist_id
 )
 SELECT
     a.al,
@@ -75,7 +77,10 @@ SELECT
     a.moisture,
     a.wmt,
     a.dmt,
-    s.id
+    s.id,
+    u.id
 FROM temp_sampling_shipmentloadingassay a
     LEFT JOIN shipment_shipment s
         ON s.name = a.shipment_name
+    LEFT JOIN custom_user u
+        ON u.username = a.username

@@ -21,10 +21,13 @@ SELECT
     a.moisture,
     a.wmt,
     a.dmt,
-    s.name shipment
+    s.name shipment,
+    u.username
 FROM sampling_shipmentloadingassay a
     LEFT JOIN shipment_shipment s
         ON s.id = a.shipment_id
     LEFT JOIN shipment_laydaysstatement statement
         ON statement.shipment_id = s.id
+    LEFT JOIN custom_user u
+        ON u.id = a.chemist_id
 ORDER BY statement.completed_loading DESC

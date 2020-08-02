@@ -90,12 +90,14 @@ sql_script "upload_data" "sampling_shipmentdischargeassay" && \
 vacuum "sampling_shipmentdischargeassay" && \
 sql_script "upload_data" "sampling_shipmentdischargelotassay" && \
 vacuum "sampling_shipmentdischargelotassay" && \
+upload_orm groups && \
+upload_orm users && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
 vacuum "sampling_shipmentloadingassay" && \
 sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
 vacuum "sampling_shipmentloadinglotassay" && \
-upload_orm groups && \
-upload_orm users && \
+sql_script "upload_data" "sampling_approvedshipmentloadingassay" && \
+vacuum "sampling_approvedshipmentloadingassay" && \
 sql_script "function" "get_ore_class" && \
 sql_script "function" "insert_dummy_cluster" && \
 sql_script "trigger" "inventory_block_exposed" && \

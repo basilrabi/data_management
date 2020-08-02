@@ -1,7 +1,6 @@
 # pylint: disable=import-error
 # pylint: disable=no-member
 
-import csv
 import sys
 from shipment.models.lct import Trip
 
