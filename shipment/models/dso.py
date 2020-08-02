@@ -568,6 +568,24 @@ class Shipment(models.Model):
     )
     remarks = models.TextField(null=True, blank=True)
 
+    def loading_period(self):
+        if self.laydaysstatement:
+            start = self.laydaysstatement.commenced_loading
+            end = self.laydaysstatement.completed_loading
+            if start and end:
+                start_day = start.strftime('%-d')
+                start_month = start.strftime('%B')
+                start_year = start.strftime('%Y')
+                end_day = end.strftime('%-d')
+                end_month = end.strftime('%B')
+                end_year = end.strftime('%Y')
+                if start_year != end_year:
+                    return f'{start_month} {start_day}, {start_year} - {end_month} {end_day}, {end_year}'.upper()
+                elif start_month != end_month:
+                    return f'{start_month} {start_day} - {end_month} {end_day}, {end_year}'.upper()
+                else:
+                    return f'{start_month} {start_day} - {end_day}, {end_year}'.upper()
+
     def clean(self):
         if self.despatch and self.demurrage:
             if self.demurrage > 0 and self.despatch > 0:

@@ -172,18 +172,30 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
-        'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
+        'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton',
         'fe', 'mgo', 'sio2', 'cr', 'co'
     )
     inlines = [ShipmentLoadingLotAssayInline]
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni')
+    list_display = ('__str__', 'approved', 'PDF')
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'chemist':
             kwargs["queryset"] = User.objects.filter(groups__name='chemist')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request) \
+            .annotate(approved=F('approvedshipmentloadingassay__approved'))
+        return qs
+
+    def approved(self, obj):
+        return obj.approved
+
+    approved.admin_order_field = 'approved'
+    approved.boolean = True
+
 
 @admin.register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('__str__', 'approved', 'PDF')

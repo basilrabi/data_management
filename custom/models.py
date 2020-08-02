@@ -21,3 +21,9 @@ class Classification(models.Model):
 
 class User(AbstractUser):
     middle_name = models.CharField(null=True, blank=True, max_length=100)
+
+    def middle_initial(self):
+        if self.middle_name:
+            mi = [x[:1].upper() for x in str(self.middle_name).split(' ')]
+            return '.'.join(mi) + '.'
+        return ''

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.html import mark_safe
 
 from custom.fields import NameField
 from custom.functions import Round, get_assay_constraints, this_year
@@ -333,6 +334,15 @@ class ApprovedShipmentLoadingAssay(models.Model):
     assay = models.OneToOneField('ShipmentLoadingAssay', on_delete=models.PROTECT)
     approved = models.BooleanField(null=True, blank=True)
 
+    def PDF(self):
+        return self.assay.PDF()
+
+    class Meta:
+        ordering = [
+            models.F('approved').asc(nulls_first=True),
+            '-assay__shipment__laydaysstatement__completed_loading'
+        ]
+
     def __str__(self):
         return self.assay.__str__()
 
@@ -349,6 +359,19 @@ class ShipmentLoadingAssay(AssaySample):
         if hasattr(self, 'approvedshipmentloadingassay'):
             if self.approvedshipmentloadingassay.approved:
                 raise ValidationError('Approved assay cannot be changed.')
+
+    def PDF(self):
+        return mark_safe(
+            '<a class="grp-button" '
+            'href="/sampling/assay/{}" '
+            'target="_blank"'
+            '>'
+            'View Certificate'
+            '</a>'.format(self.__str__())
+        )
+
+    def bc(self):
+        return self.mgo / self.sio2
 
     def save(self, *args, **kwargs):
         qs = self.shipmentloadinglotassay_set.all() \
@@ -379,6 +402,12 @@ class ShipmentLoadingLotAssay(AssaySample):
     shipment_assay = models.ForeignKey(ShipmentLoadingAssay, on_delete=models.CASCADE)
     lot = models.PositiveSmallIntegerField()
     wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
+
+    def dmt(self):
+        return round(float(self.wmt) * float(100 - self.moisture) * 0.01, 3)
+
+    def ni_ton(self):
+        return round(float(self.dmt()) * float(self.ni) * 0.01, 3)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

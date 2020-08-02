@@ -71,23 +71,27 @@ class DestinationAdmin(admin.ModelAdmin):
 class LayDaysStatementAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     inlines = [LayDaysDetailInline]
-    list_display = ('__str__',
-                    'vessel',
-                    'commenced_laytime',
-                    'completed_loading',
-                    'demurrage',
-                    'despatch',
-                    'PDF')
+    list_display = (
+        '__str__',
+        'vessel',
+        'commenced_laytime',
+        'completed_loading',
+        'demurrage',
+        'despatch',
+        'PDF'
+    )
     list_filter = ['completed_loading']
-    readonly_fields = ['date_saved',
-                       'date_computed',
-                       'commenced_laytime',
-                       'commenced_loading',
-                       'completed_loading',
-                       'time_allowed',
-                       'additional_laytime',
-                       'demurrage',
-                       'despatch']
+    readonly_fields = [
+        'date_saved',
+        'date_computed',
+        'commenced_laytime',
+        'commenced_loading',
+        'completed_loading',
+        'time_allowed',
+        'additional_laytime',
+        'demurrage',
+        'despatch'
+    ]
     search_fields = ['shipment__name']
 
 
@@ -115,14 +119,16 @@ class ShipmentAdmin(admin.ModelAdmin):
 class TripAdmin(admin.ModelAdmin):
     autocomplete_fields = ['lct', 'vessel']
     inlines = [TripDetailInline]
-    list_display = ('lct',
-                    'interval_from',
-                    'interval_to',
-                    'vessel',
-                    'dump_truck_trips',
-                    'cycle',
-                    'valid',
-                    'continuous')
+    list_display = (
+        'lct',
+        'interval_from',
+        'interval_to',
+        'vessel',
+        'dump_truck_trips',
+        'cycle',
+        'valid',
+        'continuous'
+    )
     list_filter = ['continuous', 'status', 'valid']
     readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     search_fields = ['lct__name', 'vessel__name']
