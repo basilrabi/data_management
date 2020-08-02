@@ -178,6 +178,7 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     inlines = [ShipmentLoadingLotAssayInline]
     list_display = ('__str__', 'approved', 'PDF')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
+    search_fields = ['shipment__name']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'chemist':
@@ -199,3 +200,4 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
 @admin.register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'approved', 'PDF')
+    search_fields = ['assay__shipment__name']

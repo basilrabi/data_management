@@ -7,6 +7,7 @@ from django.forms.models import BaseInlineFormSet
 from custom.functions import print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import (
+    ApprovedLayDaysStatement,
     Buyer,
     Destination,
     LayDaysDetail,
@@ -93,6 +94,12 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
         'despatch'
     ]
     search_fields = ['shipment__name']
+
+
+@admin.register(ApprovedLayDaysStatement)
+class ApprovedLayDaysStatementAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'approved', 'PDF')
+    search_fields = ['statement__shipment__name']
 
 
 @admin.register(LCT)

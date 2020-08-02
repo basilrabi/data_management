@@ -1,5 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
@@ -183,3 +184,8 @@ class  LayDaysStatement431CTest(TestCase):
         )
         self.assertAlmostEqual(statement.demurrage, Decimal(0), places=2)
         self.assertAlmostEqual(statement.despatch, Decimal(16438.89), places=2)
+        self.assertEqual(statement.clean(), None)
+        approval = statement.approvedlaydaysstatement
+        approval.approved = True
+        approval.save()
+        self.assertRaises(ValidationError, statement.clean)

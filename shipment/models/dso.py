@@ -157,6 +157,23 @@ class LayDaysDetailComputed(models.Model):
         ordering = ['interval_from']
 
 
+class ApprovedLayDaysStatement(models.Model):
+    statement = models.OneToOneField('LayDaysStatement', on_delete=models.PROTECT)
+    approved = models.BooleanField(null=True, blank=True)
+
+    def PDF(self):
+        return self.statement.PDF()
+
+    class Meta:
+        ordering = [
+            models.F('statement__completed_loading').desc(nulls_last=False),
+            models.F('statement__arrival_tmc').desc(nulls_last=False)
+        ]
+
+    def __str__(self):
+        return self.statement.__str__()
+
+
 class LayDaysStatement(models.Model):
     """
     A vessel's laydays statement for a shipment loading.
@@ -458,6 +475,10 @@ class LayDaysStatement(models.Model):
         return self.shipment.vessel.name
 
     def clean(self):
+        if hasattr(self, 'approvedlaydaysstatement'):
+            if self.approvedlaydaysstatement.approved:
+                raise ValidationError('Approved statement cannot be changed.')
+
         if self.arrival_tmc and self.arrival_pilot:
             if self.arrival_tmc < self.arrival_pilot:
                 raise ValidationError(
@@ -482,6 +503,9 @@ class LayDaysStatement(models.Model):
             self.date_saved = now()
         super().save(*args, **kwargs)
         self.shipment.save()
+        if not hasattr(self, 'approvedlaydaysstatement'):
+            approval = ApprovedLayDaysStatement(statement=self, approved=False)
+            approval.save()
 
     class Meta:
         ordering = [
@@ -497,6 +521,7 @@ class Product(Classification):
     moisture = models.DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
     ni = models.DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
     fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
+
 
 class Shipment(models.Model):
     """
