@@ -158,7 +158,13 @@ class ShipmentAdmin(admin.ModelAdmin):
             )
         })
     )
-    list_display = ('name', 'vessel', 'dump_truck_trips')
+    list_display = (
+        'name',
+        'vessel',
+        'dump_truck_trips',
+        'demurrage',
+        'despatch'
+    )
     search_fields = ['name', 'vessel__name']
 
 
