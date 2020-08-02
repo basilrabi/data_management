@@ -332,7 +332,7 @@ class ShipmentDischargeLotAssay(AssaySample):
 
 class ApprovedShipmentLoadingAssay(models.Model):
     assay = models.OneToOneField('ShipmentLoadingAssay', on_delete=models.PROTECT)
-    approved = models.BooleanField(null=True, blank=True)
+    approved = models.BooleanField()
 
     def PDF(self):
         return self.assay.PDF()

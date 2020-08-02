@@ -31,6 +31,7 @@ download_sql sampling_shipmentdischargeassay && \
 download_sql sampling_shipmentdischargelotassay && \
 download_sql sampling_shipmentloadingassay && \
 download_sql sampling_shipmentloadinglotassay && \
+download_sql shipment_approvedlaydaysstatement && \
 download_sql shipment_buyer && \
 download_sql shipment_destination && \
 download_sql shipment_laydaysdetail && \

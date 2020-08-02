@@ -159,13 +159,14 @@ class LayDaysDetailComputed(models.Model):
 
 class ApprovedLayDaysStatement(models.Model):
     statement = models.OneToOneField('LayDaysStatement', on_delete=models.PROTECT)
-    approved = models.BooleanField(null=True, blank=True)
+    approved = models.BooleanField()
 
     def PDF(self):
         return self.statement.PDF()
 
     class Meta:
         ordering = [
+            'approved',
             models.F('statement__completed_loading').desc(nulls_last=False),
             models.F('statement__arrival_tmc').desc(nulls_last=False)
         ]
