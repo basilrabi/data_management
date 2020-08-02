@@ -141,7 +141,7 @@ class ShipmentLoadingAssayTest(TestCase):
         approval = assay.approvedshipmentloadingassay
 
         self.assertEqual(assay.clean(), None)
-        self.assertEqual(float(assay.bc()), 0.77)
+        self.assertEqual(round(float(assay.bc()), 2), 0.77)
         self.assertEqual(float(assay.dmt), 41058.559)
         self.assertEqual(float(assay.moisture), 30.85)
         self.assertEqual(float(assay.ni), 1.55)
