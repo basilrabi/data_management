@@ -88,7 +88,17 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
         'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
-        'ni', 'fe', 'sio2', 'al2o3', 'mgo', 'p', 's', 'cao', 'cr2o3'
+        'al2o3',
+        'cao',
+        'co',
+        'cr2o3',
+        'fe',
+        'mgo',
+        'mn',
+        'ni',
+        'p',
+        's',
+        'sio2'
     )
     list_display = ('__str__', 'vessel')
     readonly_fields = ('vessel',)
