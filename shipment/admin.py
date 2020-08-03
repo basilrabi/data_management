@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import ExpressionWrapper, F, IntegerField, TextField
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
 
@@ -16,6 +16,7 @@ from .models.dso import (
     Shipment,
     Vessel
 )
+from .models.proxy import FinalShipmentDetail
 
 # pylint: disable=no-member
 
@@ -39,7 +40,7 @@ class LayDaysDetailInline(admin.TabularInline):
     model = LayDaysDetail
     extra = 0
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
     formset = IntervalFromInlineFormSet
 
@@ -53,7 +54,7 @@ class TripDetailInline(admin.TabularInline):
     model = TripDetail
     extra = 0
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
     formset = IntervalFromInlineFormSet
 
@@ -66,6 +67,63 @@ class BuyerAdmin(admin.ModelAdmin):
 @admin.register(Destination)
 class DestinationAdmin(admin.ModelAdmin):
     search_fields = ['name']
+
+
+@admin.register(FinalShipmentDetail)
+class FinalShipmentDetailAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Boulders', {
+            'fields': (
+                'boulders_tonnage',
+                'boulders_processing_cost',
+                'boulders_freight_cost'
+            )
+        }),
+        ('Final Specification', {
+            'fields': (
+                'buyer',
+                'base_price',
+                'final_price',
+                'final_ni',
+                'final_fe',
+                'final_moisture',
+                'remarks'
+            )
+        })
+    )
+    list_display = (
+        'name',
+        'vessel',
+        'final_ni',
+        'final_fe',
+        'final_price',
+        'final_moisture',
+        'diff_ni',
+        'diff_wmt',
+        'demurrage',
+        'despatch'
+    )
+    search_fields = ['name', 'vessel__name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request) \
+            .annotate(
+                diff_ni=F('shipmentloadingassay__ni') - F('shipmentdischargeassay__ni'),
+                diff_wmt=ExpressionWrapper(
+                    F('laydaysstatement__tonnage') - F('shipmentdischargeassay__wmt'),
+                    output_field=IntegerField()
+                )
+            )
+        return qs
+
+    def diff_ni(self, obj):
+        return obj.diff_ni
+
+    def diff_wmt(self, obj):
+        return obj.diff_wmt
+
+    diff_ni.short_description = 'Δ%Ni'
+    diff_wmt.short_description = 'ΔWMT'
 
 
 @admin.register(LayDaysStatement)
@@ -138,24 +196,6 @@ class ShipmentAdmin(admin.ModelAdmin):
                 'spec_fe',
                 'spec_moisture'
             )
-        }),
-        ('Boulders', {
-            'classes': ('collapse',),
-            'fields': (
-                'boulders_tonnage',
-                'boulders_processing_cost',
-                'boulders_freight_cost'
-            )
-        }),
-        ('Final Specification', {
-            'classes': ('collapse',),
-            'fields': (
-                'final_price',
-                'final_ni',
-                'final_fe',
-                'final_moisture',
-                'remarks'
-            )
         })
     )
     list_display = (
@@ -174,10 +214,10 @@ class ShipmentAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request) \
             .annotate(
-                tonnage=models.F('laydaysstatement__tonnage'),
-                ni=Round(models.F('shipmentloadingassay__ni'), 2),
-                fe=Round(models.F('shipmentloadingassay__fe'), 2),
-                moisture=Round(models.F('shipmentloadingassay__moisture'), 2)
+                tonnage=F('laydaysstatement__tonnage'),
+                ni=Round(F('shipmentloadingassay__ni'), 2),
+                fe=Round(F('shipmentloadingassay__fe'), 2),
+                moisture=Round(F('shipmentloadingassay__moisture'), 2)
             )
         return qs
 
