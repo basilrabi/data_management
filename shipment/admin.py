@@ -4,7 +4,7 @@ from django.db import models
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
 
-from custom.functions import print_tz_manila
+from custom.functions import Round, print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import (
     ApprovedLayDaysStatement,
@@ -162,10 +162,40 @@ class ShipmentAdmin(admin.ModelAdmin):
         'name',
         'vessel',
         'dump_truck_trips',
+        'tonnage',
+        'ni',
+        'fe',
+        'moisture',
         'demurrage',
         'despatch'
     )
     search_fields = ['name', 'vessel__name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request) \
+            .annotate(
+                tonnage=models.F('laydaysstatement__tonnage'),
+                ni=Round(models.F('shipmentloadingassay__ni'), 2),
+                fe=Round(models.F('shipmentloadingassay__fe'), 2),
+                moisture=Round(models.F('shipmentloadingassay__moisture'), 2)
+            )
+        return qs
+
+    def fe(self, obj):
+        return obj.fe
+
+    def moisture(self, obj):
+        return obj.moisture
+
+    def ni(self, obj):
+        return obj.ni
+
+    def tonnage(self, obj):
+        return obj.tonnage
+
+    fe.short_description = '%Fe'
+    moisture.short_description = '%H₂O'
+    ni.short_description = '%Ni'
 
 
 @admin.register(Trip)
