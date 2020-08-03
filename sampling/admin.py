@@ -87,13 +87,19 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
 class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
-        'shipment', 'laboratory', 'wmt', 'dmt', 'moisture',
+        'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
         'ni', 'fe', 'sio2', 'al2o3', 'mgo', 'p', 's', 'cao'
     )
+    list_display = ('__str__', 'vessel')
+    readonly_fields = ('vessel',)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request).exclude(laboratory__name='PAMCO')
+        qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
+            .annotate(vessel=F('shipment__vessel__name'))
         return qs
+
+    def vessel(self, obj):
+        return obj.vessel
 
 
 @admin.register(Lithology)
@@ -157,15 +163,21 @@ class PilingMethodAdmin(admin.ModelAdmin):
 class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     fields = (
-        'shipment', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'co', 'cr', 'mn',
-        'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p', 's', 'ignition_loss'
+        'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'co',
+        'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p', 's',
+        'ignition_loss'
     )
     inlines = [ShipmentDischargeLotAssayInline]
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
+    list_display = ('__str__', 'vessel')
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'vessel')
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request).filter(laboratory__name='PAMCO')
+        qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
+            .annotate(vessel=F('shipment__vessel__name'))
         return qs
+
+    def vessel(self, obj):
+        return obj.vessel
 
 
 @admin.register(ShipmentLoadingAssay)
