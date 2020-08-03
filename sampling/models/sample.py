@@ -37,6 +37,7 @@ class AssaySample(models.Model):
     cao = models.DecimalField('%CaO', max_digits=6, decimal_places=4, null=True, blank=True)
     co = models.DecimalField('%Co', max_digits=6, decimal_places=4, null=True, blank=True)
     cr = models.DecimalField('%Cr', max_digits=6, decimal_places=4, null=True, blank=True)
+    cr2o3 = models.DecimalField('%Cr₂O₃', max_digits=6, decimal_places=4, null=True, blank=True)
     fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
     mg = models.DecimalField('%Mg', max_digits=6, decimal_places=4, null=True, blank=True)
     mgo = models.DecimalField('%MgO', max_digits=6, decimal_places=4, null=True, blank=True)
