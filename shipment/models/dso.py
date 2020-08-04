@@ -473,7 +473,8 @@ class LayDaysStatement(models.Model):
         return zero_time
 
     def vessel(self):
-        return self.shipment.vessel.name
+        if self.shipment.vessel:
+            return self.shipment.vessel.name
 
     def clean(self):
         if hasattr(self, 'approvedlaydaysstatement'):
