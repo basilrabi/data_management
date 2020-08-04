@@ -31,6 +31,17 @@ class  LayDaysStatementTest(TestCase):
         )
         self.assertEqual(statement.clean(), None)
 
+    def test_cannot_accept_without_vessel(self):
+        shipment = Shipment.objects.all().first()
+        shipment.vessel = None
+        shipment.save()
+        statement = LayDaysStatement(
+            shipment=shipment,
+            arrival_pilot=pdt('2019-08-16 00:00:00+0800'),
+            arrival_tmc=pdt('2019-08-16 12:00:00+0800')
+        )
+        self.assertRaises(ValidationError, statement.clean)
+
     def test_nor_tender_should_be_later_than_acceptance(self):
         shipment = Shipment.objects.all().first()
         statement = LayDaysStatement(

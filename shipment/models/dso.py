@@ -499,6 +499,9 @@ class LayDaysStatement(models.Model):
                 raise ValidationError('Acceptance of Notice of Readiness must '
                                       'be later than its tender.')
 
+        if not self.shipment.vessel:
+            raise ValidationError('Cannot save statement without vessel.')
+
     def save(self, compute=False, *args, **kwargs):
         if not compute:
             self.date_saved = now()
@@ -625,8 +628,9 @@ class Shipment(models.Model):
             if not self.spec_fe:
                 self.spec_fe = self.product.fe
         super().save(*args, **kwargs)
-        for trip in self.vessel.trip_set.all():
-            trip.save()
+        if self.vessel:
+            for trip in self.vessel.trip_set.all():
+                trip.save()
 
     class Meta:
         constraints = [
