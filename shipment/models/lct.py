@@ -122,7 +122,7 @@ class Trip(models.Model):
         """
         Checks whether the trip overlaps with the vessel's shipment.
         """
-        if self.interval_to:
+        if self.interval_to and self.vessel:
             if self.vessel.shipment_set.filter(
                 models.Q(laydaysstatement__commenced_loading__lte=self.interval_to),
                 models.Q(laydaysstatement__completed_loading__gte=self.interval_from) |
