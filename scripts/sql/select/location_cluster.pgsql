@@ -12,6 +12,7 @@ SELECT
 	date_scheduled,
 	layout_date,
 	excavated,
+	modified,
 	ST_AsEWKT(location_cluster.geom)
 FROM location_cluster
 	LEFT JOIN location_roadarea

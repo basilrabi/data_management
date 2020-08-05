@@ -79,7 +79,7 @@ sql_script "function" "insert_dummy_cluster" && \
 sql_script "trigger" "inventory_block_exposed" && \
 sql_script "trigger" "location_cluster_update" && \
 sql_script "trigger" "location_drillhole_update" && \
-upload_orm location_cluster_snap && \
+psql -h $db_host -p $db_port -U $db_user -w $db_name -c "select insert_dummy_cluster()"
 sql_script "upload_data" "location_drillhole" && \
 sql_script "upload_data" "sampling_drillcoresample" && \
 sql_script "lock" "location_cluster" && \

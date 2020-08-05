@@ -13,6 +13,7 @@ CREATE TEMPORARY TABLE temp_location_cluster
     date_scheduled date,
     layout_date date,
     excavated boolean,
+    modified timestamp with time zone,
     geom_text text
 );
 
@@ -32,23 +33,25 @@ INSERT INTO location_cluster (
     date_scheduled,
     layout_date,
     excavated,
+    modified,
     geom
 )
 SELECT
-    temp_location_cluster.name,
-    temp_location_cluster.z,
-    temp_location_cluster.count,
-    temp_location_cluster.ore_class,
-    temp_location_cluster.mine_block,
-    temp_location_cluster.ni,
-    temp_location_cluster.fe,
-    temp_location_cluster.co,
-    temp_location_cluster.distance_from_road,
-    location_roadarea.id,
-    temp_location_cluster.date_scheduled,
-    temp_location_cluster.layout_date,
-    temp_location_cluster.excavated,
-    ST_GeomFromEWKT(temp_location_cluster.geom_text)
-FROM temp_location_cluster
-    LEFT JOIN location_roadarea
-        ON temp_location_cluster.road_date = location_roadarea.date_surveyed;
+    a.name,
+    a.z,
+    a.count,
+    a.ore_class,
+    a.mine_block,
+    a.ni,
+    a.fe,
+    a.co,
+    a.distance_from_road,
+    b.id,
+    a.date_scheduled,
+    a.layout_date,
+    a.excavated,
+    a.modified,
+    ST_GeomFromEWKT(a.geom_text)
+FROM temp_location_cluster a
+    LEFT JOIN location_roadarea b
+        ON a.road_date = b.date_surveyed;
