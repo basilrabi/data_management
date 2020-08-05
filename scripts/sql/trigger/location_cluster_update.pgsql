@@ -96,6 +96,7 @@ BEGIN
 
         UPDATE location_cluster
         SET z = elevation,
+            modified = NOW(),
             geom = cluster_geom
         WHERE id = NEW.cluster_id;
     END IF;
@@ -134,6 +135,7 @@ BEGIN
                     WHEN elevation IS NOT NULL THEN elevation
                     ELSE 0
                 END,
+            modified = NOW(),
             geom = cluster_geom
         WHERE id = OLD.cluster_id;
     END IF;
@@ -185,7 +187,8 @@ BEGIN
         END IF;
 
         UPDATE location_cluster
-        SET geom = ST_MakeValid(cluster_geom)
+        SET geom = ST_MakeValid(cluster_geom),
+            modified = NOW()
         WHERE id = NEW.id;
     END IF;
 

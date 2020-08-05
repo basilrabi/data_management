@@ -56,6 +56,7 @@ class Cluster(models.Model):
         filled out when the date scheduled is still empty.'''
     )
     excavated = models.BooleanField(default=False)
+    modified = models.DateTimeField()
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     def clean(self):

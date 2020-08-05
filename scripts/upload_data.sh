@@ -32,6 +32,7 @@ sql_script "upload_data" "inventory_block" && \
 upload_ogr location_mineblock identity && \
 upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
+sql_script "trigger" "location_cluster_insert" && \
 sql_script "upload_data" "location_cluster" && \
 vacuum "inventory_block" && \
 vacuum "location_cluster" && \

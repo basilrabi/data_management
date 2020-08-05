@@ -171,6 +171,7 @@ def setup_triggers():
         'function/insert_dummy_cluster',
         'lock/location_cluster',
         'trigger/inventory_block_exposed',
+        'trigger/location_cluster_insert',
         'trigger/location_cluster_update',
         'trigger/location_drillhole_update'
     ]
