@@ -308,10 +308,10 @@ class LayDaysStatement(models.Model):
                         self.commenced_loading += datetime.timedelta(minutes=5)
 
                     end_details = self.laydaysdetail_set .filter(interval_class='end')
-                    #  Proceed computation if end of statement exists
+                    #  Proceed computation if end of statement exists.
                     if end_details.exists():
 
-                        # Record end of loading operation
+                        # Record end of loading operation.
                         self.completed_loading = loading_details.last().next().interval_from
 
                         _time_remaining = self.time_limit() + self.additional_laytime
@@ -324,19 +324,7 @@ class LayDaysStatement(models.Model):
                         ]
                         for detail in self.laydaysdetail_set.all():
 
-                            # If laytime rates are mistakenly set, adjust.
-                            if _time_remaining > zero_time and \
-                                    detail.interval_class in NATURAL_DELAYS and \
-                                    detail.laytime_rate > 0:
-                                detail.laytime_rate = 0
-                                detail.save()
-                            if _time_remaining <= zero_time and \
-                                    detail.interval_class in NATURAL_DELAYS and \
-                                    detail.laytime_rate < 100:
-                                detail.laytime_rate = 100
-                                detail.save()
-
-                            # Create initial computated detail object copied from the orignal detail
+                            # Create initial computed detail object copied from the orignal detail.
                             computed_detail = LayDaysDetailComputed(
                                 laydays=detail.laydays,
                                 interval_from=detail.interval_from,
@@ -344,6 +332,21 @@ class LayDaysStatement(models.Model):
                                 interval_class=detail.interval_class,
                                 remarks=detail.remarks
                             )
+
+                            # If laytime rates are mistakenly set, adjust.
+                            if (_time_remaining - computed_detail.consumed()) > zero_time and \
+                                    detail.interval_class in NATURAL_DELAYS and \
+                                    detail.laytime_rate > 0:
+                                detail.laytime_rate = 0
+                                detail.save()
+                                computed_detail.laytime_rate = 0
+                            if (_time_remaining - computed_detail.consumed()) <= zero_time and \
+                                    detail.interval_class in NATURAL_DELAYS and \
+                                    detail.laytime_rate < 100:
+                                detail.laytime_rate = 100
+                                detail.save()
+                                computed_detail.laytime_rate = 100
+
                             previous_detail = computed_detail.previous()
                             if previous_detail:
 
