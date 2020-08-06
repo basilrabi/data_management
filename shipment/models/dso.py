@@ -239,9 +239,9 @@ class LayDaysStatement(models.Model):
         verbose_name='Pre-loading Can Test'
     )
     CAN_TEST_FACTOR_CHOICES = (
-        (1, '1.0'),
+        (0.0, '0.0'),
         (0.5, '0.5'),
-        (0, '0.0')
+        (1.0, '1.0')
     )
     can_test_factor = models.DecimalField(
         default=0.5,
