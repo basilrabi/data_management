@@ -86,6 +86,7 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
 @admin.register(ChinaShipmentAssay)
 class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     fields = (
         'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
         'al2o3',
@@ -172,6 +173,7 @@ class PilingMethodAdmin(admin.ModelAdmin):
 @admin.register(PamcoShipmentAssay)
 class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     fields = (
         'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'co',
         'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p', 's',
@@ -193,6 +195,7 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 @admin.register(ShipmentLoadingAssay)
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     fields = (
         'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton',
         'fe', 'mgo', 'sio2', 'cr', 'co'

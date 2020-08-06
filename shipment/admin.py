@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django.db.models import ExpressionWrapper, F, IntegerField, TextField
+from django.db.models import (
+    DateField, ExpressionWrapper, F, IntegerField, TextField
+)
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
+from django.db.models.functions import Cast
 
 from custom.functions import Round, print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
@@ -129,6 +132,7 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
 @admin.register(LayDaysStatement)
 class LayDaysStatementAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
+    date_hierarchy = 'laydaysdetail__interval_from'
     inlines = [LayDaysDetailInline]
     list_display = (
         '__str__',
@@ -139,7 +143,6 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
         'despatch',
         'PDF'
     )
-    list_filter = ['completed_loading']
     readonly_fields = [
         'date_saved',
         'date_computed',
@@ -176,6 +179,7 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):
     autocomplete_fields = ['vessel']
+    date_hierarchy = 'laydaysstatement__laydaysdetail__interval_from'
     fieldsets = (
         (None, {'fields': (
             'name',
@@ -207,7 +211,8 @@ class ShipmentAdmin(admin.ModelAdmin):
         'fe',
         'moisture',
         'demurrage',
-        'despatch'
+        'despatch',
+        'completion'
     )
     search_fields = ['name', 'vessel__name']
 
@@ -217,9 +222,13 @@ class ShipmentAdmin(admin.ModelAdmin):
                 tonnage=F('laydaysstatement__tonnage'),
                 ni=Round(F('shipmentloadingassay__ni'), 2),
                 fe=Round(F('shipmentloadingassay__fe'), 2),
-                moisture=Round(F('shipmentloadingassay__moisture'), 2)
+                moisture=Round(F('shipmentloadingassay__moisture'), 2),
+                completion=Cast(F('laydaysstatement__completed_loading'), DateField())
             )
         return qs
+
+    def completion(self, obj):
+        return obj.completion
 
     def fe(self, obj):
         return obj.fe
