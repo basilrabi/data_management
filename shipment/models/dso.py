@@ -119,6 +119,14 @@ class LayDaysDetailComputed(models.Model):
         """
         return to_hms(self.consumed())
 
+    def days_consumed(self):
+        if self.previous():
+            return (self.interval() * (self.previous().laytime_rate / 100)) / one_day
+        return 0
+
+    def days_remaining(self):
+        return self.time_remaining / one_day
+
     def interval(self):
         if self.previous():
             return self.interval_from - self.previous().interval_from
@@ -160,6 +168,9 @@ class LayDaysDetailComputed(models.Model):
 class ApprovedLayDaysStatement(models.Model):
     statement = models.OneToOneField('LayDaysStatement', on_delete=models.PROTECT)
     approved = models.BooleanField()
+
+    def csv(self):
+        return self.statement.csv()
 
     def PDF(self):
         return self.statement.PDF()
@@ -443,13 +454,23 @@ class LayDaysStatement(models.Model):
     def cargo_description_title(self):
         return self.cargo_description.lower().title()
 
+    def csv(self):
+        return mark_safe(
+            '<a class="grp-button" '
+            'href="/shipment/statement-csv/{}" '
+            'target="_blank"'
+            '>'
+            'Download'
+            '</a>'.format(self.__str__())
+        )
+
     def PDF(self):
         return mark_safe(
             '<a class="grp-button" '
             'href="/shipment/statement/{}" '
             'target="_blank"'
             '>'
-            'Compute and View Statement'
+            'View'
             '</a>'.format(self.__str__())
         )
 

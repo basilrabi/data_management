@@ -141,7 +141,8 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
         'completed_loading',
         'demurrage',
         'despatch',
-        'PDF'
+        'PDF',
+        'csv'
     )
     readonly_fields = [
         'date_saved',
@@ -159,7 +160,7 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
 
 @admin.register(ApprovedLayDaysStatement)
 class ApprovedLayDaysStatementAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'approved', 'PDF')
+    list_display = ('__str__', 'approved', 'PDF', 'csv')
     search_fields = ['statement__shipment__name']
 
 

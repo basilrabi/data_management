@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.template.loader import get_template
 from subprocess import PIPE, run
 
@@ -21,6 +21,17 @@ def data_export_lct_trips(request):
     CSV view of TripDetail intended for user's perusal.
     """
     return export_sql('export_lcttrips', 'lct_trips')
+
+def lay_days_statement_csv(request, name):
+    statement = LayDaysStatement.objects.get(shipment__name=name)
+    statement._compute()
+    details = statement.laydaysdetailcomputed_set.all()
+    context = {'details': details}
+    template = get_template('shipment/lay_time_details.csv')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{statement.__str__()}.csv"'
+    response.write(template.render(context))
+    return response
 
 def lay_days_statement_pdf(request, name):
     statement = LayDaysStatement.objects.get(shipment__name=name)
