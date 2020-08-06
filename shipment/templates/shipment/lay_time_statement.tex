@@ -200,7 +200,7 @@ Zgo0NjczCiUlRU9GCg==
             & {{ statement.demurrage_rate|intcomma }} US\$/day
             & Despatch Rate
             & {{ statement.despatch_rate|intcomma }} US\$/day \\
-{% if statement.can_test > 0 %}
+{% if statement.can_test > 0 and statement.can_test_factor > 0 %}
         Number of Can Test
             & {{ statement.can_test }} time{{ statement.can_test|pluralize }}
             & Total Time Allowed
