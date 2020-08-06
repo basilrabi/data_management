@@ -249,7 +249,9 @@ Zgo0NjczCiUlRU9GCg==
             & {{ detail.next.consumed_formated }}
             & {{ detail.next.remaining }}
         {% if detail.interval_class == 'others' %}
-            {% if detail.remarks %}
+            {% if detail.next.remarks.strip.lower == 'completed trimming' %}
+            & Completed Trimming \\
+            {% elif detail.remarks %}
             & {{ detail.remarks|title }} \\
             {% else %}
             & \\
@@ -261,6 +263,8 @@ Zgo0NjczCiUlRU9GCg==
             } \\
             {% elif detail.remarks == 'laytime expires' %}
             & {{ detail.interval_class|title }} \\
+            {% elif detail.next.remarks.strip.lower == 'completed loading' %}
+            & Completed Loading \\
             {% elif detail.remarks %}
             & {{ detail.interval_class|title }}. {{ detail.remarks }} \\
             {% else %}

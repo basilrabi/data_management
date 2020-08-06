@@ -318,7 +318,7 @@ class LayDaysStatement(models.Model):
                     if self.pre_loading_can_test:
                         self.commenced_loading += datetime.timedelta(minutes=5)
 
-                    end_details = self.laydaysdetail_set .filter(interval_class='end')
+                    end_details = self.laydaysdetail_set.filter(interval_class='end')
                     #  Proceed computation if end of statement exists.
                     if end_details.exists():
 
