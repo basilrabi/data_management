@@ -415,6 +415,13 @@ class LayDaysStatement(models.Model):
                                 # If the previous time interval does not cross midnight, save the present detail as new computed detail.
                                 time_remaining = _time_remaining - computed_detail.consumed()
 
+                                if _time_remaining > zero_time and time_remaining == zero_time:
+                                    computed_detail.time_remaining = time_remaining
+                                    computed_detail.remarks='laytime expires'
+                                    computed_detail.save()
+                                    _time_remaining = time_remaining
+                                    continue
+
                                 # During lay time expiry, save a time stamp at the end of allowed laytime.
                                 if _time_remaining > zero_time and time_remaining < zero_time:
                                     computed_detail_virtual = LayDaysDetailComputed(
