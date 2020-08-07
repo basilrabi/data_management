@@ -142,7 +142,8 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
         'demurrage',
         'despatch',
         'PDF',
-        'csv'
+        'csv',
+        'approved'
     )
     readonly_fields = [
         'date_saved',
@@ -156,6 +157,18 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
         'despatch'
     ]
     search_fields = ['shipment__name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).annotate(
+            approved=F('approvedlaydaysstatement__approved')
+        )
+        return qs
+
+    def approved(self, obj):
+        return obj.approved
+
+    approved.admin_order_field = 'approved'
+    approved.boolean = True
 
 
 @admin.register(ApprovedLayDaysStatement)
