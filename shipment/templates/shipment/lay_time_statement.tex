@@ -248,10 +248,14 @@ Zgo0NjczCiUlRU9GCg==
             & {{ detail.laytime_rate }}~\%
             & {{ detail.next.consumed_formated }}
             & {{ detail.next.remaining }}
-        {% if detail.interval_class == 'others' %}
-            {% if detail.next.remarks.strip.lower == 'completed trimming' %}
-            & Completed Trimming \\
-            {% elif detail.remarks %}
+        {% if detail.next.interval_class == 'end' %}
+            {% if detail.next.remarks %}
+            & {{ detail.next.remarks|title }} \\
+            {% else %}
+            & Completed Loading \\
+            {% endif %}
+        {% elif detail.interval_class == 'others' %}
+            {% if detail.remarks %}
             & {{ detail.remarks|title }} \\
             {% else %}
             & \\
