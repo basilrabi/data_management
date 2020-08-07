@@ -481,12 +481,6 @@ class LayDaysStatement(models.Model):
             '</a>'.format(self.__str__())
         )
 
-    def shipment_name_latex(self):
-        if self.shipment.name.isdigit():
-            return f'{self.shipment.name}$^\\mathrm{{\\text{{' + \
-                f'{ordinal_suffix(self.shipment.name)}}}}}$'
-        return self.shipment.name
-
     def time_can_test(self):
         return self.can_test * \
             datetime.timedelta(minutes=5) * \
@@ -643,6 +637,12 @@ class Shipment(models.Model):
                     return f'{start_month} {start_day} - {end_month} {end_day}, {end_year}'.upper()
                 else:
                     return f'{start_month} {start_day} - {end_day}, {end_year}'.upper()
+
+    def name_latex(self):
+        if self.name.isdigit():
+            return f'{self.name}$^\\mathrm{{\\text{{' + \
+                f'{ordinal_suffix(self.name)}}}}}$'
+        return self.name
 
     def clean(self):
         if self.despatch and self.demurrage:
