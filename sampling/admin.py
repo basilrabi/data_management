@@ -196,14 +196,28 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    fields = (
-        'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton',
-        'fe', 'mgo', 'sio2', 'cr', 'co'
-    )
     inlines = [ShipmentLoadingLotAssayInline]
     list_display = ('__str__', 'approved', 'PDF')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
     search_fields = ['shipment__name']
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        assay = ShipmentLoadingAssay.objects.get(id=object_id)
+        print(assay)
+        print(assay.shipment.product.name)
+        if assay.shipment.product.name != 'LIMONITE':
+            self.fields = (
+                'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
+                'ni_ton', 'fe', 'mgo', 'sio2', 'cr', 'co'
+            )
+        else:
+            self.fields = (
+                'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
+                'ni_ton', 'fe', 'mgo', 'sio2', 'cr', 'co', 'al2o3'
+            )
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'chemist':

@@ -225,6 +225,10 @@ Zgo0NjczCiUlRU9GCg==
             & {{ assay.sio2|floatformat:2 }}
             & BC
             & {{ assay.bc|floatformat:2 }} \\
+{% if assay.shipment.product.name == 'LIMONITE' %}
+            && Al$_2$O$_3$
+            & {{ assay.al2o3|floatformat:2 }}
+{% endif %}
     \end{tabular}
 \end{center}
 
