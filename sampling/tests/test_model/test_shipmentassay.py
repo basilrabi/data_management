@@ -109,6 +109,8 @@ class ShipmentLoadingAssayTest(TestCase):
         product.save()
         product = Product(name='TYPE B')
         product.save()
+        vessel = Vessel(name='Fakku')
+        vessel.save()
         vessel = Vessel(name='Jin Hong')
         vessel.save()
         shipment = Shipment(
@@ -176,4 +178,12 @@ class ShipmentLoadingAssayTest(TestCase):
 
         destination_new = Destination.objects.get(name='A')
         shipment.destination = destination_new
+        self.assertRaises(ValidationError, shipment.clean)
+
+        destination_new = Destination.objects.get(name='B')
+        shipment.destination = destination_new
+        self.assertEqual(shipment.clean(), None)
+
+        vessel_new = Vessel.objects.get(name='FAKKU')
+        shipment.vessel = vessel_new
         self.assertRaises(ValidationError, shipment.clean)
