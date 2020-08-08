@@ -196,10 +196,14 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    inlines = [ShipmentLoadingLotAssayInline]
     list_display = ('__str__', 'approved', 'PDF')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
     search_fields = ['shipment__name']
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ('date', 'shipment', 'chemist')
+        self.inlines = []
+        return super().add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         assay = ShipmentLoadingAssay.objects.get(id=object_id)
@@ -215,6 +219,7 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
                 'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
                 'ni_ton', 'fe', 'mgo', 'sio2', 'cr', 'co', 'al2o3'
             )
+        self.inlines = [ShipmentLoadingLotAssayInline]
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
         )
