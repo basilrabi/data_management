@@ -651,6 +651,17 @@ class Shipment(models.Model):
                     'Demurrage and despatch cannot have values at the same time.'
                 )
 
+        if hasattr(self, 'shipmentloadingassay'):
+            if hasattr(self.shipmentloadingassay, 'approvedshipmentloadingassay'):
+                if self.shipmentloadingassay.approvedshipmentloadingassay.approved:
+                    original_obj = Shipment.objects.get(id=self.id)
+                    previous_product = original_obj.product
+                    if self.product != previous_product:
+                        raise ValidationError('Product cannot be changed if assay is already approved.')
+                    previous_destination = original_obj.destination
+                    if self.destination != previous_destination:
+                        raise ValidationError('Destination cannot be changed if assay is already approved.')
+
     def save(self, *args, **kwargs):
         if self.product:
             if not self.spec_moisture:

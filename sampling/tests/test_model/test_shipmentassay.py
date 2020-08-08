@@ -8,7 +8,7 @@ from sampling.models.sample import (
     ShipmentLoadingAssay,
     ShipmentLoadingLotAssay
 )
-from shipment.models.dso import Destination, Shipment, Vessel
+from shipment.models.dso import Destination, Product, Shipment, Vessel
 
 # pylint: disable=no-member
 
@@ -101,9 +101,22 @@ class PamcoShipmentAssayTest(TestCase):
 class ShipmentLoadingAssayTest(TestCase):
 
     def setUp(self):
+        destination = Destination(name='A')
+        destination.save()
+        destination = Destination(name='B')
+        destination.save()
+        product = Product(name='TYPE A')
+        product.save()
+        product = Product(name='TYPE B')
+        product.save()
         vessel = Vessel(name='Jin Hong')
         vessel.save()
-        shipment = Shipment(name='481-C', vessel=vessel)
+        shipment = Shipment(
+            name='481-C',
+            vessel=vessel,
+            product=product,
+            destination=destination
+        )
         shipment.save()
 
     def test_correct_computation(self):
@@ -151,3 +164,16 @@ class ShipmentLoadingAssayTest(TestCase):
         approval.save()
         assay.refresh_from_db()
         self.assertRaises(ValidationError, assay.clean)
+
+        self.assertEqual(shipment.clean(), None)
+        product_new = Product.objects.get(name='Type A')
+        shipment.product = product_new
+        self.assertRaises(ValidationError, shipment.clean)
+
+        product_new = Product.objects.get(name='Type B')
+        shipment.product = product_new
+        self.assertEqual(shipment.clean(), None)
+
+        destination_new = Destination.objects.get(name='A')
+        shipment.destination = destination_new
+        self.assertRaises(ValidationError, shipment.clean)
