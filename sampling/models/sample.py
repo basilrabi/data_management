@@ -372,7 +372,8 @@ class ShipmentLoadingAssay(AssaySample):
         )
 
     def bc(self):
-        return self.mgo / self.sio2
+        if self.mgo and self.sio2:
+            return self.mgo / self.sio2
 
     def save(self, *args, **kwargs):
         qs = self.shipmentloadinglotassay_set.all() \
