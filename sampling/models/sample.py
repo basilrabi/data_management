@@ -272,12 +272,31 @@ class MiningSampleReport(models.Model):
         ordering = ['-date', '-shift_collected']
 
 
+class ApprovedShipmentDischargeAssay(models.Model):
+    assay = models.OneToOneField('ShipmentDischargeAssay', on_delete=models.PROTECT)
+    approved = models.BooleanField()
+
+    class Meta:
+        ordering = [
+            models.F('approved').asc(nulls_first=True),
+            '-assay__shipment__laydaysstatement__completed_loading'
+        ]
+
+    def __str__(self):
+        return self.assay.__str__()
+
+
 class ShipmentDischargeAssay(AssaySample):
     laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
     shipment = models.OneToOneField(Shipment, on_delete=models.PROTECT)
     wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
     dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
     ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
+
+    def clean(self):
+        if hasattr(self, 'approvedshipmentdischargeassay'):
+            if self.approvedshipmentdischargeassay.approved:
+                raise ValidationError('Approved assay cannot be changed.')
 
     def save(self, *args, **kwargs):
         if self.laboratory.name == 'PAMCO':
@@ -300,6 +319,9 @@ class ShipmentDischargeAssay(AssaySample):
             if self.dmt and self.ni:
                 self.ni_ton = round(float(self.ni) * float(self.dmt) * 0.01, 3)
         super().save(*args, **kwargs)
+        if not hasattr(self, 'approvedshipmentdischargeassay'):
+            approval = ApprovedShipmentDischargeAssay(assay=self, approved=False)
+            approval.save()
 
     class Meta:
         constraints = get_assay_constraints('dischargeassay')

@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from sampling.models.proxy import ChinaShipmentAssay, PamcoShipmentAssay
 from sampling.models.sample import (
+    ApprovedShipmentDischargeAssay,
     Laboratory,
     ShipmentDischargeLotAssay,
     ShipmentLoadingAssay,
@@ -48,6 +49,13 @@ class ChinaShipmentAssayTest(TestCase):
         assay.refresh_from_db()
 
         self.assertEqual(float(assay.moisture), 29.92)
+
+        # Approval
+        approval = assay.approvedshipmentdischargeassay
+        approval.approved = True
+        approval.save()
+
+        self.assertRaises(ValidationError, assay.clean)
 
 
 class PamcoShipmentAssayTest(TestCase):
@@ -96,6 +104,13 @@ class PamcoShipmentAssayTest(TestCase):
         self.assertEqual(float(assay.ni), 1.74)
         self.assertEqual(assay.laboratory.name, 'PAMCO')
         self.assertEqual(assay.wmt, 49015)
+
+        # Approval
+        approval = assay.approvedshipmentdischargeassay
+        approval.approved = True
+        approval.save()
+
+        self.assertRaises(ValidationError, assay.clean)
 
 
 class ShipmentLoadingAssayTest(TestCase):
