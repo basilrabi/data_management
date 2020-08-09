@@ -104,6 +104,7 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     )
     list_display = ('__str__', 'vessel')
     readonly_fields = ('vessel',)
+    search_fields = ['shipment__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
@@ -183,6 +184,7 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     inlines = [ShipmentDischargeLotAssayInline]
     list_display = ('__str__', 'vessel')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'vessel')
+    search_fields = ['shipment__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
@@ -242,6 +244,7 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
 
 @admin.register(ApprovedShipmentDischargeAssay)
 class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
+    date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('__str__', 'approved')
     search_fields = ['assay__shipment__name']
     readonly_fields = (
@@ -258,13 +261,13 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
         assay = ApprovedShipmentDischargeAssay.objects.get(id=object_id)
         if assay.assay.laboratory.name != 'PAMCO':
             self.fields = (
-                'assay', 'shipment', 'vessel', 'laboratory', 'wmt', 'dmt',
+                'shipment', 'vessel', 'laboratory', 'wmt', 'dmt',
                 'moisture', 'al2o3', 'cao', 'co', 'cr2o3', 'fe', 'mgo', 'mn',
                 'ni', 'p', 's', 'sio2', 'approved'
             )
         else:
             self.fields = (
-                'assay', 'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni',
+                'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni',
                 'ni_ton', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3',
                 'p', 's', 'ignition_loss', 'approved'
             )
