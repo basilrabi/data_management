@@ -5,6 +5,7 @@ from custom.admin_gis import TMCLocationAdmin
 from custom.models import User
 from personnel.models.person import Person
 
+from shipment.models.dso import Shipment
 from .models.piling import PilingMethod, TripsPerPile
 from .models.proxy import (
     AcquiredMiningSample,
@@ -106,6 +107,13 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     readonly_fields = ('vessel',)
     search_fields = ['shipment__name']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'shipment':
+            kwargs["queryset"] = Shipment.objects.distinct().filter(
+                destination__name__contains='CHINA'
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
             .annotate(vessel=F('shipment__vessel__name'))
@@ -185,6 +193,13 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'vessel')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'vessel')
     search_fields = ['shipment__name']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'shipment':
+            kwargs["queryset"] = Shipment.objects.distinct().filter(
+                destination__name__contains='JAPAN'
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
@@ -267,7 +282,7 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
             )
         else:
             self.fields = (
-                'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni',
+                'shipment', 'vessel', 'wmt', 'moisture', 'dmt', 'ni',
                 'ni_ton', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3',
                 'p', 's', 'ignition_loss', 'approved'
             )
