@@ -29,6 +29,8 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
         super().clean()
         if any(self.errors):
             return
+
+        end_stamp = None
         timestamps = []
         for form in self.forms:
             if self.can_delete and self._should_delete_form(form):
@@ -36,7 +38,12 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
             timestamp = form.cleaned_data.get('interval_from')
             if timestamp in timestamps:
                 raise ValidationError(f'{str(print_tz_manila(timestamp))} is duplicated.')
+            if not end_stamp and form.cleaned_data.get('interval_class') == 'end':
+                end_stamp = timestamp
             timestamps.append(timestamp)
+        if end_stamp:
+            if end_stamp < max(timestamps):
+                raise ValidationError(f'End ({str(print_tz_manila(end_stamp))}) should have the last time stamp.')
 
 
 class LayDaysDetailInline(admin.TabularInline):
