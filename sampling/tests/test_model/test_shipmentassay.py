@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -36,6 +37,11 @@ class ChinaShipmentAssayTest(TestCase):
         assay.refresh_from_db()
 
         self.assertEqual(float(assay.dmt), 37597.219)
+
+        assay.wmt = assay.dmt
+        self.assertRaises(ValidationError, assay.clean)
+        assay.wmt = assay.dmt - Decimal(0.001)
+        self.assertRaises(ValidationError, assay.clean)
 
     def test_moisture_trigger(self):
         shipment = Shipment.objects.first()

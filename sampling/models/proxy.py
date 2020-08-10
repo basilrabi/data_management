@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+
 from .sample import (
     DrillCoreSample, Laboratory, MiningSample, ShipmentDischargeAssay
 )
@@ -10,6 +12,14 @@ class AcquiredMiningSample(MiningSample):
 
 
 class ChinaShipmentAssay(ShipmentDischargeAssay):
+
+    def clean(self):
+        super().clean()
+        if self.dmt and self.wmt:
+            if self.dmt >= self.wmt:
+                raise ValidationError('DTM cannot be higher than WMT.')
+
+
     class Meta:
         proxy = True
         verbose_name = 'China Shipment Discharge Assay'
