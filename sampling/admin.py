@@ -331,7 +331,8 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
         return obj.cr2o3
 
     def dmt(self, obj):
-        return f'{obj.dmt:,}'
+        if obj.dmt:
+            return f'{obj.dmt:,}'
 
     def fe(self, obj):
         return obj.fe
@@ -373,7 +374,8 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
         return obj.vessel
 
     def wmt(self, obj):
-        return f'{obj.wmt:,}'
+        if obj.wmt:
+            return f'{obj.wmt:,}'
 
     al2o3.short_description = '%Al₂O₃'
     cao.short_description = '%CaO'
