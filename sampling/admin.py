@@ -89,21 +89,6 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
 class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    fields = (
-        'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
-        'al2o3',
-        'cao',
-        'co',
-        'cr2o3',
-        'fe',
-        'mgo',
-        'mn',
-        'ni',
-        'p',
-        's',
-        'sio2',
-        'ignition_loss'
-    )
     list_display = ('__str__', 'vessel')
     readonly_fields = ('vessel',)
     search_fields = ['shipment__name']
@@ -111,6 +96,24 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('shipment', 'laboratory')
         return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.fields = (
+            'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
+            'al2o3',
+            'cao',
+            'co',
+            'cr2o3',
+            'fe',
+            'mgo',
+            'mn',
+            'ni',
+            'p',
+            's',
+            'sio2',
+            'ignition_loss'
+        )
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'laboratory':
