@@ -101,7 +101,8 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
         'ni',
         'p',
         's',
-        'sio2'
+        'sio2',
+        'ignition_loss'
     )
     list_display = ('__str__', 'vessel')
     readonly_fields = ('vessel',)
@@ -278,7 +279,7 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
             self.fields = (
                 'shipment', 'vessel', 'laboratory', 'wmt', 'dmt',
                 'moisture', 'al2o3', 'cao', 'co', 'cr2o3', 'fe', 'mgo', 'mn',
-                'ni', 'p', 's', 'sio2', 'approved'
+                'ni', 'p', 's', 'sio2', 'ignition_loss', 'approved'
             )
         else:
             self.fields = (
