@@ -108,6 +108,10 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
     readonly_fields = ('vessel',)
     search_fields = ['shipment__name']
 
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ('shipment', 'laboratory')
+        return super().add_view(request, form_url, extra_context)
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'shipment':
             kwargs["queryset"] = Shipment.objects.distinct().filter(
