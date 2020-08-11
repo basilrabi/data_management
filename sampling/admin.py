@@ -113,6 +113,8 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
         return super().add_view(request, form_url, extra_context)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'laboratory':
+            kwargs["queryset"] = Laboratory.objects.distinct().exclude(name='PAMCO')
         if db_field.name == 'shipment':
             kwargs["queryset"] = Shipment.objects.distinct().filter(
                 destination__name__contains='CHINA'
