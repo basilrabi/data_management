@@ -711,7 +711,7 @@ class Vessel(models.Model):
         stripped_name = sub(r'\s+', ' ', str(self.name).upper().strip())
         stripped_name = sub(r'^M[^a-zA-Z]*V\s*', '', stripped_name)
         stripped_name = sub(r'[^\w]', '', str(stripped_name))
-        if Vessel.objects.all().filter(stripped_name = stripped_name).exists():
+        if Vessel.objects.all().exclude(id=self.id).filter(stripped_name = stripped_name).exists():
             raise ValidationError("Vessel name exists.")
 
     def save(self, *args, **kwargs):
