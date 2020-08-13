@@ -38,8 +38,11 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
             timestamp = form.cleaned_data.get('interval_from')
             if timestamp in timestamps:
                 raise ValidationError(f'{str(print_tz_manila(timestamp))} is duplicated.')
-            if not end_stamp and form.cleaned_data.get('interval_class') == 'end':
-                end_stamp = timestamp
+            if form.cleaned_data.get('interval_class') == 'end':
+                if not end_stamp:
+                    end_stamp = timestamp
+                else:
+                    raise ValidationError('Only one end is allowed.')
             timestamps.append(timestamp)
         if end_stamp:
             if end_stamp < max(timestamps):

@@ -200,15 +200,21 @@ class TripDetail(models.Model):
 
     class Meta:
         ordering = ['interval_from']
-        constraints = [models.UniqueConstraint(fields=['trip', 'interval_from'], name='unique_lct_trip_timestamp')]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['trip', 'interval_from'],
+                name='unique_lct_trip_timestamp'
+            ),
+            models.UniqueConstraint(
+                fields=['trip', 'interval_class'],
+                condition=models.Q(interval_class='end'),
+                name='unique_end_tripdetail'
+            )
+        ]
 
     def clean(self):
         if not self.interval_from:
             raise ValidationError('Date and time should not be empty.')
-        if self.trip.tripdetail_set.filter(interval_from=self.interval_from).exclude(id=self.id).count() > 0:
-            raise ValidationError(f'{str(print_tz_manila(self.interval_from))} is duplicated.')
-        if self.trip.tripdetail_set.filter(interval_class='end').exclude(id=self.id).count() > 0:
-            raise ValidationError('Only one end is allowed.')
         for trip in self.trip.lct.trip_set.all().exclude(id=self.trip.id):
             t_begin = None
             t_end = None

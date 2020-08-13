@@ -39,7 +39,7 @@ class  LayDaysDetailTest(TestCase):
             laytime_rate=100,
             interval_class='end'
         )
-        self.assertRaises(ValidationError, detail.clean)
+        self.assertRaises(IntegrityError, detail.save)
 
     def test_unique_interval_from_integrity(self):
         statement = LayDaysStatement.objects.all().first()
@@ -57,20 +57,3 @@ class  LayDaysDetailTest(TestCase):
             interval_class='heavy swell'
         )
         self.assertRaises(IntegrityError, detail.save)
-
-    def test_unique_interval_from_validation(self):
-        statement = LayDaysStatement.objects.all().first()
-        detail = LayDaysDetail(
-            laydays=statement,
-            interval_from=pdt('2019-08-17 12:00:00+0800'),
-            laytime_rate=100,
-            interval_class='rain'
-        )
-        detail.save()
-        detail = LayDaysDetail(
-            laydays=statement,
-            interval_from=pdt('2019-08-17 12:00:00+0800'),
-            laytime_rate=100,
-            interval_class='heavy swell'
-        )
-        self.assertRaises(ValidationError, detail.clean)

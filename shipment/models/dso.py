@@ -77,19 +77,13 @@ class LayDaysDetail(models.Model):
             models.UniqueConstraint(
                 fields=['laydays', 'interval_from'],
                 name='unique_vessel_trip_timestamp'
+            ),
+            models.UniqueConstraint(
+                fields=['laydays', 'interval_class'],
+                condition=models.Q(interval_class='end'),
+                name='unique_end_laydaysdetail'
             )
         ]
-
-    def clean(self):
-        if self.laydays.laydaysdetail_set \
-                .filter(interval_from=self.interval_from) \
-                .exclude(id=self.id).count() > 0:
-            raise ValidationError(f'{str(print_tz_manila(self.interval_from))} is duplicated.')
-
-        if self.interval_class == 'end' and self.laydays.laydaysdetail_set \
-                .filter(interval_class='end') \
-                .exclude(id=self.id).count() > 0:
-            raise ValidationError('Only one end is allowed.')
 
 
 class LayDaysDetailComputed(models.Model):

@@ -74,21 +74,6 @@ class  TripDetailTest(TestCase):
         )
         self.assertRaises(IntegrityError, trip_detail.save)
 
-    def test_trip_with_the_same_time_validation(self):
-        trip = Trip.objects.all().first()
-        trip_detail = TripDetail(
-            trip=trip,
-            interval_from=pd('2019-08-16 00:00:00+0800'),
-            interval_class='preparation_loading'
-        )
-        trip_detail.save()
-        trip_detail = TripDetail(
-            trip=trip,
-            interval_from=pd('2019-08-16 00:00:00+0800'),
-            interval_class='preparation_loading'
-        )
-        self.assertRaises(ValidationError, trip_detail.clean)
-
     def test_overlapping_lct_trips(self):
         trip = Trip.objects.all().first()
         lct = LCT.objects.all().first()
@@ -168,7 +153,7 @@ class  TripDetailTest(TestCase):
         trip_detail.save()
         trip_detail = TripDetail(
             trip=trip,
-            interval_from=pd('2019-08-17 00:00:00+0800'),
+            interval_from=pd('2019-08-18 00:00:00+0800'),
             interval_class='end'
         )
-        self.assertRaises(ValidationError, trip_detail.clean)
+        self.assertRaises(IntegrityError, trip_detail.save)
