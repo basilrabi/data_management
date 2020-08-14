@@ -13,4 +13,5 @@ FROM sampling_shipmentloadinglotassay a
         ON d.shipment_id = c.id
 ORDER BY
     d.completed_loading DESC,
+    c.name DESC,
     a.lot ASC
