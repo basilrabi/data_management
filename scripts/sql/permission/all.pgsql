@@ -26,9 +26,11 @@ GRANT UPDATE (
 -- survey
 GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
+GRANT SELECT ON TABLE location_drillhole TO survey;
 GRANT SELECT ON TABLE location_mineblock TO survey;
 GRANT SELECT ON TABLE location_roadarea TO survey;
-GRANT SELECT ON TABLE location_slice TO gradecontrol;
+GRANT SELECT ON TABLE location_slice TO survey;
+GRANT SELECT ON TABLE sampling_drillcoresample TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
 GRANT UPDATE (layout_date) ON TABLE location_cluster TO survey;
 
@@ -36,8 +38,6 @@ GRANT UPDATE (layout_date) ON TABLE location_cluster TO survey;
 GRANT gradecontrol TO planning;
 GRANT survey TO planning;
 GRANT INSERT ON TABLE location_slice TO planning;
-GRANT SELECT ON TABLE location_drillhole TO planning;
-GRANT SELECT ON TABLE sampling_drillcoresample TO planning;
 GRANT UPDATE (depth)          ON TABLE inventory_block TO planning;
 GRANT UPDATE (z_present)      ON TABLE location_drillhole TO planning;
 GRANT UPDATE (layer, z)       ON TABLE location_slice TO planning;
