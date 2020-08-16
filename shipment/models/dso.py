@@ -534,7 +534,10 @@ class LayDaysStatement(models.Model):
     class Meta:
         ordering = [
             models.F('completed_loading').desc(nulls_last=False),
-            models.F('arrival_tmc').desc(nulls_last=False)
+            models.F('nor_accepted').desc(nulls_last=False),
+            models.F('nor_tender').desc(nulls_last=False),
+            models.F('arrival_tmc').desc(nulls_last=False),
+            models.F('arrival_pilot').desc(nulls_last=False)
         ]
 
     def __str__(self):
@@ -682,7 +685,11 @@ class Shipment(models.Model):
         indexes = [models.Index(fields=['name'])]
         ordering = [
             models.F('laydaysstatement__completed_loading').desc(nulls_last=False),
-            models.F('laydaysstatement__arrival_tmc').desc(nulls_last=False)
+            models.F('laydaysstatement__nor_accepted').desc(nulls_last=False),
+            models.F('laydaysstatement__nor_tender').desc(nulls_last=False),
+            models.F('laydaysstatement__arrival_tmc').desc(nulls_last=False),
+            models.F('laydaysstatement__arrival_pilot').desc(nulls_last=False),
+            models.F('name').desc()
         ]
 
     def __str__(self):

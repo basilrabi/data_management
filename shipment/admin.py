@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db.models import (
-    DateField, ExpressionWrapper, F, IntegerField, TextField
+    DateField, ExpressionWrapper, F, IntegerField, Max, TextField, Value, Window
 )
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Coalesce, ExtractYear, RowNumber
 
 from custom.functions import Round, print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
@@ -236,7 +236,8 @@ class ShipmentAdmin(admin.ModelAdmin):
         'moisture',
         'demurrage',
         'despatch',
-        'completion'
+        'completion',
+        'number'
     )
     search_fields = ['name', 'vessel__name']
 
@@ -247,7 +248,16 @@ class ShipmentAdmin(admin.ModelAdmin):
                 ni=Round(F('shipmentloadingassay__ni'), 2),
                 fe=Round(F('shipmentloadingassay__fe'), 2),
                 moisture=Round(F('shipmentloadingassay__moisture'), 2),
-                completion=Cast(F('laydaysstatement__completed_loading'), DateField())
+                completion=Cast(F('laydaysstatement__completed_loading'), DateField()),
+                last_detail=Coalesce(Max(F('laydaysstatement__laydaysdetail__interval_from')), F('laydaysstatement__arrival_tmc')),
+                year=Coalesce(ExtractYear(Max(F('laydaysstatement__laydaysdetail__interval_from'))), Value(9999))
+            ) \
+            .annotate(
+                n=Window(
+                    expression=RowNumber(),
+                    partition_by=[F('year')],
+                    order_by=[F('last_detail').asc(), F('name').asc()]
+                )
             )
         return qs
 
@@ -262,6 +272,9 @@ class ShipmentAdmin(admin.ModelAdmin):
 
     def ni(self, obj):
         return obj.ni
+
+    def number(self, obj):
+        return f'{obj.year}-{obj.n:02}'
 
     def tonnage(self, obj):
         return obj.tonnage
