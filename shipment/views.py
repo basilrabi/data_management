@@ -29,7 +29,7 @@ def lay_days_statement_csv(request, name):
     context = {'details': details}
     template = get_template('shipment/lay_time_details.csv')
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{statement.__str__()}.csv"'
+    response['Content-Disposition'] = f'attachment; filename="{statement.shipment.name}.csv"'
     response.write(template.render(context))
     return response
 
@@ -44,7 +44,7 @@ def lay_days_statement_pdf(request, name):
     template = get_template('shipment/lay_time_statement.tex')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, f'{statement.__str__()}.tex')
+        filename = os.path.join(tempdir, f'{statement.shipment.name}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         latex_command = f'cd "{tempdir}" && pdflatex --shell-escape ' + \
@@ -52,6 +52,6 @@ def lay_days_statement_pdf(request, name):
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
-            open(os.path.join(tempdir, f'{statement.__str__()}.pdf'), 'rb'),
+            open(os.path.join(tempdir, f'{statement.shipment.name}.pdf'), 'rb'),
             content_type='application/pdf'
         )

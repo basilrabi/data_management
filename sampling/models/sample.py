@@ -328,7 +328,7 @@ class ShipmentDischargeAssay(AssaySample):
         ordering = ['-shipment__laydaysstatement__completed_loading']
 
     def __str__(self):
-        return self.shipment.name
+        return self.shipment.name_html()
 
 
 class ShipmentDischargeLotAssay(AssaySample):
@@ -390,7 +390,7 @@ class ShipmentLoadingAssay(AssaySample):
             'target="_blank"'
             '>'
             'View Certificate'
-            '</a>'.format(self.__str__())
+            '</a>'.format(self.shipment.name)
         )
 
     def bc(self):
@@ -419,7 +419,7 @@ class ShipmentLoadingAssay(AssaySample):
         ordering = ['-shipment__laydaysstatement__completed_loading']
 
     def __str__(self):
-        return self.shipment.name
+        return self.shipment.name_html()
 
 
 class ShipmentLoadingLotAssay(AssaySample):

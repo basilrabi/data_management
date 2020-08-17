@@ -462,7 +462,7 @@ class LayDaysStatement(models.Model):
             'target="_blank"'
             '>'
             'Download'
-            '</a>'.format(self.__str__())
+            '</a>'.format(self.shipment.name)
         )
 
     def PDF(self):
@@ -472,7 +472,7 @@ class LayDaysStatement(models.Model):
             'target="_blank"'
             '>'
             'View'
-            '</a>'.format(self.__str__())
+            '</a>'.format(self.shipment.name)
         )
 
     def time_can_test(self):
@@ -541,7 +541,7 @@ class LayDaysStatement(models.Model):
         ]
 
     def __str__(self):
-        return self.shipment.name
+        return self.shipment.name_html()
 
 
 class Product(Classification):
@@ -634,6 +634,11 @@ class Shipment(models.Model):
                     return f'{start_month} {start_day} - {end_month} {end_day}, {end_year}'.upper()
                 else:
                     return f'{start_month} {start_day} - {end_day}, {end_year}'.upper()
+
+    def name_html(self):
+        if self.name.isdigit():
+            return mark_safe(f'{self.name}<sup>{ordinal_suffix(self.name)}</sup>')
+        return self.name
 
     def name_latex(self):
         if self.name.isdigit():
@@ -743,6 +748,8 @@ class Shipment(models.Model):
         ]
 
     def __str__(self):
+        if self.name.isdigit():
+            return f'{self.name}{ordinal_suffix(self.name)}'
         return self.name
 
 

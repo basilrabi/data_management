@@ -19,7 +19,7 @@ def assay_certificate(request, name):
     template = get_template('sampling/assay_certificate.tex')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, f'{assay.__str__()}.tex')
+        filename = os.path.join(tempdir, f'{assay.shipment.name}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         latex_command = f'cd "{tempdir}" && pdflatex --shell-escape ' + \
@@ -27,6 +27,6 @@ def assay_certificate(request, name):
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
-            open(os.path.join(tempdir, f'{assay.__str__()}.pdf'), 'rb'),
+            open(os.path.join(tempdir, f'{assay.shipment.name}.pdf'), 'rb'),
             content_type='application/pdf'
         )

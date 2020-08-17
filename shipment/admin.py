@@ -105,7 +105,7 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
         })
     )
     list_display = (
-        'name',
+        'object_name',
         'vessel',
         'final_ni',
         'final_fe',
@@ -135,8 +135,12 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
     def diff_wmt(self, obj):
         return obj.diff_wmt
 
+    def object_name(self, obj):
+        return Shipment.objects.get(id=obj.id).name_html()
+
     diff_ni.short_description = 'Δ%Ni'
     diff_wmt.short_description = 'ΔWMT'
+    object_name.short_description = 'Name'
 
 
 @admin.register(LayDaysStatement)
@@ -227,7 +231,7 @@ class ShipmentAdmin(admin.ModelAdmin):
         })
     )
     list_display = (
-        'name',
+        'object_name',
         'vessel',
         'dump_truck_trips',
         'tonnage',
@@ -264,12 +268,16 @@ class ShipmentAdmin(admin.ModelAdmin):
     def ni(self, obj):
         return obj.ni
 
+    def object_name(self, obj):
+        return Shipment.objects.get(id=obj.id).name_html()
+
     def tonnage(self, obj):
         return obj.tonnage
 
     fe.short_description = '%Fe'
     moisture.short_description = '%H₂O'
     ni.short_description = '%Ni'
+    object_name.short_description = 'Name'
 
 
 @admin.register(Trip)
