@@ -289,6 +289,7 @@ class ShipmentAdmin(admin.ModelAdmin):
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
     autocomplete_fields = ['lct', 'vessel']
+    date_hierarchy = 'tripdetail__interval_from'
     inlines = [TripDetailInline]
     list_display = (
         'lct',
@@ -300,7 +301,7 @@ class TripAdmin(admin.ModelAdmin):
         'valid',
         'continuous'
     )
-    list_filter = ['continuous', 'status', 'valid']
+    list_filter = ['continuous', 'status', 'valid', 'lct']
     readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     search_fields = ['lct__name', 'vessel__name']
 
