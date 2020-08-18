@@ -28,6 +28,7 @@ road_line = LineString((593970, 1051940, 100),
 
 
 class SliceTest(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         setup_triggers()

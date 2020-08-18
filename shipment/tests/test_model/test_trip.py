@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
+from custom.functions import setup_triggers
 from shipment.models.dso import (
     LayDaysDetail, LayDaysStatement, Shipment, Vessel
 )
@@ -10,6 +11,10 @@ from shipment.models.lct import LCT, Trip, TripDetail
 # pylint: disable=no-member
 
 class  TripTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         lct = LCT(name='guagua', capacity=1000)

@@ -3,9 +3,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import (
     DateField, ExpressionWrapper, F, IntegerField, TextField
 )
+from django.db.models.functions import Cast
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
-from django.db.models.functions import Cast
 
 from custom.functions import Round, print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
@@ -210,6 +210,7 @@ class ShipmentAdmin(admin.ModelAdmin):
     date_hierarchy = 'laydaysstatement__laydaysdetail__interval_from'
     fieldsets = (
         (None, {'fields': (
+            'number',
             'name',
             'product',
             'vessel',
@@ -243,6 +244,7 @@ class ShipmentAdmin(admin.ModelAdmin):
         'completion',
         'number'
     )
+    readonly_fields = ['number']
     search_fields = ['name', 'vessel__name']
 
     def get_queryset(self, request):
@@ -252,7 +254,8 @@ class ShipmentAdmin(admin.ModelAdmin):
                 ni=Round(F('shipmentloadingassay__ni'), 2),
                 fe=Round(F('shipmentloadingassay__fe'), 2),
                 moisture=Round(F('shipmentloadingassay__moisture'), 2),
-                completion=Cast(F('laydaysstatement__completed_loading'), DateField())
+                completion=Cast(F('laydaysstatement__completed_loading'), DateField()),
+                number=F('shipmentnumber__number')
             )
         return qs
 
@@ -270,6 +273,9 @@ class ShipmentAdmin(admin.ModelAdmin):
 
     def object_name(self, obj):
         return Shipment.objects.get(id=obj.id).name_html()
+
+    def number(self, obj):
+        return obj.number
 
     def tonnage(self, obj):
         return obj.tonnage

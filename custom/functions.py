@@ -148,6 +148,10 @@ def print_tz_manila(timestamp):
         timestamp = str(timestamp.astimezone(tz_manila))
         return timestamp[:-6]
 
+def refresh_shipment_number():
+    with connection.cursor() as cursor:
+            cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_number')
+
 def round_second(duration):
     seconds = duration.total_seconds()
     return datetime.timedelta(seconds=round(seconds, 0))
@@ -170,6 +174,8 @@ def setup_triggers():
         'function/get_ore_class',
         'function/insert_dummy_cluster',
         'lock/location_cluster',
+        'select/shipment_number',
+        'index/shipment_number',
         'trigger/inventory_block_exposed',
         'trigger/location_cluster_insert',
         'trigger/location_cluster_update',

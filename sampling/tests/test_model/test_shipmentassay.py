@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from custom.functions import setup_triggers
 from sampling.models.proxy import ChinaShipmentAssay, PamcoShipmentAssay
 from sampling.models.sample import (
     ApprovedShipmentDischargeAssay,
@@ -16,6 +17,10 @@ from shipment.models.dso import Destination, Product, Shipment, Vessel
 
 
 class ChinaShipmentAssayTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         vessel = Vessel(name='Aqua Atlantic')
@@ -65,6 +70,10 @@ class ChinaShipmentAssayTest(TestCase):
 
 
 class PamcoShipmentAssayTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         lab = Laboratory(name='PAMCO')
@@ -120,6 +129,10 @@ class PamcoShipmentAssayTest(TestCase):
 
 
 class ShipmentLoadingAssayTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         destination = Destination(name='A')

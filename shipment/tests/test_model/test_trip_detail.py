@@ -3,6 +3,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
+from custom.functions import setup_triggers
 from shipment.models.dso import Shipment, Vessel
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
@@ -12,6 +13,7 @@ class  TripDetailTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        setup_triggers()
         lct = LCT(name='guagua', capacity=1000)
         lct.save()
         lct_contract = LCTContract(

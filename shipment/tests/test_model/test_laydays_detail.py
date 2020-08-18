@@ -3,6 +3,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
+from custom.functions import setup_triggers
 from shipment.models.dso import (LayDaysDetail,
                                  LayDaysStatement,
                                  Shipment,
@@ -11,6 +12,10 @@ from shipment.models.dso import (LayDaysDetail,
 # pylint: disable=no-member
 
 class  LayDaysDetailTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         vessel = Vessel(name='guagua')

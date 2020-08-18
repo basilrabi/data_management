@@ -3,14 +3,14 @@ import datetime
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import connection, models
+from django.db import models
 from django.utils.html import mark_safe
 from django.utils.timezone import now
 from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
-    ordinal_suffix, print_localzone, print_tz_manila, round_second,
+    ordinal_suffix, print_localzone, refresh_shipment_number, round_second,
     round_up_day, to_dhms, to_hm, to_hms
 )
 from custom.models import Classification
@@ -526,6 +526,7 @@ class LayDaysStatement(models.Model):
         if not compute:
             self.date_saved = now()
         super().save(*args, **kwargs)
+        refresh_shipment_number()
         self.shipment.save()
         if not hasattr(self, 'approvedlaydaysstatement'):
             approval = ApprovedLayDaysStatement(statement=self, approved=False)
@@ -646,56 +647,6 @@ class Shipment(models.Model):
                 f'{ordinal_suffix(self.name)}}}}}$'
         return self.name
 
-    def number(self):
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                WITH aa as (
-                    SELECT
-                        a.id,
-                        a.name,
-                        b.arrival_tmc date_a,
-                        MAX(c.interval_from) date_b
-                    FROM shipment_shipment a
-                    LEFT JOIN shipment_laydaysstatement b
-                        ON a.id = b.shipment_id
-                    LEFT JOIN shipment_laydaysdetail c
-                        ON b.id = c.laydays_id
-                    GROUP BY a.id, a.name, b.arrival_tmc
-                ),
-                bb as (
-                    SELECT
-                        aa.id,
-                        aa.name,
-                        COALESCE(date_b, date_a, '2100-01-01 00:00:00'::timestamp) time_stamp
-                    FROM aa
-                ),
-                cc as (
-                    SELECT bb.id, date_trunc('year', bb.time_stamp) year_begin
-                    FROM bb
-                    WHERE bb.id = %s
-                ),
-                dd as (
-                    SELECT
-                        bb.id,
-                        CASE
-                            WHEN time_stamp IS NULL THEN 9999::text
-                            ELSE EXTRACT(YEAR FROM time_stamp)::text
-                        END the_year,
-                        ROW_NUMBER () OVER (ORDER BY time_stamp, name) shipment_number
-                    FROM bb
-                    WHERE date_trunc('year', bb.time_stamp) IN (
-                        SELECT year_begin
-                        FROM cc
-                    )
-                )
-                SELECT the_year || '-' || LPAD(shipment_number::text, 2, '0')
-                FROM dd
-                WHERE id = %s
-                """,[self.id, self.id]
-            )
-            return cursor.fetchall()[0]
-
     def clean(self):
         if self.despatch and self.demurrage:
             if self.demurrage > 0 and self.despatch > 0:
@@ -726,6 +677,7 @@ class Shipment(models.Model):
             if not self.spec_fe:
                 self.spec_fe = self.product.fe
         super().save(*args, **kwargs)
+        refresh_shipment_number()
         if self.vessel:
             for trip in self.vessel.trip_set.all():
                 trip.save()
@@ -751,6 +703,17 @@ class Shipment(models.Model):
         if self.name.isdigit():
             return f'{self.name}{ordinal_suffix(self.name)}'
         return self.name
+
+
+class ShipmentNumber(models.Model):
+    """
+    Materialized view.
+    """
+    shipment = models.OneToOneField(Shipment, on_delete=models.DO_NOTHING)
+    number = models.CharField(max_length=10, unique=True)
+    class Meta:
+        managed = False
+        db_table = 'shipment_number'
 
 
 class Vessel(models.Model):

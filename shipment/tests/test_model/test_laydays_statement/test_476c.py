@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
+from custom.functions import setup_triggers
 from custom.variables import one_day
 from shipment.models.dso import (LayDaysDetail,
                                  LayDaysStatement,
@@ -13,6 +14,10 @@ from shipment.models.dso import (LayDaysDetail,
 # pylint: disable=no-member
 
 class  LayDaysStatement476CTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        setup_triggers()
 
     def setUp(self):
         vessel = Vessel(name='Jin Yue')
