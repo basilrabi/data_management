@@ -1,0 +1,13 @@
+{% extends "custom/base_generic.html" %}
+{% block title %}
+<title>Assay Differences</title>
+{% endblock %}
+{% load static %}
+{% block content %}
+    {% autoescape off %}
+    {{ ni_diff_per_shipment }}
+    {{ ni_diff_per_year }}
+    {{ fe_diff_per_shipment }}
+    {{ fe_diff_per_year }}
+    {% endautoescape %}
+{% endblock %}
