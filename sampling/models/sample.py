@@ -300,17 +300,19 @@ class ShipmentDischargeAssay(AssaySample):
 
     def save(self, *args, **kwargs):
         if self.laboratory.name == 'PAMCO':
-            qs = self.shipmentdischargelotassay_set.all() \
-                .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
-                .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
-                .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
-            self.wmt = qs['wmt__sum']
-            self.dmt = qs['dmt__sum']
-            if self.wmt and self.dmt:
-                self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
-                self.ni_ton = qs['ni_ton__sum']
-                if self.ni_ton:
-                    self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+            qs = self.shipmentdischargelotassay_set.all()
+            if qs.count() > 0:
+                qs = qs \
+                    .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
+                    .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
+                    .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
+                self.wmt = qs['wmt__sum']
+                self.dmt = qs['dmt__sum']
+                if self.wmt and self.dmt:
+                    self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+                    self.ni_ton = qs['ni_ton__sum']
+                    if self.ni_ton:
+                        self.ni = round(self.ni_ton * 100 / self.dmt, 2)
         else:
             if (self.dmt and self.wmt) and not self.moisture:
                 self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)

@@ -201,7 +201,7 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     )
     inlines = [ShipmentDischargeLotAssayInline]
     list_display = ('__str__', 'vessel')
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'vessel')
+    readonly_fields = ('vessel')
     search_fields = ['shipment__name']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
