@@ -1,0 +1,11 @@
+{% extends "custom/base_generic.html" %}
+{% block title %}
+<title>Ship Loading</title>
+{% endblock %}
+{% load static %}
+{% block activeshiploading %} active{% endblock %}
+{% block content %}
+    {% autoescape off %}
+    {{ loading_per_shipment }}
+    {% endautoescape %}
+{% endblock %}

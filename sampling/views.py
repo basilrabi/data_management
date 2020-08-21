@@ -37,8 +37,6 @@ def index(request):
                 'year'
             )
     )
-    print(df[5].unique())
-
     fig_fe_diff_per_shipment = go.Figure()
     fig_fe_diff_per_year = go.Figure()
     fig_ni_diff_per_shipment = go.Figure()
@@ -86,7 +84,11 @@ def index(request):
         xaxis_title='Loading Completion',
         yaxis_title='%Fe Difference<br>Loading - Discharging'
     )
-    fe_diff_per_shipment = plot(fig_fe_diff_per_shipment, output_type='div', include_plotlyjs=False)
+    fe_diff_per_shipment = plot(
+        fig_fe_diff_per_shipment,
+        output_type='div',
+        include_plotlyjs=False
+    )
     fig_fe_diff_per_year.update_layout(
         legend_title_text='Discharge Assay Lab',
         title='Iron Assay Difference per Year',
@@ -94,14 +96,22 @@ def index(request):
         yaxis_title='%Fe Difference<br>Loading - Discharging',
         boxmode='group'
     )
-    fe_diff_per_year = plot(fig_fe_diff_per_year, output_type='div',  include_plotlyjs=False)
+    fe_diff_per_year = plot(
+        fig_fe_diff_per_year,
+        output_type='div',
+        include_plotlyjs=False
+    )
     fig_ni_diff_per_shipment.update_layout(
         legend_title_text='Discharge Assay Lab',
         title='Nickel Assay Difference per Shipment',
         xaxis_title='Loading Completion',
         yaxis_title='%Ni Difference<br>Loading - Discharging'
     )
-    ni_diff_per_shipment = plot(fig_ni_diff_per_shipment, output_type='div', include_plotlyjs=False)
+    ni_diff_per_shipment = plot(
+        fig_ni_diff_per_shipment,
+        output_type='div',
+        include_plotlyjs=False
+    )
     fig_ni_diff_per_year.update_layout(
         legend_title_text='Discharge Assay Lab',
         title='Nickel Assay Difference per Year',
@@ -109,7 +119,11 @@ def index(request):
         yaxis_title='%Ni Difference<br>Loading - Discharging',
         boxmode='group'
     )
-    ni_diff_per_year = plot(fig_ni_diff_per_year, output_type='div', include_plotlyjs=False)
+    ni_diff_per_year = plot(
+        fig_ni_diff_per_year,
+        output_type='div',
+        include_plotlyjs=False
+    )
 
     return render(request, 'sampling/index.html', {
         'fe_diff_per_shipment': fe_diff_per_shipment,

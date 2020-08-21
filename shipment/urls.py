@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'shipment'
 urlpatterns = [
+     path('', views.index, name='index'),
      path('data-export/laydays',
           views.data_export_laydays,
           name='data-export-laydays'),
