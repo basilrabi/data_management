@@ -10,7 +10,8 @@
         <link rel="stylesheet" href="{% static 'custom/css/jquery-ui.css' %}" />
         <link rel="stylesheet" href="{% static 'custom/css/style.css' %}" />
         {% block css %}{% endblock %}
-        <script src="{% static 'custom/js/jquery-1.12.4.min.js' %}"></script>
+        <script src="{% static 'custom/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'custom/js/jquery-3.5.1.slim.min.js' %}"></script>
         <script src="{% static 'custom/js/jquery-ui.min.js' %}"></script>
         <script src="{% static 'custom/js/plotly-latest.min.js' %}"></script>
         <script>
@@ -30,12 +31,12 @@
             </div>
             <nav class="row top-nav bg-light navbar-light">
                 <div class="col-lg-12">
-                    <ul class="nav nav-fill">
-                        <li class="nav-item"><a href="/">Home</a></li>
-                        <li class="nav-item"><a href="/sampling/">Assay Variances</a></li>
-                        <li class="nav-item"><a href="/custom/export">Data Export</a></li>
-                        <li class="nav-item"><a href="/admin/">Data Management</a></li>
-                        <li class="nav-item"><a href="/map/road">Road Network</a></li>
+                    <ul class="nav nav-fill nav-tabs">
+                        <li class="nav-item"><a class="nav-link{% block activehome %}{% endblock %}" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link{% block activeassayvariance %}{% endblock %}" href="/sampling/">Assay Variances</a></li>
+                        <li class="nav-item"><a class="nav-link{% block activedataexport %}{% endblock %}" href="/custom/export">Data Export</a></li>
+                        <li class="nav-item"><a class="nav-link{% block activeroadnetwork %}{% endblock %}" href="/map/road">Road Network</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/">Data Management</a></li>
                     </ul>
                 </div>
             </nav>
