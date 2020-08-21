@@ -9,96 +9,114 @@
 {% block content %}
 <p class="ws1"></p>
 <div class="row">
-    <h3>Shipment</h3>
+    <div class="col-1"></div>
+    <div class="col-10"><h3>Shipment</h3></div>
+    <div class="col-1"></div>
 </div>
 <div class="row">
-    <div class="list-group">
-        <a href="{% url 'shipment:data-export-lct-trips' %}" class="list-group-item-action">LCT Trips</a>
-        <a href="{% url 'shipment:data-export-laydays' %}" class="list-group-item-action">Laydays Detail</a>
-      </div>
+    <div class="col-1"></div>
+    <div class="col-10">
+        <div class="list-group">
+            <a href="{% url 'shipment:data-export-lct-trips' %}" class="list-group-item-action">LCT Trips</a>
+            <a href="{% url 'shipment:data-export-laydays' %}" class="list-group-item-action">Laydays Detail</a>
+        </div>
+    </div>
+    <div class="col-1"></div>
 </div>
 <p class="ws1"></p>
 <div class="row">
-    <h3>Cluster</h3>
+    <div class="col-1"></div>
+    <div class="col-10"><h3>Cluster</h3></div>
+    <div class="col-1"></div>
 </div>
 <div class="row">
-    <div class="list-group">
-        <a href="{% url 'location:data-export-cluster' %}" target="_blank" class="list-group-item-action">Cluster CSV</a>
-        <a href="{% url 'location:data-export-cluster-str' %}" target="_blank" class="list-group-item-action">Cluster String File</a>
-        <a href="{% url 'location:data-export-cluster-str-survey' %}" target="_blank" class="list-group-item-action">Cluster String File for Layout</a>
-        <a href="{% url 'location:data-export-cluster-dxf-survey' %}" target="_blank" class="list-group-item-action">Cluster DXF File for Layout</a>
-        <a href="{% url 'inventory:data-export-clustered-block' %}" target="_blank" class="list-group-item-action">Clustered Blocks CSV</a>
-        <a href="{% url 'inventory:data-export-scheduled-block' %}" target="_blank" class="list-group-item-action">Scheduled vs Clustered Blocks CSV</a>
+    <div class="col-1"></div>
+    <div class="col-10">
+        <div class="list-group">
+            <a href="{% url 'location:data-export-cluster' %}" target="_blank" class="list-group-item-action">Cluster CSV</a>
+            <a href="{% url 'location:data-export-cluster-str' %}" target="_blank" class="list-group-item-action">Cluster String File</a>
+            <a href="{% url 'location:data-export-cluster-str-survey' %}" target="_blank" class="list-group-item-action">Cluster String File for Layout</a>
+            <a href="{% url 'location:data-export-cluster-dxf-survey' %}" target="_blank" class="list-group-item-action">Cluster DXF File for Layout</a>
+            <a href="{% url 'inventory:data-export-clustered-block' %}" target="_blank" class="list-group-item-action">Clustered Blocks CSV</a>
+            <a href="{% url 'inventory:data-export-scheduled-block' %}" target="_blank" class="list-group-item-action">Scheduled vs Clustered Blocks CSV</a>
+        </div>
     </div>
+    <div class="col-1"></div>
 </div>
     {% if user.is_authenticated %}
 <p class="ws1"></p>
 <div class="row">
-    <h3>PostGIS Credentials</h3>
+    <div class="col-1"></div>
+    <div class="col-10"><h3>PostGIS Credentials</h3></div>
+    <div class="col-1"></div>
 </div>
 <div class="row">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Paremeter</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Host</td>
-                <td>{{ db_host }}</td>
-            </tr>
-            <tr>
-                <td>Port</td>
-                <td>{{ db_port }}</td>
-            </tr>
-            <tr>
-                <td>Database</td>
-                <td>{{ db_name }}</td>
-            </tr>
-            {% if request.user|has_group:"geology" %}
-            <tr>
-                <td>User Name</td>
-                <td>geology</td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td>{{ geology }}</td>
-            </tr>
-            {% endif %}
-            {% if request.user|has_group:"gradecontrol" %}
-            <tr>
-                <td>User Name</td>
-                <td>gradecontrol</td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td>{{ gradecontrol }}</td>
-            </tr>
-            {% endif %}
-            {% if request.user|has_group:"planning" %}
-            <tr>
-                <td>User Name</td>
-                <td>planning</td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td>{{ planning }}</td>
-            </tr>
-            {% endif %}
-            {% if request.user|has_group:"survey" %}
-            <tr>
-                <td>User Name</td>
-                <td>survey</td>
-            </tr>
-            <tr>
-                <td>Password</td>
-                <td>{{ survey }}</td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
+    <div class="col-1"></div>
+    <div class="col-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Paremeter</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Host</td>
+                    <td>{{ db_host }}</td>
+                </tr>
+                <tr>
+                    <td>Port</td>
+                    <td>{{ db_port }}</td>
+                </tr>
+                <tr>
+                    <td>Database</td>
+                    <td>{{ db_name }}</td>
+                </tr>
+                {% if request.user|has_group:"geology" %}
+                <tr>
+                    <td>User Name</td>
+                    <td>geology</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>{{ geology }}</td>
+                </tr>
+                {% endif %}
+                {% if request.user|has_group:"gradecontrol" %}
+                <tr>
+                    <td>User Name</td>
+                    <td>gradecontrol</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>{{ gradecontrol }}</td>
+                </tr>
+                {% endif %}
+                {% if request.user|has_group:"planning" %}
+                <tr>
+                    <td>User Name</td>
+                    <td>planning</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>{{ planning }}</td>
+                </tr>
+                {% endif %}
+                {% if request.user|has_group:"survey" %}
+                <tr>
+                    <td>User Name</td>
+                    <td>survey</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>{{ survey }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-1"></div>
 </div>
     {% endif %}
 {% endblock %}
