@@ -34,13 +34,13 @@
             labels = [],
             from, to;
 
-        labels.push('<b>Road Gradient</b>');
+        labels.push('<b>Road<br>Gradient</b><br>');
         for (var i = 0; i < grades.length; i++) {
             from = grades[i];
             to = grades[i + 1];
             labels.push(
                 '<i style="background:' + getColor(from + 1) + '"></i> ' +
-                (from < 10 ? '&nbsp;&nbsp;0' : from) + (to ? '&ndash;' + to : '+'));
+                (from < 10 ? '&nbsp;&nbsp;0' : from) + (to ? '&ndash;' + to + '<br>&nbsp;': '+'));
         }
 
         div.innerHTML = labels.join('<br>');
