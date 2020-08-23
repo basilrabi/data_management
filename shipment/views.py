@@ -74,7 +74,9 @@ def index(request):
         """)
         df = pd.DataFrame.from_records(cursor.fetchall())
         box_data = []
-        for interval_class in df[2].unique():
+        for interval_class in [
+            'Loading', 'Natural Delay', 'Idle'
+        ]:
             df_filtered = df[df[2] == interval_class]
             box_data.append(
                 go.Bar(
@@ -87,10 +89,10 @@ def index(request):
         fig_loading_per_shipment = go.Figure(data=box_data)
         fig_loading_per_shipment.update_layout(
             barmode='stack',
-            legend_title_text='Interval',
+            legend_title_text='Component',
             title='Ship Loading Duration',
             xaxis_title='Shipment',
-            yaxis_title='Days Elapsed'
+            yaxis_title='Laydays'
         )
         loading_per_shipment = plot(
             fig_loading_per_shipment,
