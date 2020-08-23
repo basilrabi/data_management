@@ -200,7 +200,7 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
         'ignition_loss'
     )
     inlines = [ShipmentDischargeLotAssayInline]
-    list_display = ('__str__', 'vessel')
+    list_display = ('object_name', 'vessel')
     readonly_fields = ('vessel',)
     search_fields = ['shipment__name']
 
@@ -216,15 +216,20 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
             .annotate(vessel=F('shipment__vessel__name'))
         return qs
 
+    def object_name(self, obj):
+        return PamcoShipmentAssay.objects.get(id=obj.id).shipment.name_html()
+
     def vessel(self, obj):
         return obj.vessel
+
+    object_name.short_description = 'Shipment'
 
 
 @admin.register(ShipmentLoadingAssay)
 class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('__str__', 'approved', 'PDF')
+    list_display = ('object_name', 'approved', 'PDF')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
     search_fields = ['shipment__name']
 
@@ -263,19 +268,23 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     def approved(self, obj):
         return obj.approved
 
+    def object_name(self, obj):
+        return ShipmentLoadingAssay.objects.get(id=obj.id).shipment.name_html()
+
     approved.admin_order_field = 'approved'
     approved.boolean = True
+    object_name.short_description = 'Shipment'
 
 
 @admin.register(ApprovedShipmentDischargeAssay)
 class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('__str__', 'approved')
+    list_display = ('object_name', 'approved')
     search_fields = ['assay__shipment__name']
     readonly_fields = (
         'al2o3', 'cao', 'co', 'cr', 'cr2o3', 'dmt', 'fe', 'ignition_loss',
-        'laboratory', 'mgo', 'mn', 'moisture', 'ni', 'ni_ton', 'p', 's',
-        'shipment', 'sio2', 'vessel', 'wmt'
+        'laboratory', 'mgo', 'mn', 'moisture', 'ni', 'ni_ton', 'object_name',
+        'p', 's', 'shipment', 'sio2', 'vessel', 'wmt'
     )
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -292,7 +301,7 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
             )
         else:
             self.fields = (
-                'shipment', 'vessel', 'wmt', 'moisture', 'dmt', 'ni',
+                'object_name', 'vessel', 'wmt', 'moisture', 'dmt', 'ni',
                 'ni_ton', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3',
                 'p', 's', 'ignition_loss', 'approved'
             )
@@ -368,6 +377,9 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
     def ni_ton(self, obj):
         return obj.ni_ton
 
+    def object_name(self, obj):
+        return ApprovedShipmentDischargeAssay.objects.get(id=obj.id).assay.shipment.name_html()
+
     def p(self, obj):
         return obj.p
 
@@ -399,6 +411,7 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
     mn.short_description = '%Mn'
     moisture.short_description = '%H₂O'
     ni.short_description = '%Ni'
+    object_name.short_description = 'Shipment'
     p.short_description = '%P'
     s.short_description = '%S'
     sio2.short_description = '%SiO₂'

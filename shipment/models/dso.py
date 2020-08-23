@@ -542,7 +542,7 @@ class LayDaysStatement(models.Model):
         ]
 
     def __str__(self):
-        return self.shipment.name_html()
+        return self.shipment.__str__()
 
 
 class Product(Classification):

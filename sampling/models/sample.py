@@ -330,7 +330,7 @@ class ShipmentDischargeAssay(AssaySample):
         ordering = ['-shipment__laydaysstatement__completed_loading']
 
     def __str__(self):
-        return self.shipment.name_html()
+        return self.shipment.__str__()
 
 
 class ShipmentDischargeLotAssay(AssaySample):
@@ -421,7 +421,7 @@ class ShipmentLoadingAssay(AssaySample):
         ordering = ['-shipment__laydaysstatement__completed_loading']
 
     def __str__(self):
-        return self.shipment.name_html()
+        return self.shipment.__str__()
 
 
 class ShipmentLoadingLotAssay(AssaySample):

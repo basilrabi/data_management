@@ -140,7 +140,7 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
 
     diff_ni.short_description = 'Δ%Ni'
     diff_wmt.short_description = 'ΔWMT'
-    object_name.short_description = 'Name'
+    object_name.short_description = 'Shipment'
 
 
 @admin.register(LayDaysStatement)
@@ -149,7 +149,7 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
     date_hierarchy = 'laydaysdetail__interval_from'
     inlines = [LayDaysDetailInline]
     list_display = (
-        '__str__',
+        'object_name',
         'vessel',
         'commenced_laytime',
         'completed_loading',
@@ -181,14 +181,23 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
     def approved(self, obj):
         return obj.approved
 
+    def object_name(self, obj):
+        return LayDaysStatement.objects.get(id=obj.id).shipment.name_html()
+
     approved.admin_order_field = 'approved'
     approved.boolean = True
+    object_name.short_description = 'Shipment'
 
 
 @admin.register(ApprovedLayDaysStatement)
 class ApprovedLayDaysStatementAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'approved', 'PDF', 'csv')
+    list_display = ('object_name', 'approved', 'PDF', 'csv')
     search_fields = ['statement__shipment__name']
+
+    def object_name(self, obj):
+        return ApprovedLayDaysStatement.objects.get(id=obj.id).statement.shipment.name_html()
+
+    object_name.short_description = 'Shipment'
 
 
 @admin.register(LCT)
