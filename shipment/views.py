@@ -64,11 +64,14 @@ def index(request):
             FROM cte_b
         )
         SELECT
-            shipment,
+            shipment_name_html(shipment),
             completed_loading,
             interval_class,
             duration,
-            'Total: ' || round(total_duration::numeric, 2)
+            'Total: '
+                || round(total_duration::numeric, 2)
+                || '<br>Completion: '
+                || DATE(completed_loading)
         FROM cte_c
         ORDER BY completed_loading
         """)
