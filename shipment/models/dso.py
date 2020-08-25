@@ -39,6 +39,7 @@ class LayDaysDetail(models.Model):
 
     RATE_CHOICES = (
         (100, '100'),
+        (80, '80'),
         (75, '75'),
         (50, '50'),
         (25, '25'),
