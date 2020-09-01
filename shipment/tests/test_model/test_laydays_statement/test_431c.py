@@ -22,7 +22,12 @@ class  LayDaysStatement431CTest(TestCase):
     def setUp(self):
         vessel = Vessel(name='Chang Shun II')
         vessel.save()
-        shipment = Shipment(name='431-C', vessel=vessel)
+        shipment = Shipment(
+            name='431-C',
+            vessel=vessel,
+            demurrage=0,
+            despatch=Decimal(16438.89)
+        )
         shipment.save()
 
     def test_laydays_computation_431c(self):
@@ -194,3 +199,8 @@ class  LayDaysStatement431CTest(TestCase):
         approval.approved = True
         approval.save()
         self.assertRaises(ValidationError, statement.clean)
+        shipment.refresh_from_db()
+        shipment.demurrage = Decimal(0)
+        self.assertEqual(shipment.clean(), None)
+        shipment.despatch = Decimal(0)
+        self.assertRaises(ValidationError, shipment.clean)

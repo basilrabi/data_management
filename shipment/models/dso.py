@@ -649,6 +649,8 @@ class Shipment(models.Model):
         return self.name
 
     def clean(self):
+        original_obj = Shipment.objects.get(id=self.id)
+
         if self.despatch and self.demurrage:
             if self.demurrage > 0 and self.despatch > 0:
                 raise ValidationError(
@@ -658,16 +660,20 @@ class Shipment(models.Model):
         if hasattr(self, 'shipmentloadingassay'):
             if hasattr(self.shipmentloadingassay, 'approvedshipmentloadingassay'):
                 if self.shipmentloadingassay.approvedshipmentloadingassay.approved:
-                    original_obj = Shipment.objects.get(id=self.id)
-                    previous_destination = original_obj.destination
-                    if self.destination != previous_destination:
+                    if self.destination != original_obj.destination:
                         raise ValidationError('Destination cannot be changed if assay is already approved.')
-                    previous_product = original_obj.product
-                    if self.product != previous_product:
+                    if self.product != original_obj.product:
                         raise ValidationError('Product cannot be changed if assay is already approved.')
-                    previous_vessel = original_obj.vessel
-                    if self.vessel != previous_vessel:
+                    if self.vessel != original_obj.vessel:
                         raise ValidationError('Vessel cannot be changed if assay is already approved.')
+
+        if hasattr(self, 'laydaysstatement'):
+            if hasattr(self.laydaysstatement, 'approvedlaydaysstatement'):
+                if self.laydaysstatement.approvedlaydaysstatement.approved:
+                    if self.demurrage != original_obj.demurrage:
+                        raise ValidationError('Demurrage cannot be changed if laydays statement is already approved.')
+                    if self.despatch != original_obj.despatch:
+                        raise ValidationError('Despatch cannot be changed if laydays statement is already approved.')
 
     def save(self, *args, **kwargs):
         if self.product:
