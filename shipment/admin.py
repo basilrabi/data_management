@@ -242,6 +242,7 @@ class ShipmentAdmin(admin.ModelAdmin):
     )
     list_display = (
         'object_name',
+        'buyer',
         'vessel',
         'dump_truck_trips',
         'tonnage',
