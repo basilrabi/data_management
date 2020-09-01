@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db.models import (
-    DateField, ExpressionWrapper, F, IntegerField, TextField
+    ExpressionWrapper, F, IntegerField, TextField
 )
 from django.db.models.functions import Cast
 from django.forms import Textarea
@@ -264,7 +264,7 @@ class ShipmentAdmin(admin.ModelAdmin):
                 ni=Round(F('shipmentloadingassay__ni'), 2),
                 fe=Round(F('shipmentloadingassay__fe'), 2),
                 moisture=Round(F('shipmentloadingassay__moisture'), 2),
-                completion=Cast(F('laydaysstatement__completed_loading'), DateField()),
+                completion=F('laydaysstatement__completed_loading'),
                 number=F('shipmentnumber__number')
             )
         return qs
