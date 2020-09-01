@@ -133,9 +133,14 @@ def lay_days_statement_pdf(request, name):
     statement = LayDaysStatement.objects.get(shipment__name=name)
     statement._compute()
     details = statement.laydaysdetailcomputed_set.all()
+    demurrage = statement.shipment.demurrage
+    despatch = statement.shipment.despatch
     context = {
         'statement': statement,
-        'details': details
+        'details': details,
+        'demurrage': demurrage,
+        'despatch' : despatch,
+        'dem_des_set' : demurrage is not None and despatch is not None
     }
     template = get_template('shipment/lay_time_statement.tex')
     rendered_tpl = template.render(context)

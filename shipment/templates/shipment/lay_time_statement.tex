@@ -8,7 +8,9 @@
 \usepackage{longtable}
 \usepackage{microtype}
 \usepackage{multicol}
+\usepackage{tabularx}
 \usepackage{tikz}
+\usepackage{xcolor}
 \usetikzlibrary{positioning}
 \linespread{1.05}
 \renewcommand*\rmdefault{ppl}
@@ -122,6 +124,7 @@ Zgo0NjczCiUlRU9GCg==
   \renewcommand{\headrulewidth}{0pt}
   \renewcommand{\footrulewidth}{0pt}
   \fancyfoot[C]{
+      \color{tmc}
       \footnotesize
       TAGANITO MINING CORPORATION \\
       29F NAC TOWER, 32$^\mathrm{\text{nd}}$ STREET, BONIFACIO GLOBAL CITY \\
@@ -131,6 +134,7 @@ Zgo0NjczCiUlRU9GCg==
 }
 
 \setlength{\parindent}{0pt}
+\definecolor{tmc}{RGB}{75, 148, 97}
 
 \begin{document}
 \thispagestyle{front}\vspace*{-2cm}
@@ -143,7 +147,7 @@ Zgo0NjczCiUlRU9GCg==
         }
     }
     \begin{tikzpicture}
-        \node (tmclogo) {\includegraphics[width=3in]{tmclogo.pdf}};
+        \node (tmclogo) {\includegraphics[width=2.5in]{tmclogo.pdf}};
     \end{tikzpicture}
 
     \vspace{4mm}
@@ -286,11 +290,31 @@ Zgo0NjczCiUlRU9GCg==
 \end{center}
 \end{small}
 
-{% if statement.demurrage > 1 %}
-\textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage }}}
+\begin{center}
+{% if dem_des_set %}
+    {% if despatch > 0 %}
+    \textbf{DESPATCH \hspace{20pt} US\$~{{ despatch }}}
+    {% else %}
+    \textbf{DEMURRAGE \hspace{10pt} US\$~{{ demurrage }}}
+    {% endif %}
+{% elif statement.demurrage > 0 %}
+    \textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage }}}
 {% else %}
-\textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch }}}
+    \textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch }}}
 {% endif %}
+
+    \bigskip\bigskip
+
+    \begin{tabularx}{0.9\linewidth}{cXc}
+        \multicolumn{1}{l}{Checked and reviewed by:}
+            && \multicolumn{1}{l}{Approved by:} \\
+        && \\ && \\
+        \bfseries VICENTE M. BENAMER
+            && \bfseries ARTEMIO E. VALEROSO \\
+        Mine Engineering Department Manager
+            && Resident Mine Manager \\
+    \end{tabularx}
+\end{center}
 
 \end{document}
 {% endautoescape %}
