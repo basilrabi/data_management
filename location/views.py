@@ -48,7 +48,7 @@ def export_cluster_dxf_for_survey(request):
                                 }
                             )
                 doc.saveas(os.path.join(tempdir, 'dxf', f'{date}.dxf'))
-            command = f'cd "{tempdir}" && zip clusters.zip dxf/*'
+            command = f'cd "{tempdir}"/dxf && zip ../clusters.zip *'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             filename = os.path.join(tempdir, 'clusters.zip')
             return FileResponse(open(filename, 'rb'), content_type='application/zip')
