@@ -21,6 +21,11 @@ class  LayDaysStatementTest(TestCase):
         shipment = Shipment(name='431-C', vessel=vessel)
         shipment.save()
 
+    def test_add_shipment(self):
+        vessel = Vessel.objects.first()
+        shipment = Shipment(name='293', vessel=vessel)
+        self.assertEqual(None, shipment.clean())
+
     def test_arrival_at_tmc_should_be_later_than_arrival_at_surigao(self):
         shipment = Shipment.objects.all().first()
         statement = LayDaysStatement(

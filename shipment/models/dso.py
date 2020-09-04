@@ -649,7 +649,9 @@ class Shipment(models.Model):
         return self.name
 
     def clean(self):
-        original_obj = Shipment.objects.get(id=self.id)
+        original_obj = Shipment.objects.filter(id=self.id)
+        if original_obj.exists():
+            original_obj = original_obj[0]
 
         if self.despatch and self.demurrage:
             if self.demurrage > 0 and self.despatch > 0:
