@@ -293,13 +293,29 @@ Zgo0NjczCiUlRU9GCg==
 \begin{center}
 {% if dem_des_set %}
     {% if despatch > 0 %}
+        {% if despatch == statement.despatch %}
+    DES  {{ statement.despatch_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
+    \medskip
+
+        {% endif %}
     \textbf{DESPATCH \hspace{20pt} US\$~{{ despatch }}}
     {% else %}
+        {% if demurrage == statement.demurrage %}
+    DEM  {{ statement.demurrage_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
+    \medskip
+
+        {% endif %}
     \textbf{DEMURRAGE \hspace{10pt} US\$~{{ demurrage }}}
     {% endif %}
 {% elif statement.demurrage > 0 %}
+    DEM  {{ statement.demurrage_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
+    \medskip
+
     \textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage }}}
 {% else %}
+    DES  {{ statement.despatch_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
+    \medskip
+
     \textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch }}}
 {% endif %}
 
