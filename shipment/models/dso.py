@@ -265,6 +265,11 @@ class LayDaysStatement(models.Model):
         help_text='This lay days statement is revised from a previous version.'
     )
     date_computed = models.DateTimeField(null=True, blank=True)
+    negotiated = models.BooleanField(
+        default=False,
+        help_text='Demurrage/Despatch is negotiated.'
+    )
+    remarks = models.TextField(null=True, blank=True)
 
     def _clean(self):
         """
