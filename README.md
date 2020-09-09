@@ -75,84 +75,7 @@ Set-up the django project
 
 ### Serving
 
-#### Raspbian (or Debian-like)
-
-Add the following files in your system:
-
-```config
-# /etc/systemd/system/data_management.socket
-[Unit]
-Description=gunicorn data_management app socket
-
-[Socket]
-ListenStream=/run/data_management.sock
-
-[Install]
-WantedBy=sockets.target
-```
-
-```config
-# /etc/systemd/system/data_management.service
-# Change $USER to your user name
-[Unit]
-Description=gunicorn data_management app daemon
-Requires=data_management.socket
-After=network.target
-
-[Service]
-User=$USER
-Group=www-data
-WorkingDirectory=/home/$USER/data_management
-ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn \
-          --access-logfile - \
-          --workers 3 \
-          --timeout 600 \
-          --bind unix:/run/data_management.sock \
-          data_management.wsgi:application
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable gunicorn data_management app socket:
-
-```bash
-sudo systemctl start data_management.socket
-sudo systemctl enable data_management.socket
-```
-
-Add nginx configuration file:
-
-```config
-# /etc/nginx/sites-available/data_management
-# Change $HOSTNAME to your server's IP or hostname
-# Change $USER to your user name
-
-server {
-    listen 82;
-    server_name $HOSTNAME;
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
-        root /home/$USER/data_management;
-    }
-
-    location / {
-        include proxy_params;
-        proxy_pass http://unix:/run/data_management.sock;
-    }
-}
-```
-
-Then link the configuration file:
-
-```bash
-sudo ln -s /etc/nginx/sites-available/data_management /etc/nginx/sites-enabled/data_management
-```
-
-Lastly, restart your system.
-
-#### Fedora 31
+#### Fedora 32
 
 ##### Service File
 
@@ -170,7 +93,7 @@ User=$USER
 Group=nginx
 EnvironmentFile=/pathto/somefilewith_secrets
 WorkingDirectory=/home/$USER/data_management
-ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --timeout 600 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
+ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --timeout 6000 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
