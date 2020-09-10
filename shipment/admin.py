@@ -106,6 +106,7 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
     )
     list_display = (
         'object_name',
+        'number',
         'vessel',
         'final_ni',
         'final_fe',
@@ -125,7 +126,8 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
                 diff_wmt=ExpressionWrapper(
                     F('laydaysstatement__tonnage') - F('shipmentdischargeassay__wmt'),
                     output_field=IntegerField()
-                )
+                ),
+                number=F('shipmentnumber__number')
             )
         return qs
 
@@ -134,6 +136,9 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
 
     def diff_wmt(self, obj):
         return obj.diff_wmt
+
+    def number(self, obj):
+        return obj.number
 
     def object_name(self, obj):
         return Shipment.objects.get(id=obj.id).name_html()
