@@ -633,3 +633,6 @@ class  LayDaysStatement437CTest(TestCase):
         approval.approved = True
         approval.save()
         self.assertRaises(ValidationError, statement.clean)
+        shipment.refresh_from_db()
+        self.assertAlmostEqual(shipment.demurrage, Decimal(44209.03))
+        self.assertAlmostEqual(shipment.despatch, Decimal(0))

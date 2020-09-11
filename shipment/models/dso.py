@@ -170,6 +170,19 @@ class ApprovedLayDaysStatement(models.Model):
     def PDF(self):
         return self.statement.PDF()
 
+    def save(self, *args, **kwargs):
+        original_obj = ApprovedLayDaysStatement.objects.filter(id=self.id)
+        if original_obj.exists():
+            original_obj = original_obj[0]
+            if self.approved and not original_obj.approved:
+                shipment = self.statement.shipment
+                if shipment.demurrage is None and shipment.despatch is None:
+                    shipment.demurrage = self.statement.demurrage
+                    shipment.despatch = self.statement.despatch
+                    shipment.save(refresh=False)
+        super().save(*args, **kwargs)
+
+
     class Meta:
         ordering = [
             'approved',
@@ -682,7 +695,7 @@ class Shipment(models.Model):
                     if self.despatch != original_obj.despatch:
                         raise ValidationError('Despatch cannot be changed if laydays statement is already approved.')
 
-    def save(self, *args, **kwargs):
+    def save(self, refresh=True, *args, **kwargs):
         if self.product:
             if not self.spec_moisture:
                 self.spec_moisture = self.product.moisture
@@ -691,10 +704,11 @@ class Shipment(models.Model):
             if not self.spec_fe:
                 self.spec_fe = self.product.fe
         super().save(*args, **kwargs)
-        refresh_shipment_number()
-        if self.vessel:
-            for trip in self.vessel.trip_set.all():
-                trip.save()
+        if refresh:
+            refresh_shipment_number()
+            if self.vessel:
+                for trip in self.vessel.trip_set.all():
+                    trip.save()
 
     class Meta:
         constraints = [
