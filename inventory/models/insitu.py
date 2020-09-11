@@ -11,7 +11,7 @@ class Block(models.Model):
     3 meter length along z (Elevation)
     However, geometry is only saved as a 2-dimensional square in the database.
     """
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
     z = models.SmallIntegerField(
         help_text='Elevation of the top face of the block.'
     )

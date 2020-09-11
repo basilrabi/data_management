@@ -25,7 +25,7 @@ class BlockTest(TestCase):
         block.refresh_from_db()
         self.assertEqual(True, block.exposed)
 
-        block = Block(name='b2', z=99, ni=1, fe=40, co=0.1, depth = 0,
+        block = Block(name='b3', z=99, ni=1, fe=40, co=0.1, depth = 0,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
         block.refresh_from_db()
