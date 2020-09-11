@@ -153,6 +153,12 @@ class Trip(models.Model):
 
     class Meta:
         ordering = ['lct', '-interval_from']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['lct', 'interval_from', 'interval_to'],
+                name='unique_lct_trip_interval'
+            )
+        ]
 
     def __str__(self):
         return 'Record: ' + str(self.id) + ', LCT: ' + self.lct.name

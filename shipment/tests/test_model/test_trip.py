@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
@@ -121,6 +122,47 @@ class  TripTest(TestCase):
                     status='partial',
                     dump_truck_trips=20)
         self.assertRaises(ValidationError, trip.clean)
+
+    def test_double_posted_trip(self):
+        lct = LCT.objects.all().first()
+        vessel = Vessel.objects.all().first()
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:05:00+0800'),
+            interval_class='loading'
+        )
+        trip_detail.save()
+
+        trip = Trip(lct=lct,
+                    vessel=vessel,
+                    status='loaded',
+                    dump_truck_trips=50,
+                    vessel_grab=2)
+        trip.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:00:00+0800'),
+            interval_class='preparation_loading'
+        )
+        trip_detail.save()
+        trip_detail = TripDetail(
+            trip=trip,
+            interval_from=pd('2019-08-16 00:05:00+0800'),
+            interval_class='loading'
+        )
+        self.assertRaises(IntegrityError, trip_detail.save)
 
     def test_data_is_okay_if_rejected(self):
         lct = LCT.objects.all().first()
