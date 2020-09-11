@@ -229,6 +229,7 @@ class LayDaysStatement(models.Model):
         default=6000,
         help_text='Agreed loading rate (tons per day).'
     )
+    laytime_terms = NameField(max_length=20, null=True, blank=True)
     demurrage_rate = models.PositiveSmallIntegerField(
         default=11000,
         help_text='US Dollar per day'
