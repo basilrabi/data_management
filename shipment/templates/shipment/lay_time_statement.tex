@@ -210,13 +210,13 @@ Zgo0NjczCiUlRU9GCg==
             & Total Time Allowed
             & {{ statement.time_limit }} \\
         Loading Terms
-            & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms "PWWD SHINC" %}
+            & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %}
             & \multicolumn{2}{c}{} \\
 {% else %}
         Total Time Allowed
             & {{ statement.time_limit }}
             & Loading Terms
-            & {{ statement.loading_terms|intcomma }} WMT PWWD SHINC \\
+            & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %} \\
 {% endif %}
 
     \end{tabular}
