@@ -225,3 +225,9 @@ def to_hms(duration):
     duration -= minutes * one_minute
     seconds = duration // one_second
     return f'{hours:02d}:{minutes:02d}:{seconds:02d}'
+
+def to_latex(text):
+    """
+    Escapes characters to for latex printing.
+    """
+    return text.replace('&', '\\&')

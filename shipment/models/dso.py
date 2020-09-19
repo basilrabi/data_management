@@ -11,7 +11,7 @@ from re import sub
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
     ordinal_suffix, print_localzone, refresh_shipment_number, round_second,
-    round_up_day, to_dhms, to_hm, to_hms
+    round_up_day, to_dhms, to_hm, to_hms, to_latex
 )
 from custom.models import Classification
 from custom.variables import one_day, zero_time
@@ -139,6 +139,9 @@ class LayDaysDetailComputed(models.Model):
             if round_up_day(previous_detail.interval_from) > self.interval_from:
                 return False
         return True
+
+    def latex_remarks(self):
+        return to_latex(self.remarks)
 
     def next(self):
         return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
@@ -484,6 +487,9 @@ class LayDaysStatement(models.Model):
             'Download'
             '</a>'.format(self.shipment.name)
         )
+
+    def latex_remarks(self):
+        return to_latex(self.remarks)
 
     def PDF(self):
         return mark_safe(

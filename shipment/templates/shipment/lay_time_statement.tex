@@ -254,27 +254,27 @@ Zgo0NjczCiUlRU9GCg==
             & {{ detail.next.remaining }}
         {% if detail.next.interval_class == 'end' %}
             {% if detail.next.remarks %}
-            & {{ detail.next.remarks|title }} \\
+            & {{ detail.next.latex_remarks|title }} \\
             {% else %}
             & Completed Loading \\
             {% endif %}
         {% elif detail.interval_class == 'others' %}
             {% if detail.remarks %}
-            & {{ detail.remarks|title }} \\
+            & {{ detail.latex_remarks|title }} \\
             {% else %}
             & \\
             {% endif %}
         {% else %}
             {% if detail.next.remarks == 'laytime expires' %}
             & {{ detail.interval_class|title }} \newline \emph{%
-                {{ detail.next.remarks|title }}
+                {{ detail.next.latex_remarks|title }}
             } \\
             {% elif detail.remarks == 'laytime expires' %}
             & {{ detail.interval_class|title }} \\
             {% elif detail.next.remarks.strip.lower == 'completed loading' %}
             & Completed Loading \\
             {% elif detail.remarks %}
-            & {{ detail.interval_class|title }}. {{ detail.remarks }} \\
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
             {% else %}
             & {{ detail.interval_class|title }} \\
             {% endif %}
@@ -289,7 +289,7 @@ Zgo0NjczCiUlRU9GCg==
     \end{longtable}
 \end{center}
 
-{% firstof statement.remarks "" %}
+{% firstof statement.latex_remarks "" %}
 \end{small}
 
 \begin{center}
