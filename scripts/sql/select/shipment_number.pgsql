@@ -14,7 +14,7 @@ WITH aa as (
 ),
 bb as (
     SELECT
-        id, name,
+        id, name, date_a, date_b,
         COALESCE(date_b, date_a, '2100-01-01 00:00:00'::timestamp) time_stamp
     FROM aa
 ),
@@ -25,7 +25,7 @@ cc as (
 dd as (
     SELECT
         id, time_stamp, EXTRACT(YEAR FROM time_stamp)::text the_year,
-        ROW_NUMBER () OVER (PARTITION BY year_begin ORDER BY time_stamp, name) shipment_number
+        ROW_NUMBER () OVER (PARTITION BY year_begin ORDER BY date_b, date_a, name) shipment_number
     FROM cc
 )
 SELECT
