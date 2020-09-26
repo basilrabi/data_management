@@ -6,15 +6,9 @@ from shipment.models.dso import LayDaysStatement
 
 for statement in LayDaysStatement.objects.all():
     try:
-        print(f'Computing statement for {statement.__str__()}...')
+        print(f'Computing statement for {statement.__str__()}...', flush=True)
         statement._compute()
-        sys.stdout.flush()
-        sys.stderr.flush()
     except KeyboardInterrupt:
-        print('\nComputing statement interrupted.')
-        sys.stdout.flush()
-        sys.stderr.flush()
+        print('\nComputing statement interrupted.', flush=True)
         sys.exit(1)
-    print('Done.')
-    sys.stdout.flush()
-    sys.stderr.flush()
+    print('Done.', flush=True)

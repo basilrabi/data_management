@@ -28,15 +28,13 @@ with open('data/users.csv', newline='') as csvfile:
         try:
             user.clean()
             user.save()
-            print(f'User {user.username} saved.')
+            print(f'User {user.username} saved.', flush=True)
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
             sys.exit(1)
         except Exception as e:
-            print(f'User {user.username} was not saved.')
-            print(e)
-        sys.stdout.flush()
-        sys.stderr.flush()
+            print(f'User {user.username} was not saved.', flush=True)
+            print(e, flush=True)
 
 with open('data/user_group.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['user', 'group'])
@@ -45,15 +43,13 @@ with open('data/user_group.csv', newline='') as csvfile:
         group = Group.objects.get(name=row['group'])
         try:
             user.groups.add(group)
-            print(f'Added User `{user.username}` to Group `{group.name}`.')
+            print(f'Added User `{user.username}` to Group `{group.name}`.', flush=True)
         except KeyboardInterrupt:
-            print('\nUploading interrupted.')
+            print('\nUploading interrupted.', flush=True)
             sys.exit(1)
         except Exception as e:
-            print(f'User `{user.username}` was not assigned to Group `{group.name}`.')
-            print(e)
-        sys.stdout.flush()
-        sys.stderr.flush()
+            print(f'User `{user.username}` was not assigned to Group `{group.name}`.', flush=True)
+            print(e, flush=True)
 
 with open('data/user_permission.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile, fieldnames=['user', 'permission'])
@@ -62,12 +58,10 @@ with open('data/user_permission.csv', newline='') as csvfile:
         permission = Permission.objects.get(codename=row['permission'])
         try:
             user.user_permissions.add(permission)
-            print(f'Added Permission `{permission.name}` to User `{user.username}`.')
+            print(f'Added Permission `{permission.name}` to User `{user.username}`.', flush=True)
         except KeyboardInterrupt:
-            print('\nUploading interrupted.')
+            print('\nUploading interrupted.', flush=True)
             sys.exit(1)
         except Exception as e:
-            print(f'Permission `{permission.name}` was not assigned to User `{user.username}`')
+            print(f'Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
             sys.exit(1)
-        sys.stdout.flush()
-        sys.stderr.flush()
