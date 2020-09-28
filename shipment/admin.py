@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db.models import (
-    ExpressionWrapper, F, IntegerField, TextField
+    Case, ExpressionWrapper, F, IntegerField, TextField, When
 )
 from django.db.models.functions import Cast
 from django.forms import Textarea
@@ -251,6 +251,7 @@ class ShipmentAdmin(admin.ModelAdmin):
         'vessel',
         'dump_truck_trips',
         'tonnage',
+        'balance',
         'ni',
         'fe',
         'moisture',
@@ -271,8 +272,17 @@ class ShipmentAdmin(admin.ModelAdmin):
                 moisture=Round(F('shipmentloadingassay__moisture'), 2),
                 completion=F('laydaysstatement__completed_loading'),
                 number=F('shipmentnumber__number')
+            ) \
+            .annotate(
+                balance=Case(
+                    When(completion__isnull=True, then=F('target_tonnage') - F('tonnage')),
+                    output_field=IntegerField()
+                )
             )
         return qs
+
+    def balance(self, obj):
+        return obj.balance
 
     def completion(self, obj):
         return obj.completion
