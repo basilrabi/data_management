@@ -111,7 +111,7 @@ class DrillCoreSample(AssaySample):
         Lithology, null=True, blank=True, on_delete=models.SET_NULL
     )
     lithology_modified = models.ForeignKey(
-        Lithology, null=True, blank=True, on_delete=models.SET_NULL, related_name='lithology_modified'
+        Lithology, null=True, blank=True, on_delete=models.SET_NULL, related_name='drillcore'
     )
     description = models.TextField(null=True, blank=True)
     excavated_date = models.DateField(null=True, blank=True)
