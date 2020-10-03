@@ -26,7 +26,7 @@ class DrillCoreInline(admin.TabularInline):
     model = DrillCore
     extra = 0
     fields = ('interval_from', 'interval_to',
-              'lithology', 'description', 'excavated_date',
+              'lithology', 'lithology_modified', 'description', 'excavated_date',
               'ni', 'fe', 'co')
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
