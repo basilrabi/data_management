@@ -300,25 +300,25 @@ Zgo0NjczCiUlRU9GCg==
     \medskip
 
         {% endif %}
-    \textbf{ {% if statement.negotiated %}NEGOTIATED {% endif %}DESPATCH \hspace{20pt} US\$~{{ despatch }}}
+    \textbf{ {% if statement.negotiated %}NEGOTIATED {% endif %}DESPATCH \hspace{20pt} US\$~{{ despatch|floatformat:2 }}}
     {% else %}
         {% if demurrage == statement.demurrage %}
     DEM  {{ statement.demurrage_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
     \medskip
 
         {% endif %}
-    \textbf{ {% if statement.negotiated %}NEGOTIATED {% endif %}DEMURRAGE \hspace{10pt} US\$~{{ demurrage }}}
+    \textbf{ {% if statement.negotiated %}NEGOTIATED {% endif %}DEMURRAGE \hspace{10pt} US\$~{{ demurrage|floatformat:2 }}}
     {% endif %}
 {% elif statement.demurrage > 0 %}
     DEM  {{ statement.demurrage_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
     \medskip
 
-    \textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage }}}
+    \textbf{DEMURRAGE \hspace{10pt} US\$~{{ statement.demurrage|floatformat:2 }}}
 {% else %}
     DES  {{ statement.despatch_rate|intcomma }} US\$/day $\times$ {{ days|floatformat:7 }} days
     \medskip
 
-    \textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch }}}
+    \textbf{DESPATCH \hspace{20pt} US\$~{{ statement.despatch|floatformat:2 }}}
 {% endif %}
 
     \bigskip\bigskip
