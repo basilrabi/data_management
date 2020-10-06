@@ -34,6 +34,11 @@ GRANT SELECT ON TABLE sampling_drillcoresample TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
 GRANT UPDATE (layout_date) ON TABLE location_cluster TO survey;
 
+-- reader
+GRANT USAGE ON SCHEMA staging TO reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA staging TO reader;
+
 -- planning
 GRANT gradecontrol TO planning;
 GRANT survey TO planning;

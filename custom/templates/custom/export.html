@@ -113,6 +113,16 @@
                     <td>{{ survey }}</td>
                 </tr>
                 {% endif %}
+                {% if request.user|has_group:"viewer" %}
+                <tr>
+                    <td>User Name</td>
+                    <td>reader</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>{{ reader }}</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
