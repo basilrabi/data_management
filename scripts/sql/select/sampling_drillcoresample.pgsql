@@ -17,6 +17,7 @@ SELECT
     core.interval_from,
     core.interval_to,
     litho.name,
+    litho_mod.name,
     core.description,
     core.excavated_date
 FROM sampling_drillcoresample as core
@@ -24,4 +25,6 @@ FROM sampling_drillcoresample as core
         ON core.drill_hole_id = hole.id
     LEFT JOIN sampling_lithology as litho
         ON core.lithology_id = litho.id
+    LEFT JOIN sampling_lithology as litho_mod
+        ON core.lithology_modified_id = litho_mod.id
 ORDER BY hole.name, core.interval_from

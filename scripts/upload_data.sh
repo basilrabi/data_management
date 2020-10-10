@@ -40,6 +40,8 @@ sql_script "upload_data" "inventory_clustered_block" && \
 vacuum "inventory_block" && \
 sql_script "upload_data" "sampling_laboratory" && \
 vacuum "sampling_laboratory" && \
+sql_script "upload_data" "sampling_lithology" && \
+vacuum "sampling_lithology" && \
 sql_script "upload_data" "shipment_buyer" && \
 vacuum "shipment_buyer" && \
 sql_script "upload_data" "shipment_destination" && \

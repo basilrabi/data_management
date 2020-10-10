@@ -17,7 +17,8 @@ CREATE TEMPORARY TABLE temp_sampling_drillcoresample
     drillhole character varying(20),
     interval_from numeric(5,3),
     interval_to numeric(5,3),
-    lithology character varying(10),
+    lithology character varying(20),
+    lithology_modified character varying(20),
     description text,
     excavated_date date
 );
@@ -44,7 +45,8 @@ INSERT INTO sampling_drillcoresample (
     description,
     excavated_date,
     drill_hole_id,
-    lithology_id
+    lithology_id,
+    lithology_modified_id
 )
 SELECT
     core.date_received_for_preparation,
@@ -66,9 +68,12 @@ SELECT
     core.description,
     core.excavated_date,
     dh.id drill_hole_id,
-    litho.id lithology_id
+    litho.id lithology_id,
+    litho_mod.id lithology_modified_id
 FROM temp_sampling_drillcoresample core
     LEFT JOIN location_drillhole dh
         ON dh.name = core.drillhole
     LEFT JOIN sampling_lithology litho
-        ON litho.name = core.lithology;
+        ON litho.name = core.lithology
+    LEFT JOIN sampling_lithology litho_mod
+        ON litho_mod.name = core.lithology_modified;

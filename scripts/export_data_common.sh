@@ -28,6 +28,7 @@ download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \
 download_sql sampling_drillcoresample && \
 download_sql sampling_laboratory && \
+download_sql sampling_lithology && \
 download_sql sampling_shipmentdischargeassay && \
 download_sql sampling_shipmentdischargelotassay && \
 download_sql sampling_shipmentloadingassay && \
