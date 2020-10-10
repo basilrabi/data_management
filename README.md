@@ -5,7 +5,7 @@
 The packages below are required to be installed:
 
 - nginx
-- python3 (>= 3.5.3)
+- python3 (>= 3.8.5)
 - python3-virtualenvwrapper (via package or pip)
 
 Ensure that the database connection is properly set-up as required in
@@ -15,15 +15,17 @@ Ensure that the database connection is properly set-up as required in
 
 ### Set-up virtual environment
 
-Add the following lines in your `.bashrc`
+This step might not be needed in Fedora 32+.
+TODO: confirm in the next fresh installation of F33.
+
+Anyway, add the following lines in your `.bashrc`
 
 ```bash
 export WORKON_HOME=$HOME/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=' -p /usr/bin/python3 '
 export PROJECT_HOME=$HOME/Devel
-source /usr/local/bin/virtualenvwrapper.sh # for debian-like
-source /usr/bin/virtualenvwrapper.sh       # for fedora
+source /usr/bin/virtualenvwrapper.sh
 ```
 
 Then reload the file:
@@ -97,6 +99,20 @@ ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --ti
 
 [Install]
 WantedBy=multi-user.target
+```
+
+##### gunicorn Environment File
+
+In the service file mentioned above, gunicorn will use the passwords in the environment file `/pathto/somefilewith_secrets`.
+Below are the environment variables needed and should be present in `/pathto/somefilewith_secrets`.
+
+```config
+DATA_MANAGEMENT_GEOLOGY=some_password
+DATA_MANAGEMENT_GRADECONTROL=some_password
+DATA_MANAGEMENT_PLANNING=some_password
+DATA_MANAGEMENT_READER=some_password
+DATA_MANAGEMENT_SURVEY=some_password
+PYTHONUNBUFFERED=TRUE
 ```
 
 ##### SELinux Adventures
