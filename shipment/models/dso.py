@@ -634,6 +634,9 @@ class Shipment(models.Model):
     boulders_freight_cost = models.DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
     )
+    dead_freight = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
+    )
     demurrage = models.DecimalField(
         null=True, blank=True, max_digits=8, decimal_places=2,
         validators=[MinValueValidator(Decimal(0.00))]

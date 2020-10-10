@@ -89,7 +89,8 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
             'fields': (
                 'boulders_tonnage',
                 'boulders_processing_cost',
-                'boulders_freight_cost'
+                'boulders_freight_cost',
+                'dead_freight'
             )
         }),
         ('Final Specification', {
