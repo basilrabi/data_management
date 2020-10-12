@@ -6,6 +6,9 @@ from django.db.models import (
 from django.db.models.functions import Cast
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
+from import_export.admin import ExportMixin
+from import_export.fields import Field
+from import_export.resources import ModelResource
 
 from custom.functions import Round, print_tz_manila
 from .models.lct import LCT, LCTContract, Trip, TripDetail
@@ -22,6 +25,40 @@ from .models.dso import (
 from .models.proxy import FinalShipmentDetail
 
 # pylint: disable=no-member
+
+
+class ShipmentResource(ModelResource):
+    number = Field(attribute='number', column_name='Number')
+    shipment = Field(attribute='name', column_name='Shipment')
+    completion = Field(column_name='Completion')
+    buyer_name = Field(attribute='buyer__name', column_name='Buyer')
+    destination_name = Field(attribute='destination__name', column_name='Destination')
+    product_name = Field(attribute='product__name', column_name='Product')
+    vessel_name = Field(attribute='vessel__name', column_name='Vessel')
+    loading_ni = Field(attribute='shipmentloadingassay__ni', column_name='Loading %Ni')
+    loading_fe = Field(attribute='shipmentloadingassay__fe', column_name='Loading %Fe')
+    loading_wmt = Field(attribute='laydaysstatement__tonnage', column_name='Loading WMT')
+    loading_dmt = Field(attribute='shipmentloadingassay__dmt', column_name='Loading DMT')
+    discharge_lab = Field(attribute='shipmentdischargeassay__laboratory__name', column_name='Discharge Lab')
+    discharge_ni = Field(attribute='shipmentdischargeassay__ni', column_name='Discharge %Ni')
+    discharge_fe = Field(attribute='shipmentdischargeassay__fe', column_name='Discharge %Fe')
+    discharge_wmt = Field(attribute='shipmentdischargeassay__wmt', column_name='Discharge WMT')
+    discharge_dmt = Field(attribute='shipmentdischargeassay__dmt', column_name='Discharge DMT')
+
+    class Meta:
+        model = FinalShipmentDetail
+        exclude = (
+            'buyer',
+            'destination',
+            'id',
+            'name',
+            'product',
+            'vessel'
+        )
+
+    def dehydrate_completion(self, shipment):
+        if shipment.laydaysstatement.laydaysdetail_set.count() > 0:
+            return print_tz_manila(shipment.laydaysstatement.laydaysdetail_set.last().interval_from)
 
 
 class IntervalFromInlineFormSet(BaseInlineFormSet):
@@ -83,7 +120,8 @@ class DestinationAdmin(admin.ModelAdmin):
 
 
 @admin.register(FinalShipmentDetail)
-class FinalShipmentDetailAdmin(admin.ModelAdmin):
+class FinalShipmentDetailAdmin(ExportMixin, admin.ModelAdmin):
+    date_hierarchy = 'laydaysstatement__laydaysdetail__interval_from'
     fieldsets = (
         ('Boulders', {
             'fields': (
@@ -118,6 +156,7 @@ class FinalShipmentDetailAdmin(admin.ModelAdmin):
         'demurrage',
         'despatch'
     )
+    resource_class = ShipmentResource
     search_fields = ['name', 'vessel__name']
 
     def get_queryset(self, request):
