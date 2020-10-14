@@ -29,7 +29,10 @@ upload_ogr () {
 }
 
 sql_script "upload_data" "inventory_block" && \
+upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \
+upload_ogr location_mpsa identity && \
+upload_ogr location_peza identity && \
 upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
 sql_script "trigger" "location_cluster_insert" && \

@@ -17,7 +17,10 @@ download_sql () {
     psql -h $db_host -U $db_user $db_name -c "$cmd"
 }
 
+download_ogr location_fla && \
 download_ogr location_mineblock && \
+download_ogr location_mpsa && \
+download_ogr location_peza && \
 download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql inventory_block && \
