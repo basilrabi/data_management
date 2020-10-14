@@ -9,8 +9,17 @@ from import_export.resources import ModelResource
 from custom.admin_gis import TMCLocationAdmin
 from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
-from .models.landuse import RoadArea
+from .models.landuse import (
+    Facility,
+    FacilityClassification,
+    FLA,
+    MPSA,
+    PEZA,
+    RoadArea,
+    WaterBody
+)
 from .models.source import Cluster, DrillHole, MineBlock, Stockpile
+
 
 class ClusterResource(ModelResource):
     block_count = Field()
@@ -21,6 +30,7 @@ class ClusterResource(ModelResource):
 
     def dehydrate_block_count(self, cluster):
         return cluster.block_set.count()
+
 
 class DrillCoreInline(admin.TabularInline):
     model = DrillCore
@@ -39,12 +49,14 @@ class DrillCoreInline(admin.TabularInline):
     }
     readonly_fields = ['ni', 'fe', 'co']
 
+
 class ClusterChangeList(ChangeList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.blocks = self.queryset \
             .annotate(blocks=models.Count('block')) \
             .aggregate(models.Sum('blocks'))['blocks__sum']
+
 
 @admin.register(Cluster)
 class ClusterAdmin(ExportMixin, admin.ModelAdmin):
@@ -92,6 +104,7 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
     def blocks(self, obj):
         return obj.blocks
 
+
 @admin.register(DrillHole)
 class DrillHoleAdmin(TMCLocationAdmin):
     modifiable = False
@@ -99,15 +112,58 @@ class DrillHoleAdmin(TMCLocationAdmin):
     list_display = ('name', 'date_drilled')
     search_fields = ['name']
 
+
+@admin.register(Facility)
+class FacilityAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = [
+        'name',
+        'description',
+        'classification__name',
+        'classification__description'
+    ]
+
+
+@admin.register(FacilityClassification)
+class FacilityClassificationAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'description']
+
+
+@admin.register(FLA)
+class FLAAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = ['name']
+
+
 @admin.register(MineBlock)
 class MineBlockAdmin(TMCLocationAdmin):
     modifiable = False
     list_display = ('name', 'ridge')
 
+
+@admin.register(MPSA)
+class MPSAAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = ['name']
+
+
+@admin.register(PEZA)
+class PEZAAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = ['name']
+
+
 @admin.register(RoadArea)
 class RoadAreaAdmin(TMCLocationAdmin):
     modifiable = False
 
+
 @admin.register(Stockpile)
 class StockpileAdmin(TMCLocationAdmin):
     pass
+
+
+@admin.register(WaterBody)
+class WaterBodyAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = ['name']
