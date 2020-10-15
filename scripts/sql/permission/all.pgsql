@@ -27,7 +27,10 @@ GRANT UPDATE (
 GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
 GRANT SELECT ON TABLE location_drillhole TO survey;
+GRANT SELECT ON TABLE location_fla TO survey;
 GRANT SELECT ON TABLE location_mineblock TO survey;
+GRANT SELECT ON TABLE location_mpsa TO survey;
+GRANT SELECT ON TABLE location_peza TO survey;
 GRANT SELECT ON TABLE location_roadarea TO survey;
 GRANT SELECT ON TABLE location_slice TO survey;
 GRANT SELECT ON TABLE sampling_drillcoresample TO survey;
