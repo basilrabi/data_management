@@ -32,13 +32,14 @@ def export_cluster_dxf_for_survey(request):
                 date = f"{item['date_scheduled']}"
                 clusters = Cluster.objects.filter(date_scheduled=date)
                 doc = ezdxf.new('R2013')
+                doc.appids.new('TrimbleName')
                 for cluster in clusters:
                     msp = doc.modelspace()
                     doc.layers.new(name=f'{cluster.name}')
                     geom = cluster.geom.tuple
                     for multi_polygon in geom:
                         for polygon in multi_polygon:
-                            msp.add_lwpolyline(
+                            entity = msp.add_lwpolyline(
                                 list(polygon),
                                 dxfattribs={
                                     'layer': f'{cluster.name}',
@@ -47,6 +48,10 @@ def export_cluster_dxf_for_survey(request):
                                     'elevation': cluster.z - 3
                                 }
                             )
+                            entity.set_xdata('TrimbleName', [
+                                (1001, 'TrimbleName'),
+                                (1000, f'{cluster.name}'),
+                            ])
                 doc.saveas(os.path.join(tempdir, 'dxf', f'{date}.dxf'))
             command = f'cd "{tempdir}"/dxf && zip ../clusters.zip *'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
