@@ -41,7 +41,8 @@ class Block(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['z']),
-            models.Index(fields=['exposed', 'z', 'planned_excavation_date'])
+            models.Index(fields=['exposed', 'z', 'planned_excavation_date']),
+            models.Index(fields=['exposed', 'fe', 'ni', 'z', 'planned_excavation_date'])
         ]
 
     def __str__(self):
