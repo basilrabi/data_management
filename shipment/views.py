@@ -45,6 +45,7 @@ def index(request):
                     ON d.id = c.shipment_id
             WHERE ja.interval_from IS NOT NULL
                 AND c.completed_loading IS NOT NULL
+                AND EXTRACT(year FROM c.completed_loading)::integer + 5 > EXTRACT(year FROM NOW())::integer
         ),
         cte_b AS (
             SELECT
@@ -121,7 +122,7 @@ def index(request):
         """)
         year_data = []
         df = pd.DataFrame.from_records(cursor.fetchall())
-        for year in df[2].unique():
+        for year in df[2].unique()[::-1]:
             df_filtered = df[df[2] == year]
             year_data.append(
                 go.Scatter(
