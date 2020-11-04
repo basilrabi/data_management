@@ -148,6 +148,10 @@ def print_tz_manila(timestamp):
         timestamp = str(timestamp.astimezone(tz_manila))
         return timestamp[:-6]
 
+def refresh_loading_rate():
+    with connection.cursor() as cursor:
+            cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_loadingrate')
+
 def refresh_shipment_number():
     with connection.cursor() as cursor:
             cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_number')

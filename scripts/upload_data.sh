@@ -67,6 +67,8 @@ sql_script "upload_data" "shipment_trip" && \
 vacuum "shipment_trip" && \
 sql_script "upload_data" "shipment_tripdetail" && \
 vacuum "shipment_tripdetail" && \
+sql_script "select" "shipment_loadingrate" && \
+sql_script "index" "shipment_loadingrate" && \
 sql_script "select" "shipment_number" && \
 sql_script "index" "shipment_number" && \
 sql_script "upload_data" "sampling_shipmentdischargeassay" && \

@@ -10,8 +10,9 @@ from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
-    ordinal_suffix, print_localzone, refresh_shipment_number, round_second,
-    round_up_day, to_dhms, to_hm, to_hms, to_latex
+    ordinal_suffix, print_localzone, refresh_loading_rate,
+    refresh_shipment_number, round_second, round_up_day, to_dhms, to_hm, to_hms,
+    to_latex
 )
 from custom.models import Classification
 from custom.variables import one_day, zero_time
@@ -552,6 +553,7 @@ class LayDaysStatement(models.Model):
         if not compute:
             self.date_saved = now()
         super().save(*args, **kwargs)
+        refresh_loading_rate()
         refresh_shipment_number()
         self.shipment.save()
         if not hasattr(self, 'approvedlaydaysstatement'):
