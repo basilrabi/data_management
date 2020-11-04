@@ -3,79 +3,107 @@ WITH cte_a AS (
     SELECT
         shipment.name shipment,
         ldstatement.tonnage,
-        ldstatement.arrival_tmc::date arrival,
-        COALESCE(lat_a.interval_from::date, now()::date) departure
+        COALESCE(
+            lddetail.interval_from, ldstatement.arrival_tmc
+        ) AS interval_start,
+        COALESCE(lat_a.interval_from, date_trunc('hour', NOW())) interval_end
     FROM shipment_shipment shipment
         LEFT JOIN shipment_laydaysstatement ldstatement
             ON ldstatement.shipment_id = shipment.id
+        LEFT JOIN shipment_laydaysdetail lddetail
+            ON lddetail.laydays_id = ldstatement.id
         LEFT JOIN LATERAL (
             SELECT interval_from
-            FROM shipment_laydaysdetail lddetail
-            WHERE lddetail.laydays_id = ldstatement.id
-            ORDER BY interval_from DESC
+            FROM shipment_laydaysdetail temp_tab
+            WHERE temp_tab.laydays_id = lddetail.laydays_id
+                AND temp_tab.interval_from > lddetail.interval_from
+            ORDER BY temp_tab.interval_from
             LIMIT 1
         ) lat_a ON true
+    WHERE lddetail.interval_from IS NULL
+        OR lddetail.interval_class = 'continuous loading'
 ),
 cte_b AS (
-    SELECT *,
-        tonnage::float / (1 + departure - arrival)::float daily_rate
-    FROM cte_a
-    WHERE tonnage IS NOT NULL
+    SELECT
+        shipment,
+        tonnage,
+        gs interval_start
+    FROM cte_a,
+        generate_series(
+            interval_start,
+            interval_end - '1 minute'::interval,
+            '1 minute'::interval
+        ) gs
 ),
 cte_c AS (
-    SELECT *,
-        generate_series(
-            arrival::timestamp,
-            departure::timestamp,
-            '1 day'::interval
-        )::date loading_date
+    SELECT
+        shipment,
+        tonnage,
+        date_trunc('day', interval_start) date,
+        COUNT(*) minute_elapsed
     FROM cte_b
+    GROUP BY shipment, tonnage, date_trunc('day', interval_start)
 ),
 cte_d AS (
-    SELECT generate_series(
-        MIN(arrival)::timestamp,
-        MAX(departure)::timestamp,
-        '1 day'::interval
-    )::date loading_date
-    FROM cte_b
+    SELECT
+        tonnage,
+        date,
+        minute_elapsed,
+        SUM(minute_elapsed) OVER(PARTITION BY shipment) total_minutes
+    FROM cte_c
 ),
 cte_e AS (
-    SELECT loading_date, SUM(daily_rate) wmt
-    FROM cte_c
-    GROUP BY loading_date
+    SELECT
+        date,
+        tonnage::float * minute_elapsed::float / total_minutes::float wmt
+    FROM cte_d
 ),
 cte_f AS (
-    SELECT
-        cte_d.loading_date,
-        COALESCE(cte_e.wmt, 0) wmt
-    FROM cte_d
-        LEFT JOIN cte_e
-            ON cte_e.loading_date = cte_d.loading_date
+    SELECT date loading_date, SUM(wmt) wmt
+    FROM cte_e
+    GROUP BY date
 ),
-cte_g AS (
-    SELECT cte_f.*,
-        lat_b.wmt previous_wmt,
-        lat_c.wmt next_wmt
+cte_g as (
+    SELECT generate_series(
+        MIN(loading_date),
+        MAX(loading_date),
+        '1 day'::interval
+    ) loading_date
     FROM cte_f
+),
+cte_h AS (
+    SELECT
+        cte_g.loading_date::date,
+        COALESCE(cte_f.wmt, 0) wmt
+    FROM cte_g
+        LEFT JOIN cte_f
+            ON cte_f.loading_date = cte_g.loading_date
+),
+cte_i AS (
+    SELECT
+        cte_h.loading_date,
+        cte_h.wmt,
+        lat_b.wmt wmt_previous,
+        lat_c.wmt wmt_next
+    FROM cte_h
         LEFT JOIN LATERAL (
             SELECT wmt
-            FROM cte_f temp_tab
-            WHERE temp_tab.loading_date < cte_f.loading_date
+            FROM cte_h temp_tab
+            WHERE temp_tab.loading_date < cte_h.loading_date
             ORDER BY temp_tab.loading_date DESC
             LIMIT 1
-        ) lat_b ON true
+        ) lat_b on true
         LEFT JOIN LATERAL (
             SELECT wmt
-            FROM cte_f temp_tab
-            WHERE temp_tab.loading_date > cte_f.loading_date
+            FROM cte_h temp_tab
+            WHERE temp_tab.loading_date > cte_h.loading_date
             ORDER BY temp_tab.loading_date ASC
             LIMIT 1
-        ) lat_c ON true
+        ) lat_c on true
 )
 SELECT loading_date, wmt
-FROM cte_g
-WHERE wmt <> previous_wmt
-    OR wmt <> next_wmt
-    OR next_wmt IS NULL
-    OR previous_wmt IS NULL
-ORDER BY loading_date
+FROM cte_i
+WHERE wmt <> wmt_previous
+    OR wmt <> wmt_next
+    OR wmt_next IS NULL
+    OR wmt_previous IS NULL
