@@ -17,6 +17,7 @@ from shipment.models.dso import LayDaysStatement
 
 def index(request):
     loading_per_shipment = ''
+    loading_rate = ''
     with connection.cursor() as cursor:
         cursor.execute("""
         WITH cte_a AS (
@@ -102,8 +103,51 @@ def index(request):
             output_type='div',
             include_plotlyjs=False
         )
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        WITH cte_a AS (
+            SELECT
+                loading_date,
+                wmt,
+                EXTRACT(year FROM loading_date)::integer AS year,
+                EXTRACT(doy FROM loading_date)::float AS day,
+                ((date_trunc('year', loading_date) + '1 year'::interval)::date - date_trunc('year', loading_date)::date)::float days_in_year
+            FROM shipment_loadingrate
+            WHERE EXTRACT(year FROM loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
+        )
+        SELECT *, day / days_in_year year_fraction
+        FROM cte_a
+        ORDER BY loading_date
+        """)
+        year_data = []
+        df = pd.DataFrame.from_records(cursor.fetchall())
+        for year in df[2].unique():
+            df_filtered = df[df[2] == year]
+            year_data.append(
+                go.Scatter(
+                    name=f'{year}',
+                    mode='lines',
+                    x=df_filtered[5],
+                    y=df_filtered[1],
+                    text=df_filtered[0],
+                    hovertemplate='%{text}<br>%{y:,.2f} WMT'
+                )
+            )
+        fig_loading_rate = go.Figure(data=year_data)
+        fig_loading_rate.update_layout(
+            legend_title_text='Year',
+            title='Shipment Loading Rate',
+            xaxis_title='Year Fraction',
+            yaxis_title='WMT per Day'
+        )
+        loading_rate = plot(
+            fig_loading_rate,
+            output_type='div',
+            include_plotlyjs=False
+        )
     return render(request, 'shipment/index.html', {
-        'loading_per_shipment': loading_per_shipment
+        'loading_per_shipment': loading_per_shipment,
+        'loading_rate': loading_rate
     })
 
 def data_export_laydays(request):
