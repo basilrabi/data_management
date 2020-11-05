@@ -70,40 +70,10 @@ cte_g as (
         '1 day'::interval
     ) loading_date
     FROM cte_f
-),
-cte_h AS (
-    SELECT
-        cte_g.loading_date::date,
-        COALESCE(cte_f.wmt, 0) wmt
-    FROM cte_g
-        LEFT JOIN cte_f
-            ON cte_f.loading_date = cte_g.loading_date
-),
-cte_i AS (
-    SELECT
-        cte_h.loading_date,
-        cte_h.wmt,
-        lat_b.wmt wmt_previous,
-        lat_c.wmt wmt_next
-    FROM cte_h
-        LEFT JOIN LATERAL (
-            SELECT wmt
-            FROM cte_h temp_tab
-            WHERE temp_tab.loading_date < cte_h.loading_date
-            ORDER BY temp_tab.loading_date DESC
-            LIMIT 1
-        ) lat_b on true
-        LEFT JOIN LATERAL (
-            SELECT wmt
-            FROM cte_h temp_tab
-            WHERE temp_tab.loading_date > cte_h.loading_date
-            ORDER BY temp_tab.loading_date ASC
-            LIMIT 1
-        ) lat_c on true
 )
-SELECT loading_date, wmt
-FROM cte_i
-WHERE wmt <> wmt_previous
-    OR wmt <> wmt_next
-    OR wmt_next IS NULL
-    OR wmt_previous IS NULL
+SELECT
+    cte_g.loading_date::date,
+    COALESCE(cte_f.wmt, 0) wmt
+FROM cte_g
+    LEFT JOIN cte_f
+        ON cte_f.loading_date = cte_g.loading_date

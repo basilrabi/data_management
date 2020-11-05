@@ -18,6 +18,8 @@ from shipment.models.dso import LayDaysStatement
 def index(request):
     loading_per_shipment = ''
     loading_rate = ''
+    loading_rate_smooth = ''
+
     with connection.cursor() as cursor:
         cursor.execute("""
         WITH cte_a AS (
@@ -95,7 +97,6 @@ def index(request):
         fig_loading_per_shipment.update_layout(
             barmode='stack',
             legend_title_text='Component',
-            title='Ship Loading Duration',
             xaxis_title='Shipment',
             yaxis_title='Laydays'
         )
@@ -104,20 +105,19 @@ def index(request):
             output_type='div',
             include_plotlyjs=False
         )
+
     with connection.cursor() as cursor:
         cursor.execute("""
-        WITH cte_a AS (
-            SELECT
-                loading_date,
-                wmt,
-                EXTRACT(year FROM loading_date)::integer AS year,
-                EXTRACT(doy FROM loading_date)::float AS day,
-                ((date_trunc('year', loading_date) + '1 year'::interval)::date - date_trunc('year', loading_date)::date)::float days_in_year
-            FROM shipment_loadingrate
-            WHERE EXTRACT(year FROM loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
-        )
-        SELECT *, day / days_in_year year_fraction
-        FROM cte_a
+        SELECT
+            loading_date,
+            wmt,
+            EXTRACT(year FROM loading_date)::integer,
+            EXTRACT(doy FROM loading_date)::float / (
+                (date_trunc('year', loading_date) + '1 year'::interval)::date -
+                    date_trunc('year', loading_date)::date
+            )::float
+        FROM shipment_loadingrate
+        WHERE EXTRACT(year FROM loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
         ORDER BY loading_date
         """)
         year_data = []
@@ -128,7 +128,7 @@ def index(request):
                 go.Scatter(
                     name=f'{year}',
                     mode='lines',
-                    x=df_filtered[5],
+                    x=df_filtered[3],
                     y=df_filtered[1],
                     text=df_filtered[0],
                     hovertemplate='%{text}<br>%{y:,.2f} WMT'
@@ -137,7 +137,6 @@ def index(request):
         fig_loading_rate = go.Figure(data=year_data)
         fig_loading_rate.update_layout(
             legend_title_text='Year',
-            title='Shipment Loading Rate',
             xaxis_title='Year Fraction',
             yaxis_title='WMT per Day'
         )
@@ -146,9 +145,60 @@ def index(request):
             output_type='div',
             include_plotlyjs=False
         )
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        WITH cte_a AS (
+            SELECT rate.loading_date, AVG(lat_a.wmt) wmt
+            FROM shipment_loadingrate rate
+                LEFT JOIN LATERAL (
+                    SELECT wmt
+                    FROM shipment_loadingrate temp_tab
+                    WHERE ABS(temp_tab.loading_date - rate.loading_date) < 4
+                ) lat_a on true
+            WHERE EXTRACT(year FROM rate.loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
+            GROUP BY rate.loading_date
+        )
+        SELECT
+            loading_date,
+            wmt,
+            EXTRACT(year FROM loading_date)::integer,
+            EXTRACT(doy FROM loading_date)::float / (
+                (date_trunc('year', loading_date) + '1 year'::interval)::date -
+                    date_trunc('year', loading_date)::date
+            )::float
+        FROM cte_a
+        """)
+        year_data_smooth = []
+        df = pd.DataFrame.from_records(cursor.fetchall())
+        for year in df[2].unique()[::-1]:
+            df_filtered = df[df[2] == year]
+            year_data_smooth.append(
+                go.Scatter(
+                    name=f'{year}',
+                    mode='lines',
+                    x=df_filtered[3],
+                    y=df_filtered[1],
+                    text=df_filtered[0],
+                    hovertemplate='%{text}<br>%{y:,.2f} WMT'
+                )
+            )
+        fig_loading_rate_smooth = go.Figure(data=year_data_smooth)
+        fig_loading_rate_smooth.update_layout(
+            legend_title_text='Year',
+            xaxis_title='Year Fraction',
+            yaxis_title='WMT per Day'
+        )
+        loading_rate_smooth = plot(
+            fig_loading_rate_smooth,
+            output_type='div',
+            include_plotlyjs=False
+        )
+
     return render(request, 'shipment/index.html', {
         'loading_per_shipment': loading_per_shipment,
-        'loading_rate': loading_rate
+        'loading_rate': loading_rate,
+        'loading_rate_smooth': loading_rate_smooth
     })
 
 def data_export_laydays(request):

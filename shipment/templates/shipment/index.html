@@ -3,10 +3,50 @@
 <title>Ship Loading</title>
 {% endblock %}
 {% load static %}
+{% block script %}
+<script>
+    $(document).ready(function(){
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            var activeTab = $(e.target).text(); // Get the name of active tab
+            var previousTab = $(e.relatedTarget).text(); // Get the name of previous tab
+            $(".active-tab span").html(activeTab);
+            $(".previous-tab span").html(previousTab);
+        });
+    });
+</script>
+{% endblock %}
 {% block activeshiploading %} active{% endblock %}
 {% block content %}
     {% autoescape off %}
+<p class="ws1"></p>
+<p class="ws1"></p>
+<div class="row">
+    <div class="col-12"><h3>Ship Loading Duration</h3></div>
+</div>
     {{ loading_per_shipment }}
-    {{ loading_rate }}
+<hr>
+<p class="ws1"></p>
+<p class="ws1"></p>
+<div class="row">
+    <div class="col-12"><h3>Ship Loading Rate</h3></div>
+</div>
+<div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="#daily" class="nav-link active" data-toggle="tab">Daily Estimate</a>
+        </li>
+        <li class="nav-item">
+            <a href="#smooth" class="nav-link" data-toggle="tab">7-Day Average</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="daily">
+            {{ loading_rate }}
+        </div>
+        <div class="tab-pane fade active" id="smooth">
+            {{ loading_rate_smooth }}
+        </div>
+    </div>
+</div>
     {% endautoescape %}
 {% endblock %}

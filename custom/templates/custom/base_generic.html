@@ -10,15 +10,10 @@
         <link rel="stylesheet" href="{% static 'custom/css/jquery-ui.css' %}" />
         <link rel="stylesheet" href="{% static 'custom/css/style.css' %}" />
         {% block css %}{% endblock %}
+        <script src="{% static 'custom/js/jquery-3.5.1.min.js' %}"></script>
         <script src="{% static 'custom/js/bootstrap.min.js' %}"></script>
-        <script src="{% static 'custom/js/jquery-3.5.1.slim.min.js' %}"></script>
         <script src="{% static 'custom/js/jquery-ui.min.js' %}"></script>
         <script src="{% static 'custom/js/plotly-latest.min.js' %}"></script>
-        <script>
-        $( function() {
-          $( ".datepicker" ).datepicker();
-        } );
-        </script>
         {% block script %}{% endblock %}
     </head>
     <body>
