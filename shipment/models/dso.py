@@ -489,6 +489,11 @@ class LayDaysStatement(models.Model):
             '</a>'.format(self.shipment.name)
         )
 
+    def has_additional_laytime(self):
+        if self.additional_laytime > zero_time:
+            return True
+        return False
+
     def latex_remarks(self):
         return to_latex(self.remarks)
 

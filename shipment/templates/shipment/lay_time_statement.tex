@@ -208,15 +208,25 @@ Zgo0NjczCiUlRU9GCg==
         Number of Can Test
             & {{ statement.can_test }} time{{ statement.can_test|pluralize }}
             & Total Time Allowed
-            & {{ statement.time_limit }} \\
+            & {{ statement.time_allowed }} \\
         Loading Terms
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %}
+    {% if statement.has_additional_laytime %}
+            & Time Added
+            & {{ statement.additional_laytime }} \\
+    {% else %}
             & \multicolumn{2}{c}{} \\
+    {% endif %}
 {% else %}
         Total Time Allowed
-            & {{ statement.time_limit }}
+            & {{ statement.time_allowed }}
             & Loading Terms
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %} \\
+    {% if statement.has_additional_laytime %}
+            Time Added
+            & {{ statement.additional_laytime }}
+            & \multicolumn{2}{c}{} \\
+    {% endif %}
 {% endif %}
 
     \end{tabular}
