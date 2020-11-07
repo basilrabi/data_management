@@ -6,7 +6,10 @@ WITH cte_a AS (
         COALESCE(
             lddetail.interval_from, ldstatement.arrival_tmc
         ) AS interval_start,
-        COALESCE(lat_a.interval_from, date_trunc('hour', NOW())) interval_end
+        COALESCE(
+            lat_a.interval_from,
+            date_trunc('hour', ldstatement.date_saved)
+        ) interval_end
     FROM shipment_shipment shipment
         LEFT JOIN shipment_laydaysstatement ldstatement
             ON ldstatement.shipment_id = shipment.id
