@@ -25,6 +25,7 @@ class  LayDaysStatement452CTest(TestCase):
         shipment.save()
 
     def test_laydays_computation_452c(self):
+        # TODO: confirm laydays details if similar to approved details
         shipment = Shipment.objects.get(name='452-C')
         statement = LayDaysStatement(
             shipment=shipment,
@@ -73,7 +74,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-11 23:15:00+0800'),
             interval_class='waiting for cargo due to rejection'
         )
@@ -157,7 +158,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-15 18:20:00+0800'),
             interval_class='waiting for cargo due to rejection'
         )
@@ -307,7 +308,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-20 22:30:00+0800'),
             interval_class='waiting for cargo due to rejection'
         )
@@ -409,7 +410,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-24 08:00:00+0800'),
             interval_class='sun drying'
         )
@@ -421,7 +422,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-24 11:10:00+0800'),
             interval_class='sun drying'
         )
@@ -433,7 +434,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-10-24 14:10:00+0800'),
             interval_class='sun drying'
         )
@@ -589,7 +590,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-11-02 06:00:00+0800'),
             interval_class='rain'
         )
@@ -613,7 +614,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=0,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-11-02 15:10:00+0800'),
             interval_class='waiting for cargo due to rejection'
         )
@@ -673,7 +674,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=25,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-11-04 00:50:00+0800'),
             interval_class='rain'
         )
@@ -709,7 +710,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=50,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-11-04 20:35:00+0800'),
             interval_class='rain'
         )
@@ -721,7 +722,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
         detail.save()
         detail = LayDaysDetail(
-            laydays=statement, laytime_rate=75,
+            laydays=statement, laytime_rate=100,
             interval_from=pdt('2019-11-05 04:00:00+0800'),
             interval_class='rain'
         )
@@ -742,5 +743,5 @@ class  LayDaysStatement452CTest(TestCase):
         statement._compute()
         statement = LayDaysStatement.objects.get(shipment__name='452-C')
         self.assertAlmostEqual(statement.demurrage,
-                               Decimal(275186.98),
+                               Decimal(288457.81),
                                places=2)

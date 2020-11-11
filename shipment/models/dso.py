@@ -369,12 +369,6 @@ class LayDaysStatement(models.Model):
                                 detail.laytime_rate = 0
                                 detail.save()
                                 computed_detail.laytime_rate = 0
-                            if (_time_remaining - computed_detail.consumed()) <= zero_time and \
-                                    detail.interval_class in NATURAL_DELAYS and \
-                                    detail.laytime_rate < 100:
-                                detail.laytime_rate = 100
-                                detail.save()
-                                computed_detail.laytime_rate = 100
 
                             previous_detail = computed_detail.previous()
                             if previous_detail:
