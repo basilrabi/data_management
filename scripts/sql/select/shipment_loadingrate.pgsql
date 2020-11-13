@@ -42,10 +42,10 @@ cte_c AS (
     SELECT
         shipment,
         tonnage,
-        date_trunc('day', interval_start) date,
+        date_trunc('day', interval_start, 'Asia/Manila') date,
         COUNT(*) minute_elapsed
     FROM cte_b
-    GROUP BY shipment, tonnage, date_trunc('day', interval_start)
+    GROUP BY shipment, tonnage, date_trunc('day', interval_start, 'Asia/Manila')
 ),
 cte_d AS (
     SELECT
