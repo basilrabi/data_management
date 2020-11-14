@@ -109,7 +109,7 @@ def index(request):
     with connection.cursor() as cursor:
         cursor.execute("""
         SELECT
-            loading_date,
+            loading_date + 1,
             wmt,
             EXTRACT(year FROM loading_date)::integer,
             EXTRACT(doy FROM loading_date)::float / (
@@ -160,7 +160,7 @@ def index(request):
             GROUP BY rate.loading_date
         )
         SELECT
-            loading_date,
+            loading_date + 1,
             wmt,
             EXTRACT(year FROM loading_date)::integer,
             EXTRACT(doy FROM loading_date)::float / (
