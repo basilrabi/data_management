@@ -210,7 +210,11 @@ Zgo0NjczCiUlRU9GCg==
             & Total Time Allowed
             & {{ statement.time_allowed }} \\
         Loading Terms
+    {% if statement.laytime_terms == "CQD" %}
+            & CQD
+    {% else %}
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %}
+    {% endif %}
     {% if statement.has_additional_laytime %}
             & Time Added
             & {{ statement.additional_laytime }} \\
@@ -221,7 +225,11 @@ Zgo0NjczCiUlRU9GCg==
         Total Time Allowed
             & {{ statement.time_allowed }}
             & Loading Terms
+    {% if statement.laytime_terms == "CQD" %}
+            & CQD \\
+    {% else %}
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %} \\
+    {% endif %}
     {% if statement.has_additional_laytime %}
             Time Added
             & {{ statement.additional_laytime }}

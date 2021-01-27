@@ -231,7 +231,7 @@ class LayDaysStatement(models.Model):
     tonnage = models.PositiveIntegerField(null=True, blank=True)
     loading_terms = models.PositiveSmallIntegerField(
         default=6000,
-        help_text='Agreed loading rate (tons per day).'
+        help_text='Agreed loading rate (tons per day) or CQD days.'
     )
     laytime_terms = NameField(max_length=20, null=True, blank=True)
     demurrage_rate = models.PositiveSmallIntegerField(
@@ -363,12 +363,13 @@ class LayDaysStatement(models.Model):
                             )
 
                             # If laytime rates are mistakenly set, adjust.
-                            if (_time_remaining - computed_detail.consumed()) > zero_time and \
-                                    detail.interval_class in NATURAL_DELAYS and \
-                                    detail.laytime_rate > 0:
-                                detail.laytime_rate = 0
-                                detail.save()
-                                computed_detail.laytime_rate = 0
+                            if self.laytime_terms != 'CQD':
+                                if (_time_remaining - computed_detail.consumed()) > zero_time and \
+                                        detail.interval_class in NATURAL_DELAYS and \
+                                        detail.laytime_rate > 0:
+                                    detail.laytime_rate = 0
+                                    detail.save()
+                                    computed_detail.laytime_rate = 0
 
                             previous_detail = computed_detail.previous()
                             if previous_detail:
@@ -507,7 +508,9 @@ class LayDaysStatement(models.Model):
             float(self.can_test_factor)
 
     def time_limit(self):
-        if self.tonnage:
+        if self.laytime_terms == 'CQD':
+            return datetime.timedelta(days=self.loading_terms)
+        elif self.tonnage:
             return round_second(
                 (
                     datetime.timedelta(
@@ -515,6 +518,7 @@ class LayDaysStatement(models.Model):
                     ) + self.time_can_test()
                 ) or zero_time
             )
+
         return zero_time
 
     def vessel(self):
