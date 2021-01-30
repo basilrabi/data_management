@@ -55,14 +55,15 @@ class  LayDaysStatement437CTest(TestCase):
         with open(fdetails, newline='') as csvfile:
             reader = csv.DictReader(
                 csvfile,
-                fieldnames=['rate', 'stamp', 'class']
+                fieldnames=['rate', 'stamp', 'class', 'remarks']
             )
             for row in reader:
                 LayDaysDetail(
                     laydays=statement,
                     laytime_rate=row['rate'],
                     interval_from=pdt(row['stamp']),
-                    interval_class=row['class']
+                    interval_class=row['class'],
+                    remarks=row['remarks']
                 ).save()
 
         statement._compute()

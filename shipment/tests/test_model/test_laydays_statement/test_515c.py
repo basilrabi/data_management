@@ -16,45 +16,41 @@ from shipment.models.dso import (LayDaysDetail,
 # pylint: disable=no-member
 
 pwd = path.dirname(path.abspath(__file__))
-fdetails = path.join(pwd, 'detail', '431c.csv')
+fdetails = path.join(pwd, 'detail', '515c.csv')
 
-class  LayDaysStatement431CTest(TestCase):
+class  LayDaysStatement515CTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
         setup_triggers()
 
     def setUp(self):
-        vessel = Vessel(name='Chang Shun II')
+        vessel = Vessel(name='Gong Yin 1')
         vessel.save()
-        shipment = Shipment(
-            name='431-C',
-            vessel=vessel,
-            demurrage=0,
-            despatch=Decimal(16438.89)
-        )
+        shipment = Shipment(name='515-C', vessel=vessel)
         shipment.save()
 
-    def test_laydays_computation_431c(self):
-        shipment = Shipment.objects.get(name='431-C')
+    def test_laydays_computation_515c(self):
+        shipment = Shipment.objects.get(name='515-C')
         statement = LayDaysStatement(
             shipment=shipment,
-            arrival_pilot=pdt('2019-08-11 12:30:00+0800'),
-            arrival_tmc=pdt('2019-08-11 17:00:00+0800'),
-            nor_tender=pdt('2019-08-11 17:00:00+0800'),
-            nor_accepted=pdt('2019-08-11 19:45:00+0800'),
-            tonnage=55100,
+            arrival_pilot=pdt('2020-10-10 05:30:00+0800'),
+            arrival_tmc=pdt('2020-10-10 12:18:00+0800'),
+            nor_tender=pdt('2020-10-10 12:18:00+0800'),
+            nor_accepted=pdt('2020-10-10 18:00:00+0800'),
+            tonnage=51700,
             loading_terms=6000,
-            demurrage_rate=11000,
-            despatch_rate=5500,
-            can_test=22
+            demurrage_rate=15500,
+            despatch_rate=7750,
+            can_test=55
         )
         statement.save()
-        self.assertAlmostEqual(
-            statement.time_can_test() / one_day, 0.03819, places=5
+        self.assertEqual(
+            statement.time_can_test(), timedelta(minutes=(2.5 * 55))
         )
         self.assertEqual(
-            statement.time_limit(), timedelta(days=9, hours=5, minutes=19)
+            statement.time_limit(),
+            timedelta(days=8, hours=17, minutes=5, seconds=30)
         )
 
         with open(fdetails, newline='') as csvfile:
@@ -72,28 +68,23 @@ class  LayDaysStatement431CTest(TestCase):
                 ).save()
 
         statement._compute()
-        statement = LayDaysStatement.objects.get(shipment__name='431-C')
+        statement = LayDaysStatement.objects.get(shipment__name='515-C')
 
         self.assertEqual(
-            statement.completed_loading, pdt('2019-08-18 15:00:00+0800')
+            statement.completed_loading, pdt('2020-11-05 00:30:00+0800')
         )
         self.assertEqual(
-            statement.commenced_laytime, pdt('2019-08-12 02:50:00+0800')
+            statement.commenced_laytime, pdt('2020-10-11 00:18:00+0800')
         )
         self.assertAlmostEqual(
             statement.laydaysdetailcomputed_set.all().last().time_remaining / one_day,
-            2.98889,
+            -6.0149306,
             places=5
         )
-        self.assertAlmostEqual(statement.demurrage, Decimal(0), places=2)
-        self.assertAlmostEqual(statement.despatch, Decimal(16438.89), places=2)
+        self.assertAlmostEqual(statement.demurrage, Decimal(93231.42), places=2)
+        self.assertAlmostEqual(statement.despatch, Decimal(0), places=2)
         self.assertEqual(statement.clean(), None)
         approval = statement.approvedlaydaysstatement
         approval.approved = True
         approval.save()
         self.assertRaises(ValidationError, statement.clean)
-        shipment.refresh_from_db()
-        shipment.demurrage = Decimal(0)
-        self.assertEqual(shipment.clean(), None)
-        shipment.despatch = Decimal(0)
-        self.assertRaises(ValidationError, shipment.clean)
