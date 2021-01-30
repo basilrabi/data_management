@@ -294,6 +294,7 @@ class LayDaysStatement(models.Model):
         Removes redundant details.
         """
         final = False
+        self.additional_laytime = zero_time
         while not final and self.laydaysdetail_set.count() > 1:
             for detail in self.laydaysdetail_set.all():
                 if not detail.next():
