@@ -184,6 +184,7 @@ class TripDetail(models.Model):
         ('waiting_for_dock', 'Waiting for Available Dock'),
         ('waiting_for_tide', 'Waiting for Safe Water Level'),
         ('waiting_for_vessel', 'Waiting for Vessel'),
+        ('sun_drying', 'Sun Drying'),
         ('swell', 'Swell'),
         ('rain', 'Rain'),
         ('rain_swell', 'Rain and Swell'),
