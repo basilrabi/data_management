@@ -22,4 +22,9 @@ FROM temp_shipment_tripdetail
         ON temp_shipment_tripdetail.name = shipment_lct.name
     LEFT JOIN shipment_trip
         ON shipment_lct.id = shipment_trip.lct_id
-            AND temp_shipment_tripdetail.trip_start = shipment_trip.interval_from;
+            AND temp_shipment_tripdetail.trip_start = shipment_trip.interval_from
+GROUP BY
+    temp_shipment_tripdetail.detail,
+    temp_shipment_tripdetail.interval_class,
+    temp_shipment_tripdetail.remarks,
+    shipment_trip.id
