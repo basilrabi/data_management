@@ -8,22 +8,25 @@ BEGIN
     IF (NEW.cluster_id IS NOT NULL) THEN
 
         WITH a as (
-            SELECT CASE
+            SELECT
+                CASE
                     WHEN depth IS NULL THEN 1
-                    ELSE depth
+                    WHEN depth  > 0 THEN 1
+                    ELSE 0
                 END as assumed_depth
             FROM inventory_block
             WHERE cluster_id = NEW.cluster_id
         ),
         b as (
-            SELECT MAX(assumed_depth) depth
+            SELECT (
+                (COUNT(*) - SUM(assumed_depth)) * 100 / COUNT(*)::float8
+            )::integer excavation_rate
             FROM a
         )
         UPDATE location_cluster
-        SET excavated = CASE
-                WHEN b.depth > 0 THEN false
-                ELSE true
-            END
+        SET
+            excavated = b.excavation_rate = 100,
+            excavation_rate = b.excavation_rate
         FROM b
         WHERE id = NEW.cluster_id;
     END IF;
@@ -281,8 +284,9 @@ BEGIN
                 co,
                 CASE
                     WHEN depth IS NULL THEN 1
-                    ELSE depth
-                END assumed_depth
+                    WHEN depth  > 0 THEN 1
+                    ELSE 0
+                END as assumed_depth
             FROM inventory_block
             WHERE inventory_block.cluster_id = NEW.id
         ),
@@ -291,7 +295,8 @@ BEGIN
                    SUM(ni * area) ni_area,
                    SUM(fe * area) fe_area,
                    SUM(co * area) co_area,
-                   MAX(assumed_depth) depth
+                   COUNT(*) block_count,
+                   SUM(assumed_depth) available_block
             FROM a
         ),
         c as (
@@ -313,7 +318,10 @@ BEGIN
             SELECT round((b.ni_area / b.total_area)::numeric, 2) ni,
                    round((b.fe_area / b.total_area)::numeric, 2) fe,
                    round((b.co_area / b.total_area)::numeric, 2) co,
-                   d.name mine_block
+                   d.name mine_block,
+                   (
+                       (b.block_count - b.available_block) * 100 / b.block_count::float8
+                    )::integer excavation_rate
             FROM b, d
         ),
         f as (
@@ -349,10 +357,8 @@ BEGIN
                     WHEN i.count IS NULL THEN 1
                     ELSE i.count
                 END,
-            excavated = CASE
-                    WHEN b.depth > 0 THEN false
-                    ELSE true
-                END
+            excavated = e.excavation_rate = 100,
+            excavation_rate = e.excavation_rate
         FROM b, e, f, i
         WHERE id = NEW.id;
     ELSE

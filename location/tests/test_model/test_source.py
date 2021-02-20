@@ -2,13 +2,21 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError, InternalError
 from django.test import TestCase
+from django.utils.dateparse import parse_date as pd
 
 from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.landuse import RoadArea
-from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
+from location.models.source import (
+    Cluster,
+    ClusterLayout,
+    DrillHole,
+    MineBlock,
+    Stockpile
+)
 
 # pylint: disable=no-member
+
 
 class ClusterTest(TestCase):
     @classmethod
@@ -89,26 +97,6 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.fe, 40.67)
         self.assertEqual(cluster.co, 0.13)
 
-    def test_date_scheduled_lock_if_layout_date(self):
-        cluster = Cluster.objects.get(name='c1')
-        block = Block.objects.get(name='b1')
-        block.cluster = cluster
-        block.save()
-        cluster.refresh_from_db()
-        cluster.date_scheduled = '2020-05-30'
-        cluster.save()
-        cluster.refresh_from_db()
-        cluster.layout_date = '2020-05-31'
-
-        # Okay if same date
-        cluster.date_scheduled = '2020-05-30'
-        self.assertEqual(None, cluster.save())
-
-        # Fails if updated
-        cluster.date_scheduled = '2020-05-19'
-        self.assertRaises(ValidationError, cluster.clean)
-        self.assertRaises(InternalError, cluster.save)
-
     def test_excavated_is_set(self):
         b4 = Block.objects.get(name='b4')
         b5 = Block.objects.get(name='b5')
@@ -123,6 +111,7 @@ class ClusterTest(TestCase):
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
+        self.assertEqual(0, cluster.excavation_rate)
 
         b4.cluster = None
         b4.save()
@@ -136,6 +125,7 @@ class ClusterTest(TestCase):
         b5.cluster = cluster
         b5.save()
         cluster.refresh_from_db()
+        self.assertEqual(50, cluster.excavation_rate)
         self.assertEqual(False, cluster.excavated)
 
         b4.cluster = None
@@ -151,6 +141,7 @@ class ClusterTest(TestCase):
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(True, cluster.excavated)
+        self.assertEqual(100, cluster.excavation_rate)
 
     def test_excavated_is_set_on_update(self):
         b4 = Block.objects.get(name='b4')
@@ -166,24 +157,28 @@ class ClusterTest(TestCase):
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
+        self.assertEqual(0, cluster.excavation_rate)
 
         # Blocks partially excavated
         b4.depth = -1
         b4.save()
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
+        self.assertEqual(50, cluster.excavation_rate)
 
         # Blocks fully excavated
         b5.depth = -1
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(True, cluster.excavated)
+        self.assertEqual(100, cluster.excavation_rate)
 
         # Blocks editted
         b5.depth = 1
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
+        self.assertEqual(50, cluster.excavation_rate)
 
     def test_date_scheduled_lock_if_no_geom(self):
         cluster = Cluster.objects.get(name='c1')
@@ -220,8 +215,8 @@ class ClusterTest(TestCase):
         block = Block.objects.get(name='b1')
         block.cluster = cluster
         block.save()
-        cluster.layout_date = '2020-05-30'
-        self.assertRaises(InternalError, cluster.save)
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-05-30')
+        self.assertRaises(InternalError, layout.save)
 
     def test_layout_date_null_lock_if_excavated(self):
         cluster = Cluster.objects.get(name='c1')
@@ -230,12 +225,48 @@ class ClusterTest(TestCase):
         block.save()
         cluster.date_scheduled = '2020-05-30'
         cluster.save()
-        cluster.layout_date = '2020-05-30'
-        cluster.save()
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-05-30')
+        layout.save()
         cluster.excavated = True
         cluster.save()
-        cluster.layout_date = None
-        self.assertRaises(InternalError, cluster.save)
+        self.assertRaises(InternalError, layout.delete)
+
+    def test_layout_date_is_updated(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-05-30')
+        layout.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.latest_layout_date, pd('2020-05-30'))
+        layout.layout_date = '2020-06-01'
+        layout.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.latest_layout_date, pd('2020-06-01'))
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-06-30')
+        layout.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.latest_layout_date, pd('2020-06-30'))
+        layout.delete()
+        layout = ClusterLayout.objects.get(layout_date=pd('2020-06-01'))
+        layout.delete()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.latest_layout_date, None)
+
+    def test_layout_date_not_earlier_than_latest(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.date_scheduled = '2020-05-30'
+        cluster.save()
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-05-30')
+        layout.save()
+        layout = ClusterLayout(cluster=cluster, layout_date='2020-04-30')
+        self.assertRaises(InternalError, layout.save)
 
     def test_name_is_reused(self):
         cluster = Cluster.objects.get(name='c1')
@@ -304,6 +335,7 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.fe, 0)
         self.assertEqual(cluster.co, 0)
 
+
 class DrillHoleTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -336,6 +368,7 @@ class DrillHoleTest(TestCase):
         drillhole = DrillHole.objects.all().first()
         self.assertEqual(drillhole.geom, GEOSGeometry('SRID=3125;POINT (591070 1051100)'))
 
+
 class MineBlockTest(TestCase):
 
     def setUp(self):
@@ -358,6 +391,7 @@ class MineBlockTest(TestCase):
         mb.save()
         mb = MineBlock(ridge='T2', name='1 A')
         self.assertEqual(None, mb.save())
+
 
 class StockpileTest(TestCase):
 

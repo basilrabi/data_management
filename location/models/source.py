@@ -45,25 +45,23 @@ class Cluster(models.Model):
     date_scheduled = models.DateField(
         null=True,
         blank=True,
-        help_text='''Date when the cluster geometry is finalized. When this
-        date is set, the geometry cannot be changed.'''
+        help_text='''Date when the cluster is to be excavated.
+        When this date is set, the geometry cannot be changed.'''
     )
-    layout_date = models.DateField(
+    latest_layout_date = models.DateField(
         null=True,
         blank=True,
-        help_text='''Date when the cluster is laid out on the field. When this
-        date is set, the date scheduled cannot be changed. This date cannot be
-        filled out when the date scheduled is still empty.'''
+        help_text='''Latest date when the cluster is laid out on the field.
+        This field is auto-generated based on ClusterLayout.'''
+    )
+    excavation_rate = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='Percentage of blocks excavated.'
     )
     excavated = models.BooleanField(default=False)
     modified = models.DateTimeField()
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
-
-    def clean(self):
-        if self.layout_date:
-            old_cluster = Cluster.objects.get(id=self.id)
-            if self.date_scheduled != old_cluster.date_scheduled:
-                raise ValidationError('Cannot change date_scheduled if layout_date is already set.')
 
     class Meta:
         constraints = [
@@ -100,6 +98,18 @@ class Cluster(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ClusterLayout(models.Model):
+    """
+    Contains layout date of clusters since each cluster can be laid out many
+    times.
+    """
+    cluster = models.ForeignKey(Cluster, on_delete=models.PROTECT)
+    layout_date = models.DateField(
+        help_text='''Date when the cluster is laid out on the field. This date
+        cannot be filled out when the date scheduled is still empty.'''
+    )
 
 
 class DrillHole(models.Model):
