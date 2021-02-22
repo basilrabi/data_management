@@ -70,13 +70,13 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
                     'fe',
                     'ore_class',
                     'date_scheduled',
-                    'layout_date',
+                    'latest_layout_date',
                     'excavated')
     list_editable = ('date_scheduled',)
     list_filter = ['excavated',
                    'ore_class',
                    'date_scheduled',
-                   'layout_date',
+                   'latest_layout_date',
                    MineBlockListFilter]
     readonly_fields = ['name',
                        'distance_from_road',
@@ -89,7 +89,7 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
                        'mine_block',
                        'ore_class',
                        'date_scheduled',
-                       'layout_date']
+                       'latest_layout_date']
     resource_class = ClusterResource
     search_fields = ['name', 'mine_block', 'z', 'ore_class']
 

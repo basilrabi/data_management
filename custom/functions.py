@@ -178,6 +178,7 @@ def setup_triggers():
         'function/get_ore_class',
         'function/insert_dummy_cluster',
         'lock/location_cluster',
+        'lock/location_clusterlayout',
         'select/shipment_loadingrate',
         'select/shipment_number',
         'index/shipment_loadingrate',
@@ -185,6 +186,7 @@ def setup_triggers():
         'trigger/inventory_block_exposed',
         'trigger/location_cluster_insert',
         'trigger/location_cluster_update',
+        'trigger/location_clusterlayout',
         'trigger/location_drillhole_update'
     ]
     for query in pgsql:

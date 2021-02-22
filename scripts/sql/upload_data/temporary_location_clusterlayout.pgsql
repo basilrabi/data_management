@@ -19,37 +19,10 @@ CREATE TEMPORARY TABLE temp_location_cluster
 
 \copy temp_location_cluster FROM 'data/location_cluster.csv' DELIMITER ',' CSV;
 
-INSERT INTO location_cluster (
-    name,
-    z,
-    count,
-    ore_class,
-    mine_block,
-    ni,
-    fe,
-    co,
-    distance_from_road,
-    road_id,
-    date_scheduled,
-    excavated,
-    modified,
-    geom
-)
-SELECT
-    a.name,
-    a.z,
-    a.count,
-    a.ore_class,
-    a.mine_block,
-    a.ni,
-    a.fe,
-    a.co,
-    a.distance_from_road,
-    b.id,
-    a.date_scheduled,
-    a.excavated,
-    a.modified,
-    ST_GeomFromEWKT(a.geom_text)
+INSERT INTO location_clusterlayout (cluster_id, layout_date)
+SELECT b.id, a.layout_date
 FROM temp_location_cluster a
-    LEFT JOIN location_roadarea b
-        ON a.road_date = b.date_surveyed;
+    LEFT JOIN location_cluster b
+        ON a.name = b.name
+
+WHERE a.layout_date IS NOT NULL;
