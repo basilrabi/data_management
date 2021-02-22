@@ -10,7 +10,6 @@ SELECT
 	distance_from_road,
 	location_roadarea.date_surveyed road_date,
 	date_scheduled,
-	layout_date,
 	excavated,
 	modified,
 	ST_AsEWKT(location_cluster.geom)

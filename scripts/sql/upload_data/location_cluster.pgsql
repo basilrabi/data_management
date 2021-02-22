@@ -11,7 +11,6 @@ CREATE TEMPORARY TABLE temp_location_cluster
     distance_from_road double precision,
     road_date date,
     date_scheduled date,
-    layout_date date,
     excavated boolean,
     modified timestamp with time zone,
     geom_text text

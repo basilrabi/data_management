@@ -37,7 +37,7 @@ upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
 sql_script "trigger" "location_cluster_insert" && \
 sql_script "upload_data" "location_cluster" && \
-sql_script "upload_data" "temporary_location_clusterlayout" && \
+sql_script "upload_data" "location_clusterlayout" && \
 vacuum "inventory_block" && \
 vacuum "location_cluster" && \
 vacuum "location_clusterlayout" && \

@@ -87,7 +87,7 @@ def export_cluster_str_for_survey(request):
     """
     Export clusters relevant to survey.
     """
-    context = {'clusters': Cluster.objects.all().filter(layout_date=None).exclude(date_scheduled=None)}
+    context = {'clusters': Cluster.objects.all().filter(latest_layout_date=None).exclude(date_scheduled=None)}
     template = get_template('location/cluster.str')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:

@@ -7,7 +7,7 @@ SELECT
 	fe,
 	co,
 	date_scheduled,
-	layout_date,
+	latest_layout_date,
 	ST_Area(geom) * 3 as "m³"
 FROM location_cluster
 WHERE geom IS NOT NULL
