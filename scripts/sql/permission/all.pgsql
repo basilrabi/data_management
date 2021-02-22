@@ -36,6 +36,7 @@ GRANT SELECT ON TABLE location_roadarea TO survey;
 GRANT SELECT ON TABLE location_slice TO survey;
 GRANT SELECT ON TABLE sampling_drillcoresample TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
+GRANT USAGE, SELECT ON SEQUENCE location_clusterlayout_id_seq TO survey;
 
 -- reader
 GRANT USAGE ON SCHEMA staging TO reader;
