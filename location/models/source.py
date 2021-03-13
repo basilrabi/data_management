@@ -205,7 +205,7 @@ class Stockpile(models.Model):
     An area wherein mined materials are temporarily placed. Each area can be
     composed of multiple piles.
     """
-    name = PileField(max_length=20, unique=True)
+    name = PileField(max_length=100, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
