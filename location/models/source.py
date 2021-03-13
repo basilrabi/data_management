@@ -48,6 +48,13 @@ class Cluster(models.Model):
         help_text='''Date when the cluster is to be excavated.
         When this date is set, the geometry cannot be changed.'''
     )
+    dumping_area = models.ForeignKey(
+        'Stockpile',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        help_text='Assigned dumping area.'
+    )
     latest_layout_date = models.DateField(
         null=True,
         blank=True,
@@ -195,8 +202,8 @@ class Slice(models.Model):
 
 class Stockpile(models.Model):
     """
-    A pile of material with the measured chemical characteristics assumed to be
-    uniform throughout the pile.
+    An area wherein mined materials are temporarily placed. Each area can be
+    composed of multiple piles.
     """
     name = PileField(max_length=20, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)

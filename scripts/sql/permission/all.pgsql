@@ -12,6 +12,7 @@ GRANT UPDATE (excavated_date) ON TABLE sampling_drillcoresample TO geology;
 GRANT CREATE, USAGE ON SCHEMA staging TO gradecontrol;
 GRANT SELECT ON TABLE inventory_block TO gradecontrol;
 GRANT SELECT ON TABLE location_slice TO gradecontrol;
+GRANT INSERT, SELECT, UPDATE ON TABLE location_stockpile TO gradecontrol;
 GRANT INSERT, SELECT ON TABLE location_cluster TO gradecontrol;
 GRANT SELECT ON TABLE location_mineblock TO gradecontrol;
 GRANT SELECT ON TABLE location_roadarea TO gradecontrol;
@@ -20,12 +21,15 @@ GRANT UPDATE (
     date_scheduled,
     distance_from_road,
     name,
-    road_id
+    road_id,
+    stockpile_id
 ) ON TABLE location_cluster TO gradecontrol;
+GRANT USAGE, SELECT ON SEQUENCE location_stockpile_id_seq TO gradecontrol;
 
 -- survey
 GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT INSERT, SELECT, UPDATE ON TABLE location_clusterlayout TO survey;
+GRANT INSERT, SELECT, UPDATE ON TABLE location_stockpile TO gradecontrol;
 GRANT SELECT ON TABLE location_cluster TO survey;
 GRANT SELECT ON TABLE location_drillhole TO survey;
 GRANT SELECT ON TABLE location_fla TO survey;
@@ -36,7 +40,9 @@ GRANT SELECT ON TABLE location_roadarea TO survey;
 GRANT SELECT ON TABLE location_slice TO survey;
 GRANT SELECT ON TABLE sampling_drillcoresample TO survey;
 GRANT UPDATE (geom) ON TABLE location_roadarea TO survey;
+GRANT UPDATE (geom) ON TABLE location_stockpile TO survey;
 GRANT USAGE, SELECT ON SEQUENCE location_clusterlayout_id_seq TO survey;
+GRANT USAGE, SELECT ON SEQUENCE location_stockpile_id_seq TO survey;
 
 -- reader
 GRANT USAGE ON SCHEMA staging TO reader;
