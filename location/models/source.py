@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django.core.exceptions import ValidationError
 
-from custom.fields import MineBlockField, NameField, PileField
+from custom.fields import MineBlockField, NameField
 from custom.variables import ACI
 from .landuse import RoadArea
 
@@ -205,7 +205,7 @@ class Stockpile(models.Model):
     An area wherein mined materials are temporarily placed. Each area can be
     composed of multiple piles.
     """
-    name = PileField(max_length=100, unique=True)
+    name = NameField(max_length=100, unique=True)
     geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:

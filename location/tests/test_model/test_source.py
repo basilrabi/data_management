@@ -401,5 +401,5 @@ class StockpileTest(TestCase):
     def test_name_is_unique_per_ridge_part(self):
         yard = Stockpile(name='LDA 1')
         yard.save()
-        yard = Stockpile(name='LDA-1')
+        yard = Stockpile(name='LDA  1')
         self.assertRaises(IntegrityError, yard.save)
