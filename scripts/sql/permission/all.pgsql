@@ -22,7 +22,7 @@ GRANT UPDATE (
     distance_from_road,
     name,
     road_id,
-    stockpile_id
+    dumping_area_id
 ) ON TABLE location_cluster TO gradecontrol;
 GRANT USAGE, SELECT ON SEQUENCE location_stockpile_id_seq TO gradecontrol;
 
