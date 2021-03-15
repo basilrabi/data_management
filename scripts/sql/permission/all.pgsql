@@ -29,7 +29,7 @@ GRANT USAGE, SELECT ON SEQUENCE location_stockpile_id_seq TO gradecontrol;
 -- survey
 GRANT CREATE, USAGE ON SCHEMA staging TO survey;
 GRANT INSERT, SELECT, UPDATE ON TABLE location_clusterlayout TO survey;
-GRANT INSERT, SELECT, UPDATE ON TABLE location_stockpile TO gradecontrol;
+GRANT INSERT, SELECT, UPDATE ON TABLE location_stockpile TO survey;
 GRANT SELECT ON TABLE location_cluster TO survey;
 GRANT SELECT ON TABLE location_drillhole TO survey;
 GRANT SELECT ON TABLE location_fla TO survey;
