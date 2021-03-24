@@ -10,6 +10,7 @@ CREATE TEMPORARY TABLE temp_location_cluster
     co double precision,
     distance_from_road double precision,
     road_date date,
+    dumping_area text,
     date_scheduled date,
     excavated boolean,
     modified timestamp with time zone,
@@ -29,6 +30,7 @@ INSERT INTO location_cluster (
     co,
     distance_from_road,
     road_id,
+    dumping_area_id,
     date_scheduled,
     excavated,
     modified,
@@ -45,10 +47,13 @@ SELECT
     a.co,
     a.distance_from_road,
     b.id,
+    c.id,
     a.date_scheduled,
     a.excavated,
     a.modified,
     ST_GeomFromEWKT(a.geom_text)
 FROM temp_location_cluster a
     LEFT JOIN location_roadarea b
-        ON a.road_date = b.date_surveyed;
+        ON a.road_date = b.date_surveyed
+    LEFT JOIN location_stockpile c
+        ON a.dumping_area = c.name
