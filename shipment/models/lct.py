@@ -174,6 +174,7 @@ class TripDetail(models.Model):
     CLASS_CHOICES = (
         ('preparation_loading', 'Preparation for Loading'),
         ('loading', 'Loading'),
+        ('pause_loading', 'Stop Loading due to Change Shift'),
         ('preparation_departure', 'Preparation for Departure'),
         ('travel_to_vessel', 'Travel to Vessel'),
         ('preparation_unloading', 'Preparation for Unloading'),
