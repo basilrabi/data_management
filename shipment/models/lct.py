@@ -179,6 +179,7 @@ class TripDetail(models.Model):
         ('travel_to_vessel', 'Travel to Vessel'),
         ('preparation_unloading', 'Preparation for Unloading'),
         ('unloading', 'Unloading'),
+        ('pause_unloading', 'Stop Unloading due to FV Crane Trouble'),
         ('preparation_castoff', 'Preparation for Castoff'),
         ('travel_to_wharf', 'Travel to Wharf'),
         ('waiting_for_cargo', 'Wating for Cargo'),
