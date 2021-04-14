@@ -173,6 +173,8 @@ class TripDetail(models.Model):
 
     CLASS_CHOICES = (
         ('preparation_loading', 'Preparation for Loading'),
+        ('discharging_of_backload', 'Discharging of Backload'),
+        ('lct_repair', 'LCT Repair Standby'),
         ('loading', 'Loading'),
         ('pause_loading', 'Stop Loading due to Change Shift'),
         ('preparation_departure', 'Preparation for Departure'),
