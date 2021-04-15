@@ -530,6 +530,10 @@ class LayDaysStatement(models.Model):
 
         return zero_time
 
+    def time_used(self):
+        if self.time_allowed and self.laydaysdetailcomputed_set.last():
+            return self.time_allowed - self.laydaysdetailcomputed_set.last().time_remaining
+
     def vessel(self):
         if self.shipment.vessel:
             return self.shipment.vessel.name
