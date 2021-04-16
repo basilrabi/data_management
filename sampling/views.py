@@ -9,6 +9,7 @@ from django.http import FileResponse
 from django.shortcuts import render
 from django.template.loader import get_template
 from plotly.offline import plot
+from shutil import copyfile
 from subprocess import PIPE, run
 
 from sampling.models.sample import ShipmentLoadingAssay
@@ -142,12 +143,14 @@ def assay_certificate(request, name):
     template = get_template('sampling/assay_certificate.tex')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
+        copyfile(
+            'custom/static/custom/img/letter.pdf',
+            os.path.join(tempdir, 'letter.pdf')
+        )
         filename = os.path.join(tempdir, f'{assay.shipment.name}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
-        latex_command = f'cd "{tempdir}" && pdflatex --shell-escape ' + \
-            f'-interaction=batchmode {os.path.basename(filename)}'
-        run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+        latex_command = f'cd "{tempdir}" && latexmk -xelatex {os.path.basename(filename)}'
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
             open(os.path.join(tempdir, f'{assay.shipment.name}.pdf'), 'rb'),
