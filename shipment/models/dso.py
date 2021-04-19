@@ -538,6 +538,10 @@ class LayDaysStatement(models.Model):
         if self.shipment.vessel:
             return self.shipment.vessel.name
 
+    def vessel_voyage_str(self):
+        if self.vessel_voyage:
+            return str(self.vessel_voyage)
+
     def clean(self):
         if hasattr(self, 'approvedlaydaysstatement'):
             if self.approvedlaydaysstatement.approved:

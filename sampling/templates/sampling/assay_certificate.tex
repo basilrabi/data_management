@@ -1,6 +1,7 @@
 {% autoescape off %}
 {% load humanize %}
 \documentclass[10pt]{article}
+\usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{fontspec}
 \usepackage[a4paper,hmargin={65.5mm,16.5mm},top=20mm,bottom=20mm]{geometry}
@@ -45,7 +46,7 @@
     DESTINATION
         & {{ assay.shipment.destination }} \\
     VESSEL
-        & {{ assay.shipment.vessel }} VOY. NO. {{ assay.shipment.laydaysstatement.vessel_voyage }} \\
+        & {{ assay.shipment.vessel }} VOY. NO. {{ assay.shipment.laydaysstatement.vessel_voyage_str }} \\
     LOADING PERIOD
         & {{ assay.shipment.loading_period }}
 \end{tabular}
