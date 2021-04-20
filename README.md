@@ -77,89 +77,24 @@ Set-up the django project
 
 ### Serving
 
-#### Fedora 32
+#### Fedora 33
 
-##### Service File
+See [server_conf](http://datamanagement.tmc.nickelasia.com:3000/basilrabi/server_conf) for:
 
-Add the following files in your system:
+1. `/etc/nginx/nginx.conf`
+1. `/etc/systemd/system/data_management.service`
+1. `~/.gunicorn_env`
 
-```config
-# /etc/systemd/system/data_management.service
-# Change $USER to your user name
-[Unit]
-Description=Data Management Website daemon
-After=network.target
-
-[Service]
-User=$USER
-Group=nginx
-EnvironmentFile=/pathto/somefilewith_secrets
-WorkingDirectory=/home/$USER/data_management
-ExecStart=/home/$USER/.virtualenvs/data_management/bin/gunicorn --workers 3 --timeout 6000 --bind unix:/home/$USER/data_management/data_management.sock data_management.wsgi:application
-
-[Install]
-WantedBy=multi-user.target
-```
-
-##### gunicorn Environment File
-
-In the service file mentioned above, gunicorn will use the passwords in the environment file `/pathto/somefilewith_secrets`.
-Below are the environment variables needed and should be present in `/pathto/somefilewith_secrets`.
-
-```config
-DATA_MANAGEMENT_GEOLOGY=some_password
-DATA_MANAGEMENT_GRADECONTROL=some_password
-DATA_MANAGEMENT_PLANNING=some_password
-DATA_MANAGEMENT_READER=some_password
-DATA_MANAGEMENT_SURVEY=some_password
-PYTHONUNBUFFERED=TRUE
-```
 
 ##### SELinux Adventures
 
 If you want SELinux activated, running the service might fail since SELinux will prevent a lot of things.
-You may [compile](https://relativkreativ.at/articles/how-to-compile-a-selinux-policy-package) the type enforcement files in the `SELinux/` directory.
+You may [compile](https://relativkreativ.at/articles/how-to-compile-a-selinux-policy-package) the type enforcement files in the `SELinux/` directory from [here](http://datamanagement.tmc.nickelasia.com:3000/basilrabi/server_conf).
 
 See [this](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-fixing_problems-allowing_access_audit2allow)
 for further clarification of SELinux.
 
 ##### NGINX
-
-Configure nginx to proxy pass to gunicorn by adding a new `server` block to `/etc/nginx/nginx.conf`:
-
-```config
-# Change $USER to your user name
-server {
-    listen 80;
-    server_name $SERVER_DOMAIN_OR_IP;
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
-        root /home/$USER/data_management;
-    }
-
-    location / {
-        client_body_temp_path /home/$USER/client_body_temp 1 2;
-        proxy_temp_path /home/$USER/tmp 1 2;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass http://unix:/home/$USER/data_management/data_management.sock;
-    }
-}
-
-server {
-    listen 81;
-    server_name $SERVER_DOMAIN_OR_IP;
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location / {
-        root /media/tmc/nginx/81;
-        index index.html;
-        autoindex on;
-    }
-}
-```
 
 After the configuration file, run the following:
 
