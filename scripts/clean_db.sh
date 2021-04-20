@@ -35,4 +35,10 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_nam
 ./manage.py createsuperuser --noinput
 
 psql -h $db_host -p $db_port -U $db_user -w $db_name -c "create schema staging"
-psql -h $db_host -p $db_port -U $db_user -w $db_name -a -f scripts/sql/constraint/location_slice.pgsql
+
+if [ $2 == test ]
+then
+    echo "Testing."
+else
+    psql -h $db_host -p $db_port -U $db_user -w $db_name -a -f scripts/sql/constraint/location_slice.pgsql
+fi

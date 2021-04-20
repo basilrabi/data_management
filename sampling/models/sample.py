@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import mark_safe
@@ -306,8 +307,8 @@ class ShipmentDischargeAssay(AssaySample):
             qs = self.shipmentdischargelotassay_set.all()
             if qs.count() > 0:
                 qs = qs \
-                    .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
-                    .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
+                    .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * Decimal(0.01), 3)) \
+                    .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * Decimal(0.01), 3)) \
                     .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
                 self.wmt = qs['wmt__sum']
                 self.dmt = qs['dmt__sum']
@@ -404,8 +405,8 @@ class ShipmentLoadingAssay(AssaySample):
 
     def save(self, *args, **kwargs):
         qs = self.shipmentloadinglotassay_set.all() \
-            .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * 0.01, 3)) \
-            .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * 0.01, 3)) \
+            .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * Decimal(0.01), 3)) \
+            .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * Decimal(0.01), 3)) \
             .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
         self.wmt = qs['wmt__sum']
         self.dmt = qs['dmt__sum']

@@ -6,6 +6,9 @@ import tempfile
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection, models
+from django.db.models.expressions import Value
+from django.db.models.functions.mixins import FixDecimalInputMixin
+from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
 from subprocess import PIPE, run
@@ -32,11 +35,24 @@ class Echo:
         """
         return value
 
-
-class Round(models.Func):
+# TODO: Delete in Django 3.3
+class Round(FixDecimalInputMixin, Transform):
     function = 'ROUND'
-    arity = 2
+    lookup_name = 'round'
+    arity = None
 
+    def __init__(self, expression, precision=0, **extra):
+        super().__init__(expression, precision, **extra)
+
+    def as_sqlite(self, compiler, connection, **extra_context):
+        precision = self.get_source_expressions()[1]
+        if isinstance(precision, Value) and precision.value < 0:
+            raise ValueError('SQLite does not support negative precision.')
+        return super().as_sqlite(compiler, connection, **extra_context)
+
+    def _resolve_output_field(self):
+        source = self.get_source_expressions()[0]
+        return source.output_field
 
 def export_csv(rows, filename):
     buffer = Echo()
