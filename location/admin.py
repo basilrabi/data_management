@@ -139,6 +139,7 @@ class FLAAdmin(TMCLocationAdmin):
 class MineBlockAdmin(TMCLocationAdmin):
     modifiable = False
     list_display = ('name', 'ridge')
+    search_fields = ['name']
 
 
 @admin.register(MPSA)
