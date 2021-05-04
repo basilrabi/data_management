@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection, models
 from django.db.models.expressions import Value
+from django.db.models.functions import TruncDay
 from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
@@ -53,6 +54,7 @@ class Round(FixDecimalInputMixin, Transform):
     def _resolve_output_field(self):
         source = self.get_source_expressions()[0]
         return source.output_field
+
 
 def export_csv(rows, filename):
     buffer = Echo()
@@ -121,6 +123,26 @@ def get_assay_constraints(data):
         models.CheckConstraint(check=models.Q(ignition_loss__gte=0), name=f'ignition_loss_min_0_{data}'),
         models.CheckConstraint(check=models.Q(moisture__gte=0), name=f'moisture_min_0_{data}')
     ]
+
+def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_weight=0.5):
+    if get_printed_lines(queryset, queryset.count(), space_weight) <= lines_allowed:
+        return queryset.count()
+    elif get_printed_lines(queryset, slice_limit, space_weight) <= lines_allowed:
+        return slice_limit
+    else:
+        return get_optimum_print_slice(queryset, slice_limit - 1, lines_allowed, space_weight)
+
+def get_printed_lines(queryset, slice_limit, space_weight):
+    """
+    Time interval list is printed in PDF for the lay time statement. Each day
+    entry is separated by a vertical space. This outputs the estimated number
+    of lines given a list of time interval.
+    """
+    qs = queryset[:slice_limit]
+    days = len(set(
+        qs.annotate(days=TruncDay('interval_from')).values_list('days')
+    ))
+    return qs.count() + (days * space_weight) - 1
 
 def mine_blocks_with_clusters():
     # pylint: disable=no-member

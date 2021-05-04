@@ -4,13 +4,16 @@ import plotly.graph_objects as go
 import tempfile
 
 from django.db import connection
+from django.db.models.expressions import Window
+from django.db.models.functions import RowNumber
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render
 from django.template.loader import get_template
 from plotly.offline import plot
+from shutil import copyfile
 from subprocess import PIPE, run
 
-from custom.functions import export_sql
+from custom.functions import export_sql, get_optimum_print_slice
 from shipment.models.dso import LayDaysStatement
 
 # pylint: disable=no-member
@@ -227,27 +230,43 @@ def lay_days_statement_csv(request, name):
 def lay_days_statement_pdf(request, name):
     statement = LayDaysStatement.objects.get(shipment__name=name)
     statement._compute()
-    details = statement.laydaysdetailcomputed_set.all()
-    days = abs(details.last().days_remaining())
+    details = statement.laydaysdetailcomputed_set.all().annotate(
+        row=Window(expression=RowNumber())
+    )
+    days = None
+    if details.count() > 0:
+        days = abs(details.last().days_remaining())
     demurrage = statement.shipment.demurrage
     despatch = statement.shipment.despatch
+    slice_index = get_optimum_print_slice(details)
+    is_split = details.count() > 0 and slice_index != details.count()
+    details_part_a = None
+    details_part_b = None
+    if is_split:
+        details_part_a = details[:slice_index]
+        details_part_b = details[slice_index:]
     context = {
         'statement': statement,
         'days': days,
         'details': details,
         'demurrage': demurrage,
         'despatch' : despatch,
-        'dem_des_set' : demurrage is not None and despatch is not None
+        'dem_des_set' : demurrage is not None and despatch is not None,
+        'is_split' : is_split,
+        'details_part_a' : details_part_a,
+        'details_part_b' : details_part_b
     }
     template = get_template('shipment/lay_time_statement.tex')
     rendered_tpl = template.render(context)
     with tempfile.TemporaryDirectory() as tempdir:
+        copyfile(
+            'custom/static/custom/img/TMC.pdf',
+            os.path.join(tempdir, 'TMC.pdf')
+        )
         filename = os.path.join(tempdir, f'{statement.shipment.name}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
-        latex_command = f'cd "{tempdir}" && pdflatex --shell-escape ' + \
-            f'-interaction=batchmode {os.path.basename(filename)}'
-        run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+        latex_command = f'cd "{tempdir}" && latexmk -pdflatex {statement.shipment.name}'
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
             open(os.path.join(tempdir, f'{statement.shipment.name}.pdf'), 'rb'),

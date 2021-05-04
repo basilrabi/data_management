@@ -1,10 +1,12 @@
 {% autoescape off %}
 {% load humanize %}
 \documentclass[10pt]{article}
+\usepackage{afterpage}
+\usepackage{amsmath}
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{fancyhdr}
-\usepackage[a4paper,hmargin={15mm,15mm},top=20mm,bottom=25mm]{geometry}
+\usepackage[a4paper]{geometry}
 \usepackage{longtable}
 \usepackage{microtype}
 \usepackage{multicol}
@@ -16,97 +18,6 @@
 \renewcommand*\rmdefault{ppl}
 
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
-
-\begin{filecontents*}{\jobname.tmclogo}
-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
-4/RZTHI0Zo28+CKlRJ4y7jr3Y/tLBxQGbIuuOtDoboGUsPPvoGqTrKs9sOChsndIJUJ3MNLey6He
-fftXfIkFE8QVpm+CSFLTvcpnmmNTJEickbvj5msajMTk4G5zXrZUzCY/2ig3HcKqQtZ1Yp77G4Ls
-pjqpGM7imwOCxB9psDBxtr/fgQL90cCMogcoVfaVekiRWly7BzvTHyl8KmE/qoSB06MC4xbQd+PP
-iFhkE2e4wV/kzPi5enCqkffXCiwucZCWn9auQxzZI8yCDf1bkM2V8ffcXNgW6gVb0mzq2Fn7mxC7
-bPYdVNrSCC7L5ignz7QucafD9flZy6rx+dINaUbqHXigtEZ1cBW+mu5dALPzYpxwKfrHqCo03HxH
-RoFIQX26QeFyliLLmWp/sjAe/8j73nxEs07ymMYMFUt936E3l17NFQGmI3x7fHFxxncVvmU0U53h
-kB5VNeRDGS1fxOU7Aw/TwivKLRUvI6JhRNV6Ukwe/tbDZwuzRGQ4fyzllZIdonPiMqLQAffZ9LqS
-h7k5gHnG4x1jXJi34XKbQ1Ow7ssOdJ/zdBBZpCV+iXdTH9tT38z/6/jn8X9hQaLICmVuZHN0cmVh
-bQplbmRvYmoKNSAwIG9iagogICA0MDIxCmVuZG9iagozIDAgb2JqCjw8CiAgIC9FeHRHU3RhdGUg
-PDwKICAgICAgL2EwIDw8IC9DQSAxIC9jYSAxID4+CiAgID4+Cj4+CmVuZG9iagoyIDAgb2JqCjw8
-IC9UeXBlIC9QYWdlICUgMQogICAvUGFyZW50IDEgMCBSCiAgIC9NZWRpYUJveCBbIDAgMCA1MTcu
-MDc0NzY4IDEyOC4wODQzODEgXQogICAvQ29udGVudHMgNCAwIFIKICAgL0dyb3VwIDw8CiAgICAg
-IC9UeXBlIC9Hcm91cAogICAgICAvUyAvVHJhbnNwYXJlbmN5CiAgICAgIC9JIHRydWUKICAgICAg
-L0NTIC9EZXZpY2VSR0IKICAgPj4KICAgL1Jlc291cmNlcyAzIDAgUgo+PgplbmRvYmoKMSAwIG9i
-ago8PCAvVHlwZSAvUGFnZXMKICAgL0tpZHMgWyAyIDAgUiBdCiAgIC9Db3VudCAxCj4+CmVuZG9i
-ago2IDAgb2JqCjw8IC9Qcm9kdWNlciAoY2Fpcm8gMS4xNS4xMiAoaHR0cDovL2NhaXJvZ3JhcGhp
-Y3Mub3JnKSkKICAgL0NyZWF0aW9uRGF0ZSAoRDoyMDE4MDYyMDE0NDA0NCswOCcwMCkKPj4KZW5k
-b2JqCjcgMCBvYmoKPDwgL1R5cGUgL0NhdGFsb2cKICAgL1BhZ2VzIDEgMCBSCj4+CmVuZG9iagp4
-cmVmCjAgOAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDQ0NDAgMDAwMDAgbiAKMDAwMDAwNDIw
-OCAwMDAwMCBuIAowMDAwMDA0MTM2IDAwMDAwIG4gCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAw
-NDExMyAwMDAwMCBuIAowMDAwMDA0NTA1IDAwMDAwIG4gCjAwMDAwMDQ2MjEgMDAwMDAgbiAKdHJh
-aWxlcgo8PCAvU2l6ZSA4CiAgIC9Sb290IDcgMCBSCiAgIC9JbmZvIDYgMCBSCj4+CnN0YXJ0eHJl
-Zgo0NjczCiUlRU9GCg==
-\end{filecontents*}
-\immediate\write18{base64 -d \jobname.tmclogo > tmclogo.pdf}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -136,8 +47,13 @@ Zgo0NjczCiUlRU9GCg==
 \setlength{\parindent}{0pt}
 \definecolor{tmc}{RGB}{75, 148, 97}
 
+\geometry{hmargin={15mm,15mm},top=15mm,bottom=15mm}
+
 \begin{document}
-\thispagestyle{front}\vspace*{-2cm}
+\newgeometry{hmargin={15mm,15mm},top=7mm,bottom=27mm}
+\thispagestyle{front}
+\afterpage{\globaldefs=1 \restoregeometry}
+
 \begin{center}
     \tikzset{
         header/.style={
@@ -147,7 +63,7 @@ Zgo0NjczCiUlRU9GCg==
         }
     }
     \begin{tikzpicture}
-        \node (tmclogo) {\includegraphics[width=2.5in]{tmclogo.pdf}};
+        \node (tmclogo) {\includegraphics[width=2.5in]{TMC.pdf}};
     \end{tikzpicture}
 
     \vspace{4mm}
@@ -241,7 +157,72 @@ Zgo0NjczCiUlRU9GCg==
 \end{center}
 
 \begin{small}
+
 \begin{center}
+
+{% if is_split %}
+    \begin{tabular}{cccccrcrL{5.2cm}}
+        \toprule
+        \bfseries Date
+            & \bfseries Day
+            & \bfseries From
+            & \bfseries To
+            & \bfseries Duration
+            & \multicolumn{1}{c}{\bfseries Rate}
+            & \bfseries Used
+            & \bfseries Remaining
+            & \multicolumn{1}{c}{\bfseries Remarks}  \\ \midrule
+    {% for detail in details_part_a %}
+        {% if detail.next %}
+            {% if detail.is_new_day %}
+        {{ detail.interval_from|date:"Y-m-d" }}
+            & {{ detail.interval_from|date:"D" }}
+            {% else %}
+            &
+            {% endif %}
+            & {{ detail.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_formated }}
+            & {{ detail.laytime_rate }}~\%
+            & {{ detail.next.consumed_formated }}
+            & {{ detail.next.remaining }}
+            {% if detail.next.interval_class == 'end' %}
+                {% if detail.next.remarks %}
+            & {{ detail.next.latex_remarks|title }} \\
+                {% else %}
+            & Completed Loading \\
+                {% endif %}
+            {% elif detail.interval_class == 'others' %}
+                {% if detail.remarks %}
+            & {{ detail.latex_remarks|title }} \\
+                {% else %}
+            & \\
+                {% endif %}
+            {% else %}
+                {% if detail.next.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \newline \emph{%
+                {{ detail.next.latex_remarks|title }}
+            } \\
+                {% elif detail.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \\
+                {% elif detail.next.remarks.strip.lower == 'completed loading' %}
+            & Completed Loading \\
+                {% elif detail.remarks %}
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
+                {% else %}
+            & {{ detail.interval_class|title }} \\
+                {% endif %}
+            {% endif %}
+            {% if detail.next.is_new_day %}
+                {% if details_part_a.count > detail.row %}
+            \rule{0pt}{3ex}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+        \bottomrule
+    \end{tabular} \newpage
+
     \begin{longtable}{cccccrcrL{5.2cm}}
         \toprule
         \bfseries Date
@@ -260,55 +241,124 @@ Zgo0NjczCiUlRU9GCg==
         \multicolumn{9}{c}{TOTAL TIME USED: {{ statement.time_used }}} \\
         \bottomrule
         \endlastfoot
-{% for detail in details %}
-    {% if detail.next %}
-        {% if detail.is_new_day %}
+    {% for detail in details_part_b %}
+        {% if detail.next %}
+            {% if detail.is_new_day %}
         {{ detail.interval_from|date:"Y-m-d" }}
             & {{ detail.interval_from|date:"D" }}
-        {% else %}
+            {% else %}
             &
-        {% endif %}
+            {% endif %}
             & {{ detail.interval_from|date:"H:i" }}
             & {{ detail.next.interval_from|date:"H:i" }}
             & {{ detail.next.interval_formated }}
             & {{ detail.laytime_rate }}~\%
             & {{ detail.next.consumed_formated }}
             & {{ detail.next.remaining }}
-        {% if detail.next.interval_class == 'end' %}
-            {% if detail.next.remarks %}
+            {% if detail.next.interval_class == 'end' %}
+                {% if detail.next.remarks %}
             & {{ detail.next.latex_remarks|title }} \\
-            {% else %}
+                {% else %}
             & Completed Loading \\
-            {% endif %}
-        {% elif detail.interval_class == 'others' %}
-            {% if detail.remarks %}
+                {% endif %}
+            {% elif detail.interval_class == 'others' %}
+                {% if detail.remarks %}
             & {{ detail.latex_remarks|title }} \\
-            {% else %}
+                {% else %}
             & \\
-            {% endif %}
-        {% else %}
-            {% if detail.next.remarks == 'laytime expires' %}
+                {% endif %}
+            {% else %}
+                {% if detail.next.remarks == 'laytime expires' %}
             & {{ detail.interval_class|title }} \newline \emph{%
                 {{ detail.next.latex_remarks|title }}
             } \\
-            {% elif detail.remarks == 'laytime expires' %}
+                {% elif detail.remarks == 'laytime expires' %}
             & {{ detail.interval_class|title }} \\
-            {% elif detail.next.remarks.strip.lower == 'completed loading' %}
+                {% elif detail.next.remarks.strip.lower == 'completed loading' %}
             & Completed Loading \\
-            {% elif detail.remarks %}
+                {% elif detail.remarks %}
             & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
-            {% else %}
+                {% else %}
             & {{ detail.interval_class|title }} \\
+                {% endif %}
+            {% endif %}
+            {% if detail.next.is_new_day %}
+            \rule{0pt}{3ex}
             {% endif %}
         {% endif %}
-        {% if detail.next.is_new_day %}
-            \rule{0pt}{3ex}
-        {% endif %}
-    {% endif %}
-{% empty %}
+    {% empty %}
         \multicolumn{9}{c}{No computation. Statement has not yet ended.} \\
-{% endfor %}
+    {% endfor %}
     \end{longtable}
+{% else %}
+    \begin{longtable}{cccccrcrL{5.2cm}}
+        \toprule
+        \bfseries Date
+            & \bfseries Day
+            & \bfseries From
+            & \bfseries To
+            & \bfseries Duration
+            & \multicolumn{1}{c}{\bfseries Rate}
+            & \bfseries Used
+            & \bfseries Remaining
+            & \multicolumn{1}{c}{\bfseries Remarks}  \\ \midrule
+        \endhead
+        \bottomrule
+        \endfoot
+        \midrule
+        \multicolumn{9}{c}{TOTAL TIME USED: {{ statement.time_used }}} \\
+        \bottomrule
+        \endlastfoot
+    {% for detail in details %}
+        {% if detail.next %}
+            {% if detail.is_new_day %}
+        {{ detail.interval_from|date:"Y-m-d" }}
+            & {{ detail.interval_from|date:"D" }}
+            {% else %}
+            &
+            {% endif %}
+            & {{ detail.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_from|date:"H:i" }}
+            & {{ detail.next.interval_formated }}
+            & {{ detail.laytime_rate }}~\%
+            & {{ detail.next.consumed_formated }}
+            & {{ detail.next.remaining }}
+            {% if detail.next.interval_class == 'end' %}
+                {% if detail.next.remarks %}
+            & {{ detail.next.latex_remarks|title }} \\
+                {% else %}
+            & Completed Loading \\
+                {% endif %}
+            {% elif detail.interval_class == 'others' %}
+                {% if detail.remarks %}
+            & {{ detail.latex_remarks|title }} \\
+                {% else %}
+            & \\
+                {% endif %}
+            {% else %}
+                {% if detail.next.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \newline \emph{%
+                {{ detail.next.latex_remarks|title }}
+            } \\
+                {% elif detail.remarks == 'laytime expires' %}
+            & {{ detail.interval_class|title }} \\
+                {% elif detail.next.remarks.strip.lower == 'completed loading' %}
+            & Completed Loading \\
+                {% elif detail.remarks %}
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
+                {% else %}
+            & {{ detail.interval_class|title }} \\
+                {% endif %}
+            {% endif %}
+            {% if detail.next.is_new_day %}
+            \rule{0pt}{3ex}
+            {% endif %}
+        {% endif %}
+    {% empty %}
+        \multicolumn{9}{c}{No computation. Statement has not yet ended.} \\
+    {% endfor %}
+    \end{longtable}
+{% endif %}
 \end{center}
 
 {% if statement.remarks %}
