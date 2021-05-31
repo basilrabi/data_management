@@ -154,6 +154,42 @@ class LayDaysDetailComputed(models.Model):
             interval_from__lt=self.interval_from
         )).order_by('-interval_from').first()
 
+    def printed_lines(self):
+        line_limit = 37
+        lines = 1
+        next = self.next()
+        remarks = ""
+        if next:
+            if next.interval_class == "end":
+                if next.remarks:
+                    remarks = next.remarks
+                else:
+                    remarks = "completed loading"
+            elif self.interval_class == "others":
+                if self.remarks:
+                    remarks = self.remarks
+            else:
+                if next.remarks == "laytime expires":
+                    lines += 1
+                elif self.remarks == "laytime expires":
+                    remarks = self.interval_class
+                elif sub(r'\s+', ' ', str(next.remarks)).lower().strip() == "completed loading":
+                    remarks = "completed loading"
+                elif self.remarks:
+                    remarks = self.interval_class + ". " + self.remarks
+                else:
+                    remarks = self.interval_class
+            if len(remarks) > line_limit:
+                remarks = sub(r'\s+', ' ', remarks)
+                remarks_elements = remarks.split(" ")
+                remaining_length = line_limit
+                for word in remarks_elements:
+                    remaining_length -= (len(word) + 1)
+                    if remaining_length < 0:
+                        remaining_length = line_limit
+                        lines += 1
+        return lines
+
     def remaining(self):
         """
         Time remaining in hms.

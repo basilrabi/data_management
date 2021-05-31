@@ -13,7 +13,6 @@ from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
-from re import sub
 from subprocess import PIPE, run
 from tzlocal import get_localzone
 
@@ -126,7 +125,7 @@ def get_assay_constraints(data):
         models.CheckConstraint(check=models.Q(moisture__gte=0), name=f'moisture_min_0_{data}')
     ]
 
-def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_weight=0.5):
+def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_weight=0.42):
     if get_printed_lines(queryset, queryset.count(), space_weight) <= lines_allowed:
         return queryset.count()
     elif get_printed_lines(queryset, slice_limit, space_weight) <= lines_allowed:
@@ -140,47 +139,13 @@ def get_printed_lines(queryset, slice_limit, space_weight):
     entry is separated by a vertical space. This outputs the estimated number
     of lines given a list of time interval.
     """
-    line_limit = 38
     qs = queryset[:slice_limit]
     days = len(set(
         qs.annotate(days=TruncDay('interval_from')).values_list('days')
     ))
     remark_lines = 0
-    # TODO: needed to be imporoved. Either implement in class or SQL
     for detail in qs:
-        if detail.next():
-            if detail.next().interval_class == "end":
-                if detail.next().remarks:
-                    remarks = detail.next().remarks
-                else:
-                    remarks = "completed loading"
-            elif detail.interval_class == "others":
-                if detail.remarks:
-                    remarks = detail.remarks
-            else:
-                if detail.next().remarks == "laytime expires":
-                    remarks = detail.next().remarks,
-                    remark_lines += 1
-                elif detail.remarks == "laytime expires":
-                    remarks = detail.interval_class
-                elif sub(r'\s+', ' ', str(detail.next().remarks)).lower().strip() == "completed loading":
-                    remarks = "completed loading"
-                elif detail.remarks:
-                    remarks = detail.interval_class + ". " + detail.remarks
-                else:
-                    remarks = detail.interval_class
-        remark_lines += 1
-        if len(remarks) > line_limit:
-            remarks = sub(r'\s+', ' ', remarks)
-            remarks_elements = remarks.split(" ")
-            remaining_length = line_limit
-            for word in remarks_elements:
-                remaining_length -= (len(word) + 1)
-                if remaining_length < 0:
-                    remaining_length = line_limit
-                    remark_lines += 1
-            remark_lines += 1
-
+        remark_lines += detail.printed_lines()
     return remark_lines + (days * space_weight) - 1
 
 def mine_blocks_with_clusters():

@@ -44,6 +44,7 @@
   }
 }
 
+\newcommand{\remarkwidth}{5.78cm}
 \setlength{\parindent}{0pt}
 \definecolor{tmc}{RGB}{75, 148, 97}
 
@@ -161,7 +162,7 @@
 \begin{center}
 
 {% if is_split %}
-    \begin{tabular}{cccccrcrL{5.2cm}}
+    \begin{tabular}{cccccrcrL{\remarkwidth}}
         \toprule
         \bfseries Date
             & \bfseries Day
@@ -223,7 +224,7 @@
         \bottomrule
     \end{tabular} \newpage
 
-    \begin{longtable}{cccccrcrL{5.2cm}}
+    \begin{longtable}{cccccrcrL{\remarkwidth}}
         \toprule
         \bfseries Date
             & \bfseries Day
@@ -291,7 +292,7 @@
     {% endfor %}
     \end{longtable}
 {% else %}
-    \begin{longtable}{cccccrcrL{5.2cm}}
+    \begin{longtable}{cccccrcrL{\remarkwidth}}
         \toprule
         \bfseries Date
             & \bfseries Day
