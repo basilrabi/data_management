@@ -208,7 +208,7 @@
                 {% elif detail.next.remarks.strip.lower == 'completed loading' %}
             & Completed Loading \\
                 {% elif detail.remarks %}
-            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks|title }} \\
                 {% else %}
             & {{ detail.interval_class|title }} \\
                 {% endif %}
@@ -277,7 +277,7 @@
                 {% elif detail.next.remarks.strip.lower == 'completed loading' %}
             & Completed Loading \\
                 {% elif detail.remarks %}
-            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks|title }} \\
                 {% else %}
             & {{ detail.interval_class|title }} \\
                 {% endif %}
@@ -345,7 +345,7 @@
                 {% elif detail.next.remarks.strip.lower == 'completed loading' %}
             & Completed Loading \\
                 {% elif detail.remarks %}
-            & {{ detail.interval_class|title }}. {{ detail.latex_remarks }} \\
+            & {{ detail.interval_class|title }}. {{ detail.latex_remarks|title }} \\
                 {% else %}
             & {{ detail.interval_class|title }} \\
                 {% endif %}
