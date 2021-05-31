@@ -6,12 +6,14 @@ import tempfile
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection, models
+from django.db.models import Case, When
 from django.db.models.expressions import Value
 from django.db.models.functions import TruncDay
 from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
+from re import sub
 from subprocess import PIPE, run
 from tzlocal import get_localzone
 
@@ -138,11 +140,48 @@ def get_printed_lines(queryset, slice_limit, space_weight):
     entry is separated by a vertical space. This outputs the estimated number
     of lines given a list of time interval.
     """
+    line_limit = 38
     qs = queryset[:slice_limit]
     days = len(set(
         qs.annotate(days=TruncDay('interval_from')).values_list('days')
     ))
-    return qs.count() + (days * space_weight) - 1
+    remark_lines = 0
+    # TODO: needed to be imporoved. Either implement in class or SQL
+    for detail in qs:
+        if detail.next():
+            if detail.next().interval_class == "end":
+                if detail.next().remarks:
+                    remarks = detail.next().remarks
+                else:
+                    remarks = "completed loading"
+            elif detail.interval_class == "others":
+                if detail.remarks:
+                    remarks = detail.remarks
+            else:
+                if detail.next().remarks == "laytime expires":
+                    remarks = detail.next().remarks,
+                    remark_lines += 1
+                elif detail.remarks == "laytime expires":
+                    remarks = detail.interval_class
+                elif sub(r'\s+', ' ', str(detail.next().remarks)).lower().strip() == "completed loading":
+                    remarks = "completed loading"
+                elif detail.remarks:
+                    remarks = detail.interval_class + ". " + detail.remarks
+                else:
+                    remarks = detail.interval_class
+        remark_lines += 1
+        if len(remarks) > line_limit:
+            remarks = sub(r'\s+', ' ', remarks)
+            remarks_elements = remarks.split(" ")
+            remaining_length = line_limit
+            for word in remarks_elements:
+                remaining_length -= (len(word) + 1)
+                if remaining_length < 0:
+                    remaining_length = line_limit
+                    remark_lines += 1
+            remark_lines += 1
+
+    return remark_lines + (days * space_weight) - 1
 
 def mine_blocks_with_clusters():
     # pylint: disable=no-member
