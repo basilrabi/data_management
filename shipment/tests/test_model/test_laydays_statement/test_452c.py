@@ -1,21 +1,24 @@
-import csv
+from csv import DictReader
 from datetime import timedelta
 from decimal import Decimal
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
-from os import path
+from os.path import abspath, dirname, join
 
 from custom.functions import setup_triggers
 from custom.variables import one_day
-from shipment.models.dso import (LayDaysDetail,
-                                 LayDaysStatement,
-                                 Shipment,
-                                 Vessel)
+from shipment.models.dso import (
+    LayDaysDetail,
+    LayDaysStatement,
+    Shipment,
+    Vessel
+)
 
 # pylint: disable=no-member
 
-pwd = path.dirname(path.abspath(__file__))
-fdetails = path.join(pwd, 'detail', '452c.csv')
+pwd = dirname(abspath(__file__))
+fdetails = join(pwd, 'detail', '452c.csv')
+
 
 class  LayDaysStatement452CTest(TestCase):
 
@@ -30,7 +33,6 @@ class  LayDaysStatement452CTest(TestCase):
         shipment.save()
 
     def test_laydays_computation_452c(self):
-        # TODO: confirm laydays details if similar to approved details
         shipment = Shipment.objects.get(name='452-C')
         statement = LayDaysStatement(
             shipment=shipment,
@@ -54,7 +56,7 @@ class  LayDaysStatement452CTest(TestCase):
         )
 
         with open(fdetails, newline='') as csvfile:
-            reader = csv.DictReader(
+            reader = DictReader(
                 csvfile,
                 fieldnames=['rate', 'stamp', 'class', 'remarks']
             )

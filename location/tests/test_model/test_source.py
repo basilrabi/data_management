@@ -1,5 +1,4 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError, InternalError
 from django.test import TestCase
 from django.utils.dateparse import parse_date as pd

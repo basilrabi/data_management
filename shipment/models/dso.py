@@ -1,17 +1,45 @@
-import datetime
-
+from datetime import timedelta
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db.models import (
+    BooleanField,
+    CASCADE,
+    CharField,
+    CheckConstraint,
+    DO_NOTHING,
+    DateField,
+    DateTimeField,
+    DecimalField,
+    DurationField,
+    F,
+    ForeignKey,
+    Index,
+    Model,
+    OneToOneField,
+    PROTECT,
+    PositiveIntegerField,
+    PositiveSmallIntegerField,
+    Q,
+    SET_NULL,
+    TextField,
+    UniqueConstraint
+)
 from django.utils.html import mark_safe
 from django.utils.timezone import now
 from re import sub
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
-    ordinal_suffix, print_localzone, refresh_loading_rate,
-    refresh_shipment_number, round_second, round_up_day, to_dhms, to_hm, to_hms,
+    ordinal_suffix,
+    print_localzone,
+    refresh_loading_rate,
+    refresh_shipment_number,
+    round_second,
+    round_up_day,
+    to_dhms,
+    to_hm,
+    to_hms,
     to_latex
 )
 from custom.models import Classification
@@ -31,12 +59,12 @@ class Destination(Classification):
     pass
 
 
-class LayDaysDetail(models.Model):
+class LayDaysDetail(Model):
     """
     An entry in the laydays statement.
     """
-    laydays = models.ForeignKey('LayDaysStatement', on_delete=models.CASCADE)
-    interval_from = models.DateTimeField()
+    laydays = ForeignKey('LayDaysStatement', on_delete=CASCADE)
+    interval_from = DateTimeField()
 
     RATE_CHOICES = (
         (100, '100'),
@@ -46,7 +74,7 @@ class LayDaysDetail(models.Model):
         (25, '25'),
         (0, '0')
     )
-    laytime_rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+    laytime_rate = PositiveSmallIntegerField(choices=RATE_CHOICES)
 
     CLASS_CHOICES = (
         ('continuous loading', 'Continuous Loading'),
@@ -61,43 +89,43 @@ class LayDaysDetail(models.Model):
         ('vessel arrived behind of schedule', 'Vessel Arrived Behind of Schedule'),
         ('others', '-')
     )
-    interval_class = models.CharField(max_length=50, choices=CLASS_CHOICES)
-    remarks = models.TextField(null=True, blank=True)
+    interval_class = CharField(max_length=50, choices=CLASS_CHOICES)
+    remarks = TextField(null=True, blank=True)
 
     def interval(self):
         if self.next():
             return self.next().interval_from - self.interval_from
 
     def next(self):
-        return self.laydays.laydaysdetail_set.filter(models.Q(
+        return self.laydays.laydaysdetail_set.filter(Q(
             interval_from__gt=self.interval_from
         )).order_by('interval_from').first()
 
     class Meta:
         ordering = ['interval_from']
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['laydays', 'interval_from'],
                 name='unique_vessel_trip_timestamp'
             ),
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['laydays', 'interval_class'],
-                condition=models.Q(interval_class='end'),
+                condition=Q(interval_class='end'),
                 name='unique_end_laydaysdetail'
             )
         ]
 
 
-class LayDaysDetailComputed(models.Model):
+class LayDaysDetailComputed(Model):
 
-    laydays = models.ForeignKey('LayDaysStatement', on_delete=models.CASCADE)
-    interval_from = models.DateTimeField()
-    laytime_rate = models.PositiveSmallIntegerField(
+    laydays = ForeignKey('LayDaysStatement', on_delete=CASCADE)
+    interval_from = DateTimeField()
+    laytime_rate = PositiveSmallIntegerField(
         help_text='Percent available vessel grabs.'
     )
-    time_remaining = models.DurationField()
-    interval_class = models.CharField(max_length=50)
-    remarks = models.TextField(null=True, blank=True)
+    time_remaining = DurationField()
+    interval_class = CharField(max_length=50)
+    remarks = TextField(null=True, blank=True)
 
     def consumed(self):
         """
@@ -145,12 +173,12 @@ class LayDaysDetailComputed(models.Model):
         return to_latex(self.remarks)
 
     def next(self):
-        return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
+        return self.laydays.laydaysdetailcomputed_set.filter(Q(
             interval_from__gt=self.interval_from
         )).order_by('interval_from').first()
 
     def previous(self):
-        return self.laydays.laydaysdetailcomputed_set.filter(models.Q(
+        return self.laydays.laydaysdetailcomputed_set.filter(Q(
             interval_from__lt=self.interval_from
         )).order_by('-interval_from').first()
 
@@ -200,9 +228,9 @@ class LayDaysDetailComputed(models.Model):
         ordering = ['interval_from']
 
 
-class ApprovedLayDaysStatement(models.Model):
-    statement = models.OneToOneField('LayDaysStatement', on_delete=models.PROTECT)
-    approved = models.BooleanField()
+class ApprovedLayDaysStatement(Model):
+    statement = OneToOneField('LayDaysStatement', on_delete=PROTECT)
+    approved = BooleanField()
 
     def csv(self):
         return self.statement.csv()
@@ -226,63 +254,52 @@ class ApprovedLayDaysStatement(models.Model):
     class Meta:
         ordering = [
             'approved',
-            models.F('statement__completed_loading').desc(nulls_last=False),
-            models.F('statement__arrival_tmc').desc(nulls_last=False)
+            F('statement__completed_loading').desc(nulls_last=False),
+            F('statement__arrival_tmc').desc(nulls_last=False)
         ]
 
     def __str__(self):
         return self.statement.__str__()
 
 
-class LayDaysStatement(models.Model):
+class LayDaysStatement(Model):
     """
     A vessel's laydays statement for a shipment loading.
     """
-    shipment = models.OneToOneField('Shipment', on_delete=models.CASCADE)
-    vessel_voyage = models.PositiveSmallIntegerField(default=0)
-    arrival_pilot = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name='Arrival at Surigao Pilot Station'
+    shipment = OneToOneField('Shipment', on_delete=CASCADE)
+    vessel_voyage = PositiveSmallIntegerField(default=0)
+    arrival_pilot = DateTimeField(
+        null=True, blank=True, verbose_name='Arrival at Surigao Pilot Station'
     )
-    arrival_tmc = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name='Arrival at TMC Port'
+    arrival_tmc = DateTimeField(
+        null=True, blank=True, verbose_name='Arrival at TMC Port'
     )
-    nor_tender = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name='Notice of Readiness Tendered'
+    nor_tender = DateTimeField(
+        null=True, blank=True, verbose_name='Notice of Readiness Tendered'
     )
-    nor_accepted = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name='Notice of Readiness Accepted'
+    nor_accepted = DateTimeField(
+        null=True, blank=True, verbose_name='Notice of Readiness Accepted'
     )
-    commenced_laytime = models.DateTimeField(null=True, blank=True)
-    commenced_loading = models.DateTimeField(null=True, blank=True)
-    completed_loading = models.DateTimeField(null=True, blank=True)
+    commenced_laytime = DateTimeField(null=True, blank=True)
+    commenced_loading = DateTimeField(null=True, blank=True)
+    completed_loading = DateTimeField(null=True, blank=True)
     cargo_description = NameField(max_length=20, default='NICKEL ORE')
-    tonnage = models.PositiveIntegerField(null=True, blank=True)
-    loading_terms = models.PositiveSmallIntegerField(
+    tonnage = PositiveIntegerField(null=True, blank=True)
+    loading_terms = PositiveSmallIntegerField(
         default=6000,
         help_text='Agreed loading rate (tons per day) or CQD days.'
     )
     laytime_terms = NameField(max_length=20, null=True, blank=True)
-    demurrage_rate = models.PositiveSmallIntegerField(
-        default=11000,
-        help_text='US Dollar per day'
+    demurrage_rate = PositiveSmallIntegerField(
+        default=11000, help_text='US Dollar per day'
     )
-    despatch_rate = models.PositiveSmallIntegerField(
-        default=5500,
-        help_text='US Dollar per day'
+    despatch_rate = PositiveSmallIntegerField(
+        default=5500, help_text='US Dollar per day'
     )
-    can_test = models.PositiveSmallIntegerField(
-        default=0,
-        help_text='Number of can tests performed.'
+    can_test = PositiveSmallIntegerField(
+        default=0, help_text='Number of can tests performed.'
     )
-    pre_loading_can_test = models.BooleanField(
+    pre_loading_can_test = BooleanField(
         default=False,
         help_text='Is can test conducted before commencement of loading?',
         verbose_name='Pre-loading Can Test'
@@ -292,7 +309,7 @@ class LayDaysStatement(models.Model):
         (0.5, '0.5'),
         (1.0, '1.0')
     )
-    can_test_factor = models.DecimalField(
+    can_test_factor = DecimalField(
         default=0.5,
         max_digits=2,
         decimal_places=1,
@@ -300,30 +317,25 @@ class LayDaysStatement(models.Model):
         help_text="""The number of can tests times this factor times 5 minutes
             will be deducted to laytime consumed."""
     )
-    time_allowed = models.DurationField(default=zero_time)
-    additional_laytime = models.DurationField(default=zero_time)
-    demurrage = models.DecimalField(
-        default=0, max_digits=8, decimal_places=2
-    )
-    despatch = models.DecimalField(
-        default=0, max_digits=8, decimal_places=2
-    )
-    date_saved = models.DateTimeField(null=True, blank=True)
-    report_date = models.DateField(
+    time_allowed = DurationField(default=zero_time)
+    additional_laytime = DurationField(default=zero_time)
+    demurrage = DecimalField(default=0, max_digits=8, decimal_places=2)
+    despatch = DecimalField(default=0, max_digits=8, decimal_places=2)
+    date_saved = DateTimeField(null=True, blank=True)
+    report_date = DateField(
         null=True,
         blank=True,
         help_text='Date of statement. Defaults to date_saved.'
     )
-    revised = models.BooleanField(
+    revised = BooleanField(
         default=False,
         help_text='This lay days statement is revised from a previous version.'
     )
-    date_computed = models.DateTimeField(null=True, blank=True)
-    negotiated = models.BooleanField(
-        default=False,
-        help_text='Demurrage/Despatch is negotiated.'
+    date_computed = DateTimeField(null=True, blank=True)
+    negotiated = BooleanField(
+        default=False, help_text='Demurrage/Despatch is negotiated.'
     )
-    remarks = models.TextField(null=True, blank=True)
+    remarks = TextField(null=True, blank=True)
 
     def _clean(self):
         """
@@ -353,7 +365,7 @@ class LayDaysStatement(models.Model):
                 # Compute additional laytime
                 bonus_time = zero_time
                 for detail in self.laydaysdetail_set.filter(
-                    models.Q(interval_class='vessel arrived behind of schedule')
+                    Q(interval_class='vessel arrived behind of schedule')
                 ):
                     bonus_time += detail.interval()
                 if bonus_time > zero_time:
@@ -371,7 +383,7 @@ class LayDaysStatement(models.Model):
                     # Record start of loading operation
                     self.commenced_loading = loading_details.first().interval_from
                     if self.pre_loading_can_test:
-                        self.commenced_loading += datetime.timedelta(minutes=5)
+                        self.commenced_loading += timedelta(minutes=5)
 
                     end_details = self.laydaysdetail_set.filter(interval_class='end')
                     #  Proceed computation if end of statement exists.
@@ -549,16 +561,16 @@ class LayDaysStatement(models.Model):
 
     def time_can_test(self):
         return self.can_test * \
-            datetime.timedelta(minutes=5) * \
+            timedelta(minutes=5) * \
             float(self.can_test_factor)
 
     def time_limit(self):
         if self.laytime_terms == 'CQD':
-            return datetime.timedelta(days=self.loading_terms)
+            return timedelta(days=self.loading_terms)
         elif self.tonnage:
             return round_second(
                 (
-                    datetime.timedelta(
+                    timedelta(
                         days=self.tonnage / self.loading_terms
                     ) + self.time_can_test()
                 ) or zero_time
@@ -618,11 +630,11 @@ class LayDaysStatement(models.Model):
 
     class Meta:
         ordering = [
-            models.F('completed_loading').desc(nulls_last=False),
-            models.F('nor_accepted').desc(nulls_last=False),
-            models.F('nor_tender').desc(nulls_last=False),
-            models.F('arrival_tmc').desc(nulls_last=False),
-            models.F('arrival_pilot').desc(nulls_last=False)
+            F('completed_loading').desc(nulls_last=False),
+            F('nor_accepted').desc(nulls_last=False),
+            F('nor_tender').desc(nulls_last=False),
+            F('arrival_tmc').desc(nulls_last=False),
+            F('arrival_pilot').desc(nulls_last=False)
         ]
 
     def __str__(self):
@@ -630,80 +642,80 @@ class LayDaysStatement(models.Model):
 
 
 class Product(Classification):
-    moisture = models.DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
-    ni = models.DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
-    fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
+    moisture = DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
+    ni = DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
+    fe = DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
 
 
-class Shipment(models.Model):
+class Shipment(Model):
     """
     A shipment of nickel or iron ore.
     """
     name = NameField(max_length=10, unique=True)
-    vessel = models.ForeignKey(
-        'Vessel', null=True, blank=True, on_delete=models.PROTECT
+    vessel = ForeignKey(
+        'Vessel', null=True, blank=True, on_delete=PROTECT
     )
-    destination = models.ForeignKey(
-        Destination, null=True, blank=True, on_delete=models.PROTECT
+    destination = ForeignKey(
+        Destination, null=True, blank=True, on_delete=PROTECT
     )
-    buyer = models.ForeignKey(
-        Buyer, null=True, blank=True, on_delete=models.SET_NULL
+    buyer = ForeignKey(
+        Buyer, null=True, blank=True, on_delete=SET_NULL
     )
-    product = models.ForeignKey(
-        Product, null=True, blank=True, on_delete=models.SET_NULL
+    product = ForeignKey(
+        Product, null=True, blank=True, on_delete=SET_NULL
     )
-    spec_tonnage = models.PositiveIntegerField(
-        help_text='Tonnage in sales contract.',
-        null=True, blank=True
+    spec_tonnage = PositiveIntegerField(
+        help_text='Tonnage in sales contract.', null=True, blank=True
     )
-    spec_moisture = models.DecimalField(
+    spec_moisture = DecimalField(
         '%H₂O Spec', max_digits=4, decimal_places=2, null=True, blank=True
     )
-    spec_ni = models.DecimalField(
+    spec_ni = DecimalField(
         '%Ni Spec', max_digits=4, decimal_places=2, null=True, blank=True
     )
-    spec_fe = models.DecimalField(
+    spec_fe = DecimalField(
         '%Fe Spec', max_digits=4, decimal_places=2, null=True, blank=True
     )
-    target_tonnage = models.PositiveIntegerField(
+    target_tonnage = PositiveIntegerField(
         help_text='Determined during initial draft survey.',
-        null=True, blank=True
+        null=True,
+        blank=True
     )
-    dump_truck_trips = models.PositiveSmallIntegerField(null=True, blank=True)
-    final_ni = models.DecimalField(
+    dump_truck_trips = PositiveSmallIntegerField(null=True, blank=True)
+    final_ni = DecimalField(
         '%Ni', max_digits=6, decimal_places=4, null=True, blank=True
     )
-    final_fe = models.DecimalField(
+    final_fe = DecimalField(
         '%Fe', max_digits=6, decimal_places=4, null=True, blank=True
     )
-    final_moisture = models.DecimalField(
+    final_moisture = DecimalField(
         '%H₂O', max_digits=6, decimal_places=4, null=True, blank=True
     )
-    base_price = models.DecimalField(
+    base_price = DecimalField(
         max_digits=5, decimal_places=2, null=True, blank=True, help_text='US$'
     )
-    final_price = models.DecimalField(
+    final_price = DecimalField(
         max_digits=5, decimal_places=2, null=True, blank=True, help_text='US$'
     )
-    boulders_tonnage = models.PositiveIntegerField(null=True, blank=True)
-    boulders_processing_cost = models.DecimalField(
+    boulders_tonnage = PositiveIntegerField(null=True, blank=True)
+    boulders_processing_cost = DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
     )
-    boulders_freight_cost = models.DecimalField(
+    boulders_freight_cost = DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
     )
-    dead_freight = models.DecimalField(
+    dead_freight = DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True, help_text='US$'
     )
-    demurrage = models.DecimalField(
+    demurrage = DecimalField(
         null=True, blank=True, max_digits=8, decimal_places=2,
         validators=[MinValueValidator(Decimal(0.00))]
     )
-    despatch = models.DecimalField(
+    despatch = DecimalField(
         null=True, blank=True, max_digits=8, decimal_places=2,
         validators=[MinValueValidator(Decimal(0.00))]
     )
-    remarks = models.TextField(null=True, blank=True)
+    remarks = TextField(null=True, blank=True)
 
     def loading_period(self):
         if self.laydaysstatement:
@@ -780,19 +792,19 @@ class Shipment(models.Model):
 
     class Meta:
         constraints = [
-            models.CheckConstraint(
-                check=models.Q(demurrage=0) | models.Q(despatch=0),
+            CheckConstraint(
+                check=Q(demurrage=0) | Q(despatch=0),
                 name='dem_des_with_zero'
             )
         ]
-        indexes = [models.Index(fields=['name'])]
+        indexes = [Index(fields=['name'])]
         ordering = [
-            models.F('laydaysstatement__completed_loading').desc(nulls_last=False),
-            models.F('laydaysstatement__nor_accepted').desc(nulls_last=False),
-            models.F('laydaysstatement__nor_tender').desc(nulls_last=False),
-            models.F('laydaysstatement__arrival_tmc').desc(nulls_last=False),
-            models.F('laydaysstatement__arrival_pilot').desc(nulls_last=False),
-            models.F('name').desc()
+            F('laydaysstatement__completed_loading').desc(nulls_last=False),
+            F('laydaysstatement__nor_accepted').desc(nulls_last=False),
+            F('laydaysstatement__nor_tender').desc(nulls_last=False),
+            F('laydaysstatement__arrival_tmc').desc(nulls_last=False),
+            F('laydaysstatement__arrival_pilot').desc(nulls_last=False),
+            F('name').desc()
         ]
 
     def __str__(self):
@@ -801,18 +813,18 @@ class Shipment(models.Model):
         return self.name
 
 
-class ShipmentNumber(models.Model):
+class ShipmentNumber(Model):
     """
     Materialized view.
     """
-    shipment = models.OneToOneField(Shipment, on_delete=models.DO_NOTHING)
-    number = models.CharField(max_length=10, unique=True)
+    shipment = OneToOneField(Shipment, on_delete=DO_NOTHING)
+    number = CharField(max_length=10, unique=True)
     class Meta:
         managed = False
         db_table = 'shipment_number'
 
 
-class Vessel(models.Model):
+class Vessel(Model):
     """
     Bulk cargo vessel used for exporting nickel and iron ore.
     """

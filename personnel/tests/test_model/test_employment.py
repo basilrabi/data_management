@@ -7,6 +7,7 @@ from personnel.models.person import Designation, EmploymentRecord, Person
 
 # pylint: disable=no-member
 
+
 class DesignationTest(TestCase):
 
     def setUp(self):
@@ -17,6 +18,7 @@ class DesignationTest(TestCase):
         designation.save()
         designation = Designation(name=' sampler')
         self.assertRaises(IntegrityError, designation.save)
+
 
 class EmploymentRecordTest(TestCase):
 

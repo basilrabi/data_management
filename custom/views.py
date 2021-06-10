@@ -1,9 +1,8 @@
-import os
-
 from custom.models import User
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.shortcuts import render
+from os import environ
 
 from .functions import export_csv
 
@@ -12,11 +11,11 @@ def export(request):
         'db_host': settings.DB_HOST,
         'db_port': settings.DB_PORT,
         'db_name': settings.DB_NAME,
-        'geology': os.environ['DATA_MANAGEMENT_GEOLOGY'],
-        'gradecontrol': os.environ['DATA_MANAGEMENT_GRADECONTROL'],
-        'planning': os.environ['DATA_MANAGEMENT_PLANNING'],
-        'reader': os.environ['DATA_MANAGEMENT_READER'],
-        'survey': os.environ['DATA_MANAGEMENT_SURVEY']
+        'geology': environ['DATA_MANAGEMENT_GEOLOGY'],
+        'gradecontrol': environ['DATA_MANAGEMENT_GRADECONTROL'],
+        'planning': environ['DATA_MANAGEMENT_PLANNING'],
+        'reader': environ['DATA_MANAGEMENT_READER'],
+        'survey': environ['DATA_MANAGEMENT_SURVEY']
     }
     return render(request, 'custom/export.html', context=context)
 

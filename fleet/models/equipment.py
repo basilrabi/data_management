@@ -1,7 +1,8 @@
-from django.db import models
+from django.db.models import Model, PositiveSmallIntegerField
 
-class TrackedExcavator(models.Model):
-    fleet_number = models.PositiveSmallIntegerField(unique=True)
+
+class TrackedExcavator(Model):
+    fleet_number = PositiveSmallIntegerField(unique=True)
 
     class Meta:
         ordering = ['fleet_number']

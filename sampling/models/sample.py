@@ -1,6 +1,24 @@
 from decimal import Decimal
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import (
+    BooleanField,
+    CASCADE,
+    CharField,
+    DateField,
+    DecimalField,
+    F,
+    ForeignKey,
+    ManyToManyField,
+    Model,
+    OneToOneField,
+    PROTECT,
+    PositiveSmallIntegerField,
+    Q,
+    SET_NULL,
+    Sum,
+    TextField,
+    UniqueConstraint
+)
 from django.utils.html import mark_safe
 
 from custom.fields import NameField
@@ -10,7 +28,6 @@ from fleet.models.equipment import TrackedExcavator
 from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
 from personnel.models.person import Person
 from shipment.models.dso import Shipment
-
 from .piling import PilingMethod
 
 # pylint: disable=no-member
@@ -24,33 +41,71 @@ class Lithology(Classification):
         verbose_name_plural = 'lithologies'
 
 
-class AssaySample(models.Model):
+class AssaySample(Model):
     """
     A model for all samples prepared and analyzed by Assay.
     """
-    date_received_for_preparation = models.DateField(null=True, blank=True)
-    date_prepared = models.DateField(null=True, blank=True)
-    date_received_for_analysis = models.DateField(null=True, blank=True)
-    date_analyzed = models.DateField(null=True, blank=True)
-    al = models.DecimalField('%Al', max_digits=6, decimal_places=4, null=True, blank=True)
-    al2o3 = models.DecimalField('%Al₂O₃', max_digits=6, decimal_places=4, null=True, blank=True)
-    c = models.DecimalField('%C', max_digits=6, decimal_places=4, null=True, blank=True)
-    cao = models.DecimalField('%CaO', max_digits=6, decimal_places=4, null=True, blank=True)
-    co = models.DecimalField('%Co', max_digits=6, decimal_places=4, null=True, blank=True)
-    cr = models.DecimalField('%Cr', max_digits=6, decimal_places=4, null=True, blank=True)
-    cr2o3 = models.DecimalField('%Cr₂O₃', max_digits=6, decimal_places=4, null=True, blank=True)
-    fe = models.DecimalField('%Fe', max_digits=6, decimal_places=4, null=True, blank=True)
-    mg = models.DecimalField('%Mg', max_digits=6, decimal_places=4, null=True, blank=True)
-    mgo = models.DecimalField('%MgO', max_digits=6, decimal_places=4, null=True, blank=True)
-    mn = models.DecimalField('%Mn', max_digits=6, decimal_places=4, null=True, blank=True)
-    ni = models.DecimalField('%Ni', max_digits=6, decimal_places=4, null=True, blank=True)
-    p = models.DecimalField('%P', max_digits=6, decimal_places=4, null=True, blank=True)
-    s = models.DecimalField('%S', max_digits=6, decimal_places=4, null=True, blank=True)
-    sc = models.DecimalField('%Sc', max_digits=6, decimal_places=4, null=True, blank=True)
-    si = models.DecimalField('%Si', max_digits=6, decimal_places=4, null=True, blank=True)
-    sio2 = models.DecimalField('%SiO₂', max_digits=6, decimal_places=4, null=True, blank=True)
-    ignition_loss = models.DecimalField(max_digits=6, decimal_places=4, null=True, blank=True)
-    moisture = models.DecimalField('%H₂O', max_digits=6, decimal_places=4, null=True, blank=True)
+    date_received_for_preparation = DateField(null=True, blank=True)
+    date_prepared = DateField(null=True, blank=True)
+    date_received_for_analysis = DateField(null=True, blank=True)
+    date_analyzed = DateField(null=True, blank=True)
+    al = DecimalField(
+        '%Al', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    al2o3 = DecimalField(
+        '%Al₂O₃', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    c = DecimalField(
+        '%C', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    cao = DecimalField(
+        '%CaO', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    co = DecimalField(
+        '%Co', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    cr = DecimalField(
+        '%Cr', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    cr2o3 = DecimalField(
+        '%Cr₂O₃', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    fe = DecimalField(
+        '%Fe', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    mg = DecimalField(
+        '%Mg', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    mgo = DecimalField(
+        '%MgO', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    mn = DecimalField(
+        '%Mn', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    ni = DecimalField(
+        '%Ni', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    p = DecimalField(
+        '%P', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    s = DecimalField(
+        '%S', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    sc = DecimalField(
+        '%Sc', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    si = DecimalField(
+        '%Si', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    sio2 = DecimalField(
+        '%SiO₂', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    ignition_loss = DecimalField(
+        max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    moisture = DecimalField(
+        '%H₂O', max_digits=6, decimal_places=4, null=True, blank=True
+    )
 
     def has_analysis(self):
         if (
@@ -105,23 +160,27 @@ class AssaySample(models.Model):
 
 
 class DrillCoreSample(AssaySample):
-    drill_hole = models.ForeignKey(DrillHole, on_delete=models.CASCADE)
-    interval_from = models.DecimalField(max_digits=5, decimal_places=3)
-    interval_to = models.DecimalField(max_digits=5, decimal_places=3)
-    lithology = models.ForeignKey(
-        Lithology, null=True, blank=True, on_delete=models.SET_NULL
+    drill_hole = ForeignKey(DrillHole, on_delete=CASCADE)
+    interval_from = DecimalField(max_digits=5, decimal_places=3)
+    interval_to = DecimalField(max_digits=5, decimal_places=3)
+    lithology = ForeignKey(
+        Lithology, null=True, blank=True, on_delete=SET_NULL
     )
-    lithology_modified = models.ForeignKey(
-        Lithology, null=True, blank=True, on_delete=models.SET_NULL, related_name='drillcore'
+    lithology_modified = ForeignKey(
+        Lithology,
+        null=True,
+        blank=True,
+        on_delete=SET_NULL,
+        related_name='drillcore'
     )
-    description = models.TextField(null=True, blank=True)
-    excavated_date = models.DateField(null=True, blank=True)
+    description = TextField(null=True, blank=True)
+    excavated_date = DateField(null=True, blank=True)
 
     def clean(self):
         self.clean_base()
         if self.drill_hole.drillcoresample_set.filter(
-            models.Q(interval_from__lt=self.interval_to),
-            models.Q(interval_to__gt=self.interval_from)
+            Q(interval_from__lt=self.interval_to),
+            Q(interval_to__gt=self.interval_from)
         ).exclude(id=self.id).count() > 0:
             raise ValidationError('Core interval should not overlap')
         if float(self.interval_from) >= float(self.interval_to):
@@ -138,16 +197,16 @@ class Laboratory(Classification):
 
 
 class MiningSample(AssaySample):
-    series_number = models.PositiveSmallIntegerField()
-    material = models.CharField(max_length=1, null=True, blank=True)
-    ridge = models.CharField(max_length=2, null=True, blank=True)
-    dumping_area = models.ForeignKey(Stockpile, on_delete=models.CASCADE)
-    piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
-    start_collection = models.DateField(null=True, blank=True)
-    month = models.PositiveSmallIntegerField(null=True, blank=True)
-    end_collection = models.DateField(null=True, blank=True)
-    trips = models.PositiveSmallIntegerField(default=0)
-    ready_for_delivery = models.BooleanField(default=False)
+    series_number = PositiveSmallIntegerField()
+    material = CharField(max_length=1, null=True, blank=True)
+    ridge = CharField(max_length=2, null=True, blank=True)
+    dumping_area = ForeignKey(Stockpile, on_delete=CASCADE)
+    piling_method = ForeignKey(PilingMethod, on_delete=CASCADE)
+    start_collection = DateField(null=True, blank=True)
+    month = PositiveSmallIntegerField(null=True, blank=True)
+    end_collection = DateField(null=True, blank=True)
+    trips = PositiveSmallIntegerField(default=0)
+    ready_for_delivery = BooleanField(default=False)
 
     def has_increment(self):
         if self.miningsampleincrement_set.all().count() > 0:
@@ -160,7 +219,9 @@ class MiningSample(AssaySample):
 
     def trips_without_increment_id(self, increment_id):
         if self.start_collection:
-            return self.miningsampleincrement_set.exclude(id=increment_id).aggregate(models.Sum('trips'))['trips__sum'] or 0
+            return self.miningsampleincrement_set.exclude(
+                id=increment_id
+            ).aggregate(Sum('trips'))['trips__sum'] or 0
 
     def clean(self):
         self.clean_base()
@@ -171,7 +232,7 @@ class MiningSample(AssaySample):
         if self.has_increment():
             self.start_collection = self.miningsampleincrement_set.all().order_by('report__date').first().report.date
             self.year = self.start_collection.year
-            self.trips = self.miningsampleincrement_set.all().aggregate(models.Sum('trips'))['trips__sum']
+            self.trips = self.miningsampleincrement_set.all().aggregate(Sum('trips'))['trips__sum']
             if self.trips == self.required_trips():
                 self.ready_for_delivery = True
             if self.ready_for_delivery:
@@ -180,7 +241,7 @@ class MiningSample(AssaySample):
 
     class Meta:
         constraints = get_assay_constraints('miningsample') + [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['ridge', 'material', 'month', 'series_number'],
                 name='mining_sample_constraint'
             )
@@ -191,10 +252,10 @@ class MiningSample(AssaySample):
         return f'{self.piling_method.name}-{self.ridge}-{self.series_number:05d}'
 
 
-class MiningSampleIncrement(models.Model):
-    sample = models.ForeignKey('MiningSample', on_delete=models.CASCADE)
-    report = models.ForeignKey('MiningSampleReport', on_delete=models.CASCADE)
-    trips = models.PositiveSmallIntegerField()
+class MiningSampleIncrement(Model):
+    sample = ForeignKey('MiningSample', on_delete=CASCADE)
+    report = ForeignKey('MiningSampleReport', on_delete=CASCADE)
+    trips = PositiveSmallIntegerField()
 
     def clean(self):
         if self.report.piling_method != self.sample.piling_method:
@@ -211,7 +272,7 @@ class MiningSampleIncrement(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['sample', 'report'],
                 name='sample_increment_report_constraint'
             )
@@ -219,33 +280,31 @@ class MiningSampleIncrement(models.Model):
         ordering = ['sample__series_number']
 
 
-class MiningSampleReport(models.Model):
-    date = models.DateField()
+class MiningSampleReport(Model):
+    date = DateField()
     SHIFT = (
         ('D', 'Day'),
         ('N', 'Night'),
         ('M', 'M'),
     )
-    shift_collected = models.CharField(max_length=1, choices=SHIFT)
-    piling_method = models.ForeignKey(PilingMethod, on_delete=models.CASCADE)
-    tx = models.ManyToManyField(TrackedExcavator, verbose_name='TX')
-    source = models.ForeignKey(
-        Cluster, on_delete=models.SET_NULL, null=True, blank=True
+    shift_collected = CharField(max_length=1, choices=SHIFT)
+    piling_method = ForeignKey(PilingMethod, on_delete=CASCADE)
+    tx = ManyToManyField(TrackedExcavator, verbose_name='TX')
+    source = ForeignKey(
+        Cluster, on_delete=SET_NULL, null=True, blank=True
     )
-    dumping_area = models.ForeignKey(Stockpile, on_delete=models.CASCADE)
-    sampler = models.ManyToManyField(Person,
-                                     related_name='samplereport',
-                                     blank=True)
-    supervisor = models.ForeignKey(
+    dumping_area = ForeignKey(Stockpile, on_delete=CASCADE)
+    sampler = ManyToManyField(Person, related_name='samplereport', blank=True)
+    supervisor = ForeignKey(
         Person,
-        on_delete=models.SET_NULL,
+        on_delete=SET_NULL,
         null=True,
         blank=True,
         related_name='supervisedminingsamplereport'
     )
-    foreman = models.ForeignKey(
+    foreman = ForeignKey(
         Person,
-        on_delete=models.SET_NULL,
+        on_delete=SET_NULL,
         null=True,
         blank=True,
         related_name='managedminingsamplereport'
@@ -276,13 +335,13 @@ class MiningSampleReport(models.Model):
         ordering = ['-date', '-shift_collected']
 
 
-class ApprovedShipmentDischargeAssay(models.Model):
-    assay = models.OneToOneField('ShipmentDischargeAssay', on_delete=models.PROTECT)
-    approved = models.BooleanField()
+class ApprovedShipmentDischargeAssay(Model):
+    assay = OneToOneField('ShipmentDischargeAssay', on_delete=PROTECT)
+    approved = BooleanField()
 
     class Meta:
         ordering = [
-            models.F('approved').asc(nulls_first=True),
+            F('approved').asc(nulls_first=True),
             '-assay__shipment__laydaysstatement__completed_loading'
         ]
 
@@ -291,11 +350,17 @@ class ApprovedShipmentDischargeAssay(models.Model):
 
 
 class ShipmentDischargeAssay(AssaySample):
-    laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
-    shipment = models.OneToOneField(Shipment, on_delete=models.PROTECT)
-    wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
-    dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
-    ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
+    laboratory = ForeignKey(Laboratory, on_delete=PROTECT)
+    shipment = OneToOneField(Shipment, on_delete=PROTECT)
+    wmt = DecimalField(
+        'WMT', null=True, blank=True, max_digits=8, decimal_places=3
+    )
+    dmt = DecimalField(
+        'DMT', null=True, blank=True, max_digits=8, decimal_places=3
+    )
+    ni_ton = DecimalField(
+        'Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3
+    )
 
     def clean(self):
         if hasattr(self, 'approvedshipmentdischargeassay'):
@@ -307,9 +372,9 @@ class ShipmentDischargeAssay(AssaySample):
             qs = self.shipmentdischargelotassay_set.all()
             if qs.count() > 0:
                 qs = qs \
-                    .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * Decimal(0.01), 3)) \
-                    .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * Decimal(0.01), 3)) \
-                    .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
+                    .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
+                    .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
+                    .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
                 self.wmt = qs['wmt__sum']
                 self.dmt = qs['dmt__sum']
                 if self.wmt and self.dmt:
@@ -341,9 +406,9 @@ class ShipmentDischargeLotAssay(AssaySample):
     """
     Only used by PAMCO laboratory. No lot assays are seen in China discharge port asssays.
     """
-    shipment_assay = models.ForeignKey(ShipmentDischargeAssay, on_delete=models.CASCADE)
-    lot = models.PositiveSmallIntegerField()
-    wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
+    shipment_assay = ForeignKey(ShipmentDischargeAssay, on_delete=CASCADE)
+    lot = PositiveSmallIntegerField()
+    wmt = DecimalField('WMT', max_digits=8, decimal_places=3)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -351,7 +416,7 @@ class ShipmentDischargeLotAssay(AssaySample):
 
     class Meta:
         constraints = get_assay_constraints('dischargelotassay') + [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['shipment_assay', 'lot'],
                 name='unique_pamco_assay_lot'
             )
@@ -359,16 +424,16 @@ class ShipmentDischargeLotAssay(AssaySample):
         ordering = ['lot']
 
 
-class ApprovedShipmentLoadingAssay(models.Model):
-    assay = models.OneToOneField('ShipmentLoadingAssay', on_delete=models.PROTECT)
-    approved = models.BooleanField()
+class ApprovedShipmentLoadingAssay(Model):
+    assay = OneToOneField('ShipmentLoadingAssay', on_delete=PROTECT)
+    approved = BooleanField()
 
     def PDF(self):
         return self.assay.PDF()
 
     class Meta:
         ordering = [
-            models.F('approved').asc(nulls_first=True),
+            F('approved').asc(nulls_first=True),
             '-assay__shipment__laydaysstatement__completed_loading'
         ]
 
@@ -377,12 +442,18 @@ class ApprovedShipmentLoadingAssay(models.Model):
 
 
 class ShipmentLoadingAssay(AssaySample):
-    date = models.DateField()
-    shipment = models.OneToOneField(Shipment, on_delete=models.CASCADE)
-    wmt = models.DecimalField('WMT', null=True, blank=True, max_digits=8, decimal_places=3)
-    dmt = models.DecimalField('DMT', null=True, blank=True, max_digits=8, decimal_places=3)
-    ni_ton = models.DecimalField('Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3)
-    chemist = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    date = DateField()
+    shipment = OneToOneField(Shipment, on_delete=CASCADE)
+    wmt = DecimalField(
+        'WMT', null=True, blank=True, max_digits=8, decimal_places=3
+    )
+    dmt = DecimalField(
+        'DMT', null=True, blank=True, max_digits=8, decimal_places=3
+    )
+    ni_ton = DecimalField(
+        'Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3
+    )
+    chemist = ForeignKey(User, null=True, blank=True, on_delete=SET_NULL)
 
     def clean(self):
         if hasattr(self, 'approvedshipmentloadingassay'):
@@ -405,9 +476,9 @@ class ShipmentLoadingAssay(AssaySample):
 
     def save(self, *args, **kwargs):
         qs = self.shipmentloadinglotassay_set.all() \
-            .annotate(dmt=Round(models.F('wmt') * (100 - models.F('moisture')) * Decimal(0.01), 3)) \
-            .annotate(ni_ton=Round(models.F('dmt') * models.F('ni') * Decimal(0.01), 3)) \
-            .aggregate(models.Sum('wmt'), models.Sum('dmt'), models.Sum('ni_ton'))
+            .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
+            .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
+            .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
         self.wmt = qs['wmt__sum']
         self.dmt = qs['dmt__sum']
         if self.wmt and self.dmt:
@@ -429,9 +500,9 @@ class ShipmentLoadingAssay(AssaySample):
 
 
 class ShipmentLoadingLotAssay(AssaySample):
-    shipment_assay = models.ForeignKey(ShipmentLoadingAssay, on_delete=models.CASCADE)
-    lot = models.PositiveSmallIntegerField()
-    wmt = models.DecimalField('WMT', max_digits=8, decimal_places=3)
+    shipment_assay = ForeignKey(ShipmentLoadingAssay, on_delete=CASCADE)
+    lot = PositiveSmallIntegerField()
+    wmt = DecimalField('WMT', max_digits=8, decimal_places=3)
 
     def dmt(self):
         return round(float(self.wmt) * float(100 - self.moisture) * 0.01, 3)
@@ -445,7 +516,7 @@ class ShipmentLoadingLotAssay(AssaySample):
 
     class Meta:
         constraints = get_assay_constraints('loadinglotassay') + [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['shipment_assay', 'lot'],
                 name='unique_loading_assay_lot'
             )

@@ -4,12 +4,11 @@ from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pd
 
 from custom.functions import setup_triggers
-from shipment.models.dso import (
-    LayDaysDetail, LayDaysStatement, Shipment, Vessel
-)
+from shipment.models.dso import LayDaysStatement, Shipment, Vessel
 from shipment.models.lct import LCT, Trip, TripDetail
 
 # pylint: disable=no-member
+
 
 class  TripTest(TestCase):
 

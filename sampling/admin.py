@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import F
 
 from custom.admin_gis import TMCLocationAdmin
@@ -29,7 +29,7 @@ from .models.sample import (
 # pylint: disable=no-member
 
 
-class MiningSampleIncrementInline(admin.TabularInline):
+class MiningSampleIncrementInline(TabularInline):
     model = MiningSampleIncrement
     extra = 0
 
@@ -52,7 +52,7 @@ class MiningSampleIncrementInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class ShipmentDischargeLotAssayInline(admin.TabularInline):
+class ShipmentDischargeLotAssayInline(TabularInline):
     model = ShipmentDischargeLotAssay
     extra = 0
     fields = ('lot', 'wmt', 'moisture', 'ni')
@@ -62,18 +62,18 @@ class ShipmentLoadingLotAssayInline(ShipmentDischargeLotAssayInline):
     model = ShipmentLoadingLotAssay
 
 
-class TripsPerPileInline(admin.TabularInline):
+class TripsPerPileInline(TabularInline):
     model = TripsPerPile
     extra = 0
 
 
-@admin.register(Laboratory)
-class LaboratoryAdmin(admin.ModelAdmin):
+@register(Laboratory)
+class LaboratoryAdmin(ModelAdmin):
     search_fields = ['name']
 
 
-@admin.register(AcquiredMiningSample)
-class AcquiredMiningSampleAdmin(admin.ModelAdmin):
+@register(AcquiredMiningSample)
+class AcquiredMiningSampleAdmin(ModelAdmin):
     list_display = ('__str__',
                     'dumping_area',
                     'trips',
@@ -85,8 +85,8 @@ class AcquiredMiningSampleAdmin(admin.ModelAdmin):
                'ready_for_delivery')
 
 
-@admin.register(ChinaShipmentAssay)
-class ChinaShipmentAssayAdmin(admin.ModelAdmin):
+@register(ChinaShipmentAssay)
+class ChinaShipmentAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('__str__', 'vessel')
@@ -133,13 +133,13 @@ class ChinaShipmentAssayAdmin(admin.ModelAdmin):
         return obj.vessel
 
 
-@admin.register(Lithology)
-class LithologyAdmin(admin.ModelAdmin):
+@register(Lithology)
+class LithologyAdmin(ModelAdmin):
     pass
 
 
-@admin.register(MiningSampleAssay)
-class MiningSampleAssayAdmin(admin.ModelAdmin):
+@register(MiningSampleAssay)
+class MiningSampleAssayAdmin(ModelAdmin):
     list_display = ('__str__',
                     'date_received_for_preparation',
                     'date_prepared',
@@ -147,8 +147,8 @@ class MiningSampleAssayAdmin(admin.ModelAdmin):
                     'date_analyzed')
 
 
-@admin.register(MiningSampleReport)
-class MiningSampleReportAdmin(admin.ModelAdmin):
+@register(MiningSampleReport)
+class MiningSampleReportAdmin(ModelAdmin):
     list_display = ('date',
                     'shift_collected',
                     'piling_method',
@@ -184,14 +184,14 @@ class MiningSampleReportAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
-@admin.register(PilingMethod)
-class PilingMethodAdmin(admin.ModelAdmin):
+@register(PilingMethod)
+class PilingMethodAdmin(ModelAdmin):
     inlines = [TripsPerPileInline]
     list_display = ('name', 'present_required_trip')
 
 
-@admin.register(PamcoShipmentAssay)
-class PamcoShipmentAssayAdmin(admin.ModelAdmin):
+@register(PamcoShipmentAssay)
+class PamcoShipmentAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     fields = (
@@ -225,8 +225,8 @@ class PamcoShipmentAssayAdmin(admin.ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
-@admin.register(ShipmentLoadingAssay)
-class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
+@register(ShipmentLoadingAssay)
+class ShipmentLoadingAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('object_name', 'approved', 'PDF')
@@ -276,8 +276,8 @@ class ShipmentLoadingAssayAdmin(admin.ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
-@admin.register(ApprovedShipmentDischargeAssay)
-class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
+@register(ApprovedShipmentDischargeAssay)
+class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('object_name', 'approved')
     search_fields = ['assay__shipment__name']
@@ -418,7 +418,7 @@ class ApprovedShipmentDischargeAssayAdmin(admin.ModelAdmin):
     wmt.short_description = 'WMT'
 
 
-@admin.register(ApprovedShipmentLoadingAssay)
-class ApprovedShipmentLoadingAssayAdmin(admin.ModelAdmin):
+@register(ApprovedShipmentLoadingAssay)
+class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
     list_display = ('__str__', 'approved', 'PDF')
     search_fields = ['assay__shipment__name']

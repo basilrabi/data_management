@@ -3,11 +3,10 @@ from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
 
 from custom.functions import setup_triggers
-from shipment.models.dso import (LayDaysStatement,
-                                 Shipment,
-                                 Vessel)
+from shipment.models.dso import LayDaysStatement, Shipment, Vessel
 
 # pylint: disable=no-member
+
 
 class  LayDaysStatementTest(TestCase):
 

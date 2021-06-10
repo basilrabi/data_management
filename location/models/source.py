@@ -1,5 +1,23 @@
-from django.contrib.gis.db import models
-from django.core.exceptions import ValidationError
+from django.contrib.gis.db.models import (
+    BooleanField,
+    CharField,
+    CheckConstraint,
+    DateField,
+    DateTimeField,
+    FloatField,
+    ForeignKey,
+    Index,
+    IntegerField,
+    LineStringField,
+    Model,
+    MultiPolygonField,
+    PROTECT,
+    PointField,
+    PolygonField,
+    Q,
+    UniqueConstraint,
+    SmallIntegerField
+)
 
 from custom.fields import MineBlockField, NameField
 from custom.variables import ACI
@@ -17,73 +35,73 @@ RIDGES = (
 )
 
 
-class Cluster(models.Model):
+class Cluster(Model):
     """
     A group of adjacent `inventory.Blocks` with the same elevation at the same
     mine block.
     """
-    name = models.CharField(max_length=30)
-    z = models.SmallIntegerField(default=0)
-    count = models.IntegerField(
+    name = CharField(max_length=30)
+    z = SmallIntegerField(default=0)
+    count = IntegerField(
         null=True,
         blank=True,
         help_text='A unique number for the cluster at the same grade classification and at the same mine block.'
     )
-    ore_class = models.CharField(max_length=1, null=True, blank=True)
-    mine_block = models.CharField(max_length=20, null=True, blank=True)
-    ni = models.FloatField(default=0)
-    fe = models.FloatField(default=0)
-    co = models.FloatField(default=0)
-    distance_from_road = models.FloatField(default=0)
-    road = models.ForeignKey(
+    ore_class = CharField(max_length=1, null=True, blank=True)
+    mine_block = CharField(max_length=20, null=True, blank=True)
+    ni = FloatField(default=0)
+    fe = FloatField(default=0)
+    co = FloatField(default=0)
+    distance_from_road = FloatField(default=0)
+    road = ForeignKey(
         RoadArea,
         null=True,
         blank=True,
-        on_delete=models.PROTECT,
+        on_delete=PROTECT,
         help_text='Road used to adjust the cluster geometry.'
     )
-    date_scheduled = models.DateField(
+    date_scheduled = DateField(
         null=True,
         blank=True,
         help_text='''Date when the cluster is to be excavated.
         When this date is set, the geometry cannot be changed.'''
     )
-    dumping_area = models.ForeignKey(
+    dumping_area = ForeignKey(
         'Stockpile',
         null=True,
         blank=True,
-        on_delete=models.PROTECT,
+        on_delete=PROTECT,
         help_text='Assigned dumping area.'
     )
-    latest_layout_date = models.DateField(
+    latest_layout_date = DateField(
         null=True,
         blank=True,
         help_text='''Latest date when the cluster is laid out on the field.
         This field is auto-generated based on ClusterLayout.'''
     )
-    excavation_rate = models.IntegerField(
+    excavation_rate = IntegerField(
         null=True,
         blank=True,
         help_text='Percentage of blocks excavated.'
     )
-    excavated = models.BooleanField(default=False)
-    modified = models.DateTimeField()
-    geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+    excavated = BooleanField(default=False)
+    modified = DateTimeField()
+    geom = MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
         constraints = [
-            models.CheckConstraint(
-                check=models.Q(distance_from_road__gte=0),
+            CheckConstraint(
+                check=Q(distance_from_road__gte=0),
                 name='non_negative_distance'
             ),
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['count', 'ore_class', 'mine_block'],
                 name='unique_cluster_name'
             )
         ]
         indexes = [
-            models.Index(fields=['z']),
-            models.Index(fields=['mine_block', 'z'])
+            Index(fields=['z']),
+            Index(fields=['mine_block', 'z'])
         ]
         ordering = ['ore_class', 'count']
 
@@ -107,58 +125,58 @@ class Cluster(models.Model):
         return self.name
 
 
-class ClusterLayout(models.Model):
+class ClusterLayout(Model):
     """
     Contains layout date of clusters since each cluster can be laid out many
     times.
     """
-    cluster = models.ForeignKey(Cluster, on_delete=models.PROTECT)
-    layout_date = models.DateField(
+    cluster = ForeignKey(Cluster, on_delete=PROTECT)
+    layout_date = DateField(
         help_text='''Date when the cluster is laid out on the field. This date
         cannot be filled out when the date scheduled is still empty.'''
     )
 
 
-class DrillHole(models.Model):
+class DrillHole(Model):
     """
     Drill hole collar technical descriptions.
     """
     name = NameField(max_length=20, unique=True)
-    date_drilled = models.DateField(null=True, blank=True)
-    local_block = models.CharField(
+    date_drilled = DateField(null=True, blank=True)
+    local_block = CharField(
         max_length=20,
         null=True,
         blank=True,
         help_text='block location in local coordinates'
     )
-    local_easting = models.CharField(
+    local_easting = CharField(
         max_length=20,
         null=True,
         blank=True,
         help_text='collar x-coordinates in local grid'
     )
-    local_northing = models.CharField(
+    local_northing = CharField(
         max_length=20,
         null=True,
         blank=True,
         help_text='collar y-coordinates in local grid'
     )
-    local_z = models.FloatField(
+    local_z = FloatField(
         null=True,
         blank=True,
         help_text='collar elevation prior to the use of SRID:3125'
     )
-    x = models.FloatField(
+    x = FloatField(
         null=True, blank=True, help_text='collar x-coordinates in SRID:3125'
     )
-    y = models.FloatField(
+    y = FloatField(
         null=True, blank=True, help_text='collar y-coordinates in SRID:3125'
     )
-    z = models.FloatField(null=True, blank=True, help_text='collar elevation')
-    z_present = models.FloatField(
+    z = FloatField(null=True, blank=True, help_text='collar elevation')
+    z_present = FloatField(
         null=True, blank=True, help_text='present ground elevation'
     )
-    geom = models.PointField(srid=3125, null=True, blank=True)
+    geom = PointField(srid=3125, null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -167,10 +185,10 @@ class DrillHole(models.Model):
         return self.name
 
 
-class MineBlock(models.Model):
+class MineBlock(Model):
     name = MineBlockField(max_length=20, unique=True)
-    ridge = models.CharField(max_length=2, choices=RIDGES)
-    geom = models.PolygonField(srid=3125, null=True, blank=True)
+    ridge = CharField(max_length=2, choices=RIDGES)
+    geom = PolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
         ordering = ['ridge', 'name']
@@ -179,34 +197,34 @@ class MineBlock(models.Model):
         return f'{self.ridge} MB {self.name}'
 
 
-class Slice(models.Model):
+class Slice(Model):
     """
     A line string representing an element of a mine plan.
     """
-    z = models.IntegerField(help_text="Target elevation of the slice.")
-    layer = models.IntegerField(help_text="""String id.
+    z = IntegerField(help_text="Target elevation of the slice.")
+    layer = IntegerField(help_text="""String id.
         2: Crest Line (closed line string)
         7: Road
         8: Toe Line""")
-    geom = models.LineStringField(srid=3125, dim=3)
+    geom = LineStringField(srid=3125, dim=3)
 
     class Meta:
         constraints = [
-            models.CheckConstraint(
-                check=models.Q(layer__in=[2, 7, 8]),
+            CheckConstraint(
+                check=Q(layer__in=[2, 7, 8]),
                 name='valid_layer'
             ),
         ]
-        indexes = [models.Index(fields=['z'])]
+        indexes = [Index(fields=['z'])]
 
 
-class Stockpile(models.Model):
+class Stockpile(Model):
     """
     An area wherein mined materials are temporarily placed. Each area can be
     composed of multiple piles.
     """
     name = NameField(max_length=100, unique=True)
-    geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+    geom = MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
         ordering = ['name']

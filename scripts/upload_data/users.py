@@ -1,20 +1,21 @@
 # pylint: disable=import-error
 
-import csv
-import sys
-from custom.models import User
+from csv import DictReader
 from django.contrib.auth.models import Group, Permission
+from sys import exit
+
+from custom.models import User
 
 with open('data/users.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile, fieldnames=['username',
-                                                 'first_name',
-                                                 'middle_name',
-                                                 'last_name',
-                                                 'email',
-                                                 'password',
-                                                 'is_staff',
-                                                 'is_active',
-                                                 'is_superuser'])
+    reader = DictReader(csvfile, fieldnames=['username',
+                                             'first_name',
+                                             'middle_name',
+                                             'last_name',
+                                             'email',
+                                             'password',
+                                             'is_staff',
+                                             'is_active',
+                                             'is_superuser'])
     for row in reader:
         user = User(username=row['username'],
                     first_name=row['first_name'],
@@ -31,13 +32,13 @@ with open('data/users.csv', newline='') as csvfile:
             print(f'User {user.username} saved.', flush=True)
         except KeyboardInterrupt:
             print('\nUploading interrupted.')
-            sys.exit(1)
+            exit(1)
         except Exception as e:
             print(f'User {user.username} was not saved.', flush=True)
             print(e, flush=True)
 
 with open('data/user_group.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile, fieldnames=['user', 'group'])
+    reader = DictReader(csvfile, fieldnames=['user', 'group'])
     for row in reader:
         user = User.objects.get(username=row['user'])
         group = Group.objects.get(name=row['group'])
@@ -46,13 +47,13 @@ with open('data/user_group.csv', newline='') as csvfile:
             print(f'Added User `{user.username}` to Group `{group.name}`.', flush=True)
         except KeyboardInterrupt:
             print('\nUploading interrupted.', flush=True)
-            sys.exit(1)
+            exit(1)
         except Exception as e:
             print(f'User `{user.username}` was not assigned to Group `{group.name}`.', flush=True)
             print(e, flush=True)
 
 with open('data/user_permission.csv', newline='') as csvfile:
-    reader = csv.DictReader(csvfile, fieldnames=['user', 'permission'])
+    reader = DictReader(csvfile, fieldnames=['user', 'permission'])
     for row in reader:
         user = User.objects.get(username=row['user'])
         permission = Permission.objects.get(codename=row['permission'])
@@ -61,7 +62,7 @@ with open('data/user_permission.csv', newline='') as csvfile:
             print(f'Added Permission `{permission.name}` to User `{user.username}`.', flush=True)
         except KeyboardInterrupt:
             print('\nUploading interrupted.', flush=True)
-            sys.exit(1)
+            exit(1)
         except Exception as e:
             print(f'Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
-            sys.exit(1)
+            exit(1)

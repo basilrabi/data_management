@@ -1,9 +1,10 @@
-from django.contrib import admin
+from django.contrib.admin import register
 
 from custom.admin_gis import TMCLocationAdmin
 from .models.insitu import Block, DrillArea
 
-@admin.register(Block)
+
+@register(Block)
 class BlockAdmin(TMCLocationAdmin):
     modifiable = False
     list_display = ('name',
@@ -20,6 +21,7 @@ class BlockAdmin(TMCLocationAdmin):
                        'depth']
     search_fields = ['name']
 
-@admin.register(DrillArea)
+
+@register(DrillArea)
 class DrillAreaAdmin(TMCLocationAdmin):
     modifiable = False

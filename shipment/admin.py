@@ -1,9 +1,13 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.core.exceptions import ValidationError
 from django.db.models import (
-    Case, ExpressionWrapper, F, IntegerField, TextField, When
+    Case,
+    ExpressionWrapper,
+    F,
+    IntegerField,
+    TextField,
+    When
 )
-from django.db.models.functions import Cast
 from django.forms import Textarea
 from django.forms.models import BaseInlineFormSet
 from import_export.admin import ExportMixin
@@ -86,7 +90,7 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
                 raise ValidationError(f'End ({str(print_tz_manila(end_stamp))}) should have the last time stamp.')
 
 
-class LayDaysDetailInline(admin.TabularInline):
+class LayDaysDetailInline(TabularInline):
     model = LayDaysDetail
     extra = 0
     formfield_overrides = {
@@ -95,12 +99,12 @@ class LayDaysDetailInline(admin.TabularInline):
     formset = IntervalFromInlineFormSet
 
 
-class LCTContractInline(admin.TabularInline):
+class LCTContractInline(TabularInline):
     model = LCTContract
     extra = 0
 
 
-class TripDetailInline(admin.TabularInline):
+class TripDetailInline(TabularInline):
     model = TripDetail
     extra = 0
     formfield_overrides = {
@@ -109,18 +113,18 @@ class TripDetailInline(admin.TabularInline):
     formset = IntervalFromInlineFormSet
 
 
-@admin.register(Buyer)
-class BuyerAdmin(admin.ModelAdmin):
+@register(Buyer)
+class BuyerAdmin(ModelAdmin):
     search_fields = ['name']
 
 
-@admin.register(Destination)
-class DestinationAdmin(admin.ModelAdmin):
+@register(Destination)
+class DestinationAdmin(ModelAdmin):
     search_fields = ['name']
 
 
-@admin.register(FinalShipmentDetail)
-class FinalShipmentDetailAdmin(ExportMixin, admin.ModelAdmin):
+@register(FinalShipmentDetail)
+class FinalShipmentDetailAdmin(ExportMixin, ModelAdmin):
     date_hierarchy = 'laydaysstatement__laydaysdetail__interval_from'
     fieldsets = (
         ('Boulders', {
@@ -188,8 +192,8 @@ class FinalShipmentDetailAdmin(ExportMixin, admin.ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
-@admin.register(LayDaysStatement)
-class LayDaysStatementAdmin(admin.ModelAdmin):
+@register(LayDaysStatement)
+class LayDaysStatementAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'laydaysdetail__interval_from'
     inlines = [LayDaysDetailInline]
@@ -234,8 +238,8 @@ class LayDaysStatementAdmin(admin.ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
-@admin.register(ApprovedLayDaysStatement)
-class ApprovedLayDaysStatementAdmin(admin.ModelAdmin):
+@register(ApprovedLayDaysStatement)
+class ApprovedLayDaysStatementAdmin(ModelAdmin):
     list_display = ('object_name', 'approved', 'PDF', 'csv')
     search_fields = ['statement__shipment__name']
 
@@ -245,21 +249,21 @@ class ApprovedLayDaysStatementAdmin(admin.ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
-@admin.register(LCT)
-class LCTAdmin(admin.ModelAdmin):
+@register(LCT)
+class LCTAdmin(ModelAdmin):
     inlines = [LCTContractInline]
     list_display = ('name', 'capacity')
     list_filter = ['capacity']
     search_fields = ['name']
 
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+@register(Product)
+class ProductAdmin(ModelAdmin):
     pass
 
 
-@admin.register(Shipment)
-class ShipmentAdmin(admin.ModelAdmin):
+@register(Shipment)
+class ShipmentAdmin(ModelAdmin):
     autocomplete_fields = ['vessel']
     date_hierarchy = 'laydaysstatement__laydaysdetail__interval_from'
     fieldsets = (
@@ -351,8 +355,8 @@ class ShipmentAdmin(admin.ModelAdmin):
     object_name.short_description = 'Name'
 
 
-@admin.register(Trip)
-class TripAdmin(admin.ModelAdmin):
+@register(Trip)
+class TripAdmin(ModelAdmin):
     autocomplete_fields = ['lct', 'vessel']
     date_hierarchy = 'tripdetail__interval_from'
     inlines = [TripDetailInline]
@@ -371,8 +375,8 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ['lct__name', 'vessel__name']
 
 
-@admin.register(Vessel)
-class VesselAdmin(admin.ModelAdmin):
+@register(Vessel)
+class VesselAdmin(ModelAdmin):
     exclude = ('stripped_name',)
     list_display = ('__str__',)
     search_fields = ['name']

@@ -1,10 +1,10 @@
 import ezdxf
-import os
-import tempfile
 
 from django.http import FileResponse
 from django.template.loader import get_template
+from os.path import join
 from subprocess import PIPE, run
+from tempfile import TemporaryDirectory
 
 from custom.functions import export_sql
 from location.models.source import Cluster
@@ -25,7 +25,7 @@ def export_cluster_dxf_for_survey(request):
         .filter(excavated=False, date_scheduled__isnull=False, geom__isnull=False) \
         .order_by('date_scheduled') \
         .values('date_scheduled').distinct()
-    with tempfile.TemporaryDirectory() as tempdir:
+    with TemporaryDirectory() as tempdir:
         if scheduled_dates.count() > 0:
             run(f'cd "{tempdir}" && mkdir dxf', shell=True, stdout=PIPE, stderr=PIPE)
             for item in scheduled_dates:
@@ -52,16 +52,16 @@ def export_cluster_dxf_for_survey(request):
                                 (1001, 'TrimbleName'),
                                 (1000, f'{cluster.name}'),
                             ])
-                doc.saveas(os.path.join(tempdir, 'dxf', f'{date}.dxf'))
+                doc.saveas(join(tempdir, 'dxf', f'{date}.dxf'))
             command = f'cd "{tempdir}"/dxf && zip ../clusters.zip *'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
-            filename = os.path.join(tempdir, 'clusters.zip')
+            filename = join(tempdir, 'clusters.zip')
             return FileResponse(open(filename, 'rb'), content_type='application/zip')
         else:
             command = f'cd "{tempdir}" && ' + \
                 'echo "There is no un-excavated scheduled block." > output.txt'
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
-            filename = os.path.join(tempdir, 'output.txt')
+            filename = join(tempdir, 'output.txt')
             return FileResponse(open(filename, 'rb'), content_type='text/plain')
 
 
@@ -74,8 +74,8 @@ def export_cluster_str(request):
     context = {'clusters': Cluster.objects.all().exclude(geom=None)}
     template = get_template('location/cluster.str')
     rendered_tpl = template.render(context)
-    with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, 'cluster.str')
+    with TemporaryDirectory() as tempdir:
+        filename = join(tempdir, 'cluster.str')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         response = FileResponse(open(filename, 'rb'),
@@ -90,8 +90,8 @@ def export_cluster_str_for_survey(request):
     context = {'clusters': Cluster.objects.all().filter(latest_layout_date=None).exclude(date_scheduled=None)}
     template = get_template('location/cluster.str')
     rendered_tpl = template.render(context)
-    with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, 'cluster.str')
+    with TemporaryDirectory() as tempdir:
+        filename = join(tempdir, 'cluster.str')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         response = FileResponse(open(filename, 'rb'),

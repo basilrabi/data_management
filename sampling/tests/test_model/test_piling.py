@@ -7,6 +7,7 @@ from sampling.models.piling import PilingMethod, TripsPerPile
 
 # pylint: disable=no-member
 
+
 class PilingMethodTest(TestCase):
 
     def setUp(self):
@@ -24,6 +25,7 @@ class PilingMethodTest(TestCase):
         method = PilingMethod(name='direct Dump')
         self.assertRaises(IntegrityError, method.save)
 
+
 class TripsPerPileTest(TestCase):
 
     def setUp(self):
@@ -32,82 +34,62 @@ class TripsPerPileTest(TestCase):
 
     def test_trips_validity(self):
         method = PilingMethod.objects.all().first()
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-01-01'),
-            end=pd('2019-02-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-01-01'),
+                                      end=pd('2019-02-01'),
+                                      trips=10)
         self.assertEqual(trips_per_pile.clean(), None)
 
-        trips_per_pile=TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-02-01'),
-            end=pd('2019-01-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-02-01'),
+                                      end=pd('2019-01-01'),
+                                      trips=10)
         self.assertRaises(ValidationError, trips_per_pile.clean)
 
     def test_effectivity_do_not_overlap(self):
         method = PilingMethod.objects.all().first()
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-01-01'),
-            end=pd('2019-02-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-01-01'),
+                                      end=pd('2019-02-01'),
+                                      trips=10)
         trips_per_pile.save()
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-02-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-02-01'),
+                                      trips=10)
         self.assertRaises(ValidationError, trips_per_pile.clean)
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-02-02'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-02-02'),
+                                      trips=10)
         self.assertEqual(None, trips_per_pile.clean())
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2018-02-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2018-02-01'),
+                                      trips=10)
         self.assertRaises(ValidationError, trips_per_pile.clean)
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2018-02-01'),
-            end=pd('2018-12-31'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2018-02-01'),
+                                      end=pd('2018-12-31'),
+                                      trips=10)
         self.assertEqual(None, trips_per_pile.clean())
 
     def test_effectivity_do_not_have_gaps(self):
         method = PilingMethod.objects.all().first()
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-01-01'),
-            end=pd('2019-02-01'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-01-01'),
+                                      end=pd('2019-02-01'),
+                                      trips=10)
         trips_per_pile.save()
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2018-02-01'),
-            end=pd('2018-12-30'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2018-02-01'),
+                                      end=pd('2018-12-30'),
+                                      trips=10)
         self.assertRaises(ValidationError, trips_per_pile.clean)
 
-        trips_per_pile = TripsPerPile(
-            piling_method=method,
-            effectivity=pd('2019-02-03'),
-            trips=10
-        )
+        trips_per_pile = TripsPerPile(piling_method=method,
+                                      effectivity=pd('2019-02-03'),
+                                      trips=10)
         self.assertRaises(ValidationError, trips_per_pile.clean)

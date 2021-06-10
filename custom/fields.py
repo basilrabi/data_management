@@ -1,7 +1,7 @@
-from django.db import models
+from django.db.models import CharField
 from re import sub
 
-class AlphaNumeric(models.CharField):
+class AlphaNumeric(CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -9,7 +9,7 @@ class AlphaNumeric(models.CharField):
     def get_prep_value(self, value):
         return sub(r'[^\w]', '', str(value).upper())
 
-class MineBlockField(models.CharField):
+class MineBlockField(CharField):
     """
     This field must always start with a number.
     """
@@ -23,7 +23,7 @@ class MineBlockField(models.CharField):
             value = sub(r'\W', '', value)
             return value
 
-class NameField(models.CharField):
+class NameField(CharField):
     """
     https://stackoverflow.com/questions/36330677/
     django-model-set-default-charfield-in-lowercase
@@ -35,7 +35,7 @@ class NameField(models.CharField):
         if value:
             return sub(r'\s+', ' ', str(value).upper().strip())
 
-class PileField(models.CharField):
+class PileField(CharField):
     """
     This field must always start with an alphabet
     """
@@ -49,7 +49,7 @@ class PileField(models.CharField):
             value = sub(r'\W', '', value)
             return value
 
-class SpaceLess(models.CharField):
+class SpaceLess(CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,7 +58,7 @@ class SpaceLess(models.CharField):
         if value:
             return sub(r'\s+', '', str(value).upper())
 
-class MarineVesselName(models.CharField):
+class MarineVesselName(CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

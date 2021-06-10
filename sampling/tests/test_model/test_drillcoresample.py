@@ -6,6 +6,7 @@ from location.models.source import DrillHole
 
 # pylint: disable=no-member
 
+
 class DrillCoreTest(TestCase):
 
     @classmethod

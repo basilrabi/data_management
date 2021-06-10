@@ -1,19 +1,19 @@
 import csv
-import datetime
-import os
-import tempfile
 
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.db import connection, models
-from django.db.models import Case, When
+from django.db import connection
+from django.db.models import (CheckConstraint, Q)
 from django.db.models.expressions import Value
 from django.db.models.functions import TruncDay
 from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
+from os.path import join
 from subprocess import PIPE, run
+from tempfile import TemporaryDirectory
 from tzlocal import get_localzone
 
 from location.models.source import Cluster
@@ -72,7 +72,7 @@ def export_sql(sql, csvfile, header=True):
         head=''
     with open(f'scripts/sql/select/{sql}.pgsql', 'r') as file:
         query = file.read().replace('\n', ' ')
-        with tempfile.TemporaryDirectory() as tempdir:
+        with TemporaryDirectory() as tempdir:
             command = f'cd "{tempdir}" && ' + \
                 f'cmd="\\COPY ({query}) TO \'{csvfile}.csv\' ' + \
                 f'WITH CSV {head}" && ' + \
@@ -81,48 +81,48 @@ def export_sql(sql, csvfile, header=True):
                 f'-U  {settings.DB_USER} ' + \
                 f'{settings.DB_NAME} ' + \
                 f'-c "$cmd"'
-            filename = os.path.join(tempdir, f'{csvfile}.csv')
+            filename = join(tempdir, f'{csvfile}.csv')
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
 def get_assay_constraints(data):
     return [
-        models.CheckConstraint(check=models.Q(al__lte=100), name=f'al_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(al2o3__lte=100), name=f'al2o3_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(c__lte=100), name=f'c_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(cao__lte=100), name=f'cao_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(co__lte=100), name=f'co_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(cr__lte=100), name=f'cr_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(fe__lte=100), name=f'fe_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(mg__lte=100), name=f'mg_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(mgo__lte=100), name=f'mgo_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(mn__lte=100), name=f'mn_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(ni__lte=100), name=f'ni_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(p__lte=100), name=f'p_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(s__lte=100), name=f's_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(sc__lte=100), name=f'sc_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(si__lte=100), name=f'si_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(sio2__lte=100), name=f'sio2_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(ignition_loss__lte=100), name=f'ignition_loss_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(moisture__lte=100), name=f'moisture_max_100_{data}'),
-        models.CheckConstraint(check=models.Q(al__gte=0), name=f'al_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(al2o3__gte=0), name=f'al2o3_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(c__gte=0), name=f'c_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(cao__gte=0), name=f'cao_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(co__gte=0), name=f'co_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(cr__gte=0), name=f'cr_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(fe__gte=0), name=f'fe_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(mg__gte=0), name=f'mg_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(mgo__gte=0), name=f'mgo_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(mn__gte=0), name=f'mn_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(ni__gte=0), name=f'ni_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(p__gte=0), name=f'p_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(s__gte=0), name=f's_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(sc__gte=0), name=f'sc_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(si__gte=0), name=f'si_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(sio2__gte=0), name=f'sio2_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(ignition_loss__gte=0), name=f'ignition_loss_min_0_{data}'),
-        models.CheckConstraint(check=models.Q(moisture__gte=0), name=f'moisture_min_0_{data}')
+        CheckConstraint(check=Q(al__lte=100), name=f'al_max_100_{data}'),
+        CheckConstraint(check=Q(al2o3__lte=100), name=f'al2o3_max_100_{data}'),
+        CheckConstraint(check=Q(c__lte=100), name=f'c_max_100_{data}'),
+        CheckConstraint(check=Q(cao__lte=100), name=f'cao_max_100_{data}'),
+        CheckConstraint(check=Q(co__lte=100), name=f'co_max_100_{data}'),
+        CheckConstraint(check=Q(cr__lte=100), name=f'cr_max_100_{data}'),
+        CheckConstraint(check=Q(fe__lte=100), name=f'fe_max_100_{data}'),
+        CheckConstraint(check=Q(mg__lte=100), name=f'mg_max_100_{data}'),
+        CheckConstraint(check=Q(mgo__lte=100), name=f'mgo_max_100_{data}'),
+        CheckConstraint(check=Q(mn__lte=100), name=f'mn_max_100_{data}'),
+        CheckConstraint(check=Q(ni__lte=100), name=f'ni_max_100_{data}'),
+        CheckConstraint(check=Q(p__lte=100), name=f'p_max_100_{data}'),
+        CheckConstraint(check=Q(s__lte=100), name=f's_max_100_{data}'),
+        CheckConstraint(check=Q(sc__lte=100), name=f'sc_max_100_{data}'),
+        CheckConstraint(check=Q(si__lte=100), name=f'si_max_100_{data}'),
+        CheckConstraint(check=Q(sio2__lte=100), name=f'sio2_max_100_{data}'),
+        CheckConstraint(check=Q(ignition_loss__lte=100), name=f'ignition_loss_max_100_{data}'),
+        CheckConstraint(check=Q(moisture__lte=100), name=f'moisture_max_100_{data}'),
+        CheckConstraint(check=Q(al__gte=0), name=f'al_min_0_{data}'),
+        CheckConstraint(check=Q(al2o3__gte=0), name=f'al2o3_min_0_{data}'),
+        CheckConstraint(check=Q(c__gte=0), name=f'c_min_0_{data}'),
+        CheckConstraint(check=Q(cao__gte=0), name=f'cao_min_0_{data}'),
+        CheckConstraint(check=Q(co__gte=0), name=f'co_min_0_{data}'),
+        CheckConstraint(check=Q(cr__gte=0), name=f'cr_min_0_{data}'),
+        CheckConstraint(check=Q(fe__gte=0), name=f'fe_min_0_{data}'),
+        CheckConstraint(check=Q(mg__gte=0), name=f'mg_min_0_{data}'),
+        CheckConstraint(check=Q(mgo__gte=0), name=f'mgo_min_0_{data}'),
+        CheckConstraint(check=Q(mn__gte=0), name=f'mn_min_0_{data}'),
+        CheckConstraint(check=Q(ni__gte=0), name=f'ni_min_0_{data}'),
+        CheckConstraint(check=Q(p__gte=0), name=f'p_min_0_{data}'),
+        CheckConstraint(check=Q(s__gte=0), name=f's_min_0_{data}'),
+        CheckConstraint(check=Q(sc__gte=0), name=f'sc_min_0_{data}'),
+        CheckConstraint(check=Q(si__gte=0), name=f'si_min_0_{data}'),
+        CheckConstraint(check=Q(sio2__gte=0), name=f'sio2_min_0_{data}'),
+        CheckConstraint(check=Q(ignition_loss__gte=0), name=f'ignition_loss_min_0_{data}'),
+        CheckConstraint(check=Q(moisture__gte=0), name=f'moisture_min_0_{data}')
     ]
 
 def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_weight=0.42):
@@ -200,7 +200,7 @@ def refresh_shipment_number():
 
 def round_second(duration):
     seconds = duration.total_seconds()
-    return datetime.timedelta(seconds=round(seconds, 0))
+    return timedelta(seconds=round(seconds, 0))
 
 def round_up_day(timestamp):
     timestamp += one_day
@@ -235,7 +235,7 @@ def setup_triggers():
         run_sql(query)
 
 def this_year():
-    return datetime.datetime.today().year
+    return datetime.today().year
 
 def to_dhms(duration):
     """

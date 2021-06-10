@@ -1,14 +1,14 @@
 from django.urls import path
 
-from . import views
+from .views import export_clustered_block, index, scheduled_block
 
 app_name = 'inventory'
 urlpatterns = [
-     path('', views.index, name='index'),
+     path('', index, name='index'),
      path('data-export/clustered-block',
-          views.export_clustered_block,
+          export_clustered_block,
           name='data-export-clustered-block'),
      path('data-export/scheduled-block',
-          views.scheduled_block,
+          scheduled_block,
           name='data-export-scheduled-block')
 ]

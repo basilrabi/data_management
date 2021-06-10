@@ -1,4 +1,11 @@
-from django.contrib.gis.db import models
+from django.contrib.gis.db.models import (
+    DateField,
+    ForeignKey,
+    Index,
+    Model,
+    MultiPolygonField,
+    SET_NULL
+)
 
 from custom.models import Classification, GeoClassification
 
@@ -13,8 +20,8 @@ class FacilityClassification(Classification):
 
 
 class Facility(GeoClassification):
-    classification = models.ForeignKey(
-        FacilityClassification, null=True, blank=True, on_delete=models.SET_NULL
+    classification = ForeignKey(
+        FacilityClassification, null=True, blank=True, on_delete=SET_NULL
     )
 
     class Meta:
@@ -31,17 +38,15 @@ class PEZA(GeoClassification):
         verbose_name = 'Philippine Economic Zone Authority Area'
 
 
-class RoadArea(models.Model):
+class RoadArea(Model):
     """
     Area of land covered by roads.
     """
-    date_surveyed = models.DateField(unique=True)
-    geom = models.MultiPolygonField(srid=3125, null=True, blank=True)
+    date_surveyed = DateField(unique=True)
+    geom = MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
-        indexes = [
-            models.Index(fields=['date_surveyed'])
-        ]
+        indexes = [Index(fields=['date_surveyed'])]
 
     def __str__(self):
         return str(self.date_surveyed)

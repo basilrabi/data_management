@@ -1,19 +1,26 @@
 from django.urls import path
 
-from . import views
+from .views import (
+     export,
+     export_group_permission,
+     export_groups,
+     export_user_group,
+     export_user_permission,
+     export_users
+)
 
 app_name = 'custom'
 urlpatterns = [
-     path('export', views.export, name='export'),
+     path('export', export, name='export'),
      path('export/group-permissions',
-          views.export_group_permission,
+          export_group_permission,
           name='export-group-permissions'),
-     path('export/groups', views.export_groups, name='export-groups'),
+     path('export/groups', export_groups, name='export-groups'),
      path('export/user-groups',
-          views.export_user_group,
+          export_user_group,
           name='export-user-groups'),
      path('export/user-permissions',
-          views.export_user_permission,
+          export_user_permission,
           name='export-user-permissions'),
-     path('export/users', views.export_users, name='export-users')
+     path('export/users', export_users, name='export-users')
 ]

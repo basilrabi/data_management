@@ -6,6 +6,7 @@ from shipment.models.dso import Vessel
 
 # pylint: disable=no-member
 
+
 class  VesselTest(TestCase):
 
     def setUp(self):

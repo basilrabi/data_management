@@ -1,5 +1,5 @@
-import datetime
-import pytz
+from datetime import timedelta
+from pytz import timezone
 
 # AutoCAD Color Index (ACI) assigned for each ore class
 ACI = {
@@ -13,9 +13,9 @@ ACI = {
     'W': 6
 }
 
-one_day = datetime.timedelta(days=1)
-one_hour = datetime.timedelta(hours=1)
-one_minute = datetime.timedelta(minutes=1)
-one_second = datetime.timedelta(seconds=1)
-tz_manila = pytz.timezone('Asia/Manila')
-zero_time = datetime.timedelta()
+one_day = timedelta(days=1)
+one_hour = timedelta(hours=1)
+one_minute = timedelta(minutes=1)
+one_second = timedelta(seconds=1)
+tz_manila = timezone('Asia/Manila')
+zero_time = timedelta()

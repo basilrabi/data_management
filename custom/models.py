@@ -1,16 +1,16 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.gis.db import models as geomodels
-from django.db import models
+from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
+from django.db.models import (CharField, Model, TextField)
 
 from custom.fields import NameField
 
 
-class Classification(models.Model):
+class Classification(Model):
     """
     Template for any classification.
     """
     name = NameField(max_length=20, unique=True)
-    description = models.TextField(null=True, blank=True)
+    description = TextField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -20,13 +20,13 @@ class Classification(models.Model):
         return self.name
 
 
-class GeoClassification(geomodels.Model):
+class GeoClassification(GeoModel):
     """
     Template for any classification.
     """
     name = NameField(max_length=40, unique=True)
-    description = models.TextField(null=True, blank=True)
-    geom = geomodels.MultiPolygonField(srid=3125)
+    description = TextField(null=True, blank=True)
+    geom = MultiPolygonField(srid=3125)
 
     class Meta:
         abstract = True
@@ -37,7 +37,7 @@ class GeoClassification(geomodels.Model):
 
 
 class User(AbstractUser):
-    middle_name = models.CharField(null=True, blank=True, max_length=100)
+    middle_name = CharField(null=True, blank=True, max_length=100)
 
     def middle_initial(self):
         if self.middle_name:

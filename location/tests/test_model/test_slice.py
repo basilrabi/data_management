@@ -2,10 +2,6 @@ from django.test import TestCase
 from django.contrib.gis.geos import LineString
 from django.db.utils import IntegrityError
 
-# from django.contrib.gis.geos import GEOSGeometry
-# from django.core.exceptions import ValidationError
-# from django.db.utils import InternalError
-
 from custom.functions import setup_triggers
 from location.models.source import Slice
 

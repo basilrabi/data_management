@@ -13,6 +13,7 @@ from sampling.models.sample import (MiningSample,
 
 # pylint: disable=no-member
 
+
 class MiningSampleReportTest(TestCase):
 
     def setUp(self):

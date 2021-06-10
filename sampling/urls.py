@@ -1,11 +1,11 @@
 from django.urls import path
 
-from . import views
+from .views import assay_certificate, index
 
 app_name = 'sampling'
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index, name='index'),
     path('assay/<slug:name>',
-         views.assay_certificate,
+         assay_certificate,
          name='assay-certificate'),
 ]

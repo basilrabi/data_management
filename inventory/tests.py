@@ -4,6 +4,7 @@ from django.test import TestCase
 from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 
+
 class BlockTest(TestCase):
     @classmethod
     def setUpTestData(cls):

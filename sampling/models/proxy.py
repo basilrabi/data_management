@@ -6,6 +6,7 @@ from .sample import (
 
 # pylint: disable=no-member
 
+
 class AcquiredMiningSample(MiningSample):
     class Meta:
         proxy = True
@@ -18,7 +19,6 @@ class ChinaShipmentAssay(ShipmentDischargeAssay):
         if self.dmt and self.wmt:
             if self.dmt >= self.wmt:
                 raise ValidationError('DTM cannot be higher than WMT.')
-
 
     class Meta:
         proxy = True

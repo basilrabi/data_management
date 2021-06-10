@@ -1,23 +1,39 @@
-import datetime
-
+from datetime import timedelta
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import (
+    BooleanField,
+    CASCADE,
+    CharField,
+    DateField,
+    DateTimeField,
+    ForeignKey,
+    Index,
+    Max,
+    Min,
+    Model,
+    PositiveSmallIntegerField,
+    Q,
+    SET_NULL,
+    TextField,
+    UniqueConstraint
+)
 
 from custom.fields import NameField
 from custom.functions import print_tz_manila
 
 # pylint: disable=no-member
 
-class LCT(models.Model):
+
+class LCT(Model):
     """
     Landing craft tank. Used in transporting nickel and iron ore from the wharf
     to the Vessel.
     """
     name = NameField(max_length=50, unique=True)
-    capacity = models.PositiveSmallIntegerField(help_text='Capacity in tons')
+    capacity = PositiveSmallIntegerField(help_text='Capacity in tons')
 
     class Meta:
-        indexes = [models.Index(fields=['name'])]
+        indexes = [Index(fields=['name'])]
         verbose_name = "LCT"
         verbose_name_plural = "LCT's"
         ordering = ['name']
@@ -25,21 +41,22 @@ class LCT(models.Model):
     def __str__(self):
         return self.name
 
-class LCTContract(models.Model):
+
+class LCTContract(Model):
     """
     Lease contract date (for rented LCT's) or service span (for in-house LCT's).
     """
-    lct = models.ForeignKey('LCT', on_delete=models.CASCADE)
-    start = models.DateField()
-    end = models.DateField(null=True, blank=True)
+    lct = ForeignKey('LCT', on_delete=CASCADE)
+    start = DateField()
+    end = DateField(null=True, blank=True)
 
     def clean(self):
         if self.end:
             if self.end < self.start:
                 raise ValidationError('End of contract should not be earlier than start of contract.')
         if self.lct.lctcontract_set.filter(
-            models.Q(start__lte=self.end or self.start + datetime.timedelta(300)),
-            models.Q(end__gte=self.start) | models.Q(end__isnull=True)
+            Q(start__lte=self.end or self.start + timedelta(300)),
+            Q(end__gte=self.start) | Q(end__isnull=True)
         ).exclude(id=self.id).count() > 0:
             raise ValidationError('Contract dates should not overlap')
 
@@ -51,32 +68,30 @@ class LCTContract(models.Model):
     def __str__(self):
         return  'Contract ' + str(self.id) + ': ' + self.lct.name
 
-class Trip(models.Model):
+
+class Trip(Model):
     """
     A trip of the LCT. The trip starts when the LCT docks at the wharf and ends
     at the next docking at the wharf.
     """
-    lct = models.ForeignKey('LCT', on_delete=models.CASCADE)
-    vessel = models.ForeignKey('Vessel',
-                               on_delete=models.SET_NULL,
-                               null=True,
-                               blank=True)
+    lct = ForeignKey('LCT', on_delete=CASCADE)
+    vessel = ForeignKey('Vessel', on_delete=SET_NULL, null=True, blank=True)
 
     STATUS_CHOICES = (
         ('rejected', 'Cargo Rejected by Vessel'),
         ('loaded', 'Cargo Loaded to Vessel'),
         ('partial', 'Cargo Partially Loaded to Vessel'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    dump_truck_trips = models.PositiveSmallIntegerField(default=0)
-    vessel_grab = models.PositiveSmallIntegerField(default=0)
-    interval_from = models.DateTimeField(null=True, blank=True)
-    interval_to = models.DateTimeField(null=True, blank=True)
-    valid = models.BooleanField(
+    status = CharField(max_length=20, choices=STATUS_CHOICES)
+    dump_truck_trips = PositiveSmallIntegerField(default=0)
+    vessel_grab = PositiveSmallIntegerField(default=0)
+    interval_from = DateTimeField(null=True, blank=True)
+    interval_to = DateTimeField(null=True, blank=True)
+    valid = BooleanField(
         default=False,
         help_text='A valid trip coincides with the shipment schedule.'
     )
-    continuous = models.BooleanField(
+    continuous = BooleanField(
         default=False,
         help_text='A continuous trip meets the following conditions: '
                   '1) its `interval from` time stamp is equal to its previous trip\'s `interval to` time stamp and '
@@ -86,15 +101,15 @@ class Trip(models.Model):
     def cycle(self):
         if self.interval_to:
             return self.interval_to - self.interval_from
-        return datetime.timedelta(0)
+        return timedelta(0)
 
     def next(self):
         if self.interval_from:
-            return self.lct.trip_set.filter(models.Q(interval_from__gt=self.interval_from)).order_by('interval_from').first()
+            return self.lct.trip_set.filter(Q(interval_from__gt=self.interval_from)).order_by('interval_from').first()
 
     def previous(self):
         if self.interval_from:
-            return self.lct.trip_set.filter(models.Q(interval_from__lt=self.interval_from)).order_by('-interval_from').first()
+            return self.lct.trip_set.filter(Q(interval_from__lt=self.interval_from)).order_by('-interval_from').first()
 
     def _continuous(self):
         """
@@ -112,11 +127,11 @@ class Trip(models.Model):
 
     def _interval_from(self):
         if self.tripdetail_set.all().count() > 0:
-            return self.tripdetail_set.all().aggregate(models.Min('interval_from'))['interval_from__min']
+            return self.tripdetail_set.all().aggregate(Min('interval_from'))['interval_from__min']
 
     def _interval_to(self):
         if self.tripdetail_set.all().count() > 1:
-            return self.tripdetail_set.all().aggregate(models.Max('interval_from'))['interval_from__max']
+            return self.tripdetail_set.all().aggregate(Max('interval_from'))['interval_from__max']
 
     def _valid(self):
         """
@@ -124,9 +139,9 @@ class Trip(models.Model):
         """
         if self.interval_to and self.vessel:
             if self.vessel.shipment_set.filter(
-                models.Q(laydaysstatement__commenced_loading__lte=self.interval_to),
-                models.Q(laydaysstatement__completed_loading__gte=self.interval_from) |
-                models.Q(laydaysstatement__completed_loading__isnull=True)
+                Q(laydaysstatement__commenced_loading__lte=self.interval_to),
+                Q(laydaysstatement__completed_loading__gte=self.interval_from) |
+                Q(laydaysstatement__completed_loading__isnull=True)
             ).count() > 0:
                 return True
         return False
@@ -154,7 +169,7 @@ class Trip(models.Model):
     class Meta:
         ordering = ['lct', '-interval_from']
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['lct', 'interval_from', 'interval_to'],
                 name='unique_lct_trip_interval'
             )
@@ -163,13 +178,14 @@ class Trip(models.Model):
     def __str__(self):
         return 'Record: ' + str(self.id) + ', LCT: ' + self.lct.name
 
-class TripDetail(models.Model):
+
+class TripDetail(Model):
     """
     An interval within the LCT Trip. This is equivalent to one row in the
     statement of facts of the LCT.
     """
-    trip = models.ForeignKey('Trip', on_delete=models.CASCADE)
-    interval_from = models.DateTimeField()
+    trip = ForeignKey('Trip', on_delete=CASCADE)
+    interval_from = DateTimeField()
 
     CLASS_CHOICES = (
         ('preparation_loading', 'Preparation for Loading'),
@@ -198,28 +214,28 @@ class TripDetail(models.Model):
         ('end', 'End'),
     )
 
-    interval_class = models.CharField(max_length=30, choices=CLASS_CHOICES)
-    remarks = models.TextField(null=True, blank=True)
+    interval_class = CharField(max_length=30, choices=CLASS_CHOICES)
+    remarks = TextField(null=True, blank=True)
 
     def interval_to(self):
         if self.next():
             return self.next().interval_from
 
     def next(self):
-        return self.trip.tripdetail_set.filter(models.Q(
+        return self.trip.tripdetail_set.filter(Q(
             interval_from__gt=self.interval_from
         )).order_by('interval_from').first()
 
     class Meta:
         ordering = ['interval_from']
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['trip', 'interval_from'],
                 name='unique_lct_trip_timestamp'
             ),
-            models.UniqueConstraint(
+            UniqueConstraint(
                 fields=['trip', 'interval_class'],
-                condition=models.Q(interval_class='end'),
+                condition=Q(interval_class='end'),
                 name='unique_end_tripdetail'
             )
         ]
@@ -245,9 +261,9 @@ class TripDetail(models.Model):
                 if trip._interval_from() > (t_begin or self.interval_from) and trip._interval_from() < (t_end or self.interval_from):
                     raise ValidationError('Travel time of one LCT should not overlap.')
         if self.trip.lct.lctcontract_set.filter(
-            models.Q(start__lte=self.interval_from.date()),
-            models.Q(end__gte=self.interval_from.date()) |
-            models.Q(end__isnull=True)
+            Q(start__lte=self.interval_from.date()),
+            Q(end__gte=self.interval_from.date()) |
+            Q(end__isnull=True)
         ).count() < 1:
             raise ValidationError('LCT used is not rented or has no lease contract for the date inputed.')
 

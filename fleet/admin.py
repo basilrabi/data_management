@@ -1,7 +1,7 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, register
 
 from .models.equipment import TrackedExcavator
 
-@admin.register(TrackedExcavator)
-class TrackedExcavatorAdmin(admin.ModelAdmin):
+@register(TrackedExcavator)
+class TrackedExcavatorAdmin(ModelAdmin):
     pass

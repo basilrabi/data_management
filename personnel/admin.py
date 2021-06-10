@@ -1,16 +1,19 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline, register
 
 from .models.person import Designation, EmploymentRecord, Person
 
-class EmploymentRecordInline(admin.TabularInline):
+
+class EmploymentRecordInline(TabularInline):
     model = EmploymentRecord
     extra = 0
 
-@admin.register(Designation)
-class DesignationAdmin(admin.ModelAdmin):
+
+@register(Designation)
+class DesignationAdmin(ModelAdmin):
     pass
 
-@admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+
+@register(Person)
+class PersonAdmin(ModelAdmin):
     inlines = [EmploymentRecordInline]
     list_display = ('__str__', 'present_designation')

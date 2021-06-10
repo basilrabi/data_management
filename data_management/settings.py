@@ -1,4 +1,5 @@
-import os
+from os.path import abspath, dirname, join
+
 from .local import db_host, db_name, db_password, db_user, db_port
 
 DB_HOST = db_host
@@ -7,7 +8,7 @@ DB_PSWD = db_password
 DB_PORT = db_port
 DB_USER = db_user
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = dirname(dirname(abspath(__file__)))
 SECRET_KEY = '+f4&9j&@%p7kdj%##z^(!v%_)w($)vv8*dn57%6zj3@1n7hea7'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
@@ -93,7 +94,7 @@ AUTH_USER_MODEL = 'custom.User'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LANGUAGE_CODE = 'en-us'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = join(BASE_DIR, "static/")
 STATIC_URL = '/static/'
 TIME_ZONE = 'Asia/Manila'
 USE_I18N = True

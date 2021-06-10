@@ -9,6 +9,7 @@ from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
 # pylint: disable=no-member
 
+
 class  TripDetailTest(TestCase):
 
     @classmethod
@@ -56,10 +57,8 @@ class  TripDetailTest(TestCase):
 
         trip = Trip.objects.all().first()
 
-        self.assertEqual(trip._interval_from(),
-                         trip_detail1.interval_from)
-        self.assertEqual(trip._interval_to(),
-                         trip_detail2.interval_from)
+        self.assertEqual(trip._interval_from(), trip_detail1.interval_from)
+        self.assertEqual(trip._interval_to(), trip_detail2.interval_from)
 
     def test_trip_with_the_same_time_integrity(self):
         trip = Trip.objects.all().first()

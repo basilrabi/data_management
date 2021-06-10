@@ -1,7 +1,4 @@
-import os
-import pandas as pd
 import plotly.graph_objects as go
-import tempfile
 
 from django.db import connection
 from django.db.models.expressions import Window
@@ -9,9 +6,12 @@ from django.db.models.functions import RowNumber
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render
 from django.template.loader import get_template
+from os.path import join
+from pandas import DataFrame
 from plotly.offline import plot
 from shutil import copyfile
 from subprocess import PIPE, run
+from tempfile import TemporaryDirectory
 
 from custom.functions import export_sql, get_optimum_print_slice
 from shipment.models.dso import LayDaysStatement
@@ -82,7 +82,7 @@ def index(request):
         FROM cte_c
         ORDER BY completed_loading
         """)
-        df = pd.DataFrame.from_records(cursor.fetchall())
+        df = DataFrame.from_records(cursor.fetchall())
         box_data = []
         for interval_class in [
             'Loading', 'Natural Delay', 'Idle'
@@ -124,7 +124,7 @@ def index(request):
         ORDER BY loading_date
         """)
         year_data = []
-        df = pd.DataFrame.from_records(cursor.fetchall())
+        df = DataFrame.from_records(cursor.fetchall())
         for year in df[2].unique()[::-1]:
             df_filtered = df[df[2] == year]
             year_data.append(
@@ -173,7 +173,7 @@ def index(request):
         FROM cte_a
         """)
         year_data_smooth = []
-        df = pd.DataFrame.from_records(cursor.fetchall())
+        df = DataFrame.from_records(cursor.fetchall())
         for year in df[2].unique()[::-1]:
             df_filtered = df[df[2] == year]
             year_data_smooth.append(
@@ -258,17 +258,17 @@ def lay_days_statement_pdf(request, name):
     }
     template = get_template('shipment/lay_time_statement.tex')
     rendered_tpl = template.render(context)
-    with tempfile.TemporaryDirectory() as tempdir:
+    with TemporaryDirectory() as tempdir:
         copyfile(
             'custom/static/custom/img/TMC.pdf',
-            os.path.join(tempdir, 'TMC.pdf')
+            join(tempdir, 'TMC.pdf')
         )
-        filename = os.path.join(tempdir, f'{statement.shipment.name}.tex')
+        filename = join(tempdir, f'{statement.shipment.name}.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(rendered_tpl)
         latex_command = f'cd "{tempdir}" && latexmk -pdflatex {statement.shipment.name}'
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
-            open(os.path.join(tempdir, f'{statement.shipment.name}.pdf'), 'rb'),
+            open(join(tempdir, f'{statement.shipment.name}.pdf'), 'rb'),
             content_type='application/pdf'
         )

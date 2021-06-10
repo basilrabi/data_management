@@ -1,7 +1,8 @@
 # pylint: disable=import-error
 # pylint: disable=no-member
 
-import sys
+from sys import exit
+
 from shipment.models.dso import LayDaysStatement
 
 for statement in LayDaysStatement.objects.all():
@@ -10,5 +11,5 @@ for statement in LayDaysStatement.objects.all():
         statement._compute()
     except KeyboardInterrupt:
         print('\nComputing statement interrupted.', flush=True)
-        sys.exit(1)
+        exit(1)
     print('Done.', flush=True)

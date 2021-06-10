@@ -1,7 +1,7 @@
-from django.contrib.gis import admin
+from django.contrib.gis.admin import GeoModelAdmin
 
 
-class TMCLocationAdmin(admin.GeoModelAdmin):
+class TMCLocationAdmin(GeoModelAdmin):
     default_lon = 125.8313
     default_lat = 9.5235
     default_zoom = 14

@@ -1,22 +1,25 @@
-import csv
+from csv import DictReader
 from datetime import timedelta
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
-from os import path
+from os.path import abspath, dirname, join
 
 from custom.functions import setup_triggers
 from custom.variables import one_day
-from shipment.models.dso import (LayDaysDetail,
-                                 LayDaysStatement,
-                                 Shipment,
-                                 Vessel)
+from shipment.models.dso import (
+    LayDaysDetail,
+    LayDaysStatement,
+    Shipment,
+    Vessel
+)
 
 # pylint: disable=no-member
 
-pwd = path.dirname(path.abspath(__file__))
-fdetails = path.join(pwd, 'detail', '476c.csv')
+pwd = dirname(abspath(__file__))
+fdetails = join(pwd, 'detail', '476c.csv')
+
 
 class  LayDaysStatement476CTest(TestCase):
 
@@ -53,7 +56,7 @@ class  LayDaysStatement476CTest(TestCase):
         )
 
         with open(fdetails, newline='') as csvfile:
-            reader = csv.DictReader(
+            reader = DictReader(
                 csvfile,
                 fieldnames=['rate', 'stamp', 'class', 'remarks']
             )

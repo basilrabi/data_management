@@ -1,6 +1,6 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.admin.views.main import ChangeList
-from django.db import models
+from django.db.models import Count, TextField, Sum
 from django.forms import Textarea
 from import_export.admin import ExportMixin
 from import_export.fields import Field
@@ -32,7 +32,7 @@ class ClusterResource(ModelResource):
         return cluster.block_set.count()
 
 
-class DrillCoreInline(admin.TabularInline):
+class DrillCoreInline(TabularInline):
     model = DrillCore
     extra = 0
     fields = ('interval_from',
@@ -45,7 +45,7 @@ class DrillCoreInline(admin.TabularInline):
               'fe',
               'co')
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
     readonly_fields = ['ni', 'fe', 'co']
 
@@ -54,12 +54,12 @@ class ClusterChangeList(ChangeList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.blocks = self.queryset \
-            .annotate(blocks=models.Count('block')) \
-            .aggregate(models.Sum('blocks'))['blocks__sum']
+            .annotate(blocks=Count('block')) \
+            .aggregate(Sum('blocks'))['blocks__sum']
 
 
-@admin.register(Cluster)
-class ClusterAdmin(ExportMixin, admin.ModelAdmin):
+@register(Cluster)
+class ClusterAdmin(ExportMixin, ModelAdmin):
     date_hierarchy = 'date_scheduled'
     exclude = ('count', 'geom')
     list_display = ('name',
@@ -98,14 +98,14 @@ class ClusterAdmin(ExportMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        qs = qs.annotate(blocks=models.Count('block'))
+        qs = qs.annotate(blocks=Count('block'))
         return qs
 
     def blocks(self, obj):
         return obj.blocks
 
 
-@admin.register(DrillHole)
+@register(DrillHole)
 class DrillHoleAdmin(TMCLocationAdmin):
     modifiable = False
     inlines = [DrillCoreInline]
@@ -113,7 +113,7 @@ class DrillHoleAdmin(TMCLocationAdmin):
     search_fields = ['name']
 
 
-@admin.register(Facility)
+@register(Facility)
 class FacilityAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = [
@@ -124,47 +124,47 @@ class FacilityAdmin(TMCLocationAdmin):
     ]
 
 
-@admin.register(FacilityClassification)
-class FacilityClassificationAdmin(admin.ModelAdmin):
+@register(FacilityClassification)
+class FacilityClassificationAdmin(ModelAdmin):
     search_fields = ['name', 'description']
 
 
-@admin.register(FLA)
+@register(FLA)
 class FLAAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = ['name']
 
 
-@admin.register(MineBlock)
+@register(MineBlock)
 class MineBlockAdmin(TMCLocationAdmin):
     modifiable = False
     list_display = ('name', 'ridge')
     search_fields = ['name']
 
 
-@admin.register(MPSA)
+@register(MPSA)
 class MPSAAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = ['name']
 
 
-@admin.register(PEZA)
+@register(PEZA)
 class PEZAAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = ['name']
 
 
-@admin.register(RoadArea)
+@register(RoadArea)
 class RoadAreaAdmin(TMCLocationAdmin):
     modifiable = False
 
 
-@admin.register(Stockpile)
+@register(Stockpile)
 class StockpileAdmin(TMCLocationAdmin):
     pass
 
 
-@admin.register(WaterBody)
+@register(WaterBody)
 class WaterBodyAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = ['name']

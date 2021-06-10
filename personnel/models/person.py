@@ -1,12 +1,13 @@
 from datetime import date, timedelta
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import CASCADE, DateField, ForeignKey, Model, Q, SET_NULL
 
 from custom.fields import NameField
 
 # pylint: disable=no-member
 
-class Designation(models.Model):
+
+class Designation(Model):
     name = NameField(max_length=100, unique=True)
 
     class Meta:
@@ -15,12 +16,13 @@ class Designation(models.Model):
     def __str__(self):
         return self.name
 
-class EmploymentRecord(models.Model):
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    effectivity = models.DateField()
-    end = models.DateField(null=True, blank=True)
-    designation = models.ForeignKey(
-        'Designation', on_delete=models.SET_NULL, null=True, blank=True
+
+class EmploymentRecord(Model):
+    person = ForeignKey('Person', on_delete=CASCADE)
+    effectivity = DateField()
+    end = DateField(null=True, blank=True)
+    designation = ForeignKey(
+        'Designation', on_delete=SET_NULL, null=True, blank=True
     )
 
     def clean(self):
@@ -30,9 +32,9 @@ class EmploymentRecord(models.Model):
             if self.end <= self.effectivity:
                 raise ValidationError('Effectivity must be earlier than end.')
         if self.person.employmentrecord_set.filter(
-            models.Q(effectivity__lte=self.end or self.effectivity + timedelta(9999)),
-            models.Q(end__gte=self.effectivity) |
-            models.Q(end__isnull=True)
+            Q(effectivity__lte=self.end or self.effectivity + timedelta(9999)),
+            Q(end__gte=self.effectivity) |
+            Q(end__isnull=True)
         ).exclude(id=self.id).count() > 0:
             raise ValidationError('Effectivity should not overlap.')
 
@@ -42,21 +44,24 @@ class EmploymentRecord(models.Model):
     def __str__(self):
         return f'{self.person.__str__()} as {self.designation.__str__()}'
 
-class Person(models.Model):
+
+class Person(Model):
     first_name = NameField(max_length=100)
     middle_name = NameField(max_length=100, null=True, blank=True)
     last_name = NameField(max_length=100)
     name_suffix = NameField(
-        max_length=20, null=True, blank=True,
+        max_length=20,
+        null=True,
+        blank=True,
         help_text='Junior, Senior, III, etc.'
     )
 
     def designation(self, date):
         if self.employmentrecord_set.all().count() > 0:
             return self.employmentrecord_set.filter(
-                models.Q(effectivity__lte=date),
-                models.Q(end__gte=date) |
-                models.Q(end__isnull=True)
+                Q(effectivity__lte=date),
+                Q(end__gte=date) |
+                Q(end__isnull=True)
             ).first().designation
 
     def present_designation(self):

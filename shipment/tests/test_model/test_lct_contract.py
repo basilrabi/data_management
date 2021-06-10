@@ -5,6 +5,7 @@ from shipment.models.lct import LCT, LCTContract
 
 # pylint: disable=no-member
 
+
 class  LCTContractTest(TestCase):
 
     @classmethod
