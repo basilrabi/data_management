@@ -32,7 +32,7 @@ class Block(Model):
     z = SmallIntegerField(help_text='Elevation of the top face of the block.')
     ni = FloatField(help_text='Estimated nickel content of the block in percent.')
     fe = FloatField(help_text='Estimated iron content of the block in percent.')
-    co =FloatField(help_text='Estimated cobalt content of the block in percent.')
+    co = FloatField(help_text='Estimated cobalt content of the block in percent.')
     cluster = ForeignKey(Cluster, null=True, blank=True, on_delete=PROTECT)
     depth = FloatField(
         null=True,

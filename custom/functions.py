@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.db import connection
-from django.db.models import (CheckConstraint, Q)
+from django.db.models import CheckConstraint, Q
 from django.db.models.expressions import Value
 from django.db.models.functions import TruncDay
 from django.db.models.functions.mixins import FixDecimalInputMixin
@@ -17,12 +17,14 @@ from tempfile import TemporaryDirectory
 from tzlocal import get_localzone
 
 from location.models.source import Cluster
-from .variables import (one_day,
-                        one_hour,
-                        one_minute,
-                        one_second,
-                        tz_manila,
-                        zero_time)
+from .variables import (
+    one_day,
+    one_hour,
+    one_minute,
+    one_second,
+    tz_manila,
+    zero_time
+)
 
 
 class Echo:
@@ -36,6 +38,7 @@ class Echo:
         Write the value by returning it, instead of storing in a buffer.
         """
         return value
+
 
 # TODO: Delete in Django 3.3
 class Round(FixDecimalInputMixin, Transform):
