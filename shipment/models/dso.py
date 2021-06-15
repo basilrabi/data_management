@@ -250,7 +250,6 @@ class ApprovedLayDaysStatement(Model):
                     shipment.save(refresh=False)
         super().save(*args, **kwargs)
 
-
     class Meta:
         ordering = [
             'approved',

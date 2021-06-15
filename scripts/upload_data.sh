@@ -93,6 +93,7 @@ sql_script "function" "get_ore_class" && \
 sql_script "function" "shipment_name_html" && \
 sql_script "function" "insert_dummy_cluster" && \
 sql_script "trigger" "inventory_block_exposed" && \
+sql_script "trigger" "location_anchorage_update" && \
 sql_script "trigger" "location_cluster_update" && \
 sql_script "trigger" "location_clusterlayout" && \
 sql_script "trigger" "location_drillhole_update" && \

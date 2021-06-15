@@ -15,6 +15,7 @@ from import_export.fields import Field
 from import_export.resources import ModelResource
 
 from custom.functions import Round, print_tz_manila
+from location.models.shipment import Anchorage
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import (
     ApprovedLayDaysStatement,
@@ -88,6 +89,12 @@ class IntervalFromInlineFormSet(BaseInlineFormSet):
         if end_stamp:
             if end_stamp < max(timestamps):
                 raise ValidationError(f'End ({str(print_tz_manila(end_stamp))}) should have the last time stamp.')
+
+
+class AnchorageInline(TabularInline):
+    model = Anchorage
+    extra = 0
+    exclude = ('geom',)
 
 
 class LayDaysDetailInline(TabularInline):
@@ -196,7 +203,7 @@ class FinalShipmentDetailAdmin(ExportMixin, ModelAdmin):
 class LayDaysStatementAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'laydaysdetail__interval_from'
-    inlines = [LayDaysDetailInline]
+    inlines = [AnchorageInline, LayDaysDetailInline]
     list_display = (
         'object_name',
         'vessel',

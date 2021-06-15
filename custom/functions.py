@@ -229,6 +229,7 @@ def setup_triggers():
         'index/shipment_loadingrate',
         'index/shipment_number',
         'trigger/inventory_block_exposed',
+        'trigger/location_anchorage_update',
         'trigger/location_cluster_insert',
         'trigger/location_cluster_update',
         'trigger/location_clusterlayout',
