@@ -282,11 +282,28 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('object_name', 'approved')
     search_fields = ['assay__shipment__name']
-    readonly_fields = (
-        'al2o3', 'cao', 'co', 'cr', 'cr2o3', 'dmt', 'fe', 'ignition_loss',
-        'laboratory', 'mgo', 'mn', 'moisture', 'ni', 'ni_ton', 'object_name',
-        'p', 's', 'shipment', 'sio2', 'vessel', 'wmt'
-    )
+    readonly_fields = ('al2o3',
+                       'arsenic',
+                       'cao',
+                       'co',
+                       'cr',
+                       'cr2o3',
+                       'dmt',
+                       'fe',
+                       'ignition_loss',
+                       'laboratory',
+                       'mgo',
+                       'mn',
+                       'moisture',
+                       'ni',
+                       'ni_ton',
+                       'object_name',
+                       'p',
+                       's',
+                       'shipment',
+                       'sio2',
+                       'vessel',
+                       'wmt')
 
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('assay',)
@@ -295,17 +312,46 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         assay = ApprovedShipmentDischargeAssay.objects.get(id=object_id)
         if assay.assay.laboratory.name != 'PAMCO':
-            self.fields = (
-                'shipment', 'vessel', 'laboratory', 'wmt', 'dmt',
-                'moisture', 'al2o3', 'cao', 'co', 'cr2o3', 'fe', 'mgo', 'mn',
-                'ni', 'p', 's', 'sio2', 'ignition_loss', 'approved'
-            )
+            self.fields = ('shipment',
+                           'vessel',
+                           'laboratory',
+                           'wmt',
+                           'dmt',
+                           'moisture',
+                           'al2o3',
+                           'arsenic',
+                           'cao',
+                           'co',
+                           'cr2o3',
+                           'fe',
+                           'mgo',
+                           'mn',
+                           'ni',
+                           'p',
+                           's',
+                           'sio2',
+                           'ignition_loss',
+                           'approved')
         else:
-            self.fields = (
-                'object_name', 'vessel', 'wmt', 'moisture', 'dmt', 'ni',
-                'ni_ton', 'co', 'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3',
-                'p', 's', 'ignition_loss', 'approved'
-            )
+            self.fields = ('object_name',
+                           'vessel',
+                           'wmt',
+                           'moisture',
+                           'dmt',
+                           'ni',
+                           'ni_ton',
+                           'co',
+                           'cr',
+                           'mn',
+                           'fe',
+                           'sio2',
+                           'cao',
+                           'mgo',
+                           'al2o3',
+                           'p',
+                           's',
+                           'ignition_loss',
+                           'approved')
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
         )
@@ -313,6 +359,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(
             al2o3=F('assay__al2o3'),
+            arsenic=F('assay__arsenic'),
             cao=F('assay__cao'),
             co=F('assay__co'),
             cr=F('assay__cr'),
@@ -337,6 +384,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
     def al2o3(self, obj):
         return obj.al2o3
+
+    def arsenic(self, obj):
+        return obj.arsenic
 
     def cao(self, obj):
         return obj.cao
@@ -401,6 +451,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             return f'{obj.wmt:,}'
 
     al2o3.short_description = '%Al₂O₃'
+    arsenic.short_description = '%As'
     cao.short_description = '%CaO'
     co.short_description = '%Co'
     cr.short_description = '%Cr'
