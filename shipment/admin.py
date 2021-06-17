@@ -97,6 +97,11 @@ class AnchorageInline(TabularInline):
     exclude = ('geom',)
 
 
+class LCTContractInline(TabularInline):
+    model = LCTContract
+    extra = 0
+
+
 class LayDaysDetailInline(TabularInline):
     model = LayDaysDetail
     extra = 0
@@ -106,11 +111,6 @@ class LayDaysDetailInline(TabularInline):
     formset = IntervalFromInlineFormSet
 
 
-class LCTContractInline(TabularInline):
-    model = LCTContract
-    extra = 0
-
-
 class TripDetailInline(TabularInline):
     model = TripDetail
     extra = 0
@@ -118,6 +118,27 @@ class TripDetailInline(TabularInline):
         TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
     }
     formset = IntervalFromInlineFormSet
+
+
+@register(ApprovedLayDaysStatement)
+class ApprovedLayDaysStatementAdmin(ModelAdmin):
+    list_display = ('object_name', 'vessel', 'approved', 'PDF', 'csv')
+    search_fields = ['statement__shipment__name',
+                     'statement__shipment__vessel__name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).annotate(
+            vessel=F('statement__shipment__vessel__name')
+        )
+        return qs
+
+    def object_name(self, obj):
+        return ApprovedLayDaysStatement.objects.get(id=obj.id).statement.shipment.name_html()
+
+    def vessel(self, obj):
+        return obj.vessel
+
+    object_name.short_description = 'Shipment'
 
 
 @register(Buyer)
@@ -199,6 +220,14 @@ class FinalShipmentDetailAdmin(ExportMixin, ModelAdmin):
     object_name.short_description = 'Shipment'
 
 
+@register(LCT)
+class LCTAdmin(ModelAdmin):
+    inlines = [LCTContractInline]
+    list_display = ('name', 'capacity')
+    list_filter = ['capacity']
+    search_fields = ['name']
+
+
 @register(LayDaysStatement)
 class LayDaysStatementAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
@@ -226,7 +255,7 @@ class LayDaysStatementAdmin(ModelAdmin):
         'demurrage',
         'despatch'
     ]
-    search_fields = ['shipment__name']
+    search_fields = ['shipment__name', 'shipment__vessel__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(
@@ -243,25 +272,6 @@ class LayDaysStatementAdmin(ModelAdmin):
     approved.admin_order_field = 'approved'
     approved.boolean = True
     object_name.short_description = 'Shipment'
-
-
-@register(ApprovedLayDaysStatement)
-class ApprovedLayDaysStatementAdmin(ModelAdmin):
-    list_display = ('object_name', 'approved', 'PDF', 'csv')
-    search_fields = ['statement__shipment__name']
-
-    def object_name(self, obj):
-        return ApprovedLayDaysStatement.objects.get(id=obj.id).statement.shipment.name_html()
-
-    object_name.short_description = 'Shipment'
-
-
-@register(LCT)
-class LCTAdmin(ModelAdmin):
-    inlines = [LCTContractInline]
-    list_display = ('name', 'capacity')
-    list_filter = ['capacity']
-    search_fields = ['name']
 
 
 @register(Product)

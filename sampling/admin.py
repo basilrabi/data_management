@@ -67,11 +67,6 @@ class TripsPerPileInline(TabularInline):
     extra = 0
 
 
-@register(Laboratory)
-class LaboratoryAdmin(ModelAdmin):
-    search_fields = ['name']
-
-
 @register(AcquiredMiningSample)
 class AcquiredMiningSampleAdmin(ModelAdmin):
     list_display = ('__str__',
@@ -85,203 +80,10 @@ class AcquiredMiningSampleAdmin(ModelAdmin):
                'ready_for_delivery')
 
 
-@register(ChinaShipmentAssay)
-class ChinaShipmentAssayAdmin(ModelAdmin):
-    autocomplete_fields = ['shipment']
-    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('__str__', 'vessel')
-    readonly_fields = ('vessel',)
-    search_fields = ['shipment__name']
-
-    def add_view(self, request, form_url='', extra_context=None):
-        self.fields = ('shipment', 'laboratory')
-        return super().add_view(request, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.fields = (
-            'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
-            'al2o3',
-            'arsenic',
-            'cao',
-            'co',
-            'cr2o3',
-            'fe',
-            'mgo',
-            'mn',
-            'ni',
-            'p',
-            's',
-            'sio2',
-            'ignition_loss'
-        )
-        return super().change_view(request, object_id, form_url, extra_context=extra_context)
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'laboratory':
-            kwargs["queryset"] = Laboratory.objects.distinct().exclude(name='PAMCO')
-        if db_field.name == 'shipment':
-            kwargs["queryset"] = Shipment.objects.distinct().filter(
-                destination__name__contains='CHINA'
-            )
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
-            .annotate(vessel=F('shipment__vessel__name'))
-        return qs
-
-    def vessel(self, obj):
-        return obj.vessel
-
-
-@register(Lithology)
-class LithologyAdmin(ModelAdmin):
-    pass
-
-
-@register(MiningSampleAssay)
-class MiningSampleAssayAdmin(ModelAdmin):
-    list_display = ('__str__',
-                    'date_received_for_preparation',
-                    'date_prepared',
-                    'date_received_for_analysis',
-                    'date_analyzed')
-
-
-@register(MiningSampleReport)
-class MiningSampleReportAdmin(ModelAdmin):
-    list_display = ('date',
-                    'shift_collected',
-                    'piling_method',
-                    'dumping_area')
-
-    def add_view(self, request, form_url='', extra_context=None):
-        self.exclude = ('sampler', 'supervisor', 'foreman')
-        return super().add_view(request, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.inlines = [MiningSampleIncrementInline]
-        self.exclude = None
-        return super().change_view(
-            request, object_id, form_url, extra_context=extra_context
-        )
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'supervisor':
-            kwargs["queryset"] = Person.objects.distinct().filter(
-                employmentrecord__designation__name__contains='SUPERVISOR'
-            )
-        if db_field.name == 'foreman':
-            kwargs["queryset"] = Person.objects.distinct().filter(
-                employmentrecord__designation__name__contains='FOREMAN'
-            )
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == 'sampler':
-            kwargs["queryset"] = Person.objects.distinct().filter(
-                employmentrecord__designation__name__contains='SAMPLER'
-            )
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-
-@register(PilingMethod)
-class PilingMethodAdmin(ModelAdmin):
-    inlines = [TripsPerPileInline]
-    list_display = ('name', 'present_required_trip')
-
-
-@register(PamcoShipmentAssay)
-class PamcoShipmentAssayAdmin(ModelAdmin):
-    autocomplete_fields = ['shipment']
-    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    fields = (
-        'shipment', 'vessel', 'wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'co',
-        'cr', 'mn', 'fe', 'sio2', 'cao', 'mgo', 'al2o3', 'p', 's',
-        'ignition_loss'
-    )
-    inlines = [ShipmentDischargeLotAssayInline]
-    list_display = ('object_name', 'vessel')
-    readonly_fields = ('vessel',)
-    search_fields = ['shipment__name']
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'shipment':
-            kwargs["queryset"] = Shipment.objects.distinct().filter(
-                destination__name__contains='JAPAN'
-            )
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
-            .annotate(vessel=F('shipment__vessel__name'))
-        return qs
-
-    def object_name(self, obj):
-        return PamcoShipmentAssay.objects.get(id=obj.id).shipment.name_html()
-
-    def vessel(self, obj):
-        return obj.vessel
-
-    object_name.short_description = 'Shipment'
-
-
-@register(ShipmentLoadingAssay)
-class ShipmentLoadingAssayAdmin(ModelAdmin):
-    autocomplete_fields = ['shipment']
-    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'approved', 'PDF')
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
-    search_fields = ['shipment__name']
-
-    def add_view(self, request, form_url='', extra_context=None):
-        self.fields = ('date', 'shipment', 'chemist')
-        self.inlines = []
-        return super().add_view(request, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        assay = ShipmentLoadingAssay.objects.get(id=object_id)
-        if assay.shipment.product.name != 'LIMONITE':
-            self.fields = (
-                'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
-                'ni_ton', 'fe', 'mgo', 'sio2', 'cr', 'co'
-            )
-        else:
-            self.fields = (
-                'date', 'shipment', 'chemist', 'wmt', 'dmt', 'moisture', 'ni',
-                'ni_ton', 'fe', 'mgo', 'sio2', 'cr', 'co', 'al2o3'
-            )
-        self.inlines = [ShipmentLoadingLotAssayInline]
-        return super().change_view(
-            request, object_id, form_url, extra_context=extra_context
-        )
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'chemist':
-            kwargs["queryset"] = User.objects.filter(groups__name='chemist')
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request) \
-            .annotate(approved=F('approvedshipmentloadingassay__approved'))
-        return qs
-
-    def approved(self, obj):
-        return obj.approved
-
-    def object_name(self, obj):
-        return ShipmentLoadingAssay.objects.get(id=obj.id).shipment.name_html()
-
-    approved.admin_order_field = 'approved'
-    approved.boolean = True
-    object_name.short_description = 'Shipment'
-
-
 @register(ApprovedShipmentDischargeAssay)
 class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'approved')
-    search_fields = ['assay__shipment__name']
+    list_display = ('object_name', 'vessel', 'approved')
     readonly_fields = ('al2o3',
                        'arsenic',
                        'cao',
@@ -304,6 +106,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        'sio2',
                        'vessel',
                        'wmt')
+    search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('assay',)
@@ -472,5 +275,248 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
 @register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
-    list_display = ('__str__', 'approved', 'PDF')
-    search_fields = ['assay__shipment__name']
+    list_display = ('__str__', 'vessel', 'approved', 'PDF')
+    search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request). \
+            annotate(vessel=F('assay__shipment__vessel__name'))
+        return qs
+
+    def vessel(self, obj):
+        return obj.vessel
+
+
+@register(ChinaShipmentAssay)
+class ChinaShipmentAssayAdmin(ModelAdmin):
+    autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
+    list_display = ('__str__', 'vessel')
+    readonly_fields = ('vessel',)
+    search_fields = ['shipment__name', 'shipment__vessel__name']
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ('shipment', 'laboratory')
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.fields = (
+            'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
+            'al2o3',
+            'arsenic',
+            'cao',
+            'co',
+            'cr2o3',
+            'fe',
+            'mgo',
+            'mn',
+            'ni',
+            'p',
+            's',
+            'sio2',
+            'ignition_loss'
+        )
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'laboratory':
+            kwargs["queryset"] = Laboratory.objects.distinct().exclude(name='PAMCO')
+        if db_field.name == 'shipment':
+            kwargs["queryset"] = Shipment.objects.distinct().filter(
+                destination__name__contains='CHINA'
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
+            .annotate(vessel=F('shipment__vessel__name'))
+        return qs
+
+    def vessel(self, obj):
+        return obj.vessel
+
+
+@register(Laboratory)
+class LaboratoryAdmin(ModelAdmin):
+    search_fields = ['name']
+
+
+@register(Lithology)
+class LithologyAdmin(ModelAdmin):
+    pass
+
+
+@register(MiningSampleAssay)
+class MiningSampleAssayAdmin(ModelAdmin):
+    list_display = ('__str__',
+                    'date_received_for_preparation',
+                    'date_prepared',
+                    'date_received_for_analysis',
+                    'date_analyzed')
+
+
+@register(MiningSampleReport)
+class MiningSampleReportAdmin(ModelAdmin):
+    list_display = ('date',
+                    'shift_collected',
+                    'piling_method',
+                    'dumping_area')
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.exclude = ('sampler', 'supervisor', 'foreman')
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.inlines = [MiningSampleIncrementInline]
+        self.exclude = None
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'supervisor':
+            kwargs["queryset"] = Person.objects.distinct().filter(
+                employmentrecord__designation__name__contains='SUPERVISOR'
+            )
+        if db_field.name == 'foreman':
+            kwargs["queryset"] = Person.objects.distinct().filter(
+                employmentrecord__designation__name__contains='FOREMAN'
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'sampler':
+            kwargs["queryset"] = Person.objects.distinct().filter(
+                employmentrecord__designation__name__contains='SAMPLER'
+            )
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
+
+@register(PamcoShipmentAssay)
+class PamcoShipmentAssayAdmin(ModelAdmin):
+    autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
+    fields = ('shipment',
+              'vessel',
+              'wmt',
+              'dmt',
+              'moisture',
+              'ni',
+              'ni_ton',
+              'co',
+              'cr',
+              'mn',
+              'fe',
+              'sio2',
+              'cao',
+              'mgo',
+              'al2o3',
+              'p',
+              's',
+              'ignition_loss')
+    inlines = [ShipmentDischargeLotAssayInline]
+    list_display = ('object_name', 'vessel')
+    readonly_fields = ('vessel',)
+    search_fields = ['shipment__name', 'shipment__vessel__name']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'shipment':
+            kwargs["queryset"] = Shipment.objects.distinct().filter(
+                destination__name__contains='JAPAN'
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
+            .annotate(vessel=F('shipment__vessel__name'))
+        return qs
+
+    def object_name(self, obj):
+        return PamcoShipmentAssay.objects.get(id=obj.id).shipment.name_html()
+
+    def vessel(self, obj):
+        return obj.vessel
+
+    object_name.short_description = 'Shipment'
+
+
+@register(PilingMethod)
+class PilingMethodAdmin(ModelAdmin):
+    inlines = [TripsPerPileInline]
+    list_display = ('name', 'present_required_trip')
+
+
+@register(ShipmentLoadingAssay)
+class ShipmentLoadingAssayAdmin(ModelAdmin):
+    autocomplete_fields = ['shipment']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
+    list_display = ('object_name', 'vessel', 'approved', 'PDF')
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
+    search_fields = ['shipment__name', 'shipment__vessel__name']
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ('date', 'shipment', 'chemist')
+        self.inlines = []
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        assay = ShipmentLoadingAssay.objects.get(id=object_id)
+        if assay.shipment.product.name != 'LIMONITE':
+            self.fields = ('date',
+                           'shipment',
+                           'chemist',
+                           'wmt',
+                           'dmt',
+                           'moisture',
+                           'ni',
+                           'ni_ton',
+                           'fe',
+                           'mgo',
+                           'sio2',
+                           'cr',
+                           'co')
+        else:
+            self.fields = ('date',
+                           'shipment',
+                           'chemist',
+                           'wmt',
+                           'dmt',
+                           'moisture',
+                           'ni',
+                           'ni_ton',
+                           'fe',
+                           'mgo',
+                           'sio2',
+                           'cr',
+                           'co',
+                           'al2o3')
+        self.inlines = [ShipmentLoadingLotAssayInline]
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'chemist':
+            kwargs["queryset"] = User.objects.filter(groups__name='chemist')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request) \
+            .annotate(
+                approved=F('approvedshipmentloadingassay__approved'),
+                vessel=F('shipment__vessel__name')
+            )
+        return qs
+
+    def approved(self, obj):
+        return obj.approved
+
+    def object_name(self, obj):
+        return ShipmentLoadingAssay.objects.get(id=obj.id).shipment.name_html()
+
+    def vessel(self, obj):
+        return obj.vessel
+
+    approved.admin_order_field = 'approved'
+    approved.boolean = True
+    object_name.short_description = 'Shipment'

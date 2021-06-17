@@ -15,6 +15,12 @@
     1. Methods (alphabetical)
     1. Class Meta (alphabetical)
     1. `__str__()` definition
+1. Classes are to be defined in alphabetical order.
+    1. In the case of classes definition in an admin module, the following sort-order is applied then alphabetical
+        1. import_export.resources.ModelResource derived classes
+        1. django.forms.models.BaseInlineFormSet derived classes
+        1. AdminInlines derived classes
+        1. Parent Admin derived classes
 
 ### Delimeters and Contents Spanning Multiple Lines
 

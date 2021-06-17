@@ -1,6 +1,7 @@
 from django.db.models import CharField
 from re import sub
 
+
 class AlphaNumeric(CharField):
 
     def __init__(self, *args, **kwargs):
@@ -8,6 +9,19 @@ class AlphaNumeric(CharField):
 
     def get_prep_value(self, value):
         return sub(r'[^\w]', '', str(value).upper())
+
+
+class MarineVesselName(CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        if value:
+            value = sub(r'\s+', ' ', str(value).upper().strip())
+            value = sub(r'^M[^a-zA-Z]*V\s*', '', value)
+            return value
+
 
 class MineBlockField(CharField):
     """
@@ -23,6 +37,7 @@ class MineBlockField(CharField):
             value = sub(r'\W', '', value)
             return value
 
+
 class NameField(CharField):
     """
     https://stackoverflow.com/questions/36330677/
@@ -34,6 +49,7 @@ class NameField(CharField):
     def get_prep_value(self, value):
         if value:
             return sub(r'\s+', ' ', str(value).upper().strip())
+
 
 class PileField(CharField):
     """
@@ -49,6 +65,7 @@ class PileField(CharField):
             value = sub(r'\W', '', value)
             return value
 
+
 class SpaceLess(CharField):
 
     def __init__(self, *args, **kwargs):
@@ -57,14 +74,3 @@ class SpaceLess(CharField):
     def get_prep_value(self, value):
         if value:
             return sub(r'\s+', '', str(value).upper())
-
-class MarineVesselName(CharField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def get_prep_value(self, value):
-        if value:
-            value = sub(r'\s+', ' ', str(value).upper().strip())
-            value = sub(r'^M[^a-zA-Z]*V\s*', '', value)
-            return value
