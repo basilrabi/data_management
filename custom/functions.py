@@ -92,6 +92,7 @@ def get_assay_constraints(data):
     return [
         CheckConstraint(check=Q(al__lte=100), name=f'al_max_100_{data}'),
         CheckConstraint(check=Q(al2o3__lte=100), name=f'al2o3_max_100_{data}'),
+        CheckConstraint(check=Q(arsenic__lte=100), name=f'arsenic_max_100_{data}'),
         CheckConstraint(check=Q(c__lte=100), name=f'c_max_100_{data}'),
         CheckConstraint(check=Q(cao__lte=100), name=f'cao_max_100_{data}'),
         CheckConstraint(check=Q(co__lte=100), name=f'co_max_100_{data}'),
@@ -110,6 +111,7 @@ def get_assay_constraints(data):
         CheckConstraint(check=Q(moisture__lte=100), name=f'moisture_max_100_{data}'),
         CheckConstraint(check=Q(al__gte=0), name=f'al_min_0_{data}'),
         CheckConstraint(check=Q(al2o3__gte=0), name=f'al2o3_min_0_{data}'),
+        CheckConstraint(check=Q(arsenic__gte=0), name=f'arsenic_min_0_{data}'),
         CheckConstraint(check=Q(c__gte=0), name=f'c_min_0_{data}'),
         CheckConstraint(check=Q(cao__gte=0), name=f'cao_min_0_{data}'),
         CheckConstraint(check=Q(co__gte=0), name=f'co_min_0_{data}'),

@@ -101,6 +101,7 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
         self.fields = (
             'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
             'al2o3',
+            'arsenic',
             'cao',
             'co',
             'cr2o3',

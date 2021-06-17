@@ -55,6 +55,9 @@ class AssaySample(Model):
     al2o3 = DecimalField(
         '%Al₂O₃', max_digits=6, decimal_places=4, null=True, blank=True
     )
+    arsenic = DecimalField(
+        '%As', max_digits=6, decimal_places=4, null=True, blank=True
+    )
     c = DecimalField(
         '%C', max_digits=6, decimal_places=4, null=True, blank=True
     )
@@ -111,6 +114,7 @@ class AssaySample(Model):
         if (
                 self.al is not None or \
                 self.al2o3 is not None or \
+                self.arsenic is not None or \
                 self.c is not None or \
                 self.cao is not None or \
                 self.co is not None or \
