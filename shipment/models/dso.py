@@ -289,10 +289,10 @@ class LayDaysStatement(Model):
         help_text='Agreed loading rate (tons per day) or CQD days.'
     )
     laytime_terms = NameField(max_length=20, null=True, blank=True)
-    demurrage_rate = PositiveSmallIntegerField(
+    demurrage_rate = PositiveIntegerField(
         default=11000, help_text='US Dollar per day'
     )
-    despatch_rate = PositiveSmallIntegerField(
+    despatch_rate = PositiveIntegerField(
         default=5500, help_text='US Dollar per day'
     )
     can_test = PositiveSmallIntegerField(
