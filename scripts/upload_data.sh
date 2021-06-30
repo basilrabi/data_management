@@ -69,6 +69,8 @@ sql_script "upload_data" "location_anchorage" && \
 vacuum "location_anchorage" && \
 sql_script "upload_data" "shipment_laydaysdetail" && \
 vacuum "shipment_laydaysdetail" && \
+sql_script "upload_data" "shipment_laydaysdetailcomputed" && \
+vacuum "shipment_laydaysdetailcomputed" && \
 sql_script "upload_data" "shipment_trip" && \
 vacuum "shipment_trip" && \
 sql_script "upload_data" "shipment_tripdetail" && \

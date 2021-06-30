@@ -42,6 +42,7 @@ download_sql shipment_approvedlaydaysstatement && \
 download_sql shipment_buyer && \
 download_sql shipment_destination && \
 download_sql shipment_laydaysdetail && \
+download_sql shipment_laydaysdetailcomputed && \
 download_sql shipment_laydaysstatement && \
 download_sql shipment_lct && \
 download_sql shipment_lctcontract && \
