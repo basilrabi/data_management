@@ -30,4 +30,6 @@ FROM sampling_shipmentloadingassay a
         ON statement.shipment_id = s.id
     LEFT JOIN custom_user u
         ON u.id = a.chemist_id
-ORDER BY statement.completed_loading DESC
+ORDER BY
+    statement.completed_loading DESC,
+    s.name DESC

@@ -28,4 +28,6 @@ FROM sampling_shipmentdischargeassay a
         ON s.id = a.shipment_id
     LEFT JOIN shipment_laydaysstatement statement
         ON statement.shipment_id = s.id
-ORDER BY statement.completed_loading
+ORDER BY
+    statement.completed_loading,
+    s.name

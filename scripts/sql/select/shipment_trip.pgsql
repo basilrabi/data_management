@@ -12,4 +12,5 @@ FROM shipment_trip
         ON shipment_trip.vessel_id = shipment_vessel.id
 ORDER BY
     shipment_lct.name,
-    shipment_trip.interval_from
+    shipment_trip.interval_from,
+    shipment_vessel.name

@@ -25,6 +25,7 @@ download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql inventory_block && \
 download_sql inventory_clustered_block && \
+download_sql location_anchorage && \
 download_sql location_cluster && \
 download_sql location_clusterlayout && \
 download_sql location_drillhole && \
