@@ -1,6 +1,7 @@
 SELECT
     a.al,
     a.al2o3,
+    a.arsenic,
     a.c,
     a.cao,
     a.co,

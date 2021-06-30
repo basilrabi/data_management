@@ -2,6 +2,7 @@ CREATE TEMPORARY TABLE temp_sampling_shipmentdischargeassay
 (
     al numeric(6,4),
     al2o3 numeric(6,4),
+    arsenic numeric(6,4),
     c numeric(6,4),
     cao numeric(6,4),
     co numeric(6,4),
@@ -29,6 +30,7 @@ CREATE TEMPORARY TABLE temp_sampling_shipmentdischargeassay
 INSERT INTO sampling_shipmentdischargeassay (
     al,
     al2o3,
+    arsenic,
     c,
     cao,
     co,
@@ -53,6 +55,7 @@ INSERT INTO sampling_shipmentdischargeassay (
 SELECT
     a.al,
     a.al2o3,
+    a.arsenic,
     a.c,
     a.cao,
     a.co,
