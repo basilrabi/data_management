@@ -56,7 +56,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA staging TO reader;
 -- planning
 GRANT gradecontrol TO planning;
 GRANT survey TO planning;
-GRANT INSERT ON TABLE location_slice TO planning;
+GRANT DELETE, INSERT ON TABLE location_slice TO planning;
 GRANT UPDATE (depth)          ON TABLE inventory_block TO planning;
 GRANT UPDATE (z_present)      ON TABLE location_drillhole TO planning;
 GRANT UPDATE (layer, z)       ON TABLE location_slice TO planning;
