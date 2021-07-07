@@ -106,6 +106,7 @@ sql_script "upload_data" "location_drillhole" && \
 sql_script "upload_data" "sampling_drillcoresample" && \
 sql_script "lock" "location_cluster" && \
 sql_script "lock" "location_clusterlayout" && \
+sql_script "lock" "location_slice" && \
 echo "Setting up QGIS users'..." 2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user geology      with inherit encrypted password '$DATA_MANAGEMENT_GEOLOGY'"      2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user gradecontrol with inherit encrypted password '$DATA_MANAGEMENT_GRADECONTROL'" 2>&1 | tee -a log_upload_data && \

@@ -226,6 +226,7 @@ def setup_triggers():
         'function/insert_dummy_cluster',
         'lock/location_cluster',
         'lock/location_clusterlayout',
+        'lock/location_slice',
         'select/shipment_loadingrate',
         'select/shipment_number',
         'index/shipment_loadingrate',

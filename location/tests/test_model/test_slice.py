@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.gis.geos import LineString
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, InternalError
 
 from custom.functions import setup_triggers
 from location.models.source import Slice
@@ -47,3 +47,9 @@ class SliceTest(TestCase):
     def test_invalid_other_line(self):
         slice1 = Slice(z=100, layer=3, geom=open_string)
         self.assertRaises(IntegrityError, slice1.save)
+
+    def test_overlap(self):
+        slice1 = Slice(z=100, layer=2, geom=crest_line)
+        slice1.save()
+        slice2 = Slice(z=100, layer=2, geom=crest_line)
+        self.assertRaises(InternalError, slice2.save)
