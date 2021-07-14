@@ -31,6 +31,9 @@
 1. The content items may be placed on the same line as the delimters if the lines with the delimters do not exceed 80 characters.
 
 ```python3
+class SomeClass:
+    class AnotherClass:
+
         supervisor = ForeignKey(
             Person,
             on_delete=SET_NULL,
@@ -78,3 +81,21 @@ from .models.landuse import (
     WaterBody
 )
 ```
+
+## PGSQL
+
+1. One indentation level is 4 characters.
+1. Use `:=` for assignment while `=` to check for equality.
+1. Each clause of a query shall in a separate line.
+
+### Comments
+
+1. All comments shall not exceed 80 character per line.
+1. If comments are less than 3 lines, use `--` on each line.
+1. If comments are more than 2 lines, use
+
+### Identifiers
+
+1. Custom  identifiers shall be in small letters with words separated by underscore
+1. Built-in identifiers shall be in capital letters
+1. Avoid meaningless identifiers except for using table alias.

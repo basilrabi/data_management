@@ -224,6 +224,7 @@ def setup_triggers():
         'dump/location_mineblock',
         'function/get_ore_class',
         'function/insert_dummy_cluster',
+        'function/shipment_name_html',
         'lock/location_cluster',
         'lock/location_clusterlayout',
         'lock/location_slice',
@@ -233,9 +234,13 @@ def setup_triggers():
         'index/shipment_number',
         'trigger/inventory_block_exposed',
         'trigger/location_anchorage_update',
+        'trigger/location_clippedcluster_insert',
+        'trigger/location_clippedcluster_update',
         'trigger/location_cluster_insert',
         'trigger/location_cluster_update',
         'trigger/location_clusterlayout',
+        'trigger/location_crest_insert',
+        'trigger/location_crest_update',
         'trigger/location_drillhole_update'
     ]
     for query in pgsql:

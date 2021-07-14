@@ -1,18 +1,12 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.db.utils import IntegrityError, InternalError
+from django.db.utils import InternalError
 from django.test import TestCase
 from django.utils.dateparse import parse_date as pd
 
 from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.landuse import RoadArea
-from location.models.source import (
-    Cluster,
-    ClusterLayout,
-    DrillHole,
-    MineBlock,
-    Stockpile
-)
+from location.models.source import Cluster, ClusterLayout
 
 # pylint: disable=no-member
 
@@ -333,72 +327,3 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.ni, 0)
         self.assertEqual(cluster.fe, 0)
         self.assertEqual(cluster.co, 0)
-
-
-class DrillHoleTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        setup_triggers()
-
-    def setUp(self):
-        drillhole = DrillHole(name='MyHole')
-        drillhole.save()
-
-    def test_auto_geom_creation(self):
-        drillhole = DrillHole(name='MyOtherHole',
-                              x=591070,
-                              y=1051100)
-        drillhole.save()
-
-        drillhole = DrillHole.objects.get(name='MyOtherHole')
-        self.assertEqual(drillhole.geom, GEOSGeometry('SRID=3125;POINT (591070 1051100)'))
-
-    def test_auto_geom_update(self):
-        drillhole = DrillHole.objects.all().first()
-        drillhole.x = 591070
-        drillhole.save()
-
-        drillhole = DrillHole.objects.all().first()
-        self.assertEqual(drillhole.geom, None)
-
-        drillhole.y = 1051100
-        drillhole.save()
-
-        drillhole = DrillHole.objects.all().first()
-        self.assertEqual(drillhole.geom, GEOSGeometry('SRID=3125;POINT (591070 1051100)'))
-
-
-class MineBlockTest(TestCase):
-
-    def setUp(self):
-        pass
-
-    def test_name_is_unique_part1(self):
-        mb = MineBlock(ridge='T1', name='MB 201-A')
-        mb.save()
-        mb = MineBlock(ridge='T1', name='MB 201A')
-        self.assertRaises(IntegrityError, mb.save)
-
-    def test_name_is_unique_per_ridge_part_2(self):
-        mb = MineBlock(ridge='T1', name='MB 201-A')
-        mb.save()
-        mb = MineBlock(ridge='T2', name='201 A')
-        self.assertRaises(IntegrityError, mb.save)
-
-    def test_name_is_unique_per_ridge_part_3(self):
-        mb = MineBlock(ridge='T1', name='MB 201-A')
-        mb.save()
-        mb = MineBlock(ridge='T2', name='1 A')
-        self.assertEqual(None, mb.save())
-
-
-class StockpileTest(TestCase):
-
-    def setUp(self):
-        pass
-
-    def test_name_is_unique_per_ridge_part(self):
-        yard = Stockpile(name='LDA 1')
-        yard.save()
-        yard = Stockpile(name='LDA  1')
-        self.assertRaises(IntegrityError, yard.save)

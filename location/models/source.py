@@ -14,10 +14,14 @@ from django.contrib.gis.db.models import (
     PROTECT,
     PointField,
     PolygonField,
+    PositiveSmallIntegerField,
     Q,
     UniqueConstraint,
     SmallIntegerField
 )
+from django.db.models import indexes
+from django.db.models.deletion import CASCADE, SET_NULL
+from django.db.models.fields.related import OneToOneField
 
 from custom.fields import MineBlockField, NameField
 from custom.variables import ACI
@@ -35,75 +39,38 @@ RIDGES = (
 )
 
 
-class Cluster(Model):
+class BaseCluster(Model):
     """
     A group of adjacent `inventory.Blocks` with the same elevation at the same
     mine block.
     """
-    name = CharField(max_length=30)
-    z = SmallIntegerField(default=0)
-    count = IntegerField(
-        null=True,
-        blank=True,
-        help_text='A unique number for the cluster at the same grade classification and at the same mine block.'
-    )
-    ore_class = CharField(max_length=1, null=True, blank=True)
-    mine_block = CharField(max_length=20, null=True, blank=True)
-    ni = FloatField(default=0)
-    fe = FloatField(default=0)
-    co = FloatField(default=0)
-    distance_from_road = FloatField(default=0)
-    road = ForeignKey(
-        RoadArea,
-        null=True,
-        blank=True,
-        on_delete=PROTECT,
-        help_text='Road used to adjust the cluster geometry.'
-    )
     date_scheduled = DateField(
         null=True,
         blank=True,
         help_text='''Date when the cluster is to be excavated.
         When this date is set, the geometry cannot be changed.'''
     )
-    dumping_area = ForeignKey(
-        'Stockpile',
-        null=True,
-        blank=True,
-        on_delete=PROTECT,
-        help_text='Assigned dumping area.'
-    )
+    excavated = BooleanField(default=False)
     latest_layout_date = DateField(
         null=True,
         blank=True,
         help_text='''Latest date when the cluster is laid out on the field.
         This field is auto-generated based on ClusterLayout.'''
     )
-    excavation_rate = IntegerField(
-        null=True,
-        blank=True,
-        help_text='Percentage of blocks excavated.'
-    )
-    excavated = BooleanField(default=False)
+    mine_block = CharField(max_length=20, null=True, blank=True)
     modified = DateTimeField()
+    name = CharField(max_length=30)
+    ore_class = CharField(max_length=1, null=True, blank=True)
+    z = SmallIntegerField(default=0)
+
+    co = FloatField(default=0)
+    fe = FloatField(default=0)
+    ni = FloatField(default=0)
+
     geom = MultiPolygonField(srid=3125, null=True, blank=True)
 
     class Meta:
-        constraints = [
-            CheckConstraint(
-                check=Q(distance_from_road__gte=0),
-                name='non_negative_distance'
-            ),
-            UniqueConstraint(
-                fields=['count', 'ore_class', 'mine_block'],
-                name='unique_cluster_name'
-            )
-        ]
-        indexes = [
-            Index(fields=['z']),
-            Index(fields=['mine_block', 'z'])
-        ]
-        ordering = ['ore_class', 'count']
+        abstract = True
 
     def feature_as_str(self):
         """
@@ -125,6 +92,68 @@ class Cluster(Model):
         return self.name
 
 
+class ClippedCluster(BaseCluster):
+    """
+    Cluster clipped using Crest. Majority of the fields come from Cluster
+    while data updates are purely based on triggers.
+    """
+    cluster = OneToOneField('Cluster', on_delete=CASCADE)
+
+    class Meta:
+        indexes = [
+            Index(fields=['z']),
+            Index(fields=['mine_block', 'z'])
+        ]
+
+
+class Cluster(BaseCluster):
+    """
+    Created by grade control.
+    """
+    count = IntegerField(
+        null=True,
+        blank=True,
+        help_text='A unique number for the cluster at the same grade classification and at the same mine block.'
+    )
+    distance_from_road = FloatField(default=0)
+    road = ForeignKey(
+        RoadArea,
+        null=True,
+        blank=True,
+        on_delete=PROTECT,
+        help_text='Road used to adjust the cluster geometry.'
+    )
+    dumping_area = ForeignKey(
+        'Stockpile',
+        null=True,
+        blank=True,
+        on_delete=PROTECT,
+        help_text='Assigned dumping area.'
+    )
+    excavation_rate = IntegerField(
+        null=True,
+        blank=True,
+        help_text='Percentage of blocks excavated.'
+    )
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(distance_from_road__gte=0),
+                name='non_negative_distance'
+            ),
+            UniqueConstraint(
+                fields=['count', 'ore_class', 'mine_block'],
+                name='unique_cluster_name'
+            )
+        ]
+        indexes = [
+            Index(fields=['z']),
+            Index(fields=['mine_block', 'z'])
+        ]
+        ordering = ['ore_class', 'count']
+
+
 class ClusterLayout(Model):
     """
     Contains layout date of clusters since each cluster can be laid out many
@@ -135,6 +164,18 @@ class ClusterLayout(Model):
         help_text='''Date when the cluster is laid out on the field. This date
         cannot be filled out when the date scheduled is still empty.'''
     )
+
+
+class Crest(Model):
+    """
+    Polygon version of a crest from Slice.
+    """
+    slice = OneToOneField('Slice', null=True, blank=True, on_delete=SET_NULL)
+    z = PositiveSmallIntegerField()
+    geom = MultiPolygonField(srid=3125)
+
+    class Meta:
+        indexes = [Index(fields=['z'])]
 
 
 class DrillHole(Model):

@@ -28,6 +28,9 @@ upload_ogr () {
     echo "ogr $1, $time_elapsed" >> log_upload_data_time.csv
 }
 
+sql_script "function" "get_ore_class" && \
+sql_script "function" "shipment_name_html" && \
+sql_script "function" "insert_dummy_cluster" && \
 sql_script "upload_data" "inventory_block" && \
 upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \
@@ -45,6 +48,10 @@ sql_script "upload_data" "inventory_clustered_block" && \
 vacuum "inventory_block" && \
 sql_script "upload_data" "compute_location_cluster_excavation_rate" && \
 sql_script "upload_data" "compute_location_cluster_latest_layout_date" && \
+sql_script "upload_data" "location_crest" && \
+vacuum "location_crest" && \
+sql_script "upload_data" "location_clippedcluster" && \
+vacuum "location_clippedcluster" && \
 sql_script "upload_data" "sampling_laboratory" && \
 vacuum "sampling_laboratory" && \
 sql_script "upload_data" "sampling_lithology" && \
@@ -93,17 +100,19 @@ sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
 vacuum "sampling_shipmentloadinglotassay" && \
 sql_script "upload_data" "sampling_approvedshipmentloadingassay" && \
 vacuum "sampling_approvedshipmentloadingassay" && \
-sql_script "function" "get_ore_class" && \
-sql_script "function" "shipment_name_html" && \
-sql_script "function" "insert_dummy_cluster" && \
 sql_script "trigger" "inventory_block_exposed" && \
 sql_script "trigger" "location_anchorage_update" && \
+sql_script "trigger" "location_clippedcluster_insert" && \
+sql_script "trigger" "location_clippedcluster_update" && \
 sql_script "trigger" "location_cluster_update" && \
 sql_script "trigger" "location_clusterlayout" && \
+sql_script "trigger" "location_crest_insert" && \
+sql_script "trigger" "location_crest_update" && \
 sql_script "trigger" "location_drillhole_update" && \
 psql -h $db_host -p $db_port -U $db_user -w $db_name -c "select insert_dummy_cluster()"
 sql_script "upload_data" "location_drillhole" && \
 sql_script "upload_data" "sampling_drillcoresample" && \
+sql_script "constraint" "location_slice" && \
 sql_script "lock" "location_cluster" && \
 sql_script "lock" "location_clusterlayout" && \
 sql_script "lock" "location_slice" && \

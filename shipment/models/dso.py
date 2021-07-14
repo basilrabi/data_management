@@ -818,6 +818,7 @@ class ShipmentNumber(Model):
     """
     shipment = OneToOneField(Shipment, on_delete=DO_NOTHING)
     number = CharField(max_length=10, unique=True)
+
     class Meta:
         managed = False
         db_table = 'shipment_number'
