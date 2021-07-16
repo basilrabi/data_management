@@ -1,0 +1,7 @@
+GRANT USAGE ON SCHEMA public     TO reader;
+GRANT USAGE ON SCHEMA staging    TO reader;
+GRANT USAGE ON SCHEMA topography TO reader;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public     TO reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA staging    TO reader;
+GRANT SELECT ON ALL TABLES IN SCHEMA topography TO reader;

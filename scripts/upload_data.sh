@@ -122,7 +122,11 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user gradecontro
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user planning     with inherit encrypted password '$DATA_MANAGEMENT_PLANNING'"     2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user reader       with inherit encrypted password '$DATA_MANAGEMENT_READER'"       2>&1 | tee -a log_upload_data && \
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create user survey       with inherit encrypted password '$DATA_MANAGEMENT_SURVEY'"       2>&1 | tee -a log_upload_data && \
-sql_script "permission" "all"
+sql_script "permission" "reader"
+sql_script "permission" "geology"
+sql_script "permission" "gradecontrol"
+sql_script "permission" "survey"
+sql_script "permission" "planning"
 sql_script "helper" "excavate_inventory_block"
 sql_script "helper" "excavate_sampling_drillcoresample"
 sql_script "helper" "update_location_drillhole_z_present"

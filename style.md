@@ -99,3 +99,16 @@ from .models.landuse import (
 1. Custom  identifiers shall be in small letters with words separated by underscore
 1. Built-in identifiers shall be in capital letters
 1. Avoid meaningless identifiers except for using table alias.
+
+### Permissions
+
+1. The permissions file of one role shall be on its own file.
+1. The grant permissions shall be grouped in the following order:
+    1. Granting role to a role
+    1. Granting permission on a schema
+    1. Granting permission on a table
+    1. Granting permission on a sequence
+1. Permissions shall be arranged in alphabetical order.
+1. Each privilege type and group shall be separated by 1 line
+1. For each grouped permissions with the same privilege type, align all clauses.
+1. Each update privilege of a column shall be on its own line and ordered by table first then by columns.
