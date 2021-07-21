@@ -1,34 +1,55 @@
 CREATE MATERIALIZED VIEW shipment_number AS
-WITH aa as (
+WITH raw_stamps AS (
     SELECT
         a.id,
         a.name,
-        b.arrival_tmc date_a,
-        MAX(c.interval_from) date_b
+        b.arrival_tmc,
+        b.completed_loading,
+        MAX(c.interval_from) last_detail
     FROM shipment_shipment a
-    LEFT JOIN shipment_laydaysstatement b
-        ON a.id = b.shipment_id
-    LEFT JOIN shipment_laydaysdetail c
-        ON b.id = c.laydays_id
-    GROUP BY a.id, a.name, b.arrival_tmc
+        LEFT JOIN shipment_laydaysstatement b
+            ON a.id = b.shipment_id
+        LEFT JOIN shipment_laydaysdetail c
+            ON b.id = c.laydays_id
+    GROUP BY
+        a.id,
+        a.name,
+        b.arrival_tmc,
+        b.completed_loading
 ),
-bb as (
+coalesced_stamps AS (
     SELECT
-        id, name, date_a, date_b,
-        COALESCE(date_b, date_a, '2100-01-01 00:00:00'::timestamp) time_stamp
-    FROM aa
+        id,
+        arrival_tmc,
+        completed_loading,
+        last_detail,
+        name,
+        COALESCE(
+            last_detail,
+            arrival_tmc,
+            '2100-01-01 00:00:00'::timestamp
+        ) time_stamp
+    FROM raw_stamps
 ),
-cc as (
-    SELECT *, date_trunc('year', bb.time_stamp) year_begin
-    FROM bb
+year_added AS (
+    SELECT *, DATE_TRUNC('year', time_stamp) year_begin
+    FROM coalesced_stamps
 ),
-dd as (
+numbered AS (
     SELECT
-        id, time_stamp, EXTRACT(YEAR FROM time_stamp)::text the_year,
-        ROW_NUMBER () OVER (PARTITION BY year_begin ORDER BY date_b, date_a, name) shipment_number
-    FROM cc
+        id,
+        EXTRACT(YEAR FROM time_stamp)::text the_year,
+        ROW_NUMBER () OVER (
+            PARTITION BY year_begin
+            ORDER BY
+                completed_loading ASC NULLS LAST,
+                arrival_tmc ASC NULLS LAST,
+                last_detail ASC NULLS LAST,
+                name ASC
+        ) shipment_number
+    FROM year_added
 )
 SELECT
     id shipment_id,
     the_year || '-' || LPAD(shipment_number::text, 2, '0') number
-FROM dd
+FROM numbered
