@@ -87,6 +87,7 @@ from .models.landuse import (
 1. One indentation level is 4 characters.
 1. Use `:=` for assignment while `=` to check for equality.
 1. Each clause of a query shall in a separate line.
+1. Limit identifiers to 63 characters.
 
 ### Comments
 

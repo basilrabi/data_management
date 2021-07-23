@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION update_location_clippedcluster_geom_from_location_cluster_fields()
+CREATE OR REPLACE FUNCTION update_location_clippedcluster_geom_from_location_cluster_field()
 RETURNS trigger AS
 $BODY$
 -- If location_cluster fields are updated, update the other fields of
@@ -31,7 +31,7 @@ AFTER UPDATE OF
     z
 ON location_cluster
 FOR EACH ROW
-EXECUTE PROCEDURE update_location_clippedcluster_geom_from_location_cluster_fields();
+EXECUTE PROCEDURE update_location_clippedcluster_geom_from_location_cluster_field();
 
 CREATE OR REPLACE FUNCTION update_location_clippedcluster_geom_from_location_cluster_geom()
 RETURNS trigger AS
@@ -253,7 +253,7 @@ END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS location_clippedcluster_property_update
-ON location_cluster;
+ON location_clippedcluster;
 CREATE TRIGGER location_clippedcluster_property_update
 AFTER UPDATE OF geom ON location_clippedcluster
 FOR EACH ROW
@@ -262,7 +262,7 @@ WHEN (ST_AsText(NEW.geom) <> ST_AsText(OLD.geom) OR
       (NEW.geom IS NULL AND OLD.geom IS NOT NULL))
 EXECUTE PROCEDURE update_location_clippedcluster_property();
 
-CREATE OR REPLACE FUNCTION update_location_clippedcluster_property_from_inventory_block_update()
+CREATE OR REPLACE FUNCTION update_clippedcluster_property_from_inventory_block_update()
 RETURNS trigger AS
 $BODY$
 /* Whenever there is a change in the ni, fe, and co columns of inventory_block,
@@ -324,4 +324,4 @@ WHEN (
         OR NEW.ni <> OLD.ni
     )
 )
-EXECUTE PROCEDURE update_location_clippedcluster_property_from_inventory_block_update();
+EXECUTE PROCEDURE update_clippedcluster_property_from_inventory_block_update();
