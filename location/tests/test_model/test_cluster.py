@@ -327,3 +327,23 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.ni, 0)
         self.assertEqual(cluster.fe, 0)
         self.assertEqual(cluster.co, 0)
+
+    def test_updating_block_updates_cluster(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.ni, 1)
+        self.assertEqual(cluster.fe, 40)
+        self.assertEqual(cluster.co, 0.1)
+
+        # Update block
+        block.ni = 2
+        block.fe = 45
+        block.co = 0.05
+        block.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.ni, 2)
+        self.assertEqual(cluster.fe, 45)
+        self.assertEqual(cluster.co, 0.05)

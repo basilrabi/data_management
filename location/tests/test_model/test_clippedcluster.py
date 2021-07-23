@@ -40,6 +40,27 @@ class ClippedClusterTest(TestCase):
         cluster = Cluster(name='c1')
         cluster.save()
 
+    def test_update_on_block_update(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        cluster.refresh_from_db()
+        clipped_cluster = ClippedCluster.objects.get(name=cluster.name)
+        self.assertEqual(clipped_cluster.ni, 1)
+        self.assertEqual(clipped_cluster.fe, 40)
+        self.assertEqual(clipped_cluster.co, 0.1)
+
+        # Update block
+        block.ni = 2
+        block.fe = 45
+        block.co = 0.05
+        block.save()
+        clipped_cluster.refresh_from_db()
+        self.assertEqual(clipped_cluster.ni, 2)
+        self.assertEqual(clipped_cluster.fe, 45)
+        self.assertEqual(clipped_cluster.co, 0.05)
+
     def test_update_on_cluster_update(self):
         # 1 block assigned
         cluster = Cluster.objects.get(name='c1')

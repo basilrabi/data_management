@@ -261,3 +261,67 @@ WHEN (ST_AsText(NEW.geom) <> ST_AsText(OLD.geom) OR
       (NEW.geom IS NOT NULL AND OLD.geom IS NULL) OR
       (NEW.geom IS NULL AND OLD.geom IS NOT NULL))
 EXECUTE PROCEDURE update_location_clippedcluster_property();
+
+CREATE OR REPLACE FUNCTION update_location_clippedcluster_property_from_inventory_block_update()
+RETURNS trigger AS
+$BODY$
+/* Whenever there is a change in the ni, fe, and co columns of inventory_block,
+ * columns ni, fe, co, and ore_class are also updated.
+ */
+BEGIN
+    WITH area_grade AS (
+        SELECT
+            ST_Area(
+                ST_Intersection(
+                    ST_Expand(a.geom, 5),
+                    b.geom
+                )
+            ) area,
+            a.co,
+            a.fe,
+            a.ni
+        FROM inventory_block a,
+            location_clippedcluster b
+        WHERE a.cluster_id = NEW.cluster_id
+            AND b.cluster_id = NEW.cluster_id
+    ),
+    area_totals AS (
+        SELECT
+            SUM(co * area) co_area,
+            SUM(fe * area) fe_area,
+            SUM(ni * area) ni_area,
+            SUM(area) total_area
+        FROM area_grade
+    ),
+    average_grade AS (
+        SELECT
+            round((co_area / total_area)::numeric, 2) co,
+            round((fe_area / total_area)::numeric, 2) fe,
+            round((ni_area / total_area)::numeric, 2) ni
+        FROM area_totals
+    )
+    UPDATE location_clippedcluster
+    SET co = a.co,
+        ni = a.ni,
+        fe = a.fe,
+        ore_class = get_ore_class(a.ni, a.fe)
+    FROM average_grade a
+    WHERE cluster_id = NEW.cluster_id;
+    RETURN NULL;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS location_clippedcluster_property_update_from_inventory_block_update
+ON location_cluster;
+CREATE TRIGGER location_clippedcluster_property_update_from_inventory_block_update
+AFTER UPDATE OF co, fe, ni ON inventory_block
+FOR EACH ROW
+WHEN (
+    NEW.cluster_id IS NOT NULL
+    AND (
+        NEW.co <> OLD.co
+        OR NEW.fe <> OLD.fe
+        OR NEW.ni <> OLD.ni
+    )
+)
+EXECUTE PROCEDURE update_location_clippedcluster_property_from_inventory_block_update();
