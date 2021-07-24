@@ -1,6 +1,6 @@
 GRANT reader TO gradecontrol;
 
-GRANT CREATE SCHEMA staging TO gradecontrol;
+GRANT CREATE ON SCHEMA staging TO gradecontrol;
 
 GRANT INSERT ON TABLE location_cluster   TO gradecontrol;
 GRANT INSERT ON TABLE location_stockpile TO gradecontrol;
