@@ -330,6 +330,10 @@ class ClusterTest(TestCase):
 
     def test_updating_block_updates_cluster(self):
         cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b2')
+        block.cluster = cluster
+        block.save()
+        cluster = Cluster.objects.get(name='111')
         block = Block.objects.get(name='b1')
         block.cluster = cluster
         block.save()

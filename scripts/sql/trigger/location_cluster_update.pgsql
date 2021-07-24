@@ -1,3 +1,27 @@
+CREATE OR REPLACE FUNCTION add_dummy_location_cluster()
+RETURNS TRIGGER AS
+$BODY$
+-- Always maintain a dummy cluster.
+BEGIN
+    IF NOT EXISTS(
+        SELECT *
+        FROM location_cluster
+        WHERE name = '111'
+    ) THEN
+        PERFORM insert_dummy_cluster();
+    END IF;
+    RETURN NULL;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS location_cluster_dummy_insert
+ON location_cluster;
+CREATE TRIGGER location_cluster_dummy_insert
+AFTER INSERT ON location_cluster
+FOR EACH ROW
+WHEN (NEW.name <> '111')
+EXECUTE PROCEDURE add_dummy_location_cluster();
+
 CREATE OR REPLACE FUNCTION update_location_cluster_excavated()
 RETURNS trigger AS
 $BODY$
@@ -333,7 +357,7 @@ BEGIN
             FROM location_cluster, e, f
             WHERE location_cluster.id <> NEW.id AND
                   location_cluster.ore_class = f.ore_class AND
-                  substring(location_cluster.mine_block from '\d+') = substring(e.mine_block from '\d+')
+                  SUBSTRING(location_cluster.mine_block FROM '\d+') = SUBSTRING(e.mine_block FROM '\d+')
         ),
         h as (
             SELECT generate_series(1, max(g.count) + 1, 1) counts
@@ -393,7 +417,12 @@ $BODY$
  * columns ni, fe, co, and ore_class are also updated.
  */
 BEGIN
-    WITH area_grade AS (
+    WITH affected_cluster AS (
+        SELECT id, geom, mine_block
+        FROM location_cluster
+        WHERE id = NEW.cluster_id
+    ),
+    area_grade AS (
         SELECT
             ST_Area(
                 ST_Intersection(
@@ -404,10 +433,8 @@ BEGIN
             a.co,
             a.fe,
             a.ni
-        FROM inventory_block a,
-            location_cluster b
+        FROM inventory_block a, affected_cluster b
         WHERE a.cluster_id = NEW.cluster_id
-            AND b.id = NEW.cluster_id
     ),
     area_totals AS (
         SELECT
@@ -423,20 +450,51 @@ BEGIN
             round((fe_area / total_area)::numeric, 2) fe,
             round((ni_area / total_area)::numeric, 2) ni
         FROM area_totals
+    ),
+    new_class AS (
+        SELECT get_ore_class(ni, fe) ore_class
+        FROM average_grade
+    ),
+    count_list AS (
+        SELECT count
+        FROM location_cluster a,
+            new_class b ,
+            affected_cluster c
+        WHERE a.id <> NEW.cluster_id AND
+            a.ore_class = b.ore_class AND
+            SUBSTRING(a.mine_block FROM '\d+') = SUBSTRING(c.mine_block FROM '\d+')
+    ),
+    count_choice AS (
+        SELECT GENERATE_SERIES(1, MAX(a.count) + 1) count
+        FROM count_list a
+    ),
+    count_staging AS (
+        SELECT MIN(a.count) count
+        FROM count_choice a
+        WHERE a.count NOT IN  (
+            SELECT count
+            FROM count_list
+        )
     )
     UPDATE location_cluster
     SET co = a.co,
         ni = a.ni,
         fe = a.fe,
-        ore_class = get_ore_class(a.ni, a.fe)
-    FROM average_grade a
+        ore_class = b.ore_class,
+        count = CASE
+            WHEN c.count IS NULL THEN 1
+            ELSE c.count
+            END
+    FROM average_grade a,
+        new_class b,
+        count_staging c
     WHERE id = NEW.cluster_id;
     RETURN NULL;
 END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS location_cluster_property_update_from_inventory_block_update
-ON location_cluster;
+ON inventory_block;
 CREATE TRIGGER location_cluster_property_update_from_inventory_block_update
 AFTER UPDATE OF co, fe, ni ON inventory_block
 FOR EACH ROW
