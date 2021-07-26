@@ -1,6 +1,6 @@
 SELECT
-    EXTRACT(year FROM detail_from.interval_from)::integer AS year,
-    EXTRACT(month FROM detail_from.interval_from)::integer AS month,
+    EXTRACT(year FROM ld_statement.completed_loading)::integer AS year,
+    EXTRACT(month FROM ld_statement.completed_loading)::integer AS month,
     shipment.name,
     detail_from.laytime_rate,
 	REPLACE(detail_from.interval_from::text, '+08', '') as interval_start,

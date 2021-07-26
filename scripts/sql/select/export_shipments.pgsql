@@ -59,6 +59,7 @@ FROM shipment_shipment shipment
         WHERE interval_class = 'end'
             AND laydays_id = b.id
     ) le ON true
+WHERE b.completed_loading IS NOT NULL
 GROUP BY
     shipment.dead_freight,
     shipment.name,
