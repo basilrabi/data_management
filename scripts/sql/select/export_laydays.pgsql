@@ -1,22 +1,31 @@
 SELECT
-	shipment_shipment.name,
-	replace(tab1.interval_from::text, '+08', '') as from,
-	tab2.to,
-	tab1.interval_class,
-	tab1.remarks as remarks_from,
-	tab2.remarks as remarks_to
-FROM shipment_laydaysdetail tab1
-	LEFT JOIN shipment_laydaysstatement
-		ON tab1.laydays_id = shipment_laydaysstatement.id
-	LEFT JOIN shipment_shipment
-		ON shipment_laydaysstatement.shipment_id = shipment_shipment.id
-	LEFT JOIN LATERAL (
-		SELECT
-			replace(shipment_laydaysdetail.interval_from::text, '+08', '') as to,
-			shipment_laydaysdetail.remarks
-		FROM shipment_laydaysdetail
-		WHERE shipment_laydaysdetail.interval_from > tab1.interval_from
-			AND shipment_laydaysdetail.laydays_id = tab1.laydays_id
-		LIMIT 1
-	) tab2 ON true
-WHERE tab2.to IS NOT NULL
+    EXTRACT(year FROM detail_from.interval_from)::integer AS year,
+    EXTRACT(month FROM detail_from.interval_from)::integer AS month,
+    shipment.name,
+    detail_from.laytime_rate,
+	REPLACE(detail_from.interval_from::text, '+08', '') as interval_start,
+    REPLACE(detail_to.interval_from::text, '+08', '') as interval_end,
+    EXTRACT(
+        epoch FROM detail_to.interval_from - detail_from.interval_from
+    ) * detail_from.laytime_rate / (100 * 60 * 60 * 24) lay_days,
+    detail_from.interval_class,
+    detail_from.remarks
+FROM shipment_laydaysdetailcomputed detail_from
+    LEFT JOIN LATERAL (
+        SELECT *
+        FROM shipment_laydaysdetailcomputed a
+        WHERE a.laydays_id = detail_from.laydays_id
+            AND a.interval_from > detail_from.interval_from
+        ORDER BY a.interval_from ASC
+        LIMIT 1
+    ) detail_to ON true
+    LEFT JOIN shipment_laydaysstatement ld_statement
+        ON ld_statement.id = detail_from.laydays_id
+    LEFT JOIN shipment_shipment shipment
+        ON shipment.id = ld_statement.id
+WHERE detail_to.interval_from IS NOT NULL
+    AND ld_statement.completed_loading IS NOT NULL
+ORDER BY
+    ld_statement.completed_loading,
+    shipment.name,
+    detail_from.interval_from

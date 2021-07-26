@@ -216,6 +216,12 @@ def data_export_lct_trips(request):
     """
     return export_sql('export_lcttrips', 'lct_trips')
 
+def data_export_shipments(request):
+    """
+    CSV view of Shipments intended for user's perusal.
+    """
+    return export_sql('export_shipments', 'shipments')
+
 def lay_days_statement_csv(request, name):
     statement = LayDaysStatement.objects.get(shipment__name=name)
     statement._compute()
