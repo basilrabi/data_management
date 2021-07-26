@@ -22,7 +22,7 @@ FROM shipment_laydaysdetailcomputed detail_from
     LEFT JOIN shipment_laydaysstatement ld_statement
         ON ld_statement.id = detail_from.laydays_id
     LEFT JOIN shipment_shipment shipment
-        ON shipment.id = ld_statement.id
+        ON shipment.id = ld_statement.shipment_id
 WHERE detail_to.interval_from IS NOT NULL
     AND ld_statement.completed_loading IS NOT NULL
 ORDER BY
