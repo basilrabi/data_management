@@ -178,6 +178,33 @@ class ClusterTest(TestCase):
         cluster.date_scheduled = '2020-05-30'
         self.assertRaises(InternalError, cluster.save)
 
+    def test_deletion_of_inventory_block(self):
+        cluster = Cluster.objects.get(name='c1')
+        block = Block.objects.get(name='b1')
+        block.cluster = cluster
+        block.save()
+        block = Block.objects.get(name='b2')
+        block.cluster = cluster
+        block.save()
+
+        # Delete 1 block
+        block.delete()
+        cluster.refresh_from_db()
+
+        self.assertEqual(cluster.geom.area, 100)
+        self.assertEqual(cluster.ni, 1)
+        self.assertEqual(cluster.fe, 40)
+        self.assertEqual(cluster.co, 0.1)
+
+        # Delete another block
+        block = Block.objects.get(name='b1')
+        block.delete()
+        cluster.refresh_from_db()
+
+        self.assertEqual(cluster.geom, None)
+        self.assertEqual(cluster.name, '111')
+        self.assertEqual(cluster.ni, 0)
+
     def test_geom_lock_if_date_scheduled(self):
         cluster = Cluster.objects.get(name='c1')
         block = Block.objects.get(name='b1')

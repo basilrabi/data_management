@@ -181,6 +181,67 @@ WHEN (NEW.cluster_id <> OLD.cluster_id OR
       (NEW.cluster_id IS NULL AND OLD.cluster_id IS NOT NULL))
 EXECUTE PROCEDURE update_location_cluster_geometry();
 
+CREATE OR REPLACE FUNCTION update_location_cluster_geometry_after_block_delete()
+RETURNS trigger AS
+$BODY$
+/* Whenever there is a change in the referred location_cluster in the foreign
+ * key column of `inventory_block`, the geom and elevation colummns of
+ * location_cluster is updated.
+ */
+DECLARE
+    cluster_geom geometry;
+    elevation integer;
+    road_buffer geometry;
+BEGIN
+    SELECT
+        ST_Multi(ST_Union(ST_Expand(geom, 5))),
+        mode() WITHIN GROUP (ORDER BY z)
+    INTO cluster_geom, elevation
+    FROM inventory_block
+    WHERE cluster_id = OLD.cluster_id;
+
+    IF (
+        (SELECT road_id
+            FROM location_cluster
+            WHERE id = OLD.cluster_id) IS NOT NULL
+    ) THEN
+        SELECT ST_MakeValid(ST_Buffer(
+            location_roadarea.geom,
+            location_cluster.distance_from_road
+        ))
+        INTO road_buffer
+        FROM location_cluster INNER JOIN location_roadarea
+        ON location_cluster.road_id = location_roadarea.id
+        WHERE location_cluster.id = OLD.cluster_id;
+
+        SELECT ST_Multi(ST_MakeValid(ST_Difference(
+            cluster_geom,
+            ST_MakeValid(road_buffer)
+        )))
+        INTO cluster_geom;
+    END IF;
+
+    UPDATE location_cluster
+    SET z = CASE
+                WHEN elevation IS NOT NULL THEN elevation
+                ELSE 0
+            END,
+        modified = NOW(),
+        geom = cluster_geom
+    WHERE id = OLD.cluster_id;
+
+    RETURN NULL;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS location_cluster_geometry_update_after_block_delete
+ON inventory_block;
+CREATE TRIGGER location_cluster_geometry_update_after_block_delete
+AFTER DELETE ON inventory_block
+FOR EACH ROW
+WHEN (OLD.cluster_id IS NOT NULL)
+EXECUTE PROCEDURE update_location_cluster_geometry_after_block_delete();
+
 CREATE OR REPLACE FUNCTION update_location_cluster_geometry_overlay()
 RETURNS trigger AS
 $BODY$
