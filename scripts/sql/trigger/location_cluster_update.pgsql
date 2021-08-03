@@ -354,9 +354,35 @@ $BODY$
  * of each row is based on their area of influence that intersects the geom
  * column of location_cluster.
  */
+DECLARE
+    mine_block_final text;
+    mine_block_intersected text;
+    mine_block_nearest text;
 BEGIN
     IF (NEW.geom IS NOT NULL) THEN
-        WITH a as (
+        WITH intersected_mine_blocks AS (
+            SELECT
+                name,
+                ST_Area(ST_Intersection(NEW.geom, geom)) area
+            FROM location_mineblock
+            WHERE ST_Intersects(geom, NEW.geom)
+        )
+        SELECT name
+        INTO mine_block_intersected
+        FROM intersected_mine_blocks
+        ORDER BY area DESC
+        LIMIT 1;
+
+        SELECT name
+        INTO mine_block_nearest
+        FROM location_mineblock
+        ORDER BY geom <-> NEW.geom
+        LIMIT 1;
+
+        SELECT COALESCE(mine_block_intersected, mine_block_nearest)
+        INTO mine_block_final;
+
+        WITH area_grade as (
             SELECT
                 ST_Area(
                     ST_Intersection(
@@ -375,76 +401,61 @@ BEGIN
             FROM inventory_block
             WHERE inventory_block.cluster_id = NEW.id
         ),
-        b as (
+        area_totals as (
             SELECT SUM(area) total_area,
                    SUM(ni * area) ni_area,
                    SUM(fe * area) fe_area,
                    SUM(co * area) co_area,
                    COUNT(*) block_count,
                    SUM(assumed_depth) available_block
-            FROM a
+            FROM area_grade
         ),
-        c as (
-            SELECT name,
-                   ST_Area(ST_Intersection(
-                       ST_MakeValid(NEW.geom),
-                       location_mineblock.geom
-                    )) area
-            FROM location_mineblock
-            WHERE ST_Intersects(ST_MakeValid(NEW.geom), location_mineblock.geom)
+        average_grade as (
+            SELECT
+                round((ni_area / total_area)::numeric, 2) ni,
+                round((fe_area / total_area)::numeric, 2) fe,
+                round((co_area / total_area)::numeric, 2) co,
+                (
+                    (block_count - available_block) * 100 / block_count::float8
+                )::integer excavation_rate
+            FROM area_totals
         ),
-        d as (
-            SELECT name, area
-            FROM c
-            ORDER BY area DESC
-            LIMIT 1
-        ),
-        e as (
-            SELECT round((b.ni_area / b.total_area)::numeric, 2) ni,
-                   round((b.fe_area / b.total_area)::numeric, 2) fe,
-                   round((b.co_area / b.total_area)::numeric, 2) co,
-                   d.name mine_block,
-                   (
-                       (b.block_count - b.available_block) * 100 / b.block_count::float8
-                    )::integer excavation_rate
-            FROM b, d
-        ),
-        f as (
+        ore_class as (
             SELECT get_ore_class(ni, fe) ore_class
-            FROM e
+            FROM average_grade
         ),
-        g as (
-            SELECT location_cluster.count
-            FROM location_cluster, e, f
-            WHERE location_cluster.id <> NEW.id AND
-                  location_cluster.ore_class = f.ore_class AND
-                  SUBSTRING(location_cluster.mine_block FROM '\d+') = SUBSTRING(e.mine_block FROM '\d+')
+        cluster_count as (
+            SELECT a.count
+            FROM location_cluster a, ore_class b
+            WHERE a.id <> NEW.id
+                AND a.ore_class = b.ore_class
+                AND SUBSTRING(a.mine_block FROM '\d+') = SUBSTRING(mine_block_final FROM '\d+')
         ),
-        h as (
-            SELECT generate_series(1, max(g.count) + 1, 1) counts
-            FROM g
+        cluster_count_options as (
+            SELECT generate_series(1, max(a.count) + 1, 1) counts
+            FROM cluster_count a
         ),
-        i as (
+        cluster_count_final as (
             SELECT min(counts) count
-            FROM h
+            FROM cluster_count_options
             WHERE counts NOT IN (
                 SELECT count
-                FROM g
+                FROM cluster_count
             )
         )
         UPDATE location_cluster
-        SET ni = e.ni,
-            fe = e.fe,
-            co = e.co,
-            mine_block = e.mine_block,
-            ore_class = f.ore_class,
+        SET ni = a.ni,
+            fe = a.fe,
+            co = a.co,
+            mine_block = mine_block_final,
+            ore_class = b.ore_class,
             count = CASE
-                    WHEN i.count IS NULL THEN 1
-                    ELSE i.count
+                    WHEN c.count IS NULL THEN 1
+                    ELSE c.count
                 END,
-            excavated = e.excavation_rate = 100,
-            excavation_rate = e.excavation_rate
-        FROM b, e, f, i
+            excavated = a.excavation_rate = 100,
+            excavation_rate = a.excavation_rate
+        FROM average_grade a, ore_class b, cluster_count_final c
         WHERE id = NEW.id;
     ELSE
         UPDATE location_cluster

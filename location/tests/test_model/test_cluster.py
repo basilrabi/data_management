@@ -17,20 +17,54 @@ class ClusterTest(TestCase):
         setup_triggers()
 
     def setUp(self):
-        block = Block(name='b1', z=99, ni=1, fe=40, co=0.1,
+        block = Block(name='b1',
+                      z=99,
+                      ni=1,
+                      fe=40,
+                      co=0.1,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
-        block = Block(name='b2', z=99, ni=2, fe=42, co=0.2,
+        block = Block(name='b2',
+                      z=99,
+                      ni=2,
+                      fe=42,
+                      co=0.2,
                       geom=GEOSGeometry('SRID=3125;POINT (591110 1051100)'))
         block.save()
-        block = Block(name='b3', z=102, ni=2, fe=42, co=0.2,
+        block = Block(name='b3',
+                      z=102,
+                      ni=2,
+                      fe=42,
+                      co=0.2,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051100)'))
         block.save()
-        block = Block(name='b4', z=99, ni=1, fe=40, co=0.1,
+        block = Block(name='b4',
+                      z=99,
+                      ni=1,
+                      fe=40,
+                      co=0.1,
                       geom=GEOSGeometry('SRID=3125;POINT (591100 1051090)'))
         block.save()
-        block = Block(name='b5', z=99, ni=1, fe=40, co=0.1,
+        block = Block(name='b5',
+                      z=99,
+                      ni=1,
+                      fe=40,
+                      co=0.1,
                       geom=GEOSGeometry('SRID=3125;POINT (591110 1051090)'))
+        block.save()
+        block = Block(name='T1-02-02030-S',
+                      z=114,
+                      ni=1.55,
+                      fe=13.28,
+                      co=0.02,
+                      geom=GEOSGeometry('SRID=3125;POINT (588455 1054115)'))
+        block.save()
+        block = Block(name='T1-02-02031-S',
+                      z=114,
+                      ni=1.46,
+                      fe=11.53,
+                      co=0.02,
+                      geom=GEOSGeometry('SRID=3125;POINT (588465 1054115)'))
         block.save()
         road = RoadArea(
             date_surveyed='2020-03-06',
@@ -89,6 +123,21 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.ni, 1.33)
         self.assertEqual(cluster.fe, 40.67)
         self.assertEqual(cluster.co, 0.13)
+
+    def test_correct_computation_even_with_no_mineblocks(self):
+        cluster = Cluster.objects.get(name='c1')
+        b1 = Block.objects.get(name='T1-02-02030-S')
+        b1.cluster = cluster
+        b1.save()
+        b2 = Block.objects.get(name='T1-02-02031-S')
+        b2.cluster = cluster
+        b2.save()
+        cluster.refresh_from_db()
+        self.assertEqual(cluster.geom.area, 200)
+        self.assertEqual(cluster.ni, 1.51)
+        self.assertEqual(cluster.fe, 12.41)
+        self.assertEqual(cluster.co, 0.02)
+        self.assertEqual(cluster.name, 'F1-114-202')
 
     def test_excavated_is_set(self):
         b4 = Block.objects.get(name='b4')
