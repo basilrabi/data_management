@@ -24,7 +24,10 @@ BEGIN
         '   SET depth = a.depth'
         '   FROM a'
         '   WHERE inventory_block.id = a.id'
-        '       AND a.depth < inventory_block.depth',
+        '       AND ('
+        '           inventory_block.depth IS NULL'
+        '               OR a.depth < inventory_block.depth'
+        '       )',
         topo_schema,
         topo_table
     );
