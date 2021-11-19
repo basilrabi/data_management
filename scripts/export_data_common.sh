@@ -61,3 +61,4 @@ echo "Exporting user_permissions..." && \
 curl $address/custom/export/user-permissions -o $datadir/user_permission.csv && \
 echo "Exporting users..." && \
 curl $address/custom/export/users -o $datadir/users.csv
+./scripts/R/export_external_data.R

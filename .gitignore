@@ -2,3 +2,5 @@ data/
 data_[0-9]?*/
 data_local*/
 log*
+.Rhistory
+.Rproj.user
