@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+source $HOME/.virtualenvs/data_management/bin/activate
+
 set -a
 . data_management/local.py
 set +a
@@ -130,3 +132,4 @@ sql_script "permission" "planning"
 sql_script "helper" "excavate_inventory_block"
 sql_script "helper" "excavate_sampling_drillcoresample"
 sql_script "helper" "update_location_drillhole_z_present"
+./scripts/R/upload_external_data.R 2>&1 | tee -a log_upload_data

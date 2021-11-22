@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+source $HOME/.virtualenvs/data_management/bin/activate
+
 set -a
 . data_management/local.py
 set +a

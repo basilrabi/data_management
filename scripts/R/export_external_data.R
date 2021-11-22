@@ -3,16 +3,17 @@
 library(DBI)
 library(RPostgres)
 library(dplyr)
-library(tmctools)
 
-db_host <- Sys.getenv("DATA_MANAGEMENT_DB_HOST")
-db_name <- Sys.getenv("DATA_MANAGEMENT_DB_NAME")
-db_user <- Sys.getenv("DATA_MANAGEMENT_DB_USER")
+datadir <- Sys.getenv("datadir")
+db_host <- Sys.getenv("db_host")
+db_name <- Sys.getenv("db_name")
+db_user <- Sys.getenv("db_user")
+db_port <- as.integer(Sys.getenv("db_port"))
 
 download_ogr <- function(schema_name, table_name, valid_file_name) {
   cmd <- sprintf(
-    'ogr2ogr -f "GPKG" data/external_tables/"%s-%s.gpkg" "PG:host=%s user=%s dbname=%s" "%s"."%s"',
-    schema_name, valid_file_name, db_host, db_user, db_name, schema_name, table_name
+    'ogr2ogr -f "GPKG" %s/external_tables/"%s.gpkg" "PG:host=%s user=%s dbname=%s" "%s"."%s"',
+    datadir, valid_file_name, db_host, db_user, db_name, schema_name, table_name
   )
   cat(cmd, "\n")
   if (system(cmd) != "0")
@@ -20,14 +21,10 @@ download_ogr <- function(schema_name, table_name, valid_file_name) {
   return(invisible(NULL))
 }
 
-sql <- function(x) {
-  tmctools::psql(db_host, db_user, db_name, x)
-}
-
 con <- DBI::dbConnect(RPostgres::Postgres(),
                       dbname = db_name,
                       host = db_host,
-                      port = 5432,
+                      port = db_port,
                       user = db_user)
 
 # Get non-standard tables
@@ -60,14 +57,24 @@ order by a.table_schema, a.table_name
 "
 
 external_tables <- RPostgres::dbGetQuery(conn = con, statement = query) %>%
-  dplyr::mutate(valid_name = gsub("/", "", table_name))
+  dplyr::mutate(
+    table_owner = dplyr::case_when(table_owner == db_user ~ as.character(NA),
+                                   TRUE ~ table_owner),
+    valid_name = paste(table_schema,
+                       gsub("/|\\s+", "", table_name),
+                       sep = "-")
+  )
 
-if (!dir.exists("data/external_tables"))
-  dir.create("data/external_tables")
+if (any(duplicated(external_tables$valid_name)))
+  stop("Duplicated name exists.")
+
+if (!dir.exists(paste0(datadir, "/external_tables")))
+  dir.create(paste0(datadir, "/external_tables"))
 
 write.csv(external_tables,
-          file = "data/external_tables/tables.csv",
-          row.names = FALSE)
+          file = paste0(datadir, "/external_tables/tables.csv"),
+          row.names = FALSE,
+          na = "")
 
 for (i in 1:nrow(external_tables)) {
   download_ogr(external_tables$table_schema[i],

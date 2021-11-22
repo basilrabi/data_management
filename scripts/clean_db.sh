@@ -1,22 +1,12 @@
 #!/usr/bin/bash
 
+source $HOME/.virtualenvs/data_management/bin/activate
+
 set -a
 . data_management/local.py
 set +a
 
 template=data_management_template
-
-if [ $# -gt 0 ]
-then
-    if [ $1 == light ]
-    then
-        echo "Using light database."
-        template=data_management_template_no_topo
-    else
-        echo "Only accepted argument is 'light'."
-        exit 1
-    fi
-fi
 
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists $db_name"
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists geology"
@@ -34,5 +24,3 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_nam
 # Set-up django database
 ./manage.py migrate
 ./manage.py createsuperuser --noinput
-
-psql -h $db_host -p $db_port -U $db_user -w $db_name -c "create schema staging"
