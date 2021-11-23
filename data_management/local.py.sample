@@ -1,5 +1,5 @@
 db_name='database_name'
-db_user='postgres_user'
+db_user='data_management'
 db_password='postgres_user_password'
 db_host='databse_host'
 db_port='5432'
