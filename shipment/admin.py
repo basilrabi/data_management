@@ -276,7 +276,7 @@ class LayDaysStatementAdmin(ModelAdmin):
 
 @register(Product)
 class ProductAdmin(ModelAdmin):
-    pass
+    list_display = ('__str__', 'ni', 'fe', 'moisture')
 
 
 @register(Shipment)
