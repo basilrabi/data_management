@@ -1,7 +1,5 @@
 #!/usr/bin/Rscript
 
-library(tmctools)
-
 db_host <- Sys.getenv("db_host")
 db_name <- Sys.getenv("db_name")
 db_password <- Sys.getenv("db_password")
@@ -9,6 +7,24 @@ db_port <- Sys.getenv("db_port")
 db_user <- Sys.getenv("db_user")
 
 external_tables <- read.csv("data/external_tables/tables.csv")
+
+psql <- function(db_host,
+                 db_user,
+                 db_name,
+                 query,
+                 ignore.stdout = TRUE,
+                 use_single_quoute = TRUE) {
+  cmd <- paste0("psql -h ", db_host, " -U ", db_user, " -d ", db_name, " -c")
+  if (use_single_quoute) {
+    cmd <- paste0(cmd, "'", query, "'")
+  } else {
+    cmd <- paste0(cmd, '"', query, '"')
+  }
+  if (system(cmd, ignore.stdout = ignore.stdout) != 0)
+    stop("PSQL command error.")
+
+  return(invisible(NULL))
+}
 
 upload_ogr <- function(schema_name, table_name, file_name, table_owner) {
   cmd <- sprintf(
@@ -33,7 +49,7 @@ upload_ogr <- function(schema_name, table_name, file_name, table_owner) {
       schema_name, table_name, table_owner
     )
     cat(cmd, "\n")
-    tmctools::psql(db_host, db_user, db_name, cmd)
+    psql(db_host, db_user, db_name, cmd)
   }
 
   return(invisible(NULL))
