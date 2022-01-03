@@ -4,12 +4,12 @@
 
 ### System packages
 
-The system packages below are required to be installed in Fedora 33+:
+The system packages below are required to be installed in Fedora 34+:
 
 - nginx
 - postgis-llvmjit
 - postgresql-llvmjit
-- python3
+- python3-devel
 - python3-virtualenvwrapper
 
 System packages are installed using `dnf`:
@@ -129,7 +129,7 @@ export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
 
 ### Serving
 
-#### Fedora 33+
+#### Fedora 34+
 
 See [server_conf](http://datamanagement.tmc.nickelasia.com:3000/basilrabi/server_conf) for:
 
