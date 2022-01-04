@@ -1,0 +1,11 @@
+{% extends "gis/openlayers-osm.html" %}
+{% load l10n %}
+
+{% block base_layer %}
+var base_layer = new ol.layer.Image({source: new ol.source.ImageWMS({
+    url: 'http://datamanagement.tmc.nickelasia.com:8010/ogc/topo',
+    params: {'LAYERS': 'Topography'},
+    serverType: 'qgis',
+    attributions: '© Taganito Mining Corporation',
+})});
+{% endblock %}

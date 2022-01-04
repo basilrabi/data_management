@@ -43,7 +43,7 @@ upload_ogr <- function(schema_name, table_name, file_name, table_owner) {
   if (system(cmd) != "0")
     stop("ogr2ogr error.")
 
-  if (table_owner != "") {
+  if (!table_owner %in% c("", "data_management")) {
     cmd <- sprintf(
       'ALTER TABLE \"%s\".\"%s\" OWNER TO %s',
       schema_name, table_name, table_owner
