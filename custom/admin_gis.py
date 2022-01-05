@@ -8,18 +8,18 @@ class TMCLocationWidget(OSMWidget):
     default_zoom = 14
     map_height = 600
     map_width = 800
-    template_name = 'custom/map-topo.html'
+    template_name = 'map/map-topo.html'
 
     class Media:
         extend = False
         css = {
             'all': (
-                'custom/css/ol.css',
+                'map/css/ol.css',
                 'gis/css/ol3.css',
             )
         }
         js = (
-            'custom/js/ol.js',
+            'map/js/ol.js',
             'gis/js/OLMapWidget.js',
         )
 
