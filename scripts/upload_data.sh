@@ -129,8 +129,20 @@ sql_script "permission" "geology"
 sql_script "permission" "gradecontrol"
 sql_script "permission" "survey"
 sql_script "permission" "planning"
-sql_script "permission" "data_management"
+if [ "$db_user" != "data_management" ];
+then
+    sed -e "s/data_management/$db_user/" scripts/sql/permission/data_management.pgsql > "scripts/sql/permission/$db_user.pgsql"
+    sql_script "permission" "$db_user"
+    rm "scripts/sql/permission/$db_user.pgsql"
+else
+    sql_script "permission" "data_management"
+fi
 sql_script "helper" "excavate_inventory_block"
 sql_script "helper" "excavate_sampling_drillcoresample"
 sql_script "helper" "update_location_drillhole_z_present"
 ./scripts/R/upload_external_data.R 2>&1 | tee -a log_upload_data
+sql_script "permission" "reader-default"
+sql_script "permission" "reader-default" "geology"
+sql_script "permission" "reader-default" "gradecontrol"
+sql_script "permission" "reader-default" "survey"
+sql_script "permission" "reader-default" "planning"
