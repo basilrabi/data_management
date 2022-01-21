@@ -28,6 +28,7 @@ from django.db.models import (
 from django.utils.html import mark_safe
 from django.utils.timezone import now
 from re import sub
+from time import sleep
 
 from custom.fields import AlphaNumeric, NameField, MarineVesselName
 from custom.functions import (
@@ -242,12 +243,16 @@ class ApprovedLayDaysStatement(Model):
         original_obj = ApprovedLayDaysStatement.objects.filter(id=self.id)
         if original_obj.exists():
             original_obj = original_obj[0]
+            shipment = self.statement.shipment
             if self.approved and not original_obj.approved:
-                shipment = self.statement.shipment
                 if shipment.demurrage is None and shipment.despatch is None:
                     shipment.demurrage = self.statement.demurrage
                     shipment.despatch = self.statement.despatch
                     shipment.save(refresh=False)
+            if not self.approved and original_obj.approved:
+                shipment.demurrage = None
+                shipment.despatch = None
+                shipment.save(refresh=False)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -358,8 +363,9 @@ class LayDaysStatement(Model):
         if not self.date_computed or self.date_saved > self.date_computed:
             self._clean()
             details = self.laydaysdetailcomputed_set.all()
-            if details.exists():
+            while details.exists():
                 details.delete()
+                sleep(1)
             if self.laydaysdetail_set.all().count() >= 1:
                 # Compute additional laytime
                 bonus_time = zero_time
