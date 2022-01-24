@@ -7,6 +7,7 @@ WITH cte AS (
         REPLACE(MIN(c.interval_from)::text, '+08', '') as loading_start,
         REPLACE(le.interval_from::text, '+08', '') as loading_end,
         d.name vessel,
+        destination.name destination,
         shipment.target_tonnage target_wmt,
         shipment.spec_moisture target_moisture,
         shipment.spec_ni,
@@ -44,6 +45,8 @@ WITH cte AS (
             'SRID=3125;POINT(589742 1056033)'::geometry
         ) / 1000 distance_from_wharf
     FROM shipment_shipment shipment
+        LEFT JOIN shipment_destination destination
+            ON shipment.destination_id = destination.id
         LEFT JOIN shipment_buyer buyer
             ON buyer.id = shipment.buyer_id
         LEFT JOIN sampling_shipmentloadingassay assay
@@ -68,6 +71,7 @@ WITH cte AS (
         ) le ON true
     WHERE b.completed_loading IS NOT NULL
     GROUP BY
+        destination.name,
         shipment.dead_freight,
         shipment.name,
         shipment.spec_moisture,
@@ -111,6 +115,7 @@ SELECT
     target_moisture,
     spec_ni,
     spec_fe,
+    destination,
     loading_wmt,
     loading_dmt,
     loading_ni,
@@ -146,6 +151,7 @@ GROUP BY
     target_moisture,
     spec_ni,
     spec_fe,
+    destination,
     loading_wmt,
     loading_dmt,
     loading_ni,
