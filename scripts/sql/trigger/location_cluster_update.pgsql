@@ -35,22 +35,28 @@ BEGIN
             SELECT
                 CASE
                     WHEN depth IS NULL THEN 1
-                    WHEN depth  > 0 THEN 1
+                    WHEN depth > 0 THEN 1
                     ELSE 0
-                END as assumed_depth
+                END as unexcavated,
+                CASE
+                    WHEN depth IS NULL THEN 0
+                    WHEN depth <= 3 THEN 0
+                    ELSE 1
+                END as unexposed
             FROM inventory_block
             WHERE cluster_id = NEW.cluster_id
         ),
         b as (
-            SELECT (
-                (COUNT(*) - SUM(assumed_depth)) * 100 / COUNT(*)::float8
-            )::integer excavation_rate
+            SELECT
+                ((COUNT(*) - SUM(unexcavated)) * 100 / COUNT(*)::float8)::integer excavation_rate,
+                ((COUNT(*) - SUM(unexposed)) * 100 / COUNT(*)::float8)::integer exposure_rate
             FROM a
         )
         UPDATE location_cluster
         SET
             excavated = b.excavation_rate = 100,
-            excavation_rate = b.excavation_rate
+            excavation_rate = b.excavation_rate,
+            exposure_rate = b.exposure_rate
         FROM b
         WHERE id = NEW.cluster_id;
     END IF;
@@ -395,9 +401,14 @@ BEGIN
                 co,
                 CASE
                     WHEN depth IS NULL THEN 1
-                    WHEN depth  > 0 THEN 1
+                    WHEN depth > 0 THEN 1
                     ELSE 0
-                END as assumed_depth
+                END as unexcavated,
+                CASE
+                    WHEN depth IS NULL THEN 0
+                    WHEN depth <= 3 THEN 0
+                    ELSE 1
+                END as unexposed
             FROM inventory_block
             WHERE inventory_block.cluster_id = NEW.id
         ),
@@ -407,7 +418,8 @@ BEGIN
                    SUM(fe * area) fe_area,
                    SUM(co * area) co_area,
                    COUNT(*) block_count,
-                   SUM(assumed_depth) available_block
+                   SUM(unexcavated) available_block,
+                   SUM(unexposed) unexposed_block
             FROM area_grade
         ),
         average_grade as (
@@ -417,7 +429,10 @@ BEGIN
                 round((co_area / total_area)::numeric, 2) co,
                 (
                     (block_count - available_block) * 100 / block_count::float8
-                )::integer excavation_rate
+                )::integer excavation_rate,
+                (
+                    (block_count - unexposed_block) * 100 / block_count::float8
+                )::integer exposure_rate
             FROM area_totals
         ),
         ore_class as (
@@ -454,7 +469,8 @@ BEGIN
                     ELSE c.count
                 END,
             excavated = a.excavation_rate = 100,
-            excavation_rate = a.excavation_rate
+            excavation_rate = a.excavation_rate,
+            exposure_rate = a.exposure_rate
         FROM average_grade a, ore_class b, cluster_count_final c
         WHERE id = NEW.id;
     ELSE

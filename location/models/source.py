@@ -135,6 +135,11 @@ class Cluster(BaseCluster):
         blank=True,
         help_text='Percentage of blocks excavated.'
     )
+    exposure_rate = IntegerField(
+        null=True,
+        blank=True,
+        help_text='Percentage of blocks either exposed or excavated.'
+    )
 
     class Meta:
         constraints = [

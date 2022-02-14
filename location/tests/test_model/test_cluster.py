@@ -139,7 +139,7 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.co, 0.02)
         self.assertEqual(cluster.name, 'F1-114-202')
 
-    def test_excavated_is_set(self):
+    def test_excavated_and_exposed_are_set(self):
         b4 = Block.objects.get(name='b4')
         b5 = Block.objects.get(name='b5')
         cluster = Cluster.objects.get(name='c1')
@@ -154,6 +154,7 @@ class ClusterTest(TestCase):
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
         self.assertEqual(0, cluster.excavation_rate)
+        self.assertEqual(100, cluster.exposure_rate)
 
         b4.cluster = None
         b4.save()
@@ -168,6 +169,7 @@ class ClusterTest(TestCase):
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(50, cluster.excavation_rate)
+        self.assertEqual(100, cluster.exposure_rate)
         self.assertEqual(False, cluster.excavated)
 
         b4.cluster = None
@@ -183,6 +185,7 @@ class ClusterTest(TestCase):
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(True, cluster.excavated)
+        self.assertEqual(100, cluster.exposure_rate)
         self.assertEqual(100, cluster.excavation_rate)
 
     def test_excavated_is_set_on_update(self):
@@ -191,7 +194,7 @@ class ClusterTest(TestCase):
         cluster = Cluster.objects.get(name='c1')
 
         # All blocks not excavated
-        b4.depth = 1
+        b4.depth = 4
         b4.cluster = cluster
         b4.save()
         b5.depth = 1
@@ -200,6 +203,7 @@ class ClusterTest(TestCase):
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
         self.assertEqual(0, cluster.excavation_rate)
+        self.assertEqual(50, cluster.exposure_rate)
 
         # Blocks partially excavated
         b4.depth = -1
@@ -207,6 +211,7 @@ class ClusterTest(TestCase):
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
         self.assertEqual(50, cluster.excavation_rate)
+        self.assertEqual(100, cluster.exposure_rate)
 
         # Blocks fully excavated
         b5.depth = -1
@@ -214,13 +219,15 @@ class ClusterTest(TestCase):
         cluster.refresh_from_db()
         self.assertEqual(True, cluster.excavated)
         self.assertEqual(100, cluster.excavation_rate)
+        self.assertEqual(100, cluster.exposure_rate)
 
         # Blocks editted
-        b5.depth = 1
+        b5.depth = 5
         b5.save()
         cluster.refresh_from_db()
         self.assertEqual(False, cluster.excavated)
         self.assertEqual(50, cluster.excavation_rate)
+        self.assertEqual(50, cluster.exposure_rate)
 
     def test_date_scheduled_lock_if_no_geom(self):
         cluster = Cluster.objects.get(name='c1')
