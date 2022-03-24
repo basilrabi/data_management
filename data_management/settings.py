@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_admin_multiple_choice_list_filter',
-    'import_export'
+    'import_export',
+    'comptrollership'
 ]
 
 MIDDLEWARE = [
