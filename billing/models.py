@@ -6,7 +6,7 @@ from django.db import models
 
 def filepath(instance, filename):
     filename = f"{instance.contractor}-{instance.purpose}-{instance.start_date}{instance.specification}.pdf"
-    return f"billing_scans/{instance.contractor}/{instance.purpose}/{filename}"
+    return f"billing/billing_scans/{instance.contractor}/{instance.purpose}/{filename}"
 
 class BillingTracker(models.Model):
 
@@ -14,7 +14,6 @@ class BillingTracker(models.Model):
         ('CKDI', 'CKDI'),
         ('TRGC', 'TRGC'),
         ('SDMC', 'SDMC'),
-        ('SKAFF', 'SKAFF'),
         ('HPK', 'HPK'),
         ('NB', 'NICKELBASE'),
         ('POL', 'POLARIS'),

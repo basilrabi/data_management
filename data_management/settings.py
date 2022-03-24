@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django_admin_multiple_choice_list_filter',
     'import_export',
-    'comptrollership'
+    'billing'
 ]
 
 MIDDLEWARE = [
