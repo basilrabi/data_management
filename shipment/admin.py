@@ -242,7 +242,8 @@ class LayDaysStatementAdmin(ModelAdmin):
         'despatch',
         'PDF',
         'csv',
-        'approved'
+        'approved',
+        'difference_with_assay'
     )
     readonly_fields = [
         'date_saved',
@@ -259,18 +260,23 @@ class LayDaysStatementAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(
-            approved=F('approvedlaydaysstatement__approved')
+            approved=F('approvedlaydaysstatement__approved'),
+            difference_with_assay=F('shipment__shipmentloadingassay__wmt') - F('tonnage')
         )
         return qs
 
     def approved(self, obj):
         return obj.approved
 
+    def difference_with_assay(self, obj):
+        return obj.difference_with_assay
+
     def object_name(self, obj):
         return LayDaysStatement.objects.get(id=obj.id).shipment.name_html()
 
     approved.admin_order_field = 'approved'
     approved.boolean = True
+    difference_with_assay.admin_order_field= 'difference_with_assay'
     object_name.short_description = 'Shipment'
 
 
