@@ -23,7 +23,10 @@ WITH cte AS (
         CASE
             WHEN dassay.wmt IS NOT NULL THEN
                 CASE
-                    WHEN shipment.name LIKE '%-C' THEN b.tonnage
+                    WHEN shipment.name LIKE '%B' THEN b.tonnage - shipment.boulders_tonnage
+                    WHEN shipment.name LIKE '%C' THEN b.tonnage
+                    WHEN shipment.name LIKE '%M' THEN dassay.wmt - shipment.boulders_tonnage
+                    WHEN shipment.name LIKE '%P' THEN b.tonnage - shipment.boulders_tonnage
                     ELSE dassay.wmt - shipment.boulders_tonnage
                 END
             ELSE NULL
