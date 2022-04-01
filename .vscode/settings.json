@@ -4,7 +4,6 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    "python.pythonPath": "~/.virtualenvs/data_management/bin/python",
-    "terminal.integrated.fontSize": 13,
-    "latex-workshop.latex.autoBuild.run": "never"
+    "python.defaultInterpreterPath": "~/.virtualenvs/data_management/bin/python",
+    "terminal.integrated.fontSize": 13
 }
