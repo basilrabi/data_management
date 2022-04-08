@@ -20,12 +20,10 @@ from django.db.models import (
     UniqueConstraint
 )
 from django.utils.html import mark_safe
-
-from custom.fields import NameField
-from custom.functions import Round, get_assay_constraints, this_year
+from custom.functions import Round, get_assay_constraints
 from custom.models import Classification, User
 from fleet.models.equipment import TrackedExcavator
-from location.models.source import Cluster, DrillHole, MineBlock, Stockpile
+from location.models.source import Cluster, DrillHole, Stockpile
 from personnel.models.person import Person
 from shipment.models.dso import Shipment
 from .piling import PilingMethod

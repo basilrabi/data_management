@@ -42,6 +42,7 @@ where a.table_type = 'BASE TABLE'
     and a.table_schema not in ('information_schema', 'pg_catalog')
     and not a.table_name ilike any (array[
         'auth_%',
+        'billing_%',
         'controllership_%',
         'custom_user%',
         'django_%',

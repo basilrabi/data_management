@@ -1,3 +1,4 @@
+from os import environ
 from os.path import abspath, dirname, join
 
 from .local import db_host, db_name, db_password, db_user, db_port
@@ -95,7 +96,10 @@ AUTH_USER_MODEL = 'custom.User'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LANGUAGE_CODE = 'en-us'
-STATIC_ROOT = join(BASE_DIR, "static/")
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
+MEDIA_ROOT = environ['DATA_MANAGEMENT_MEDIA_ROOT']
+MEDIA_URL = environ['DATA_MANAGEMENT_MEDIA_URL']
+STATIC_ROOT = join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 TIME_ZONE = 'Asia/Manila'
 USE_I18N = True

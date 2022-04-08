@@ -121,6 +121,8 @@ export DATA_MANAGEMENT_GRADECONTROL=gradecontrol_password
 export DATA_MANAGEMENT_PLANNING=planning_password
 export DATA_MANAGEMENT_READER=reader_password
 export DATA_MANAGEMENT_SURVEY=survey_password
+export DATA_MANAGEMENT_MEDIA_ROOT=where_your_media_root_is
+export DATA_MANAGEMENT_MEDIA_URL=where_your_media_root_or_url_is
 # Variables below should be the same in datamanagement/local.py
 export DJANGO_SUPERUSER_USERNAME=username
 export DJANGO_SUPERUSER_PASSWORD=password
