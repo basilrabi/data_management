@@ -6,3 +6,4 @@ db_port='5432'
 DJANGO_SUPERUSER_USERNAME='username'
 DJANGO_SUPERUSER_PASSWORD='password'
 DJANGO_SUPERUSER_EMAIL='sample.email@domain.com'
+DEVELOPER=True

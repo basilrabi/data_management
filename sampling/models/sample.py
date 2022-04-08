@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import (
     BooleanField,
@@ -7,6 +8,7 @@ from django.db.models import (
     DateField,
     DecimalField,
     F,
+    FileField,
     ForeignKey,
     ManyToManyField,
     Model,
@@ -20,6 +22,8 @@ from django.db.models import (
     UniqueConstraint
 )
 from django.utils.html import mark_safe
+from os import remove
+from os.path import join
 from custom.functions import Round, get_assay_constraints
 from custom.models import Classification, User
 from fleet.models.equipment import TrackedExcavator
@@ -340,6 +344,22 @@ class MiningSampleReport(Model):
 class ApprovedShipmentDischargeAssay(Model):
     assay = OneToOneField('ShipmentDischargeAssay', on_delete=PROTECT)
     approved = BooleanField()
+    certificate = FileField(
+        upload_to='assay/shipment/discharing/', null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        old_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
+        super().save(*args, **kwargs)
+        new_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
+        if old_file:
+            if new_file:
+                if new_file.name != old_file.name:
+                    remove(join(settings.MEDIA_ROOT, old_file.name))
+                    pass
+            else:
+                remove(join(settings.MEDIA_ROOT, old_file.name))
+                pass
 
     class Meta:
         ordering = [
@@ -429,9 +449,25 @@ class ShipmentDischargeLotAssay(AssaySample):
 class ApprovedShipmentLoadingAssay(Model):
     assay = OneToOneField('ShipmentLoadingAssay', on_delete=PROTECT)
     approved = BooleanField()
+    certificate = FileField(
+        upload_to='assay/shipment/loading/', null=True, blank=True
+    )
 
     def PDF(self):
         return self.assay.PDF()
+
+    def save(self, *args, **kwargs):
+        old_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
+        super().save(*args, **kwargs)
+        new_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
+        if old_file:
+            if new_file:
+                if new_file.name != old_file.name:
+                    remove(join(settings.MEDIA_ROOT, old_file.name))
+                    pass
+            else:
+                remove(join(settings.MEDIA_ROOT, old_file.name))
+                pass
 
     class Meta:
         ordering = [
