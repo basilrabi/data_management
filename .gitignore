@@ -4,3 +4,4 @@ data_local*/
 log*
 .Rhistory
 .Rproj.user
+.vscode

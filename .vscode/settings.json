@@ -1,9 +1,0 @@
-{
-    "editor.rulers": [80],
-    "editor.fontSize": 13,
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
-    "python.defaultInterpreterPath": "~/.virtualenvs/data_management/bin/python",
-    "terminal.integrated.fontSize": 13
-}
