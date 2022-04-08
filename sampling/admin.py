@@ -83,7 +83,7 @@ class AcquiredMiningSampleAdmin(ModelAdmin):
 @register(ApprovedShipmentDischargeAssay)
 class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'vessel', 'approved')
+    list_display = ('object_name', 'vessel', 'approved', 'approved_certificate')
     readonly_fields = ('al2o3',
                        'arsenic',
                        'cao',
@@ -275,7 +275,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
 @register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
-    list_display = ('__str__', 'vessel', 'approved', 'PDF')
+    list_display = ('__str__', 'vessel', 'approved', 'PDF', 'approved_certificate')
     search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
 
     def get_queryset(self, request):
@@ -450,7 +450,7 @@ class PilingMethodAdmin(ModelAdmin):
 class ShipmentLoadingAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'vessel', 'approved', 'PDF')
+    list_display = ('object_name', 'vessel', 'approved', 'PDF', 'approved_certificate')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
     search_fields = ['shipment__name', 'shipment__vessel__name']
 

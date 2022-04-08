@@ -348,6 +348,17 @@ class ApprovedShipmentDischargeAssay(Model):
         upload_to='assay/shipment/discharing/', null=True, blank=True
     )
 
+    def approved_certificate(self):
+        if self.certificate:
+            return mark_safe(
+                '<a class="grp-button" '
+                'href="{}" '
+                'target="_blank"'
+                '>'
+                'View Certificate'
+                '</a>'.format(self.certificate.url)
+            )
+
     def save(self, *args, **kwargs):
         old_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
         super().save(*args, **kwargs)
@@ -383,6 +394,11 @@ class ShipmentDischargeAssay(AssaySample):
     ni_ton = DecimalField(
         'Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3
     )
+
+    def approved_certificate(self):
+        if hasattr(self, 'approvedshipmentdischargeassay'):
+            if self.approvedshipmentdischargeassay.certificate:
+                return self.approvedshipmentdischargeassay.approved_certificate()
 
     def clean(self):
         if hasattr(self, 'approvedshipmentdischargeassay'):
@@ -456,6 +472,17 @@ class ApprovedShipmentLoadingAssay(Model):
     def PDF(self):
         return self.assay.PDF()
 
+    def approved_certificate(self):
+        if self.certificate:
+            return mark_safe(
+                '<a class="grp-button" '
+                'href="{}" '
+                'target="_blank"'
+                '>'
+                'View Certificate'
+                '</a>'.format(self.certificate.url)
+            )
+
     def save(self, *args, **kwargs):
         old_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
         super().save(*args, **kwargs)
@@ -492,6 +519,11 @@ class ShipmentLoadingAssay(AssaySample):
         'Ni-ton', null=True, blank=True, max_digits=7, decimal_places=3
     )
     chemist = ForeignKey(User, null=True, blank=True, on_delete=SET_NULL)
+
+    def approved_certificate(self):
+        if hasattr(self, 'approvedshipmentloadingassay'):
+            if self.approvedshipmentloadingassay.certificate:
+                return self.approvedshipmentloadingassay.approved_certificate()
 
     def clean(self):
         if hasattr(self, 'approvedshipmentloadingassay'):
