@@ -360,17 +360,18 @@ class ApprovedShipmentDischargeAssay(Model):
             )
 
     def save(self, *args, **kwargs):
-        old_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
+        if ApprovedShipmentDischargeAssay.objects.filter(id=self.id).exists():
+            old_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
+        else:
+            old_file = None
         super().save(*args, **kwargs)
-        new_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
         if old_file:
+            new_file = ApprovedShipmentDischargeAssay.objects.get(id=self.id).certificate
             if new_file:
                 if new_file.name != old_file.name:
                     remove(join(settings.MEDIA_ROOT, old_file.name))
-                    pass
             else:
                 remove(join(settings.MEDIA_ROOT, old_file.name))
-                pass
 
     class Meta:
         ordering = [
@@ -484,17 +485,18 @@ class ApprovedShipmentLoadingAssay(Model):
             )
 
     def save(self, *args, **kwargs):
-        old_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
+        if ApprovedShipmentLoadingAssay.objects.filter(id=self.id).exists():
+            old_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
+        else:
+            old_file = None
         super().save(*args, **kwargs)
-        new_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
         if old_file:
+            new_file = ApprovedShipmentLoadingAssay.objects.get(id=self.id).certificate
             if new_file:
                 if new_file.name != old_file.name:
                     remove(join(settings.MEDIA_ROOT, old_file.name))
-                    pass
             else:
                 remove(join(settings.MEDIA_ROOT, old_file.name))
-                pass
 
     class Meta:
         ordering = [

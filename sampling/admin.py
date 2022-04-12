@@ -1,10 +1,7 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import F
-
-from custom.admin_gis import TMCLocationAdmin
 from custom.models import User
 from personnel.models.person import Person
-
 from shipment.models.dso import Shipment
 from .models.piling import PilingMethod, TripsPerPile
 from .models.proxy import (
@@ -25,8 +22,6 @@ from .models.sample import (
     ShipmentLoadingAssay,
     ShipmentLoadingLotAssay
 )
-
-# pylint: disable=no-member
 
 
 class MiningSampleIncrementInline(TabularInline):
@@ -155,6 +150,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                            's',
                            'ignition_loss',
                            'approved')
+        self.fields += ('certificate',)
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
         )
