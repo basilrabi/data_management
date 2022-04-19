@@ -14,7 +14,6 @@ from tempfile import TemporaryDirectory
 
 from sampling.models.sample import ShipmentLoadingAssay
 
-# pylint: disable=no-member
 
 def index(request):
     df = DataFrame.from_records(

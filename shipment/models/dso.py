@@ -46,8 +46,6 @@ from custom.functions import (
 from custom.models import Classification
 from custom.variables import one_day, zero_time
 
-# pylint: disable=no-member
-
 
 class Buyer(Classification):
     pass

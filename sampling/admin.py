@@ -78,8 +78,13 @@ class AcquiredMiningSampleAdmin(ModelAdmin):
 @register(ApprovedShipmentDischargeAssay)
 class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'vessel', 'approved', 'approved_certificate')
-    readonly_fields = ('al2o3',
+    list_display = ('object_name',
+                    'number',
+                    'vessel',
+                    'approved',
+                    'approved_certificate')
+    readonly_fields = ('number',
+                       'al2o3',
                        'arsenic',
                        'cao',
                        'co',
@@ -111,6 +116,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
         assay = ApprovedShipmentDischargeAssay.objects.get(id=object_id)
         if assay.assay.laboratory.name != 'PAMCO':
             self.fields = ('shipment',
+                           'number',
                            'vessel',
                            'laboratory',
                            'wmt',
@@ -132,6 +138,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                            'approved')
         else:
             self.fields = ('object_name',
+                           'number',
                            'vessel',
                            'wmt',
                            'moisture',
@@ -172,6 +179,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             moisture=F('assay__moisture'),
             ni=F('assay__ni'),
             ni_ton=F('assay__ni_ton'),
+            number=F('assay__shipment__shipmentnumber__number'),
             p=F('assay__p'),
             s=F('assay__s'),
             shipment=F('assay__shipment__name'),
@@ -227,6 +235,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def ni_ton(self, obj):
         return obj.ni_ton
 
+    def number(self, obj):
+        return obj.number
+
     def object_name(self, obj):
         return ApprovedShipmentDischargeAssay.objects.get(id=obj.id).assay.shipment.name_html()
 
@@ -271,13 +282,22 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
 @register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
-    list_display = ('__str__', 'vessel', 'approved', 'PDF', 'approved_certificate')
+    list_display = (
+        '__str__', 'number', 'vessel', 'approved', 'PDF', 'approved_certificate'
+    )
+    fields = ('assay', 'number', 'approved', 'certificate')
+    readonly_fields = ('assay', 'number')
     search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request). \
-            annotate(vessel=F('assay__shipment__vessel__name'))
+        qs = super().get_queryset(request).annotate(
+            number=F('assay__shipment__shipmentnumber__number'),
+            vessel=F('assay__shipment__vessel__name')
+        )
         return qs
+
+    def number(self, obj):
+        return obj.number
 
     def vessel(self, obj):
         return obj.vessel
@@ -287,8 +307,8 @@ class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
 class ChinaShipmentAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('__str__', 'vessel')
-    readonly_fields = ('vessel',)
+    list_display = ('__str__', 'number', 'vessel')
+    readonly_fields = ('number', 'vessel')
     search_fields = ['shipment__name', 'shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -296,22 +316,26 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
         return super().add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.fields = (
-            'shipment', 'vessel', 'laboratory', 'wmt', 'dmt', 'moisture',
-            'al2o3',
-            'arsenic',
-            'cao',
-            'co',
-            'cr2o3',
-            'fe',
-            'mgo',
-            'mn',
-            'ni',
-            'p',
-            's',
-            'sio2',
-            'ignition_loss'
-        )
+        self.fields = ('shipment',
+                       'number',
+                       'vessel',
+                       'laboratory',
+                       'wmt',
+                       'dmt',
+                       'moisture',
+                       'al2o3',
+                       'arsenic',
+                       'cao',
+                       'co',
+                       'cr2o3',
+                       'fe',
+                       'mgo',
+                       'mn',
+                       'ni',
+                       'p',
+                       's',
+                       'sio2',
+                       'ignition_loss')
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -325,8 +349,14 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).exclude(laboratory__name='PAMCO') \
-            .annotate(vessel=F('shipment__vessel__name'))
+            .annotate(
+                number=F('shipment__shipmentnumber__number'),
+                vessel=F('shipment__vessel__name')
+            )
         return qs
+
+    def number(self, obj):
+        return obj.number
 
     def vessel(self, obj):
         return obj.vessel
@@ -393,6 +423,7 @@ class PamcoShipmentAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     fields = ('shipment',
+              'number',
               'vessel',
               'wmt',
               'dmt',
@@ -411,8 +442,8 @@ class PamcoShipmentAssayAdmin(ModelAdmin):
               's',
               'ignition_loss')
     inlines = [ShipmentDischargeLotAssayInline]
-    list_display = ('object_name', 'vessel')
-    readonly_fields = ('vessel',)
+    list_display = ('object_name', 'number', 'vessel')
+    readonly_fields = ('number', 'vessel')
     search_fields = ['shipment__name', 'shipment__vessel__name']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -424,11 +455,17 @@ class PamcoShipmentAssayAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).filter(laboratory__name='PAMCO') \
-            .annotate(vessel=F('shipment__vessel__name'))
+            .annotate(
+                number=F('shipment__shipmentnumber__number'),
+                vessel=F('shipment__vessel__name')
+            )
         return qs
 
     def object_name(self, obj):
         return PamcoShipmentAssay.objects.get(id=obj.id).shipment.name_html()
+
+    def number(self, obj):
+        return obj.number
 
     def vessel(self, obj):
         return obj.vessel
@@ -446,8 +483,13 @@ class PilingMethodAdmin(ModelAdmin):
 class ShipmentLoadingAssayAdmin(ModelAdmin):
     autocomplete_fields = ['shipment']
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
-    list_display = ('object_name', 'vessel', 'approved', 'PDF', 'approved_certificate')
-    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton')
+    list_display = ('object_name',
+                    'number',
+                    'vessel',
+                    'approved',
+                    'PDF',
+                    'approved_certificate')
+    readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'number')
     search_fields = ['shipment__name', 'shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -457,35 +499,22 @@ class ShipmentLoadingAssayAdmin(ModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         assay = ShipmentLoadingAssay.objects.get(id=object_id)
-        if assay.shipment.product.name != 'LIMONITE':
-            self.fields = ('date',
-                           'shipment',
-                           'chemist',
-                           'wmt',
-                           'dmt',
-                           'moisture',
-                           'ni',
-                           'ni_ton',
-                           'fe',
-                           'mgo',
-                           'sio2',
-                           'cr',
-                           'co')
-        else:
-            self.fields = ('date',
-                           'shipment',
-                           'chemist',
-                           'wmt',
-                           'dmt',
-                           'moisture',
-                           'ni',
-                           'ni_ton',
-                           'fe',
-                           'mgo',
-                           'sio2',
-                           'cr',
-                           'co',
-                           'al2o3')
+        self.fields = ('number',
+                       'date',
+                       'shipment',
+                       'chemist',
+                       'wmt',
+                       'dmt',
+                       'moisture',
+                       'ni',
+                       'ni_ton',
+                       'fe',
+                       'mgo',
+                       'sio2',
+                       'cr',
+                       'co')
+        if assay.shipment.product.name == 'LIMONITE':
+            self.fields += ('al2o3',)
         self.inlines = [ShipmentLoadingLotAssayInline]
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
@@ -500,12 +529,16 @@ class ShipmentLoadingAssayAdmin(ModelAdmin):
         qs = super().get_queryset(request) \
             .annotate(
                 approved=F('approvedshipmentloadingassay__approved'),
+                number=F('shipment__shipmentnumber__number'),
                 vessel=F('shipment__vessel__name')
             )
         return qs
 
     def approved(self, obj):
         return obj.approved
+
+    def number(self, obj):
+        return obj.number
 
     def object_name(self, obj):
         return ShipmentLoadingAssay.objects.get(id=obj.id).shipment.name_html()
