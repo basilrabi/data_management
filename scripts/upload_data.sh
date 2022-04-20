@@ -33,6 +33,10 @@ upload_ogr () {
 sql_script "function" "get_ore_class" && \
 sql_script "function" "shipment_name_html" && \
 sql_script "function" "insert_dummy_cluster" && \
+sql_script "upload_data" "billing_billingtracker" && \
+sql_script "upload_data" "billing_billingtracker_id_seq" && \
+vacuum "billing_billingaddon" && \
+vacuum "billing_billingtracker" && \
 sql_script "upload_data" "inventory_block" && \
 upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \

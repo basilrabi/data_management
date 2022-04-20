@@ -23,6 +23,8 @@ download_ogr location_mpsa && \
 download_ogr location_peza && \
 download_ogr location_roadarea && \
 download_ogr location_slice && \
+download_sql billing_billingaddon && \
+download_sql billing_billingtracker && \
 download_sql inventory_block && \
 download_sql inventory_clustered_block && \
 download_sql location_anchorage && \
