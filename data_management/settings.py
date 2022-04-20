@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'inventory.apps.InventoryConfig',
     'location.apps.LocationConfig',
     'map.apps.MapConfig',
+    'organization.apps.OrganizationConfig',
     'personnel.apps.PersonnelConfig',
     'sampling.apps.SamplingConfig',
     'shipment.apps.ShipmentConfig',

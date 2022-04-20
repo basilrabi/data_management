@@ -1,5 +1,6 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import F
+
 from custom.models import User
 from personnel.models.person import Person
 from shipment.models.dso import Shipment

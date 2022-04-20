@@ -19,9 +19,6 @@ from django.db.models import (
 )
 
 from custom.fields import NameField
-from custom.functions import print_tz_manila
-
-# pylint: disable=no-member
 
 
 class LCT(Model):

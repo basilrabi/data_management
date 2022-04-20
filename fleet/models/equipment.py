@@ -1,4 +1,73 @@
-from django.db.models import Model, PositiveSmallIntegerField
+from tabnanny import verbose
+from django.db.models import (
+    DateField,
+    DecimalField,
+    F,
+    Model,
+    ForeignKey,
+    PositiveSmallIntegerField,
+    PROTECT
+)
+
+from custom.models import Classification
+from custom.fields import NameField
+from organization.models import Organization
+
+
+class Equipment(Model):
+    """
+    A single piece of equipment.
+    """
+    fleet_number = PositiveSmallIntegerField()
+    model = ForeignKey('EquipmentModel', on_delete=PROTECT)
+    owner = ForeignKey(Organization, on_delete=PROTECT)
+    acquisition_cost = DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2,
+        help_text='Cost in Philippine Peso'
+    )
+    date_acquired = DateField(null=True, blank=True)
+    date_phased_out = DateField(null=True, blank=True)
+    serial_number = NameField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Equipment'
+        verbose_name_plural = 'Equipment'
+        ordering = [
+            F('owner__name').asc(),
+            F('model__equipment_class__name').asc(),
+            F('fleet_number').asc()
+        ]
+
+
+class EquipmentManufacturer(Classification):
+
+    class Meta:
+        ordering = [F('name').asc()]
+
+
+class EquipmentModel(Classification):
+    equipment_class = ForeignKey('EquipmentClass', on_delete=PROTECT)
+    manufacturer = ForeignKey('EquipmentManufacturer', on_delete=PROTECT)
+
+    class Meta:
+        ordering = [
+            F('manufacturer__name').asc(),
+            F('equipment_class__name').asc(),
+            F('name').asc()
+        ]
+
+    def __str__(self):
+        return f'{self.manufacturer.name} {self.equipment_class.name} {self.name}'
+
+
+class EquipmentClass(Classification):
+
+    class Meta:
+        verbose_name = 'Equipment Class'
+        verbose_name_plural = 'Equipment Classes'
+        ordering = [F('name').asc()]
 
 
 class TrackedExcavator(Model):
