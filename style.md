@@ -22,6 +22,10 @@
         1. AdminInlines derived classes
         1. Parent Admin derived classes
 
+#### Django Admin Classes
+
+For `django.contrib.admin.ModelAdmin` sub-classes, registration is done using the `@register` decorator before the class declaration.
+
 ### Delimeters and Contents Spanning Multiple Lines
 
 1. If the content of the delimeter has multiple elements and the line exceeds 80 characters, each element should be on its separate line.

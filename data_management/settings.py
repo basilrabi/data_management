@@ -15,6 +15,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'billing.apps.BillingConfig',
     'custom.apps.CustomConfig',
     'fleet.apps.FleetConfig',
     'inventory.apps.InventoryConfig',
@@ -33,8 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_admin_multiple_choice_list_filter',
-    'import_export',
-    'billing'
+    'import_export'
 ]
 
 MIDDLEWARE = [
