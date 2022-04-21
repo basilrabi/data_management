@@ -47,10 +47,16 @@ where a.table_type = 'BASE TABLE'
         'custom_user%',
         'django_%',
         'fleet_%',
+        'gammu',
+        'inbox',
         'inventory_%',
         'location_%',
+        'outbox',
+        'outbox_multipart',
         'personnel_%',
+        'phones',
         'sampling_%',
+        'sentitems',
         'shipment_%',
         'spatial_ref_sys'
     ])
