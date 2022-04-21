@@ -33,6 +33,12 @@ upload_ogr () {
 sql_script "function" "get_ore_class" && \
 sql_script "function" "shipment_name_html" && \
 sql_script "function" "insert_dummy_cluster" && \
+sql_script "upload_data" "fleet_equipmentclass" && \
+vacuum "fleet_equipmentclass" && \
+sql_script "upload_data" "fleet_equipmentmanufacturer" && \
+vacuum "fleet_equipmentmanufacturer" && \
+sql_script "upload_data" "organization_organization" && \
+vacuum "organization_organization" && \
 sql_script "upload_data" "billing_billingtracker" && \
 sql_script "upload_data" "billing_billingtracker_id_seq" && \
 vacuum "billing_billingaddon" && \
@@ -45,6 +51,10 @@ upload_ogr location_peza identity && \
 upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
 sql_script "trigger" "location_cluster_insert" && \
+sql_script "upload_data" "fleet_equipmentmodel" && \
+vacuum "fleet_equipmentmodel" && \
+sql_script "upload_data" "fleet_equipment" && \
+vacuum "fleet_equipment" && \
 sql_script "upload_data" "location_cluster" && \
 sql_script "upload_data" "location_clusterlayout" && \
 vacuum "inventory_block" && \

@@ -25,12 +25,17 @@ download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql billing_billingaddon && \
 download_sql billing_billingtracker && \
+download_sql fleet_equipment && \
+download_sql fleet_equipmentclass && \
+download_sql fleet_equipmentmanufacturer && \
+download_sql fleet_equipmentmodel && \
 download_sql inventory_block && \
 download_sql inventory_clustered_block && \
 download_sql location_anchorage && \
 download_sql location_cluster && \
 download_sql location_clusterlayout && \
 download_sql location_drillhole && \
+download_sql organization_organization && \
 download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \
 download_sql sampling_drillcoresample && \

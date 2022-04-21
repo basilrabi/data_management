@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from django.db.models import (
     DateField,
     DecimalField,
@@ -40,6 +39,17 @@ class Equipment(Model):
             F('fleet_number').asc()
         ]
 
+    def __str__(self):
+        return f'{self.owner.name} {self.model.equipment_class.name}-{self.fleet_number}'
+
+
+class EquipmentClass(Classification):
+
+    class Meta:
+        verbose_name = 'Equipment Class'
+        verbose_name_plural = 'Equipment Classes'
+        ordering = [F('name').asc()]
+
 
 class EquipmentManufacturer(Classification):
 
@@ -60,14 +70,6 @@ class EquipmentModel(Classification):
 
     def __str__(self):
         return f'{self.manufacturer.name} {self.equipment_class.name} {self.name}'
-
-
-class EquipmentClass(Classification):
-
-    class Meta:
-        verbose_name = 'Equipment Class'
-        verbose_name_plural = 'Equipment Classes'
-        ordering = [F('name').asc()]
 
 
 class TrackedExcavator(Model):
