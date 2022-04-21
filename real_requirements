@@ -6,5 +6,4 @@ gunicorn
 pandas
 plotly
 psycopg2
-pylint
 tzlocal
