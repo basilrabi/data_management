@@ -110,6 +110,8 @@ sql_script "upload_data" "sampling_approvedshipmentdischargeassay" && \
 vacuum "sampling_approvedshipmentdischargeassay" && \
 upload_orm groups && \
 upload_orm users && \
+sql_script "upload_data" "custom_mobilenumber" && \
+vacuum "custom_mobilenumber" && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
 vacuum "sampling_shipmentloadingassay" && \
 sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
