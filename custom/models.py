@@ -59,7 +59,7 @@ class MobileNumber(Model):
         ordering = [F('spaceless_number').asc()]
 
     def __str__(self):
-        return self.spaceless_number
+        return self.number.as_international
 
 
 class User(AbstractUser):
