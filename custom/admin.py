@@ -5,13 +5,14 @@ from .models import MobileNumber, User
 
 
 class MobileNumberInline(TabularInline):
+    fields = ('user', 'number')
     model = MobileNumber
     extra = 0
 
 
 @register(MobileNumber)
 class MobileNumberAdmin(ModelAdmin):
-    pass
+    fields = ('user', 'number')
 
 
 @register(User)
