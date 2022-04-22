@@ -153,6 +153,7 @@ else
 fi
 sql_script "helper" "excavate_inventory_block"
 sql_script "helper" "excavate_sampling_drillcoresample"
+sql_script "helper" "gammu"
 sql_script "helper" "update_location_drillhole_z_present"
 ./scripts/R/upload_external_data.R 2>&1 | tee -a log_upload_data
 sql_script "permission" "reader-default"

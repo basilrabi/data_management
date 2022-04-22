@@ -51,6 +51,7 @@ where a.table_type = 'BASE TABLE'
         'inbox',
         'inventory_%',
         'location_%',
+        'organization_%',
         'outbox',
         'outbox_multipart',
         'personnel_%',
