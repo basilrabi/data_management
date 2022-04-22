@@ -1,6 +1,7 @@
 Django
 django-admin-multiple-choice-list-filter
 django-import-export
+django-phonenumber-field[phonenumbers]
 ezdxf
 gunicorn
 pandas

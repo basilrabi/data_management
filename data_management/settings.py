@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_admin_multiple_choice_list_filter',
-    'import_export'
+    'import_export',
+    'phonenumber_field'
 ]
 
 MIDDLEWARE = [
@@ -100,6 +101,7 @@ LANGUAGE_CODE = 'en-us'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
 MEDIA_ROOT = environ['DATA_MANAGEMENT_MEDIA_ROOT']
 MEDIA_URL = environ['DATA_MANAGEMENT_MEDIA_URL']
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 STATIC_ROOT = join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 TIME_ZONE = 'Asia/Manila'

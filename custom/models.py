@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
-from django.db.models import (CharField, Model, TextField)
+from django.db.models import (CharField, ForeignKey, Model, SET_NULL, TextField)
+from phonenumber_field.modelfields import PhoneNumberField
 
 from custom.fields import NameField
 
@@ -34,6 +35,11 @@ class GeoClassification(GeoModel):
 
     def __str__(self):
         return self.name
+
+
+class MobileNumber(Model):
+    user = ForeignKey('User', null=True, blank=True, on_delete=SET_NULL)
+    number = PhoneNumberField()
 
 
 class User(AbstractUser):
