@@ -39,7 +39,7 @@ class GeoClassification(GeoModel):
 
 class MobileNumber(Model):
     user = ForeignKey('User', null=True, blank=True, on_delete=SET_NULL)
-    number = PhoneNumberField()
+    number = PhoneNumberField(unique=True)
 
 
 class User(AbstractUser):
