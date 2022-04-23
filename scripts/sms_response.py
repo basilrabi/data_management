@@ -1,5 +1,3 @@
-#!/home/datamanagement/.virtualenvs/data_management/bin/python
-
 from os import environ
 
 from custom.functions import send_sms, sender_registered
