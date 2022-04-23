@@ -89,6 +89,9 @@ def export_sql(sql, csvfile, header=True):
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
+def fortune():
+    return run('fortune', stdout=PIPE).stdout.decode('utf-8')
+
 def get_assay_constraints(data):
     return [
         CheckConstraint(check=Q(al__lte=100), name=f'al_max_100_{data}'),
