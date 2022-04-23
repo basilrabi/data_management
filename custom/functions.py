@@ -17,6 +17,7 @@ from tempfile import TemporaryDirectory
 from tzlocal import get_localzone
 
 from location.models.source import Cluster
+from .models import MobileNumber
 from .variables import (
     one_day,
     one_hour,
@@ -217,6 +218,17 @@ def run_sql(pgsql):
         query = file.read()
         with connection.cursor() as cursor:
             cursor.execute(query)
+
+def send_sms(number, text):
+    text_length = len(text)
+    if text_length <= 160:
+        command = f'gammu-smsd-inject TEXT {number} -text "{text}"'
+    else:
+        command = f'gammu-smsd-inject TEXT {number} -len {text_length} -text "{text}"'
+    run(command, shell=True, stdout=PIPE, stderr=PIPE)
+
+def sender_registered(number):
+    return MobileNumber.objects.filter(spaceless_number=number).exists()
 
 def setup_triggers():
     pgsql = [
