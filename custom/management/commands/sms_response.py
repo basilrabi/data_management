@@ -8,6 +8,8 @@ from custom.functions import fortune, send_sms, sender_registered
 class Command(BaseCommand):
     def handle(self, *args, **options):
         phone_number = environ['SMS_1_NUMBER']
+        if phone_number[:4] != '+639':
+            return
         if sender_registered(phone_number):
             message = sub('\s+', ' ', environ['SMS_1_TEXT']).strip().upper()
             if message == 'FORTUNE':
