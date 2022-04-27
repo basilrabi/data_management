@@ -44,7 +44,7 @@ where a.table_type = 'BASE TABLE'
         'auth_%',
         'billing_%',
         'controllership_%',
-        'custom_user%',
+        'custom_%',
         'django_%',
         'fleet_%',
         'gammu',
