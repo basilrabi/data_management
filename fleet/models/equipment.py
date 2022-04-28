@@ -5,7 +5,8 @@ from django.db.models import (
     Model,
     ForeignKey,
     PositiveSmallIntegerField,
-    PROTECT
+    PROTECT,
+    UniqueConstraint
 )
 
 from custom.models import Classification
@@ -31,6 +32,10 @@ class Equipment(Model):
     serial_number = NameField(max_length=100, null=True, blank=True)
 
     class Meta:
+        constraints = [UniqueConstraint(
+            fields=['fleet_number', 'model', 'owner'],
+            name='unique_equipment_constraint'
+        )]
         verbose_name = 'Equipment'
         verbose_name_plural = 'Equipment'
         ordering = [
