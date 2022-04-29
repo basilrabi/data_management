@@ -94,7 +94,7 @@ def export_sql(sql, csvfile, header=True):
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
 def fortune():
-    return run('fortune', stdout=PIPE).stdout.decode('utf-8').replace('\t', '    ')
+    return run('fortune', stdout=PIPE).stdout.decode('utf-8').replace('\t', '    ').rstrip()
 
 def get_assay_constraints(data):
     return [
