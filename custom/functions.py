@@ -11,6 +11,7 @@ from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
+from gammu import EncodeSMS
 from gammu.smsd import SMSD
 from os import environ
 from os.path import join
@@ -228,12 +229,23 @@ def run_sql(pgsql):
 
 def send_sms(number, text):
     Log(log=f'Attempting to send\nSMS: "{text}"\nTO: {number}').save()
-    log = smsd.InjectSMS([{
-        'Number': f'{number}',
-        'SMSC': {'Location': 1},
-        'Text': f'{text}'
-    }])
-    Log(log=log).save()
+    if len(text) <= 160:
+        log = smsd.InjectSMS([{
+            'Number': f'{number}',
+            'SMSC': {'Location': 1},
+            'Text': f'{text}'
+        }])
+        Log(log=log).save()
+    else:
+        smsinfo = {
+            'Class': -1,
+            'Entries': [{'ID': 'ConcatenatedTextLong', 'Buffer': f'{text}'}]
+        }
+        for message in EncodeSMS(smsinfo):
+            message["SMSC"] = {'Location': 1}
+            message["Number"] = f'{number}'
+            log = smsd.InjectSMS([message])
+            Log(log=log).save()
 
 def sender_registered(number):
     return MobileNumber.objects.filter(spaceless_number=number).exists()
