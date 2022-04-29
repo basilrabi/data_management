@@ -228,11 +228,11 @@ def run_sql(pgsql):
 
 def send_sms(number, text):
     Log(log=f'Attempting to send\nSMS: "{text}"\nTO: {number}').save()
-    log = smsd.InjectSMS({
+    log = smsd.InjectSMS([{
         'Number': f'{number}',
         'SMSC': {'Location': 1},
         'Text': f'{text}'
-    })
+    }])
     Log(log=log).save()
 
 def sender_registered(number):
