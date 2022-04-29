@@ -11,7 +11,6 @@ from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
-from gammu import EncodeSMS
 from gammu.smsd import SMSD
 from os import environ
 from os.path import join
@@ -229,12 +228,11 @@ def run_sql(pgsql):
 
 def send_sms(number, text):
     Log(log=f'Attempting to send\nSMS: "{text}"\nTO: {number}').save()
-    sms = {
+    log = smsd.InjectSMS({
         'Number': f'{number}',
         'SMSC': {'Location': 1},
         'Text': f'{text}'
-    }
-    log = smsd.InjectSMS([EncodeSMS(sms)])
+    })
     Log(log=log).save()
 
 def sender_registered(number):
