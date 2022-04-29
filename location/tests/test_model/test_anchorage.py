@@ -5,8 +5,6 @@ from custom.functions import setup_triggers
 from location.models.shipment import Anchorage
 from shipment.models.dso import LayDaysStatement, Shipment, Vessel
 
-# pylint: disable=no-member
-
 
 class AnchorageTest(TestCase):
 

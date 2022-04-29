@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils.dateparse import parse_datetime as pdt
@@ -10,8 +9,6 @@ from shipment.models.dso import (
     Shipment,
     Vessel
 )
-
-# pylint: disable=no-member
 
 
 class  LayDaysDetailTest(TestCase):

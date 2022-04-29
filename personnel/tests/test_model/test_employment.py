@@ -5,8 +5,6 @@ from django.utils.dateparse import parse_date as pd
 
 from personnel.models.person import Designation, EmploymentRecord, Person
 
-# pylint: disable=no-member
-
 
 class DesignationTest(TestCase):
 

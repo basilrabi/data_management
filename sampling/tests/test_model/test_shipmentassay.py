@@ -5,15 +5,12 @@ from django.test import TestCase
 from custom.functions import setup_triggers
 from sampling.models.proxy import ChinaShipmentAssay, PamcoShipmentAssay
 from sampling.models.sample import (
-    ApprovedShipmentDischargeAssay,
     Laboratory,
     ShipmentDischargeLotAssay,
     ShipmentLoadingAssay,
     ShipmentLoadingLotAssay
 )
 from shipment.models.dso import Destination, Product, Shipment, Vessel
-
-# pylint: disable=no-member
 
 
 class ChinaShipmentAssayTest(TestCase):

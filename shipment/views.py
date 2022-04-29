@@ -16,8 +16,6 @@ from tempfile import TemporaryDirectory
 from custom.functions import export_sql, get_optimum_print_slice
 from shipment.models.dso import LayDaysStatement
 
-# pylint: disable=no-member
-
 def index(request):
     loading_per_shipment = ''
     loading_rate = ''

@@ -1,6 +1,3 @@
-# pylint: disable=import-error
-# pylint: disable=no-member
-
 from shipment.models.lct import Trip
 
 print('Resaving all LCT trips...', flush=True)

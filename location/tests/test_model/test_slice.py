@@ -6,8 +6,6 @@ from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.source import Cluster, ClusterLayout, Crest, Slice
 
-# pylint: disable=no-member
-
 crest_line = LineString(
     (593970, 1051940, 100),
     (593970, 1051950, 110),

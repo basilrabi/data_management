@@ -9,8 +9,6 @@ from tempfile import TemporaryDirectory
 from custom.functions import export_sql
 from location.models.source import Cluster
 
-# pylint: disable=no-member
-
 def export_cluster(request):
     """
     CSV view of Cluster intended for user's perusal.

@@ -1,10 +1,11 @@
 from django.core.exceptions import ValidationError
 
 from .sample import (
-    DrillCoreSample, Laboratory, MiningSample, ShipmentDischargeAssay
+    DrillCoreSample,
+    Laboratory,
+    MiningSample,
+    ShipmentDischargeAssay
 )
-
-# pylint: disable=no-member
 
 
 class AcquiredMiningSample(MiningSample):

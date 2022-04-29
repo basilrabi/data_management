@@ -4,8 +4,6 @@ from django.test import TestCase
 
 from shipment.models.dso import Vessel
 
-# pylint: disable=no-member
-
 
 class  VesselTest(TestCase):
 

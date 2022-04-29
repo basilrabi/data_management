@@ -3,8 +3,6 @@ from django.test import TestCase
 
 from location.models.source import MineBlock
 
-# pylint: disable=no-member
-
 
 class MineBlockTest(TestCase):
 

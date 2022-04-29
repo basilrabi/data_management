@@ -11,8 +11,6 @@ from sampling.models.sample import (MiningSample,
                                     MiningSampleIncrement,
                                     MiningSampleReport)
 
-# pylint: disable=no-member
-
 
 class MiningSampleReportTest(TestCase):
 

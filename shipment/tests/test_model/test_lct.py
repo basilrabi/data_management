@@ -3,8 +3,6 @@ from django.test import TestCase
 
 from shipment.models.lct import LCT
 
-# pylint: disable=no-member
-
 
 class  LCTTest(TestCase):
 

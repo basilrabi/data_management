@@ -3,8 +3,6 @@ from django.test import TestCase
 
 from location.models.source import Stockpile
 
-# pylint: disable=no-member
-
 
 class StockpileTest(TestCase):
 

@@ -8,8 +8,6 @@ from inventory.models.insitu import Block
 from location.models.landuse import RoadArea
 from location.models.source import Cluster, ClusterLayout
 
-# pylint: disable=no-member
-
 
 class ClusterTest(TestCase):
     @classmethod

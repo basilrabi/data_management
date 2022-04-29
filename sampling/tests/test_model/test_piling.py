@@ -5,8 +5,6 @@ from django.utils.dateparse import parse_date as pd
 
 from sampling.models.piling import PilingMethod, TripsPerPile
 
-# pylint: disable=no-member
-
 
 class PilingMethodTest(TestCase):
 

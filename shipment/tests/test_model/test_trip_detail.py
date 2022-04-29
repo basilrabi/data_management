@@ -7,8 +7,6 @@ from custom.functions import setup_triggers
 from shipment.models.dso import Shipment, Vessel
 from shipment.models.lct import LCT, LCTContract, Trip, TripDetail
 
-# pylint: disable=no-member
-
 
 class  TripDetailTest(TestCase):
 

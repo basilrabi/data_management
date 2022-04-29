@@ -1,5 +1,3 @@
-# pylint: disable=import-error
-
 from csv import DictReader
 from django.contrib.auth.models import Group, Permission
 from sys import exit

@@ -29,8 +29,6 @@ from .models.dso import (
 )
 from .models.proxy import FinalShipmentDetail
 
-# pylint: disable=no-member
-
 
 class ShipmentResource(ModelResource):
     number = Field(attribute='number', column_name='Number')

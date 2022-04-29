@@ -12,8 +12,6 @@ from django.db.models import (
 
 from custom.fields import NameField
 
-# pylint: disable=no-member
-
 
 class PilingMethod(Model):
     name = NameField(max_length=20, unique=True)

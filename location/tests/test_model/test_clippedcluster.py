@@ -5,8 +5,6 @@ from custom.functions import setup_triggers
 from inventory.models.insitu import Block
 from location.models.source import ClippedCluster, Cluster, Slice
 
-# pylint: disable=no-member
-
 slice1 = Slice(
     z=96,
     layer=2,

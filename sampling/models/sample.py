@@ -32,8 +32,6 @@ from personnel.models.person import Person
 from shipment.models.dso import Shipment
 from .piling import PilingMethod
 
-# pylint: disable=no-member
-
 
 class Lithology(Classification):
     """

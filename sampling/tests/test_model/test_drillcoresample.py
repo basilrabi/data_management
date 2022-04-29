@@ -4,8 +4,6 @@ from django.test import TestCase
 from sampling.models.proxy import DrillCore
 from location.models.source import DrillHole
 
-# pylint: disable=no-member
-
 
 class DrillCoreTest(TestCase):
 

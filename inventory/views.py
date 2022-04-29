@@ -3,8 +3,6 @@ from django.shortcuts import render
 from custom.functions import export_csv, export_sql
 from inventory.models.insitu import Block
 
-# pylint: disable=no-member
-
 def index(request):
     return render(request, 'inventory/index.html', {})
 

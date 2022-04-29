@@ -1,6 +1,3 @@
-# pylint: disable=import-error
-# pylint: disable=no-member
-
 from sys import exit
 
 from shipment.models.dso import LayDaysStatement

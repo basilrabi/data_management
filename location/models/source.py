@@ -19,15 +19,12 @@ from django.contrib.gis.db.models import (
     UniqueConstraint,
     SmallIntegerField
 )
-from django.db.models import indexes
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields.related import OneToOneField
 
 from custom.fields import MineBlockField, NameField
 from custom.variables import ACI
 from .landuse import RoadArea
-
-# pylint: disable=no-member
 
 RIDGES = (
     ('HY', 'Hayanggabon'),

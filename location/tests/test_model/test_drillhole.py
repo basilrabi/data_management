@@ -4,8 +4,6 @@ from django.test import TestCase
 from custom.functions import setup_triggers
 from location.models.source import DrillHole
 
-# pylint: disable=no-member
-
 
 class DrillHoleTest(TestCase):
     @classmethod

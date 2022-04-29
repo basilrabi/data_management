@@ -4,8 +4,6 @@ from django.db.models import CASCADE, DateField, ForeignKey, Model, Q, SET_NULL
 
 from custom.fields import NameField
 
-# pylint: disable=no-member
-
 
 class Designation(Model):
     name = NameField(max_length=100, unique=True)

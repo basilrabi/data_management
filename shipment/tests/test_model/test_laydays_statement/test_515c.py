@@ -15,8 +15,6 @@ from shipment.models.dso import (
     Vessel
 )
 
-# pylint: disable=no-member
-
 pwd = dirname(abspath(__file__))
 fdetails = join(pwd, 'detail', '515c.csv')
 

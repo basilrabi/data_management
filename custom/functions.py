@@ -95,7 +95,9 @@ def export_sql(sql, csvfile, header=True):
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
 def fortune():
-    return run('fortune', stdout=PIPE).stdout.decode('utf-8').replace('\t', '    ').rstrip()
+    return run('fortune', stdout=PIPE).stdout.decode('utf-8') \
+        .replace('\t', '    ') \
+        .replace('`', "'").rstrip()
 
 def get_assay_constraints(data):
     return [
@@ -163,7 +165,6 @@ def get_printed_lines(queryset, slice_limit, space_weight):
     return remark_lines + (days * space_weight) - 1
 
 def mine_blocks_with_clusters():
-    # pylint: disable=no-member
     clustered_mine_blocks = set(
         Cluster.objects.values_list('mine_block', flat=True).distinct()
     )
