@@ -1,8 +1,10 @@
 import csv
+import re
 
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
 from django.db import connection
 from django.db.models import CheckConstraint, Q
 from django.db.models.expressions import Value
@@ -19,8 +21,12 @@ from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
 from tzlocal import get_localzone
 
+from fleet.models.equipment import Equipment, EquipmentClass
+from organization.models import Organization
+from location.models.equipment import EquipmentLocation
+from location.models.landuse import MPSA
 from location.models.source import Cluster
-from .models import Log, MobileNumber
+from .models import Log, MobileNumber, User
 from .variables import (
     one_day,
     one_hour,
@@ -94,11 +100,6 @@ def export_sql(sql, csvfile, header=True):
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
-def fortune():
-    return run('fortune', stdout=PIPE).stdout.decode('utf-8') \
-        .replace('\t', '    ') \
-        .replace('`', "'").rstrip()
-
 def get_assay_constraints(data):
     return [
         CheckConstraint(check=Q(al__lte=100), name=f'al_max_100_{data}'),
@@ -163,6 +164,11 @@ def get_printed_lines(queryset, slice_limit, space_weight):
     for detail in qs:
         remark_lines += detail.printed_lines()
     return remark_lines + (days * space_weight) - 1
+
+def get_sender(number):
+    sender = MobileNumber.objects.filter(spaceless_number=number)
+    if sender.exists():
+        return sender.first()
 
 def mine_blocks_with_clusters():
     clustered_mine_blocks = set(
@@ -248,13 +254,11 @@ def send_sms(number, text):
             log = smsd.InjectSMS([message])
             Log(log=log).save()
 
-def sender_registered(number):
-    return MobileNumber.objects.filter(spaceless_number=number).exists()
-
 def setup_triggers():
     pgsql = [
         'constraint/location_slice',
         'dump/location_mineblock',
+        'dump/location_mpsa',
         'function/get_ore_class',
         'function/insert_dummy_cluster',
         'function/shipment_name_html',
@@ -278,6 +282,89 @@ def setup_triggers():
     ]
     for query in pgsql:
         run_sql(query)
+
+def sms_response(sms: str, sender: User) -> str:
+    message = re.sub('\s+', ' ', sms).strip().upper()
+    if message == 'FORTUNE':
+        return run('fortune', stdout=PIPE).stdout.decode('utf-8') \
+            .replace('\t', '    ') \
+            .replace('`', "'").rstrip()
+
+    location_pattern_general_decimal = re.compile('^(\w+)\s(\w+)\s(\d+)\s(\d+\.?\d+)\s(\d+\.?\d+)$')
+    location_pattern_inhouse_decimal = re.compile('^(\w+)\s(\d+)\s(\d+\.?\d+)\s(\d+\.?\d+)$')
+
+    if location_pattern_inhouse_decimal.match(message):
+        match = location_pattern_inhouse_decimal.match(message)
+        equipment_class = EquipmentClass.objects.filter(name=match.group(1))
+        if equipment_class.exists():
+            equipment = Equipment.objects.filter(
+                fleet_number=int(match.group(2)),
+                model__equipment_class__name=match.group(1),
+                owner__name='TMC'
+            )
+            if equipment.exists():
+                equipment = equipment.first()
+                geom = GEOSGeometry(f'SRID=4326;POINT({match.group(3)} {match.group(4)})')
+                if MPSA.objects.filter(geom__distance_lt=(geom, D(km=5))).exists():
+                    EquipmentLocation(
+                        equipment=equipment,
+                        user=sender,
+                        geom=geom
+                    ).save()
+                    return f'Location saved for {equipment}. Thank you {sender.first_name or sender.__str__()}.'
+                else:
+                    return f'Invalid location. Coordinates is 5 km outside MPSA.'
+            else:
+                return f'TMC {match.group(1)} {match.group(2)} is not yet registered.'
+        else:
+            class_list = [f'{fleet.name} - {fleet.description}' for fleet in EquipmentClass.objects.all()]
+            class_text = '\n'.join(class_list)
+            return f'Equipment type "{match.group(1)}" does not exist. Possible choices are:\n{class_text}\n.'
+
+    if location_pattern_general_decimal.match(message):
+        match = location_pattern_general_decimal.match(message)
+        equipment = Equipment.objects.filter(
+            fleet_number=int(match.group(3)),
+            model__equipment_class__name=match.group(2),
+            owner__name=match.group(1)
+        )
+        if equipment.exists():
+            equipment = equipment.first()
+            geom = GEOSGeometry(f'SRID=4326;POINT({match.group(4)} {match.group(5)})')
+            if MPSA.objects.filter(geom__distance_lt=(geom, D(km=5))).exists():
+                EquipmentLocation(
+                    equipment=equipment,
+                    user=sender,
+                    geom=geom
+                ).save()
+                return f'Location saved for {equipment}. Thank you {sender.first_name or sender.__str__()}.'
+            else:
+                return f'Invalid location. Coordinates is 5 km outside MPSA.'
+        else:
+            owner = Organization.objects.filter(name=match.group(1))
+            if not owner.exists():
+                org_list = [f'{org.name} - {org.description}' for org in Organization.objects.all()]
+                org_text = '\n'.join(org_list)
+                return f'Company "{match.group(1)}" does not exist. Possible choices are:\n{org_text}\n.'
+            equipment_class = EquipmentClass.objects.filter(name=match.group(2))
+            if not equipment_class.exists():
+                class_list = [f'{fleet.name} - {fleet.description}' for fleet in EquipmentClass.objects.all()]
+                class_text = '\n'.join(class_list)
+                return f'Equipment type "{match.group(2)}" does not exist. Possible choices are:\n{class_text}\n.'
+            return f'{match.group(1)} {match.group(2)} {match.group(3)} is not yet registered.'
+    else:
+        return (
+            'Text pattern unrecognized. '
+            'If you want to report the location of an equipment, '
+            'you may use the patterns:\n'
+            'General Pattern: [COMPANY] [EQUIPMENT TYPE] [BODY NUMBER] [LONGITUDE DECIMAL DEGREE] [LATITUDE DECIMAL DEGREE]\n'
+            'Example:\n'
+            'TMC DT 234 125.8246 9.5176\n'
+            'Inhouse Pattern: [EQUIPMENT TYPE] [BODY NUMBER] [LONGITUDE DECIMAL DEGREE] [LATITUDE DECIMAL DEGREE]\n'
+            'Example:\n'
+            'DT 234 125.8246 9.5176\n\n'
+            'The expected coordinate system is WGS 84 (EPSG:4326).'
+        )
 
 def this_year():
     return datetime.today().year

@@ -118,7 +118,7 @@ class DrillHoleAdmin(TMCLocationAdmin):
 class EquipmentLocationAdmin(TMCLocationAdmin):
     date_hierarchy = 'time_stamp'
     modfiable = False
-    readonly_fields = ['equipment', 'time_stamp']
+    readonly_fields = ['equipment', 'time_stamp', 'user']
 
 
 @register(Facility)
