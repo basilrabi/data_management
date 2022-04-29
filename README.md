@@ -6,6 +6,7 @@
 
 The system packages below are required to be installed in Fedora 34+:
 
+- gammu-devel
 - nginx
 - postgis-llvmjit
 - postgresql-llvmjit
@@ -55,6 +56,31 @@ Create the virtual environment:
 ```bash
 mkvirtualenv data_management
 deactivate
+```
+
+### Set-up gammu
+
+You will need to have `~/gammu-smsdrc` set-up with something like for your testing environment:
+
+```
+[gammu]
+connection = bluephonet
+device = 00:00:00:00:00:00 # Your phone MAC bluetooth MAC address
+logformat = textall
+
+[smsd]
+commtimeout = 30
+debuglevel = 0
+hangupcalls = 1
+logfile = $HOME/gammu.log # You need to substitue your absolute $HOME
+maxretries = 100
+phoneid = the_phone
+pin = 1234
+receivefrequency = 15
+retrytimeout = 600
+sendtimeout = 30
+service = NULL
+
 ```
 
 ### Initial set-up
