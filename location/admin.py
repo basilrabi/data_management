@@ -9,6 +9,7 @@ from import_export.resources import ModelResource
 from custom.admin_gis import TMCLocationAdmin
 from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
+from .models.equipment import EquipmentLocation
 from .models.landuse import (
     Facility,
     FacilityClassification,
@@ -111,6 +112,13 @@ class DrillHoleAdmin(TMCLocationAdmin):
     inlines = [DrillCoreInline]
     list_display = ('name', 'date_drilled')
     search_fields = ['name']
+
+
+@register(EquipmentLocation)
+class EquipmentLocationAdmin(TMCLocationAdmin):
+    date_hierarchy = 'time_stamp'
+    modfiable = False
+    readonly_fields = ['equipment', 'time_stamp']
 
 
 @register(Facility)

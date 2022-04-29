@@ -1,13 +1,18 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import MobileNumber, User
+from .models import Log, MobileNumber, User
 
 
 class MobileNumberInline(TabularInline):
     fields = ('user', 'number')
     model = MobileNumber
     extra = 0
+
+
+@register(Log)
+class LogAdmin(ModelAdmin):
+    readonly_fields = ['created', 'log']
 
 
 @register(MobileNumber)

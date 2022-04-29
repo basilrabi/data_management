@@ -11,13 +11,16 @@ from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
+from gammu import EncodeSMS
+from gammu.smsd import SMSD
+from os import environ
 from os.path import join
 from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
 from tzlocal import get_localzone
 
 from location.models.source import Cluster
-from .models import MobileNumber
+from .models import Log, MobileNumber
 from .variables import (
     one_day,
     one_hour,
@@ -26,6 +29,8 @@ from .variables import (
     tz_manila,
     zero_time
 )
+
+smsd = SMSD(f'{environ["HOME"]}/gammu-smsdrc')
 
 
 class Echo:
@@ -223,12 +228,12 @@ def run_sql(pgsql):
             cursor.execute(query)
 
 def send_sms(number, text):
-    text_length = len(text)
-    if text_length <= 160:
-        command = f'gammu-smsd-inject TEXT {number} -text "{text}"'
-    else:
-        command = f'gammu-smsd-inject TEXT {number} -len {text_length} -text "{text}"'
-    run(command, shell=True, stdout=PIPE, stderr=PIPE)
+    log = smsd.InjectSMS([EncodeSMS({
+        'Number': number,
+        'SMSC': {'Location': 1},
+        'Text': text
+    })])
+    Log(log=log).save()
 
 def sender_registered(number):
     return MobileNumber.objects.filter(spaceless_number=number).exists()

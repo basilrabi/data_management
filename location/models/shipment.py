@@ -9,7 +9,6 @@ from django.contrib.gis.db.models import (
     PositiveSmallIntegerField,
     Q
 )
-from django.db.models import constraints
 
 from shipment.models.dso import LayDaysStatement
 

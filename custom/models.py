@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
 from django.db.models import (
     CharField,
+    DateTimeField,
     F,
     ForeignKey,
     Model,
@@ -42,6 +43,14 @@ class GeoClassification(GeoModel):
 
     def __str__(self):
         return self.name
+
+
+class Log(Model):
+    """
+    Asyncronous log storage
+    """
+    created = DateTimeField(auto_now_add=True)
+    log = TextField()
 
 
 class MobileNumber(Model):
