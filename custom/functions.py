@@ -285,7 +285,7 @@ def setup_triggers():
 
 def sms_response(sms: str, sender: User) -> str:
     message = re.sub('\s+', ' ', sms).strip().upper()
-    if message == 'FORTUNE':
+    if message == 'FORTUNE' or message == '':
         return run('fortune', stdout=PIPE).stdout.decode('utf-8') \
             .replace('\t', '    ') \
             .replace('`', "'").rstrip()
