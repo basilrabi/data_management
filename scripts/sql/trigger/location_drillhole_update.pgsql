@@ -1,9 +1,8 @@
 CREATE OR REPLACE FUNCTION update_location_drillhole_geometry()
 RETURNS trigger AS
 $BODY$
-/* Whenever the x or y coordinates are updated, the point geometry of the
- * drill hole is also updated.
- */
+-- Whenever the x or y coordinates are updated, the point geometry of the
+-- drill hole is also updated.
 DECLARE
     has_x boolean;
     has_y boolean;

@@ -1,6 +1,5 @@
-/* Update location_drillhole.z_present using a Polygon Z table
- * `topo_schema`.`topo_table`.
- */
+-- Update location_drillhole.z_present using a Polygon Z table
+-- `topo_schema`.`topo_table`.
 CREATE OR REPLACE FUNCTION update_location_drillhole_z_present(topo_schema text,
                                                                topo_table text)
 RETURNS integer AS

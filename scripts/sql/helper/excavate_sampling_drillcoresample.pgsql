@@ -1,5 +1,4 @@
-/* Set sampling_drillcoresample.excavated date using z_present of a cetain date.
- */
+-- Set sampling_drillcoresample.excavated date using z_present of a cetain date.
 CREATE OR REPLACE FUNCTION excavate_sampling_drillcoresample(topo_date date)
 RETURNS integer AS
 $BODY$

@@ -1,9 +1,8 @@
 CREATE OR REPLACE FUNCTION insert_location_cluster_timestamp()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is no timestamp field in a freshly inserted row, automatically
- * create one.
- */
+-- Whenever there is no timestamp field in a freshly inserted row, automatically
+-- create one.
 BEGIN
     NEW.modified = NOW();
     RETURN NEW;

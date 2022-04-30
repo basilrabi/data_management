@@ -28,11 +28,9 @@ For `django.contrib.admin.ModelAdmin` sub-classes, registration is done using th
 
 ### Delimeters and Contents Spanning Multiple Lines
 
-1. If the content of the delimeter has multiple elements and the line exceeds 80 characters, each element should be on its separate line.
 1. If the delimeters are placed on separate lines from the contents:
     1. The opening delimeter and the closing delimeter must be on the same indentation level.
     1. The contents must be indented one more level from the delimeters
-1. The content items may be placed on the same line as the delimters if the lines with the delimters do not exceed 80 characters.
 
 ```python3
 class SomeClass:
@@ -97,7 +95,7 @@ from .models.landuse import (
 
 1. All comments shall not exceed 80 character per line.
 1. If comments are less than 3 lines, use `--` on each line.
-1. If comments are more than 2 lines, use
+1. If comments are more than 2 lines, use `/* */`
 
 ### Identifiers
 

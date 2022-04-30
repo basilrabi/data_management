@@ -25,9 +25,8 @@ EXECUTE PROCEDURE add_dummy_location_cluster();
 CREATE OR REPLACE FUNCTION update_location_cluster_excavated()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the depth field of a clustered block, the
- * cluster is flagged as excavated if all blocks are already excavated.
- */
+-- Whenever there is a change in the depth field of a clustered block, the
+-- cluster is flagged as excavated if all blocks are already excavated.
 BEGIN
     IF (NEW.cluster_id IS NOT NULL) THEN
 
@@ -251,9 +250,8 @@ EXECUTE PROCEDURE update_location_cluster_geometry_after_block_delete();
 CREATE OR REPLACE FUNCTION update_location_cluster_geometry_overlay()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the distance_from_road or the road_id column
- * of location_cluster, the geom column is updated.
- */
+-- Whenever there is a change in the distance_from_road or the road_id column
+-- of location_cluster, the geom column is updated.
 DECLARE
     cluster_geom geometry;
     has_child boolean;
@@ -304,9 +302,8 @@ EXECUTE PROCEDURE update_location_cluster_geometry_overlay();
 CREATE OR REPLACE FUNCTION update_location_cluster_name()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the ore_class, mine_block and count columns of
- * location_cluster, the column name is updated.
- */
+-- Whenever there is a change in the ore_class, mine_block and count columns of
+-- location_cluster, the column name is updated.
 DECLARE
     new_name text;
 BEGIN
@@ -501,9 +498,8 @@ EXECUTE PROCEDURE update_location_cluster_property();
 CREATE OR REPLACE FUNCTION update_location_cluster_property_from_inventory_block_update()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the ni, fe, and co columns of inventory_block,
- * columns ni, fe, co, and ore_class are also updated.
- */
+-- Whenever there is a change in the ni, fe, and co columns of inventory_block,
+-- columns ni, fe, co, and ore_class are also updated.
 BEGIN
     WITH affected_cluster AS (
         SELECT id, geom, mine_block

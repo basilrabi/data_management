@@ -24,9 +24,8 @@ FOR EACH ROW
 EXECUTE PROCEDURE set_inventory_block_exposed();
 
 
-/* Whenever there is a change in the depth field of a block, the exposed
- * flag is updated.
- */
+-- Whenever there is a change in the depth field of a block, the exposed
+-- flag is updated.
 DROP TRIGGER IF EXISTS inventory_block_exposed_update
 ON inventory_block;
 CREATE TRIGGER inventory_block_exposed_update

@@ -1,9 +1,8 @@
 CREATE OR REPLACE FUNCTION delete_location_cluster_layout_date()
 RETURNS trigger AS
 $BODY$
-/* Update location_cluster.latest_layout_date for any deletion in
- * location_clusterlayout.
- */
+-- Update location_cluster.latest_layout_date for any deletion in
+-- location_clusterlayout.
 DECLARE
     new_date date;
 BEGIN
@@ -30,9 +29,8 @@ EXECUTE PROCEDURE delete_location_cluster_layout_date();
 CREATE OR REPLACE FUNCTION insert_location_cluster_layout_date()
 RETURNS trigger AS
 $BODY$
-/* Update location_cluster.latest_layout_date for any addition in
- * location_clusterlayout.
- */
+-- Update location_cluster.latest_layout_date for any addition in
+-- location_clusterlayout.
 DECLARE
     new_date date;
 BEGIN
@@ -59,9 +57,8 @@ EXECUTE PROCEDURE insert_location_cluster_layout_date();
 CREATE OR REPLACE FUNCTION update_location_cluster_layout_date()
 RETURNS trigger AS
 $BODY$
-/* Update location_cluster.latest_layout_date for any changes in
- * location_clusterlayout.
- */
+-- Update location_cluster.latest_layout_date for any changes in
+-- location_clusterlayout.
 DECLARE
     new_date date;
     old_date date;

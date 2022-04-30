@@ -265,9 +265,8 @@ EXECUTE PROCEDURE update_location_clippedcluster_property();
 CREATE OR REPLACE FUNCTION update_clippedcluster_property_from_inventory_block_update()
 RETURNS trigger AS
 $BODY$
-/* Whenever there is a change in the ni, fe, and co columns of inventory_block,
- * columns ni, fe, co, and ore_class are also updated.
- */
+-- Whenever there is a change in the ni, fe, and co columns of inventory_block,
+-- columns ni, fe, co, and ore_class are also updated.
 BEGIN
     WITH area_grade AS (
         SELECT

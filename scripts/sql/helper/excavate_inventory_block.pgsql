@@ -1,6 +1,5 @@
-/* Update inventory_block.depth using a Polygon Z table
- * `topo_schema`.`topo_table`.
- */
+-- Update inventory_block.depth using a Polygon Z table
+-- `topo_schema`.`topo_table`.
 CREATE OR REPLACE FUNCTION excavate_inventory_block(topo_schema text,
                                                     topo_table text)
 RETURNS integer AS

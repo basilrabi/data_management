@@ -11,6 +11,7 @@ from django.db.models.expressions import Value
 from django.db.models.functions import TruncDay
 from django.db.models.functions.mixins import FixDecimalInputMixin
 from django.db.models.lookups import Transform
+from django.db.models.query import QuerySet
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
 from gammu import EncodeSMS
@@ -19,6 +20,7 @@ from os import environ
 from os.path import join
 from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
+from typing import Iterable
 from tzlocal import get_localzone
 
 from fleet.models.equipment import Equipment, EquipmentClass
@@ -72,15 +74,20 @@ class Round(FixDecimalInputMixin, Transform):
         return source.output_field
 
 
-def export_csv(rows, filename):
+def export_csv(rows: Iterable[list[str]], filename: str) -> StreamingHttpResponse:
+    """
+    Export a csv stream from python generated rows.
+    """
     buffer = Echo()
     writer = csv.writer(buffer)
-    response = StreamingHttpResponse((writer.writerow(row) for row in rows),
-                                     content_type="text/csv")
+    response = StreamingHttpResponse((writer.writerow(row) for row in rows), content_type="text/csv")
     response['Content-Disposition'] = 'attachment; ' + f'filename="{filename}.csv"'
     return response
 
-def export_sql(sql, csvfile, header=True):
+def export_sql(sql: str, csvfile: str, header: bool = True) -> FileResponse:
+    """
+    Export a csv file from a PostgreSQL query file.
+    """
     if header:
         head='HEADER'
     else:
@@ -100,7 +107,10 @@ def export_sql(sql, csvfile, header=True):
             run(command, shell=True, stdout=PIPE, stderr=PIPE)
             return FileResponse(open(filename, 'rb'), content_type='text/csv')
 
-def get_assay_constraints(data):
+def get_assay_constraints(data: str) -> list[CheckConstraint]:
+    """
+    Returns a list of constraints for all Assay-like objects.
+    """
     return [
         CheckConstraint(check=Q(al__lte=100), name=f'al_max_100_{data}'),
         CheckConstraint(check=Q(al2o3__lte=100), name=f'al2o3_max_100_{data}'),
@@ -142,7 +152,11 @@ def get_assay_constraints(data):
         CheckConstraint(check=Q(moisture__gte=0), name=f'moisture_min_0_{data}')
     ]
 
-def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_weight=0.42):
+def get_optimum_print_slice(queryset: QuerySet, slice_limit=36, lines_allowed=36, space_weight=0.42) -> int:
+    """
+    Estimate the optimum number of interval objects to be printed in the first
+    page ofthe laydays statement.
+    """
     if get_printed_lines(queryset, queryset.count(), space_weight) <= lines_allowed:
         return queryset.count()
     elif get_printed_lines(queryset, slice_limit, space_weight) <= lines_allowed:
@@ -150,11 +164,11 @@ def get_optimum_print_slice(queryset, slice_limit=36, lines_allowed=36, space_we
     else:
         return get_optimum_print_slice(queryset, slice_limit - 1, lines_allowed, space_weight)
 
-def get_printed_lines(queryset, slice_limit, space_weight):
+def get_printed_lines(queryset: QuerySet, slice_limit: int, space_weight: float) -> float:
     """
     Time interval list is printed in PDF for the lay time statement. Each day
     entry is separated by a vertical space. This outputs the estimated number
-    of lines given a list of time interval.
+    of printed lines in the PDF given a list of time interval.
     """
     qs = queryset[:slice_limit]
     days = len(set(
@@ -165,12 +179,19 @@ def get_printed_lines(queryset, slice_limit, space_weight):
         remark_lines += detail.printed_lines()
     return remark_lines + (days * space_weight) - 1
 
-def get_sender(number: str) -> User:
+def get_sender(number: str) -> (User | None):
+    """
+    Return the owner of the mobile number.
+    """
     sender = MobileNumber.objects.filter(spaceless_number=number)
     if sender.exists():
         return sender.first().user
 
-def mine_blocks_with_clusters():
+def mine_blocks_with_clusters() -> list[str]:
+    """
+    Return the mine blocks containing a cluster. This is used for filtering in
+    the admin page.
+    """
     clustered_mine_blocks = set(
         Cluster.objects.values_list('mine_block', flat=True).distinct()
     )
@@ -178,7 +199,10 @@ def mine_blocks_with_clusters():
     mine_blocks.sort()
     return mine_blocks
 
-def ordinal_suffix(x):
+def ordinal_suffix(x: str) -> str:
+    """
+    Append the proper ordinal suffix given a whole number.
+    """
     x = int(x)
     if x % 100 in (11, 12, 13):
         return 'th'
@@ -188,53 +212,66 @@ def ordinal_suffix(x):
         return 'th'
     return suffix[x-1]
 
-def point_to_box(point_geom, distance=5):
+def print_localzone(timestamp: datetime) -> (datetime | None):
     """
-    Converts a point geometry to a square with lengh = 2 * distance.
+    Convert a datetime object to the timezone in the localmachine.
     """
-    if point_geom.geom_type != 'Point':
-        raise TypeError('Data is not a point geometry.')
-    ewkt = f'SRID={point_geom.srid};POLYGON ((' + \
-        f'{point_geom.coords[0] - distance} {point_geom.coords[1] - distance}, ' + \
-        f'{point_geom.coords[0] - distance} {point_geom.coords[1] + distance}, ' + \
-        f'{point_geom.coords[0] + distance} {point_geom.coords[1] + distance}, ' + \
-        f'{point_geom.coords[0] + distance} {point_geom.coords[1] - distance}, ' + \
-        f'{point_geom.coords[0] - distance} {point_geom.coords[1] - distance}))'
-    return GEOSGeometry(ewkt)
-
-def print_localzone(timestamp):
     if timestamp:
         return timestamp.astimezone(get_localzone())
 
-def print_tz_manila(timestamp):
+def print_tz_manila(timestamp: datetime) -> (str | None):
+    """
+    Print the datetime object to a Philippine time stamp without the time zone
+    information.
+    """
     if timestamp:
         timestamp = str(timestamp.astimezone(tz_manila))
         return timestamp[:-6]
 
-def refresh_loading_rate():
+def refresh_loading_rate() -> None:
+    """
+    Refresh the view shipment_loadingrate.
+    """
     with connection.cursor() as cursor:
-            cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_loadingrate')
+        cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_loadingrate')
 
-def refresh_shipment_number():
+def refresh_shipment_number() -> None:
+    """
+    Refresh the view shipment_number.
+    """
     with connection.cursor() as cursor:
-            cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_number')
+        cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY shipment_number')
 
-def round_second(duration):
+def round_second(duration: timedelta) -> timedelta:
+    """
+    Round a duration to the nearest second since human readers of the printed
+    laydays statement can only digest this level of accuracy. Any smaller than
+    this is impractical.
+    """
     seconds = duration.total_seconds()
     return timedelta(seconds=round(seconds, 0))
 
-def round_up_day(timestamp):
+def round_up_day(timestamp: datetime) -> datetime:
+    """
+    Rounds up a datetime object to the nearest day in the local time zone.
+    """
     timestamp += one_day
     timestamp = str(print_localzone(timestamp))
     return pdt(f'{timestamp[0:10]} 00:00:00+{timestamp[-5:]}')
 
-def run_sql(pgsql):
+def run_sql(pgsql: str) -> None:
+    """
+    Execute a file containing a PostgreSQL query.
+    """
     with open(f'scripts/sql/{pgsql}.pgsql', 'r') as file:
         query = file.read()
         with connection.cursor() as cursor:
             cursor.execute(query)
 
-def send_sms(number, text):
+def send_sms(number: str, text: str) -> None:
+    """
+    Injects a text to Gammu SMSD.
+    """
     Log(log=f'Attempting to send\nSMS: "{text}"\nTO: {number}').save()
     if len(text) <= 160:
         log = smsd.InjectSMS([{
@@ -254,7 +291,10 @@ def send_sms(number, text):
             log = smsd.InjectSMS([message])
             Log(log=log).save()
 
-def setup_triggers():
+def setup_triggers() -> None:
+    """
+    Initializes all needed database objects for testing.
+    """
     pgsql = [
         'constraint/location_slice',
         'dump/location_mineblock',
@@ -284,6 +324,11 @@ def setup_triggers():
         run_sql(query)
 
 def sms_response(sms: str, sender: User) -> str:
+    """
+    Drafts an SMS response to any SMS received by the server. When a valid
+    equipment location pattern is received, saves an EquipmentLocation object
+    using the information received.
+    """
     message = re.sub('\s+', ' ', sms).strip().upper()
     if message == 'FORTUNE' or message == '':
         return run('fortune', stdout=PIPE).stdout.decode('utf-8') \
@@ -410,10 +455,7 @@ def sms_response(sms: str, sender: User) -> str:
             'The expected coordinate system is WGS 84 (EPSG:4326).'
         )
 
-def this_year():
-    return datetime.today().year
-
-def to_dhms(duration):
+def to_dhms(duration: timedelta) -> str:
     """
     Converts a datetime.timedelta object to an dhms string.
     """
@@ -433,7 +475,7 @@ def to_dhms(duration):
         return '-' + dhms
     return dhms
 
-def to_hm(duration):
+def to_hm(duration: timedelta) -> str:
     """
     Converts a datetime.timedelta object to an hm string.
     """
@@ -441,7 +483,7 @@ def to_hm(duration):
     minutes = (duration - (hours * one_hour)) // one_minute
     return f'{hours:02d}:{minutes:02d}'
 
-def to_hms(duration):
+def to_hms(duration: timedelta) -> str:
     """
     Converts a datetime.timedelta object to an hms string.
     """
@@ -452,7 +494,7 @@ def to_hms(duration):
     seconds = duration // one_second
     return f'{hours:02d}:{minutes:02d}:{seconds:02d}'
 
-def to_latex(text):
+def to_latex(text: str) -> str:
     """
     Escapes characters to for latex printing.
     """

@@ -1,9 +1,8 @@
 CREATE OR REPLACE FUNCTION update_location_anchorage_geometry()
 RETURNS trigger AS
 $BODY$
-/* Whenever the x or y coordinates are updated, the point geometry of
- * anchorage is also updated.
- */
+-- Whenever the x or y coordinates are updated, the point geometry of
+-- anchorage is also updated.
 DECLARE
     has_lat_d boolean;
     has_lat_m boolean;
