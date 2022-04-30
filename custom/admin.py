@@ -12,6 +12,8 @@ class MobileNumberInline(TabularInline):
 
 @register(Log)
 class LogAdmin(ModelAdmin):
+    date_hierarchy = 'created'
+    list_display = ('created', 'log')
     readonly_fields = ['created', 'log']
 
 

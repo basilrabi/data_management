@@ -52,6 +52,9 @@ class Log(Model):
     created = DateTimeField(auto_now_add=True)
     log = TextField()
 
+    class Meta:
+        ordering = [F('created').desc()]
+
 
 class MobileNumber(Model):
     user = ForeignKey('User', null=True, blank=True, on_delete=SET_NULL)
