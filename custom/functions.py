@@ -165,10 +165,10 @@ def get_printed_lines(queryset, slice_limit, space_weight):
         remark_lines += detail.printed_lines()
     return remark_lines + (days * space_weight) - 1
 
-def get_sender(number):
+def get_sender(number: str) -> User:
     sender = MobileNumber.objects.filter(spaceless_number=number)
     if sender.exists():
-        return sender.first()
+        return sender.first().user
 
 def mine_blocks_with_clusters():
     clustered_mine_blocks = set(

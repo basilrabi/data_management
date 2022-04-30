@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from custom.functions import sms_response, setup_triggers
+from custom.functions import get_sender, sms_response, setup_triggers
 from custom.models import MobileNumber, User
 from fleet.models.equipment import (
     Equipment,
@@ -83,4 +83,8 @@ class SmsResponseTest(TestCase):
         self.assertEqual(
             sms_response('TMC DT 101 125.8246 9.5176', user)[:14],
             'Location saved'
+        )
+        self.assertEqual(
+            get_sender('+639771358478').first_name,
+            'developer'
         )
