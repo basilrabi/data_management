@@ -65,6 +65,10 @@ class SmsResponseTest(TestCase):
             'Location saved'
         )
         self.assertEqual(
+            sms_response('DT 101 125 49 28.56 9 31 3.36', user)[:14],
+            'Location saved'
+        )
+        self.assertEqual(
             sms_response('TMCc DTT 128 1.1 1.1', user)[:30],
             'Company "TMCC" does not exist.'
         )
@@ -82,6 +86,10 @@ class SmsResponseTest(TestCase):
         )
         self.assertEqual(
             sms_response('TMC DT 101 125.8246 9.5176', user)[:14],
+            'Location saved'
+        )
+        self.assertEqual(
+            sms_response('TMC DT 101 125 49 28.56 9 31 3.36', user)[:14],
             'Location saved'
         )
         self.assertEqual(

@@ -290,11 +290,19 @@ def sms_response(sms: str, sender: User) -> str:
             .replace('\t', '    ') \
             .replace('`', "'").rstrip()
 
-    location_pattern_general_decimal = re.compile('^(\w+)\s(\w+)\s(\d+)\s(\d+\.?\d+)\s(\d+\.?\d+)$')
-    location_pattern_inhouse_decimal = re.compile('^(\w+)\s(\d+)\s(\d+\.?\d+)\s(\d+\.?\d+)$')
+    location_pattern_general_decimal = re.compile('^(\w+)\s(\w+)\s(\d+)\s(\d+(\.\d+)?)\s(\d+(\.\d+)?)$')
+    location_pattern_general_dms = re.compile('^(\w+)\s(\w+)\s(\d+)\s(\d+)\s(\d+)\s(\d+(\.\d+)?)\s(\d+)\s(\d+)\s(\d+(\.\d+)?)$')
+    location_pattern_inhouse_decimal = re.compile('^(\w+)\s(\d+)\s(\d+(\.\d+)?)\s(\d+(\.\d+)?)$')
+    location_pattern_inhouse_dms = re.compile('^(\w+)\s(\d+)\s(\d+)\s(\d+)\s(\d+(\.\d+)?)\s(\d+)\s(\d+)\s(\d+(\.\d+)?)$')
 
-    if location_pattern_inhouse_decimal.match(message):
-        match = location_pattern_inhouse_decimal.match(message)
+    if location_pattern_inhouse_decimal.match(message) or location_pattern_inhouse_dms.match(message):
+        match_dec = False
+        if location_pattern_inhouse_decimal.match(message):
+            match = location_pattern_inhouse_decimal.match(message)
+            match_dec = True
+        else:
+            match = location_pattern_inhouse_dms.match(message)
+
         equipment_class = EquipmentClass.objects.filter(name=match.group(1))
         if equipment_class.exists():
             equipment = Equipment.objects.filter(
@@ -304,7 +312,18 @@ def sms_response(sms: str, sender: User) -> str:
             )
             if equipment.exists():
                 equipment = equipment.first()
-                geom = GEOSGeometry(f'SRID=4326;POINT({match.group(3)} {match.group(4)})')
+                if match_dec:
+                    geom = GEOSGeometry(f'SRID=4326;POINT({match.group(3)} {match.group(5)})')
+                else:
+                    lat_deg = float(match.group(7))
+                    lat_min = float(match.group(8))
+                    lat_sec = float(match.group(9))
+                    lon_deg = float(match.group(3))
+                    lon_min = float(match.group(4))
+                    lon_sec = float(match.group(5))
+                    lat = lat_deg + (lat_min / 60) + (lat_sec / 3600)
+                    lon = lon_deg + (lon_min / 60) + (lon_sec / 3600)
+                    geom = GEOSGeometry(f'SRID=4326;POINT({lon:.12} {lat:.10})')
                 if MPSA.objects.filter(geom__distance_lt=(geom, D(km=5))).exists():
                     EquipmentLocation(
                         equipment=equipment,
@@ -321,8 +340,14 @@ def sms_response(sms: str, sender: User) -> str:
             class_text = '\n'.join(class_list)
             return f'Equipment type "{match.group(1)}" does not exist. Possible choices are:\n{class_text}\n.'
 
-    if location_pattern_general_decimal.match(message):
-        match = location_pattern_general_decimal.match(message)
+    if location_pattern_general_decimal.match(message) or location_pattern_general_dms.match(message):
+        match_dec = False
+        if location_pattern_general_decimal.match(message):
+            match = location_pattern_general_decimal.match(message)
+            match_dec = True
+        else:
+            match = location_pattern_general_dms.match(message)
+
         equipment = Equipment.objects.filter(
             fleet_number=int(match.group(3)),
             model__equipment_class__name=match.group(2),
@@ -330,7 +355,18 @@ def sms_response(sms: str, sender: User) -> str:
         )
         if equipment.exists():
             equipment = equipment.first()
-            geom = GEOSGeometry(f'SRID=4326;POINT({match.group(4)} {match.group(5)})')
+            if match_dec:
+                geom = GEOSGeometry(f'SRID=4326;POINT({match.group(4)} {match.group(6)})')
+            else:
+                lat_deg = float(match.group(8))
+                lat_min = float(match.group(9))
+                lat_sec = float(match.group(10))
+                lon_deg = float(match.group(4))
+                lon_min = float(match.group(5))
+                lon_sec = float(match.group(6))
+                lat = lat_deg + (lat_min / 60) + (lat_sec / 3600)
+                lon = lon_deg + (lon_min / 60) + (lon_sec / 3600)
+                geom = GEOSGeometry(f'SRID=4326;POINT({lon:.12} {lat:.10})')
             if MPSA.objects.filter(geom__distance_lt=(geom, D(km=5))).exists():
                 EquipmentLocation(
                     equipment=equipment,
@@ -357,14 +393,20 @@ def sms_response(sms: str, sender: User) -> str:
             'Text pattern unrecognized.\n\n'
             'If you want to report the location of an equipment, '
             'you may use the patterns below.\n\n'
-            'General Pattern (Intended for all equipment units, including contractors):\n'
-            '[COMPANY] [EQUIPMENT TYPE] [BODY NUMBER] [LONGITUDE DECIMAL DEGREE] [LATITUDE DECIMAL DEGREE]\n\n'
+            'GENERAL PATTERN (Intended for all equipment units, including contractors):\n\n'
+            '[company] [equipment type] [body number] [longitude decimal degree] [latitude decimal degree]\n\n'
             'Example:\n'
             'TMC DT 234 125.8246 9.5176\n\n'
-            'Inhouse Pattern (Intended for TMC equipment only):\n'
-            '[EQUIPMENT TYPE] [BODY NUMBER] [LONGITUDE DECIMAL DEGREE] [LATITUDE DECIMAL DEGREE]\n'
+            '[company] [equipment type] [body number] [longitude degree minute second] [latitude degree minute second]\n\n'
+            'Example:\n'
+            'TMC DT 234 125 49 28.56 9 31 3.36\n\n'
+            'INHOUSE PATTERN (Intended for TMC equipment only):\n\n'
+            '[equipment type] [body number] [longitude decimal degree] [latitude decimal degree]\n'
             'Example:\n'
             'DT 234 125.8246 9.5176\n\n'
+            '[equipment type] [body number] [longitude degree minute second] [latitude degree minute second]\n'
+            'Example:\n'
+            'DT 234 125 49 28.56 9 31 3.36\n\n'
             'The expected coordinate system is WGS 84 (EPSG:4326).'
         )
 
