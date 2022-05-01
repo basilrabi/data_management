@@ -272,7 +272,7 @@ def send_sms(number: str, text: str) -> None:
     """
     Injects a text to Gammu SMSD.
     """
-    Log(log=f'Attempting to send\nSMS: "{text}"\nTO: {number}').save()
+    Log(log=f'Sending SMS to {number}:\n{text}').save()
     if len(text) <= 160:
         log = smsd.InjectSMS([{
             'Number': f'{number}',
