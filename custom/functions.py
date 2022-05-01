@@ -377,7 +377,7 @@ def sms_response(sms: str, sender: User) -> str:
                     ).save()
                     return f'Location saved for {equipment}. Thank you {sender.first_name or sender.__str__()}.'
                 else:
-                    return f'Invalid location. Coordinates is 5 km outside MPSA.'
+                    return f'Invalid location. Input point is 5 km outside MPSA.'
             else:
                 return f'TMC {match.group(1)} {match.group(2)} is not yet registered.'
         else:
@@ -420,7 +420,7 @@ def sms_response(sms: str, sender: User) -> str:
                 ).save()
                 return f'Location saved for {equipment}. Thank you {sender.first_name or sender.__str__()}.'
             else:
-                return f'Invalid location. Coordinates is 5 km outside MPSA.'
+                return f'Invalid location. Input point is 5 km outside MPSA.'
         else:
             owner = Organization.objects.filter(name=match.group(1))
             if not owner.exists():
