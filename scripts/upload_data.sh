@@ -112,6 +112,8 @@ upload_orm groups && \
 upload_orm users && \
 sql_script "upload_data" "custom_mobilenumber" && \
 vacuum "custom_mobilenumber" && \
+sql_script "upload_data" "location_equipmentlocation" && \
+vacuum "location_equipmentlocation" && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
 vacuum "sampling_shipmentloadingassay" && \
 sql_script "upload_data" "sampling_shipmentloadinglotassay" && \

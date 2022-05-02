@@ -16,3 +16,6 @@ class EquipmentLocation(Model):
     time_stamp = DateTimeField(auto_now_add=True)
     user = ForeignKey(User, null=True, blank=True, on_delete=SET_NULL)
     geom = PointField(srid=4326)
+
+    def __str__(self) -> str:
+        return f'{self.time_stamp} - {self.equipment}'

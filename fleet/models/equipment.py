@@ -6,6 +6,7 @@ from django.db.models import (
     ForeignKey,
     PositiveSmallIntegerField,
     PROTECT,
+    SET_NULL,
     UniqueConstraint
 )
 
@@ -30,21 +31,29 @@ class Equipment(Model):
     date_acquired = DateField(null=True, blank=True)
     date_phased_out = DateField(null=True, blank=True)
     serial_number = NameField(max_length=100, null=True, blank=True)
+    equipment_class = ForeignKey(
+        'EquipmentClass', on_delete=SET_NULL, null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        self.equipment_class = self.model.equipment_class
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [UniqueConstraint(
-            fields=['fleet_number', 'model', 'owner'],
+            fields=['fleet_number', 'equipment_class', 'owner'],
             name='unique_equipment_constraint'
         )]
         verbose_name = 'Equipment'
         verbose_name_plural = 'Equipment'
         ordering = [
             F('owner__name').asc(),
-            F('model__equipment_class__name').asc(),
+            F('equipment_class__name').asc(),
             F('fleet_number').asc()
         ]
 
     def __str__(self):
+        # TODO: change self.model.equipment_class.name to self.equipment_class.name in the next server reset
         return f'{self.owner.name} {self.model.equipment_class.name}-{self.fleet_number}'
 
 

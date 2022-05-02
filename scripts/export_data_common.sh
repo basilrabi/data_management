@@ -36,6 +36,7 @@ download_sql location_anchorage && \
 download_sql location_cluster && \
 download_sql location_clusterlayout && \
 download_sql location_drillhole && \
+download_sql location_equipmentlocation && \
 download_sql organization_organization && \
 download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \

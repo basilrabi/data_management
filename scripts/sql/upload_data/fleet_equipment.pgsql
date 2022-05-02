@@ -18,7 +18,8 @@ INSERT INTO fleet_equipment (
     date_phased_out,
     serial_number,
     model_id,
-    owner_id
+    owner_id,
+    equipment_class_id
 )
 SELECT
     a.fleet_number,
@@ -27,7 +28,8 @@ SELECT
     a.date_phased_out,
     a.serial_number,
     b.id,
-    c.id
+    c.id,
+    b.equipment_class_id
 FROM temp_fleet_equipment a
     LEFT JOIN fleet_equipmentmodel b
         ON a.model_name = b.name

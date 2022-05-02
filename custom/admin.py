@@ -20,6 +20,7 @@ class LogAdmin(ModelAdmin):
 @register(MobileNumber)
 class MobileNumberAdmin(ModelAdmin):
     fields = ('user', 'number')
+    list_display = ('user', 'number')
 
 
 @register(User)

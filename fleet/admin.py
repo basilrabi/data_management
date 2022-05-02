@@ -11,7 +11,7 @@ from .models.equipment import (
 
 @register(Equipment)
 class EquipmentAdmin(ModelAdmin):
-    pass
+    exclude = ('equipment_class',)
 
 
 @register(EquipmentClass)
