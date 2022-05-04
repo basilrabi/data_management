@@ -26,6 +26,12 @@ class Equipment(Model):
         default=0,
         max_digits=12,
         decimal_places=2,
+        help_text='Cost in Philippine Peso as recorded by TSD'
+    )
+    acquisition_cost_from_accounting = DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2,
         help_text='Cost in Philippine Peso'
     )
     date_acquired = DateField(null=True, blank=True)
@@ -72,10 +78,15 @@ class EquipmentManufacturer(Classification):
 
 
 class EquipmentModel(Classification):
+    name = NameField(max_length=20)
     equipment_class = ForeignKey('EquipmentClass', on_delete=PROTECT)
     manufacturer = ForeignKey('EquipmentManufacturer', on_delete=PROTECT)
 
     class Meta:
+        constraints = [UniqueConstraint(
+            fields=['name', 'equipment_class', 'manufacturer'],
+            name='unique_equipment_model_constraint'
+        )]
         ordering = [
             F('manufacturer__name').asc(),
             F('equipment_class__name').asc(),
