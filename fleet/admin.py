@@ -16,7 +16,7 @@ class EquipmentAdmin(ModelAdmin):
 
 @register(EquipmentClass)
 class EquipmentClassAdmin(ModelAdmin):
-    list_display = ('__str__', 'description')
+    list_display = ('name', 'description')
 
 
 @register(EquipmentManufacturer)

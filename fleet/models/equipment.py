@@ -70,6 +70,9 @@ class EquipmentClass(Classification):
         verbose_name_plural = 'Equipment Classes'
         ordering = [F('name').asc()]
 
+    def __str__(self):
+        return f'{self.name} - {self.description}'
+
 
 class EquipmentManufacturer(Classification):
 
