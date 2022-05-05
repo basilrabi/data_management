@@ -4,7 +4,10 @@ SELECT
     shipment_trip.status,
     shipment_trip.dump_truck_trips,
     shipment_trip.vessel_grab,
-    shipment_trip.interval_from
+    shipment_trip.interval_from,
+    shipment_trip.interval_to,
+    shipment_trip.valid,
+    shipment_trip.continuous
 FROM shipment_trip
     LEFT JOIN shipment_lct
         ON shipment_trip.lct_id = shipment_lct.id
