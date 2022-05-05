@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
 from django.db.models import (
     CharField,
+    DateField,
     DateTimeField,
     F,
     ForeignKey,
@@ -76,6 +77,7 @@ class MobileNumber(Model):
 
 class User(AbstractUser):
     middle_name = CharField(null=True, blank=True, max_length=100)
+    birth_date = DateField(null=True, blank=True)
 
     def middle_initial(self):
         if self.middle_name:
