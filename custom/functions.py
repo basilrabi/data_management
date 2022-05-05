@@ -279,7 +279,7 @@ def send_sms(number: str, text: str) -> None:
             'SMSC': {'Location': 1},
             'Text': f'{text}'
         }])
-        Log(log=log).save()
+        Log(log=f'Injected SMS: {log}').save()
     else:
         smsinfo = {
             'Class': -1,
@@ -289,7 +289,7 @@ def send_sms(number: str, text: str) -> None:
             message["SMSC"] = {'Location': 1}
             message["Number"] = f'{number}'
             log = smsd.InjectSMS([message])
-            Log(log=log).save()
+            Log(log=f'Injected SMS: {log}').save()
 
 def setup_triggers() -> None:
     """
