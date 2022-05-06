@@ -12,7 +12,7 @@ download_ogr () {
 
 download_sql () {
     echo "Exporting $1..." && \
-    sql=$(cat scripts/sql/select/$1.pgsql | tr "[[:space:]]+" " " | tr -s " ") && \
+    sql=$(cat scripts/sql/select/$1.pgsql | tr "[:space:]" " " | tr -s " ") && \
     cmd="\COPY ($sql) TO '$(pwd)/$datadir/$1.csv' WITH CSV" && \
     psql -h $db_host -U $db_user $db_name -c "$cmd"
 }
