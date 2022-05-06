@@ -348,7 +348,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('approved', models.BooleanField()),
-                ('certificate', models.FileField(blank=True, null=True, upload_to='assay/shipment/discharing/')),
+                ('certificate', models.FileField(blank=True, null=True, upload_to='assay/shipment/discharging/')),
                 ('assay', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, to='sampling.shipmentdischargeassay')),
             ],
             options={

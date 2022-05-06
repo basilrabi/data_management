@@ -343,7 +343,7 @@ class ApprovedShipmentDischargeAssay(Model):
     assay = OneToOneField('ShipmentDischargeAssay', on_delete=PROTECT)
     approved = BooleanField()
     certificate = FileField(
-        upload_to='assay/shipment/discharing/', null=True, blank=True
+        upload_to='assay/shipment/discharging/', null=True, blank=True
     )
 
     def approved_certificate(self):
