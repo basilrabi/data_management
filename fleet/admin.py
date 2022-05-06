@@ -12,6 +12,8 @@ from .models.equipment import (
 @register(Equipment)
 class EquipmentAdmin(ModelAdmin):
     exclude = ('equipment_class',)
+    list_filter = ['owner', 'equipment_class']
+    search_fields = ['fleet_number']
 
 
 @register(EquipmentClass)

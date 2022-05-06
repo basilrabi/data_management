@@ -13,8 +13,10 @@ class Command(BaseCommand):
             return
         sender = get_sender(phone_number)
         if sender:
+            Log(log=f'Received SMS from {sender}: {environ["SMS_1_TEXT"]}').save()
             text = sms_response(environ["SMS_1_TEXT"], sender)
         else:
+            Log(log=f'Received SMS from {phone_number}: {environ["SMS_1_TEXT"]}').save()
             text = 'Hello, your number is unrecognized. Please have your phone number registered first.'
         send_sms(phone_number, text)
         return

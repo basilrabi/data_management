@@ -59,8 +59,7 @@ class Equipment(Model):
         ]
 
     def __str__(self):
-        # TODO: change self.model.equipment_class.name to self.equipment_class.name in the next server reset
-        return f'{self.owner.name} {self.model.equipment_class.name}-{self.fleet_number}'
+        return f'{self.owner} {self.equipment_class.name}-{self.fleet_number}'
 
 
 class EquipmentClass(Classification):
