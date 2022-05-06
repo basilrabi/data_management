@@ -21,6 +21,7 @@ class LogAdmin(ModelAdmin):
 class MobileNumberAdmin(ModelAdmin):
     fields = ('user', 'number')
     list_display = ('user', 'number')
+    search_fields = ('user__username', 'spaceless_number')
 
 
 @register(User)
