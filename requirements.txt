@@ -1,4 +1,4 @@
-asgiref==3.5.0
+asgiref==3.5.1
 defusedxml==0.7.1
 diff-match-patch==20200713
 Django==4.0.4
