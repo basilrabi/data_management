@@ -4,7 +4,7 @@ SELECT
     tab_a.acquisition_cost_from_accounting,
     tab_a.date_acquired,
     tab_a.date_phased_out,
-    tab_a.serial_number,
+    REGEXP_REPLACE(tab_a.serial_number, '[^\w]', '', 'g') serial_number,
     tab_b.name model_name,
     tab_d.name class_name,
     tab_e.name manufacturer,

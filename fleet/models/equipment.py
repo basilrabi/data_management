@@ -11,7 +11,7 @@ from django.db.models import (
 )
 
 from custom.models import Classification
-from custom.fields import NameField
+from custom.fields import AlphaNumeric, NameField
 from organization.models import Organization
 
 
@@ -36,7 +36,7 @@ class Equipment(Model):
     )
     date_acquired = DateField(null=True, blank=True)
     date_phased_out = DateField(null=True, blank=True)
-    serial_number = NameField(max_length=100, null=True, blank=True)
+    serial_number = AlphaNumeric(max_length=100, null=True, blank=True)
     equipment_class = ForeignKey(
         'EquipmentClass', on_delete=SET_NULL, null=True, blank=True
     )
