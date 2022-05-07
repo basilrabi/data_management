@@ -9,6 +9,7 @@ with open('data/users.csv', newline='') as csvfile:
                                              'first_name',
                                              'middle_name',
                                              'last_name',
+                                             'birth_date',
                                              'email',
                                              'password',
                                              'is_staff',
@@ -19,6 +20,7 @@ with open('data/users.csv', newline='') as csvfile:
                     first_name=row['first_name'],
                     middle_name=row['middle_name'],
                     last_name=row['last_name'],
+                    birth_date=row['birth_date'],
                     email=row['email'],
                     password=row['password'],
                     is_staff=row['is_staff'],
@@ -32,7 +34,7 @@ with open('data/users.csv', newline='') as csvfile:
             print('\nUploading interrupted.')
             exit(1)
         except Exception as e:
-            print(f'User {user.username} was not saved.', flush=True)
+            print(f'Error: User {user.username} was not saved.', flush=True)
             print(e, flush=True)
 
 with open('data/user_group.csv', newline='') as csvfile:
@@ -47,7 +49,7 @@ with open('data/user_group.csv', newline='') as csvfile:
             print('\nUploading interrupted.', flush=True)
             exit(1)
         except Exception as e:
-            print(f'User `{user.username}` was not assigned to Group `{group.name}`.', flush=True)
+            print(f'Error: User `{user.username}` was not assigned to Group `{group.name}`.', flush=True)
             print(e, flush=True)
 
 with open('data/user_permission.csv', newline='') as csvfile:
@@ -62,5 +64,5 @@ with open('data/user_permission.csv', newline='') as csvfile:
             print('\nUploading interrupted.', flush=True)
             exit(1)
         except Exception as e:
-            print(f'Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
+            print(f'Error: Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
             exit(1)
