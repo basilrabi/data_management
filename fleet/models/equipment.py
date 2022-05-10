@@ -80,7 +80,7 @@ class EquipmentManufacturer(Classification):
 
 
 class EquipmentModel(Classification):
-    name = NameField(max_length=20)
+    name = NameField(max_length=40)
     equipment_class = ForeignKey('EquipmentClass', on_delete=PROTECT)
     manufacturer = ForeignKey('EquipmentManufacturer', on_delete=PROTECT)
 
