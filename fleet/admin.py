@@ -33,6 +33,7 @@ class EquipmentManufacturerAdmin(ModelAdmin):
 
 @register(EquipmentModel)
 class EquipmentModelAdmin(ModelAdmin):
+    list_display = ('equipment_class', 'manufacturer', 'name')
     search_fields = ['equipment_class__name', 'manufacturer__name', 'name']
 
 

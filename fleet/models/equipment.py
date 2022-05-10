@@ -96,7 +96,7 @@ class EquipmentModel(Classification):
         ]
 
     def __str__(self):
-        return f'{self.manufacturer.name} {self.equipment_class.name} {self.name}'
+        return f'{self.equipment_class.name} - {self.manufacturer.name} {self.name}'
 
 
 class TrackedExcavator(Model):
