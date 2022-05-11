@@ -8,7 +8,8 @@ class AlphaNumeric(CharField):
         super().__init__(*args, **kwargs)
 
     def get_prep_value(self, value):
-        return sub(r'[^\w]', '', str(value).upper())
+        if value:
+            return sub(r'[^\w]', '', str(value).upper())
 
 
 class MarineVesselName(CharField):
