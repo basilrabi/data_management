@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 
+from datetime import date
 from django.db.models import F
 from django.db.models.functions import ExtractYear
 from django.http import FileResponse
@@ -28,6 +29,7 @@ def index(request):
             ) \
             .exclude(ni_diff__isnull=True) \
             .exclude(loading_completion__isnull=True) \
+            .filter(loading_completion__year__gt=(date.today().year - 6)) \
             .values_list(
                 'loading_completion',
                 'ni_diff',

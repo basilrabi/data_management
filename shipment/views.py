@@ -48,7 +48,7 @@ def index(request):
                     ON d.id = c.shipment_id
             WHERE ja.interval_from IS NOT NULL
                 AND c.completed_loading IS NOT NULL
-                AND EXTRACT(year FROM c.completed_loading)::integer + 5 > EXTRACT(year FROM NOW())::integer
+                AND EXTRACT(year FROM c.completed_loading)::integer + 6 > EXTRACT(year FROM NOW())::integer
         ),
         cte_b AS (
             SELECT
@@ -118,7 +118,7 @@ def index(request):
                     date_trunc('year', loading_date)::date
             )::float
         FROM shipment_loadingrate
-        WHERE EXTRACT(year FROM loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
+        WHERE EXTRACT(year FROM loading_date)::integer + 6 > EXTRACT(year FROM NOW())::integer
         ORDER BY loading_date
         """)
         year_data = []
@@ -157,7 +157,7 @@ def index(request):
                     FROM shipment_loadingrate temp_tab
                     WHERE ABS(temp_tab.loading_date - rate.loading_date) < 4
                 ) lat_a on true
-            WHERE EXTRACT(year FROM rate.loading_date)::integer + 5 > EXTRACT(year FROM NOW())::integer
+            WHERE EXTRACT(year FROM rate.loading_date)::integer + 6 > EXTRACT(year FROM NOW())::integer
             GROUP BY rate.loading_date
         )
         SELECT
