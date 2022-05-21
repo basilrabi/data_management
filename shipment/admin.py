@@ -121,6 +121,7 @@ class TripDetailInline(TabularInline):
 @register(ApprovedLayDaysStatement)
 class ApprovedLayDaysStatementAdmin(ModelAdmin):
     list_display = ('object_name', 'vessel', 'approved', 'PDF', 'csv')
+    readonly_fields = ['csv', 'PDF']
     search_fields = ['statement__shipment__name',
                      'statement__shipment__vessel__name']
 
