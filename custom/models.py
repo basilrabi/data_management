@@ -19,7 +19,7 @@ class Classification(Model):
     """
     Template for any classification.
     """
-    name = NameField(max_length=20, unique=True)
+    name = NameField(max_length=40, unique=True)
     description = TextField(null=True, blank=True)
 
     class Meta:

@@ -3,22 +3,41 @@ from os.path import abspath, dirname, join
 
 from .local import db_host, db_name, db_password, db_user, db_port
 
+BASE_DIR = dirname(dirname(abspath(__file__)))
 DB_HOST = db_host
 DB_NAME = db_name
 DB_PSWD = db_password
 DB_PORT = db_port
 DB_USER = db_user
 
-BASE_DIR = dirname(dirname(abspath(__file__)))
-SECRET_KEY = '+f4&9j&@%p7kdj%##z^(!v%_)w($)vv8*dn57%6zj3@1n7hea7'
-DEBUG = True
 ALLOWED_HOSTS = ['*']
-
+AUTH_USER_MODEL = 'custom.User'
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+]
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': db_name,
+        'USER': db_user,
+        'PASSWORD': db_password,
+        'HOST': db_host,
+        'PORT': db_port,
+    }
+}
+DEBUG = True
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INSTALLED_APPS = [
     'billing.apps.BillingConfig',
     'custom.apps.CustomConfig',
     'fleet.apps.FleetConfig',
     'inventory.apps.InventoryConfig',
+    'local_calendar.apps.LocalCalendarConfig',
     'location.apps.LocationConfig',
     'map.apps.MapConfig',
     'organization.apps.OrganizationConfig',
@@ -37,7 +56,9 @@ INSTALLED_APPS = [
     'import_export',
     'phonenumber_field'
 ]
-
+LANGUAGE_CODE = 'en-us'
+MEDIA_ROOT = environ['DATA_MANAGEMENT_MEDIA_ROOT']
+MEDIA_URL = environ['DATA_MANAGEMENT_MEDIA_URL']
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -47,9 +68,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 ROOT_URLCONF = 'data_management.urls'
-
+SECRET_KEY = '+f4&9j&@%p7kdj%##z^(!v%_)w($)vv8*dn57%6zj3@1n7hea7'
+STATIC_ROOT = join(BASE_DIR, 'static/')
+STATIC_URL = '/static/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -65,47 +88,9 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'data_management.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': db_name,
-        'USER': db_user,
-        'PASSWORD': db_password,
-        'HOST': db_host,
-        'PORT': db_port,
-    }
-}
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-AUTH_USER_MODEL = 'custom.User'
-DATA_UPLOAD_MAX_NUMBER_FIELDS = None
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LANGUAGE_CODE = 'en-us'
-DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
-MEDIA_ROOT = environ['DATA_MANAGEMENT_MEDIA_ROOT']
-MEDIA_URL = environ['DATA_MANAGEMENT_MEDIA_URL']
-PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
-STATIC_ROOT = join(BASE_DIR, 'static/')
-STATIC_URL = '/static/'
 TIME_ZONE = 'Asia/Manila'
 USE_I18N = True
 USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
 USE_TZ = True
+WSGI_APPLICATION = 'data_management.wsgi.application'

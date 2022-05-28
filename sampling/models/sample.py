@@ -76,6 +76,9 @@ class AssaySample(Model):
     fe = DecimalField(
         '%Fe', max_digits=6, decimal_places=4, null=True, blank=True
     )
+    k = DecimalField(
+        '%K', max_digits=6, decimal_places=4, null=True, blank=True
+    )
     mg = DecimalField(
         '%Mg', max_digits=6, decimal_places=4, null=True, blank=True
     )
@@ -91,6 +94,9 @@ class AssaySample(Model):
     p = DecimalField(
         '%P', max_digits=6, decimal_places=4, null=True, blank=True
     )
+    pb = DecimalField(
+        '%Pb', max_digits=6, decimal_places=4, null=True, blank=True
+    )
     s = DecimalField(
         '%S', max_digits=6, decimal_places=4, null=True, blank=True
     )
@@ -102,6 +108,9 @@ class AssaySample(Model):
     )
     sio2 = DecimalField(
         '%SiO₂', max_digits=6, decimal_places=4, null=True, blank=True
+    )
+    zn = DecimalField(
+        '%Zn', max_digits=6, decimal_places=4, null=True, blank=True
     )
     ignition_loss = DecimalField(
         max_digits=6, decimal_places=4, null=True, blank=True
@@ -120,15 +129,18 @@ class AssaySample(Model):
                 self.co is not None or \
                 self.cr is not None or \
                 self.fe is not None or \
+                self.k is not None or \
                 self.mg is not None or \
                 self.mgo is not None or \
                 self.mn is not None or \
                 self.ni is not None or \
                 self.p is not None or \
+                self.pb is not None or \
                 self.s is not None or \
                 self.sc is not None or \
                 self.si is not None or \
                 self.sio2 is not None or \
+                self.zn is not None or \
                 self.ignition_loss is not None or \
                 self.moisture is not None
         ):

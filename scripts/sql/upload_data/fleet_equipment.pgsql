@@ -6,10 +6,10 @@ CREATE TEMPORARY TABLE temp_fleet_equipment
     date_acquired date,
     date_phased_out date,
     serial_number character varying(100),
-    model_name character varying(20),
-    class_name character varying(20),
-    manufacturer character varying(20),
-    owner_name character varying(20)
+    model_name character varying(40),
+    class_name character varying(40),
+    manufacturer character varying(40),
+    owner_name character varying(40)
 );
 
 \copy temp_fleet_equipment FROM 'data/fleet_equipment.csv' DELIMITER ',' CSV;

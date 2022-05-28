@@ -1,9 +1,9 @@
 CREATE TEMPORARY TABLE temp_fleet_equipmentmodel
 (
-    name character varying(20),
+    name character varying(40),
     description text,
-    equipment_class character varying(20),
-    manufacturer character varying(20)
+    equipment_class character varying(40),
+    manufacturer character varying(40)
 );
 
 \copy temp_fleet_equipmentmodel FROM 'data/fleet_equipmentmodel.csv' DELIMITER ',' CSV;

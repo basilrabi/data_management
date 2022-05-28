@@ -94,6 +94,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        'dmt',
                        'fe',
                        'ignition_loss',
+                       'k',
                        'laboratory',
                        'mgo',
                        'mn',
@@ -102,11 +103,13 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        'ni_ton',
                        'object_name',
                        'p',
+                       'pb',
                        's',
                        'shipment',
                        'sio2',
                        'vessel',
-                       'wmt')
+                       'wmt',
+                       'zn')
     search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -129,12 +132,15 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                            'co',
                            'cr2o3',
                            'fe',
+                           'k',
                            'mgo',
                            'mn',
                            'ni',
                            'p',
+                           'pb',
                            's',
                            'sio2',
+                           'zn',
                            'ignition_loss',
                            'approved')
         else:
@@ -174,6 +180,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             dmt=F('assay__dmt'),
             fe=F('assay__fe'),
             ignition_loss=F('assay__ignition_loss'),
+            k=F('assay__k'),
             laboratory=F('assay__laboratory__name'),
             mgo=F('assay__mgo'),
             mn=F('assay__mn'),
@@ -182,11 +189,13 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             ni_ton=F('assay__ni_ton'),
             number=F('assay__shipment__shipmentnumber__number'),
             p=F('assay__p'),
+            pb=F('assay__pb'),
             s=F('assay__s'),
             shipment=F('assay__shipment__name'),
             sio2=F('assay__sio2'),
             vessel=F('assay__shipment__vessel__name'),
-            wmt=F('assay__wmt')
+            wmt=F('assay__wmt'),
+            zn=F('assay__zn')
         )
         return qs
 
@@ -218,6 +227,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def ignition_loss(self, obj):
         return obj.ignition_loss
 
+    def k(self, obj):
+        return obj.k
+
     def laboratory(self, obj):
         return obj.laboratory
 
@@ -245,6 +257,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def p(self, obj):
         return obj.p
 
+    def pb(self, obj):
+        return obj.pb
+
     def s(self, obj):
         return obj.s
 
@@ -261,6 +276,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
         if obj.wmt:
             return f'{obj.wmt:,}'
 
+    def zn(self, obj):
+        return obj.zn
+
     al2o3.short_description = '%Al₂O₃'
     arsenic.short_description = '%As'
     cao.short_description = '%CaO'
@@ -270,15 +288,18 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     dmt.short_description = 'DMT'
     fe.short_description = '%Fe'
     ignition_loss.short_description = '%LOI'
+    k.short_description = '%K'
     mgo.short_description = '%MgO'
     mn.short_description = '%Mn'
     moisture.short_description = '%H₂O'
     ni.short_description = '%Ni'
     object_name.short_description = 'Shipment'
     p.short_description = '%P'
+    pb.short_description = '%Pb'
     s.short_description = '%S'
     sio2.short_description = '%SiO₂'
     wmt.short_description = 'WMT'
+    zn.short_description = '%Zn'
 
 
 @register(ApprovedShipmentLoadingAssay)
@@ -330,12 +351,15 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
                        'co',
                        'cr2o3',
                        'fe',
+                       'k',
                        'mgo',
                        'mn',
                        'ni',
                        'p',
+                       'pb',
                        's',
                        'sio2',
+                       'zn',
                        'ignition_loss')
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
