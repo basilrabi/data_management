@@ -55,6 +55,10 @@ sql_script "upload_data" "fleet_equipmentmodel" && \
 vacuum "fleet_equipmentmodel" && \
 sql_script "upload_data" "fleet_equipment" && \
 vacuum "fleet_equipment" && \
+sql_script "upload_data" "local_calendar_holidayevent" && \
+vacuum "local_calendar_holidayevent" && \
+sql_script "upload_data" "local_calendar_holiday" && \
+vacuum "local_calendar_holiday" && \
 sql_script "upload_data" "location_cluster" && \
 sql_script "upload_data" "location_clusterlayout" && \
 vacuum "inventory_block" && \

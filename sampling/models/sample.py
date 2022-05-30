@@ -128,6 +128,7 @@ class AssaySample(Model):
                 self.cao is not None or \
                 self.co is not None or \
                 self.cr is not None or \
+                self.cr2o3 is not None or \
                 self.fe is not None or \
                 self.k is not None or \
                 self.mg is not None or \

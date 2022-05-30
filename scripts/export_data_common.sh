@@ -32,6 +32,8 @@ download_sql fleet_equipmentmanufacturer && \
 download_sql fleet_equipmentmodel && \
 download_sql inventory_block && \
 download_sql inventory_clustered_block && \
+download_sql local_calendar_holiday && \
+download_sql local_calendar_holidayevent && \
 download_sql location_anchorage && \
 download_sql location_cluster && \
 download_sql location_clusterlayout && \

@@ -50,6 +50,7 @@ where a.table_type = 'BASE TABLE'
         'gammu',
         'inbox',
         'inventory_%',
+        'local_calendar_%',
         'location_%',
         'organization_%',
         'outbox',
