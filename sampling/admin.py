@@ -312,6 +312,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
 @register(ApprovedShipmentLoadingAssay)
 class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
+    date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = (
         '__str__', 'number', 'vessel', 'approved', 'PDF', 'approved_certificate'
     )
