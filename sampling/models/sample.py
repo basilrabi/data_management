@@ -600,10 +600,12 @@ class ShipmentLoadingLotAssay(AssaySample):
     wmt = DecimalField('WMT', max_digits=8, decimal_places=3)
 
     def dmt(self):
-        return round(float(self.wmt) * float(100 - self.moisture) * 0.01, 3)
+        if self.wmt and self.moisture:
+            return round(float(self.wmt) * float(100 - self.moisture) * 0.01, 3)
 
     def ni_ton(self):
-        return round(float(self.dmt()) * float(self.ni) * 0.01, 3)
+        if self.dmt() and self.ni:
+            return round(float(self.dmt()) * float(self.ni) * 0.01, 3)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
