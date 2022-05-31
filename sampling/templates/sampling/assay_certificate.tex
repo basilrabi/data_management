@@ -46,7 +46,10 @@
     DESTINATION
         & {{ assay.shipment.destination }} \\
     VESSEL
-        & MV {{ assay.shipment.vessel }} VOY. NO. {{ assay.shipment.laydaysstatement.vessel_voyage_str }} \\
+        & MV {{ assay.shipment.vessel }}
+            {% if assay.shipment.laydaysstatement.vessel_voyage_str != '0' %}
+                VOY. NO. {{ assay.shipment.laydaysstatement.vessel_voyage_str }}
+            {% endif %} \\
     LOADING PERIOD
         & {{ assay.shipment.loading_period }}
 \end{tabular}
