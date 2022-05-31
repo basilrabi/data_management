@@ -7,6 +7,7 @@ SELECT
     a.co,
     a.cr,
     a.cr2o3,
+    a.cu,
     a.date,
     a.fe,
     a.k,

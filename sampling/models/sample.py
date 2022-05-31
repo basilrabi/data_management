@@ -73,6 +73,9 @@ class AssaySample(Model):
     cr2o3 = DecimalField(
         '%Cr₂O₃', max_digits=6, decimal_places=4, null=True, blank=True
     )
+    cu = DecimalField(
+        '%Cu', max_digits=6, decimal_places=4, null=True, blank=True
+    )
     fe = DecimalField(
         '%Fe', max_digits=6, decimal_places=4, null=True, blank=True
     )
@@ -129,6 +132,7 @@ class AssaySample(Model):
                 self.co is not None or \
                 self.cr is not None or \
                 self.cr2o3 is not None or \
+                self.cu is not None or \
                 self.fe is not None or \
                 self.k is not None or \
                 self.mg is not None or \

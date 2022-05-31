@@ -92,6 +92,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        'co',
                        'cr',
                        'cr2o3',
+                       'cu',
                        'dmt',
                        'fe',
                        'ignition_loss',
@@ -132,6 +133,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                            'cao',
                            'co',
                            'cr2o3',
+                           'cu',
                            'fe',
                            'k',
                            'mgo',
@@ -178,6 +180,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             co=F('assay__co'),
             cr=F('assay__cr'),
             cr2o3=F('assay__cr2o3'),
+            cu=F('assay__cu'),
             dmt=F('assay__dmt'),
             fe=F('assay__fe'),
             ignition_loss=F('assay__ignition_loss'),
@@ -217,6 +220,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 
     def cr2o3(self, obj):
         return obj.cr2o3
+
+    def cu(self, obj):
+        return obj.cu
 
     def dmt(self, obj):
         if obj.dmt:
@@ -286,6 +292,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     co.short_description = '%Co'
     cr.short_description = '%Cr'
     cr2o3.short_description = '%Cr₂O₃'
+    cu.short_description = '%Cu'
     dmt.short_description = 'DMT'
     fe.short_description = '%Fe'
     ignition_loss.short_description = '%LOI'
@@ -351,6 +358,7 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
                        'cao',
                        'co',
                        'cr2o3',
+                       'cu',
                        'fe',
                        'k',
                        'mgo',

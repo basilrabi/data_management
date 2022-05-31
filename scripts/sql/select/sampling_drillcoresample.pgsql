@@ -11,6 +11,7 @@ SELECT
     core.co,
     core.cr,
     core.cr2o3,
+    core.cu,
     core.fe,
     core.k,
     core.mg,
