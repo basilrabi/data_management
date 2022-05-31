@@ -460,6 +460,14 @@ class ShipmentDischargeLotAssay(AssaySample):
     lot = PositiveSmallIntegerField()
     wmt = DecimalField('WMT', max_digits=8, decimal_places=3)
 
+    def dmt(self):
+        if self.wmt and self.moisture:
+            return round(self.wmt * (100 - self.moisture) / 100, 3)
+
+    def ni_ton(self):
+        if self.dmt() and self.ni:
+            return round(self.dmt() * self.ni / 100, 3)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.shipment_assay.save()

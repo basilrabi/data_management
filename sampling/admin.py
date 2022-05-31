@@ -51,7 +51,8 @@ class MiningSampleIncrementInline(TabularInline):
 class ShipmentDischargeLotAssayInline(TabularInline):
     model = ShipmentDischargeLotAssay
     extra = 0
-    fields = ('lot', 'wmt', 'moisture', 'ni')
+    fields = ('lot', 'wmt', 'moisture', 'ni', 'dmt', 'ni_ton')
+    readonly_fields = ('dmt', 'ni_ton')
 
 
 class ShipmentLoadingLotAssayInline(ShipmentDischargeLotAssayInline):
