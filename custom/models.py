@@ -78,6 +78,19 @@ class MobileNumber(Model):
 class User(AbstractUser):
     middle_name = CharField(null=True, blank=True, max_length=100)
     birth_date = DateField(null=True, blank=True)
+    name_suffix = NameField(
+        max_length=20,
+        null=True,
+        blank=True,
+        help_text='Junior, Senior, III, etc.'
+    )
+
+    SEX_CHOICES = (
+        ('F', 'Female'),
+        ('M', 'Male'),
+        ('N', 'Non-binary')
+    )
+    sex = CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)
 
     def middle_initial(self):
         if self.middle_name:

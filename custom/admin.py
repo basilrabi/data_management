@@ -34,7 +34,8 @@ class CustomUserAdmin(UserAdmin):
                 'middle_name',
                 'last_name',
                 'email',
-                'birth_date'
+                'birth_date',
+                'sex',
             )
         }),
         (_('Permissions'), {
