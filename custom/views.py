@@ -53,6 +53,7 @@ def export_users(request):
         str(user.middle_name or ''),
         str(user.last_name),
         str(user.birth_date or ''),
+        str(user.sex or ''),
         str(user.email),
         str(user.password),
         str(user.is_staff),
