@@ -8,6 +8,7 @@ from django.db.models import (
     UniqueConstraint
 )
 
+from custom.fields import AlphaNumeric
 from custom.models import Classification
 
 
@@ -35,6 +36,9 @@ class CostCenterConversion(Model):
             F('old_cost_center__name').asc()
         ]
 
+    def __str__(self) -> str:
+        return f'{self.old_cost_center} - {self.sap_cost_center}'
+
 
 class GeneralLedgerAccount(Model):
     """
@@ -43,9 +47,16 @@ class GeneralLedgerAccount(Model):
     code = PositiveIntegerField(unique=True)
     description = TextField()
 
+    class Meta:
+        ordering = [F('code').asc()]
+
+    def __str__(self) -> str:
+        return self.description
+
 
 class SapCostCenter(Classification):
     """
     Cost center definitions in SAP ERP.
     """
+    long_name = AlphaNumeric(max_length=40, null=True, blank=True)
     remarks = TextField(null=True, blank=True)
