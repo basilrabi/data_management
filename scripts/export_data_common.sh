@@ -25,6 +25,10 @@ download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql billing_billingaddon && \
 download_sql billing_billingtracker && \
+download_sql comptrollership_costcenter && \
+download_sql comptrollership_costcenterconversion && \
+download_sql comptrollership_generalledgeraccount && \
+download_sql comptrollership_sapcostcenter && \
 download_sql custom_mobilenumber && \
 download_sql fleet_equipment && \
 download_sql fleet_equipmentclass && \

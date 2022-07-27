@@ -43,7 +43,7 @@ where a.table_type = 'BASE TABLE'
     and not a.table_name ilike any (array[
         'auth_%',
         'billing_%',
-        'controllership_%',
+        'comptrollership_%',
         'custom_%',
         'django_%',
         'fleet_%',
@@ -60,7 +60,8 @@ where a.table_type = 'BASE TABLE'
         'sampling_%',
         'sentitems',
         'shipment_%',
-        'spatial_ref_sys'
+        'spatial_ref_sys',
+        'temp_ply_%'
     ])
 order by a.table_schema, a.table_name
 "
