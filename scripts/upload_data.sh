@@ -30,9 +30,13 @@ upload_ogr () {
     echo "ogr $1, $time_elapsed" >> log_upload_data_time.csv
 }
 
+sql_script "function" "array_from_geom" && \
 sql_script "function" "get_ore_class" && \
-sql_script "function" "shipment_name_html" && \
+sql_script "function" "gradient" && \
 sql_script "function" "insert_dummy_cluster" && \
+sql_script "function" "shipment_name_html" && \
+sql_script "function" "slope_angle" && \
+sql_script "function" "vectors" && \
 sql_script "upload_data" "comptrollership_costcenter" && \
 vacuum "comptrollership_costcenter" && \
 sql_script "upload_data" "comptrollership_generalledgeraccount" && \
