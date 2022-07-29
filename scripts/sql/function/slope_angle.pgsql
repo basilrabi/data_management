@@ -4,6 +4,7 @@ RETURNS float8 AS
 $BODY$
 DECLARE
     point_array float8[3][3];
+    magnitude float8;
     slope float8;
     v_a float8[3];
     v_b float8[3];
@@ -21,11 +22,16 @@ BEGIN
     v_b := subtract_vector(v_k, v_i);
     v_n := cross_product(v_a, v_b);
     v_z := ARRAY[0, 0, 1];
-    slope := acos(
-        (dot_product(v_n, v_z)) / (vector_magnitude(v_n) * vector_magnitude(v_z))
-    );
-    IF (slope > (PI() / 2)) THEN
-        slope := PI() - slope;
+    magnitude := vector_magnitude(v_n);
+    IF (magnitude > 0) THEN
+        slope := acos(
+            (dot_product(v_n, v_z)) / (magnitude * vector_magnitude(v_z))
+        );
+        IF (slope > (PI() / 2)) THEN
+            slope := PI() - slope;
+        END IF;
+    ELSE
+        slope := NULL;
     END IF;
 
     RETURN slope;
