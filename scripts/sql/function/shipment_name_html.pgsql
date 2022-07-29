@@ -12,4 +12,6 @@ BEGIN
     END CASE;
     RETURN shipment_name;
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$
+LANGUAGE plpgsql
+IMMUTABLE;

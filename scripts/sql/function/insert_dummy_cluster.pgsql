@@ -23,4 +23,6 @@ BEGIN
         VALUES ('111', 0, 0, 0, 0, false, 0, NOW());
     END IF;
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$
+LANGUAGE plpgsql
+VOLATILE;

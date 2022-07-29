@@ -15,4 +15,6 @@ BEGIN
     END CASE;
     RETURN ore_class;
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$
+LANGUAGE plpgsql
+IMMUTABLE;
