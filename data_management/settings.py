@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'local_calendar',
     'location',
     'map',
+    'material_management',
     'organization',
     'personnel',
     'sampling',
