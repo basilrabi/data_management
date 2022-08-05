@@ -52,6 +52,7 @@ where a.table_type = 'BASE TABLE'
         'inventory_%',
         'local_calendar_%',
         'location_%',
+        'material_management_%'
         'organization_%',
         'outbox',
         'outbox_multipart',
@@ -61,6 +62,9 @@ where a.table_type = 'BASE TABLE'
         'sentitems',
         'shipment_%',
         'spatial_ref_sys',
+        'surface_green',
+        'surface_lower',
+        'surface_upper',
         'temp_ply_%'
     ])
 order by a.table_schema, a.table_name
