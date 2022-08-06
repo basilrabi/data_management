@@ -116,13 +116,11 @@ from .models.landuse import (
 1. For each grouped permissions with the same privilege type, align all clauses.
 1. Each update privilege of a column shall be on its own line and ordered by table first then by columns.
 
-## R and C++
-
-## Identifiers
+## Identifiers styles
 
 | Type      | Style      |
 | --------- | ---------- |
 | Classes   | CamelCase  |
-| Functions | camelCase  |
-| Methods   | camelCase  |
+| Functions | camel_case |
+| Methods   | camel_case |
 | Objects   | camel_case |

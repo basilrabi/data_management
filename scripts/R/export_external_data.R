@@ -52,7 +52,7 @@ where a.table_type = 'BASE TABLE'
         'inventory_%',
         'local_calendar_%',
         'location_%',
-        'material_management_%'
+        'material_management_%',
         'organization_%',
         'outbox',
         'outbox_multipart',

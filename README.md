@@ -155,6 +155,14 @@ export DJANGO_SUPERUSER_PASSWORD=password
 export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
 ```
 
+When all environment variables in `~/.bashrc` and variables in `data_management/local.py` are set properly,
+uploading the exported production data and migrating (testing) your changes is done using the command below:
+
+```
+./scripts/clean_db.sh && ./scripts/upload_data.sh && ./scripts/refresh_data.sh
+./manage.py runserver
+```
+
 ### Serving
 
 #### Fedora 34+

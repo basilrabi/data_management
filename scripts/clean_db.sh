@@ -23,4 +23,3 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_nam
 
 # Set-up django database
 ./manage.py migrate
-./manage.py createsuperuser --noinput

@@ -84,6 +84,16 @@ sql_script "upload_data" "location_crest" && \
 vacuum "location_crest" && \
 sql_script "upload_data" "location_clippedcluster" && \
 vacuum "location_clippedcluster" && \
+sql_script "upload_data" "material_management_legacyitemtype" && \
+vacuum "material_management_legacyitemtype" && \
+sql_script "upload_data" "material_management_legacyvendor" && \
+vacuum "material_management_legacyvendor" && \
+sql_script "upload_data" "material_management_legacymaterial" && \
+vacuum "material_management_legacymaterial" && \
+sql_script "upload_data" "material_management_legacygoodsissuance" && \
+vacuum "material_management_legacygoodsissuance" && \
+sql_script "upload_data" "material_management_legacygoodsreceivednote" && \
+vacuum "material_management_legacygoodsreceivednote" && \
 sql_script "upload_data" "sampling_laboratory" && \
 vacuum "sampling_laboratory" && \
 sql_script "upload_data" "sampling_lithology" && \
