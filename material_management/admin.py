@@ -1,5 +1,6 @@
-from django.contrib.admin import ModelAdmin, register
+from django.contrib.admin import register
 
+from custom.admin import ReadOnlyAdmin
 from .models import (
     LegacyGoodsIssuance,
     LegacyGoodsReceivedNote,
@@ -10,8 +11,9 @@ from .models import (
 
 
 @register(LegacyGoodsIssuance)
-class LegacyGoodsIssuanceAdmin(ModelAdmin):
+class LegacyGoodsIssuanceAdmin(ReadOnlyAdmin):
     date_hierarchy = 'transaction_date'
+    list_display = ('__str__', 'cost_center', 'equipment', 'quantity')
     search_fields = ['cost_center',
                      'equipment',
                      'material__name',
@@ -20,8 +22,13 @@ class LegacyGoodsIssuanceAdmin(ModelAdmin):
 
 
 @register(LegacyGoodsReceivedNote)
-class LegacyGoodsReceivedAdmin(ModelAdmin):
+class LegacyGoodsReceivedAdmin(ReadOnlyAdmin):
     date_hierarchy = 'transaction_date'
+    list_display = ('__str__',
+                    'purchase_order',
+                    'vendor',
+                    'quantity',
+                    'total_price')
     search_fields = ['invoice_number',
                      'material__name',
                      'material__item_type__name',
@@ -31,15 +38,16 @@ class LegacyGoodsReceivedAdmin(ModelAdmin):
 
 
 @register(LegacyItemType)
-class LegacyItemTypeAdmin(ModelAdmin):
+class LegacyItemTypeAdmin(ReadOnlyAdmin):
     search_fields = ['name']
 
 
 @register(LegacyMaterial)
-class LegacyMaterialTypeAdmin(ModelAdmin):
+class LegacyMaterialTypeAdmin(ReadOnlyAdmin):
+    list_display = ('__str__', 'description')
     search_fields = ['name', 'description']
 
 
 @register(LegacyVendor)
-class LegacyVendorAdmin(ModelAdmin):
+class LegacyVendorAdmin(ReadOnlyAdmin):
     search_fields = ['name']
