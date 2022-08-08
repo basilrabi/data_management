@@ -1,4 +1,4 @@
-from django.contrib.admin import register
+from django.contrib.admin import ModelAdmin, register
 
 from custom.admin import ReadOnlyAdmin
 from .models import (
@@ -6,7 +6,11 @@ from .models import (
     LegacyGoodsReceivedNote,
     LegacyItemType,
     LegacyMaterial,
-    LegacyVendor
+    LegacyVendor,
+    Material,
+    MaterialType,
+    UnitOfMeasure,
+    Valuation
 )
 
 
@@ -51,3 +55,23 @@ class LegacyMaterialTypeAdmin(ReadOnlyAdmin):
 @register(LegacyVendor)
 class LegacyVendorAdmin(ReadOnlyAdmin):
     search_fields = ['name']
+
+
+@register(Material)
+class MaterialAdmin(ModelAdmin):
+    pass
+
+
+@register(MaterialType)
+class MaterialTypeAdmin(ModelAdmin):
+    pass
+
+
+@register(UnitOfMeasure)
+class UnitOfMeasureAdmin(ModelAdmin):
+    pass
+
+
+@register(Valuation)
+class ValuationAdmin(ModelAdmin):
+    search_fields = ['name', 'description', 'gl__code', 'gl__description']
