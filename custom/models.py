@@ -11,37 +11,9 @@ from django.db.models import (
     SET_NULL,
     TextField
 )
-from gammu import EncodeSMS
-from gammu.smsd import SMSD
-from os import environ
 from phonenumber_field.modelfields import PhoneNumberField
 
 from custom.fields import NameField, SpaceLess
-
-smsd = SMSD(f'{environ["HOME"]}/gammu-smsdrc')
-
-def send_sms(number: str, text: str) -> None:
-    """
-    Injects a text to Gammu SMSD.
-    """
-    Log(log=f'Sending SMS to {number}:\n{text}').save()
-    if len(text) <= 160:
-        log = smsd.InjectSMS([{
-            'Number': f'{number}',
-            'SMSC': {'Location': 1},
-            'Text': f'{text}'
-        }])
-        Log(log=f'Injected SMS: {log}').save()
-    else:
-        smsinfo = {
-            'Class': -1,
-            'Entries': [{'ID': 'ConcatenatedTextLong', 'Buffer': f'{text}'}]
-        }
-        for message in EncodeSMS(smsinfo):
-            message["SMSC"] = {'Location': 1}
-            message["Number"] = f'{number}'
-            log = smsd.InjectSMS([message])
-            Log(log=f'Injected SMS: {log}').save()
 
 
 class Classification(Model):
@@ -156,13 +128,6 @@ class TextMessage(Model):
         recipients = self._recipient()
         if recipients:
             return '\n'.join(recipients)
-
-    def save(self):
-        super().save()
-        recipient = self._recipient()
-        if recipient and self.sms:
-            for number in recipient:
-                send_sms(number, self.sms)
 
     class Meta:
         ordering = [F('modified').desc()]
