@@ -11,6 +11,7 @@ from django.db.models import (
 )
 
 from comptrollership.models import GeneralLedgerAccount
+from custom.fields import NameField
 from custom.models import Classification
 
 # Legacy Models refers to data from the old ERP (Lawsown M3)
@@ -94,10 +95,15 @@ class MaterialType(Classification):
 
 class UnitOfMeasure(Classification):
     iso = CharField(null=True, blank=True, max_length=3)
-    unit = CharField(null=True, blank=True, max_length=3)
+    name = NameField(max_length=3)
+    unit = CharField(unique=True, max_length=3)
 
     class Meta:
+        ordering = ['unit']
         verbose_name_plural = 'units of measure'
+
+    def __str__(self) -> str:
+        return f'{self.unit}'
 
 
 class Valuation(Classification):

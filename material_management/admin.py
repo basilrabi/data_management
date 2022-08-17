@@ -69,7 +69,8 @@ class MaterialTypeAdmin(ModelAdmin):
 
 @register(UnitOfMeasure)
 class UnitOfMeasureAdmin(ModelAdmin):
-    pass
+    list_display = ('__str__', 'iso', 'description', 'name')
+    search_fields = ['unit', 'iso', 'description', 'name']
 
 
 @register(Valuation)
