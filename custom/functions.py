@@ -14,9 +14,6 @@ from django.db.models.lookups import Transform
 from django.db.models.query import QuerySet
 from django.http import FileResponse, StreamingHttpResponse
 from django.utils.dateparse import parse_datetime as pdt
-from gammu import EncodeSMS
-from gammu.smsd import SMSD
-from os import environ
 from os.path import join
 from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
@@ -37,8 +34,6 @@ from .variables import (
     tz_manila,
     zero_time
 )
-
-smsd = SMSD(f'{environ["HOME"]}/gammu-smsdrc')
 
 
 class Echo:
@@ -277,29 +272,6 @@ def run_sql(pgsql: str) -> None:
         query = file.read()
         with connection.cursor() as cursor:
             cursor.execute(query)
-
-def send_sms(number: str, text: str) -> None:
-    """
-    Injects a text to Gammu SMSD.
-    """
-    Log(log=f'Sending SMS to {number}:\n{text}').save()
-    if len(text) <= 160:
-        log = smsd.InjectSMS([{
-            'Number': f'{number}',
-            'SMSC': {'Location': 1},
-            'Text': f'{text}'
-        }])
-        Log(log=f'Injected SMS: {log}').save()
-    else:
-        smsinfo = {
-            'Class': -1,
-            'Entries': [{'ID': 'ConcatenatedTextLong', 'Buffer': f'{text}'}]
-        }
-        for message in EncodeSMS(smsinfo):
-            message["SMSC"] = {'Location': 1}
-            message["Number"] = f'{number}'
-            log = smsd.InjectSMS([message])
-            Log(log=f'Injected SMS: {log}').save()
 
 def setup_triggers() -> None:
     """

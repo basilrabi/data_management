@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from os import environ
 
-from custom.functions import get_sender, send_sms, sms_response
-from custom.models import Log
+from custom.functions import get_sender, sms_response
+from custom.models import Log, send_sms
 
 
 class Command(BaseCommand):

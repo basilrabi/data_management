@@ -1,7 +1,8 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import Log, MobileNumber, User
+
+from .models import Log, MobileNumber, TextMessage, User
 
 
 class MobileNumberInline(TabularInline):
@@ -22,6 +23,41 @@ class MobileNumberAdmin(ModelAdmin):
     fields = ('user', 'number')
     list_display = ('user', 'number')
     search_fields = ('user__username', 'spaceless_number')
+
+
+@register(TextMessage)
+class TextMessageAdmin(ModelAdmin):
+    exclude = ['user']
+    fieldsets = (
+        (None, {'fields': ('sms', 'recipient')}),
+        (None, {'fields': ('created', 'modified', 'user')}),
+        ('Provider Options', {
+            'classes': ('collapse',),
+            'fields': ('provider_number',)
+        }),
+        ('Single Recipients', {
+            'classes': ('collapse',),
+            'fields': ('number',)
+        }),
+        ('Group Recipients', {
+            'classes': ('collapse',),
+            'fields': ('group',)
+        })
+    )
+    filter_horizontal = ('number', 'group')
+    list_display = ('__str__', 'sms')
+    readonly_fields = ('created', 'modified', 'recipient','user')
+    search_fields = ('sms',)
+
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            return super().get_queryset(request).filter(user=request.user)
+        return super().get_queryset(request)
+
+    def save_form(self, request, form, change):
+        obj = super().save_form(request, form, change)
+        obj.user = request.user
+        return obj
 
 
 @register(User)

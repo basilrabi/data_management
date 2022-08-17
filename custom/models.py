@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
 from django.db.models import (
     CharField,
@@ -6,13 +6,42 @@ from django.db.models import (
     DateTimeField,
     F,
     ForeignKey,
+    ManyToManyField,
     Model,
     SET_NULL,
     TextField
 )
+from gammu import EncodeSMS
+from gammu.smsd import SMSD
+from os import environ
 from phonenumber_field.modelfields import PhoneNumberField
 
 from custom.fields import NameField, SpaceLess
+
+smsd = SMSD(f'{environ["HOME"]}/gammu-smsdrc')
+
+def send_sms(number: str, text: str) -> None:
+    """
+    Injects a text to Gammu SMSD.
+    """
+    Log(log=f'Sending SMS to {number}:\n{text}').save()
+    if len(text) <= 160:
+        log = smsd.InjectSMS([{
+            'Number': f'{number}',
+            'SMSC': {'Location': 1},
+            'Text': f'{text}'
+        }])
+        Log(log=f'Injected SMS: {log}').save()
+    else:
+        smsinfo = {
+            'Class': -1,
+            'Entries': [{'ID': 'ConcatenatedTextLong', 'Buffer': f'{text}'}]
+        }
+        for message in EncodeSMS(smsinfo):
+            message["SMSC"] = {'Location': 1}
+            message["Number"] = f'{number}'
+            log = smsd.InjectSMS([message])
+            Log(log=f'Injected SMS: {log}').save()
 
 
 class Classification(Model):
@@ -72,7 +101,74 @@ class MobileNumber(Model):
         ordering = [F('spaceless_number').asc()]
 
     def __str__(self):
-        return self.number.as_international
+        return f'{self.user} {self.number.as_international}'
+
+
+class TextMessage(Model):
+    """
+    SMS to be sent to either a number, user, or a group. SMS is sent once saved.
+    """
+    NUMBER_CHOICES = (
+        ('222', '222'),
+        ('8080', '8080')
+    )
+    provider_number = CharField(
+        null=True,
+        blank=True,
+        max_length=4,
+        choices=NUMBER_CHOICES,
+        help_text='If this field is set, the number and group fields are ignored. This is used in sending SMS to the network provider.'
+    )
+    number = ManyToManyField(
+        'MobileNumber',
+        blank=True,
+        help_text='If this field is not empty, the group field is ignored.<br/>'
+    )
+    group = ManyToManyField(
+        Group,
+        blank=True,
+        help_text='If either provider_number or number field is not empty, this field is ignored.<br/>'
+    )
+    sms = TextField(
+        null=True,
+        blank=True,
+        help_text='Text message to be sent. Message shall only be sent if recipient is not empty.'
+    )
+    created = DateTimeField(auto_now_add=True)
+    modified = DateTimeField(auto_now=True)
+    user = ForeignKey('User', blank=True, null=True, on_delete=SET_NULL)
+
+    def _recipient(self) -> set[str]:
+        numbers = set()
+        if self.provider_number:
+            numbers.add(self.provider_number)
+        elif self.number.all().exists():
+            for number in self.number.all():
+                numbers.add(number.spaceless_number)
+        elif self.group.all().exists():
+            for group in self.group.all():
+                for user in group.user_set.all():
+                    for number in user.mobilenumber_set.all():
+                        numbers.add(number.spaceless_number)
+        return numbers
+
+    def recipient(self) -> (str | None):
+        recipients = self._recipient()
+        if recipients:
+            return '\n'.join(recipients)
+
+    def save(self):
+        super().save()
+        recipient = self._recipient()
+        if recipient and self.sms:
+            for number in recipient:
+                send_sms(number, self.sms)
+
+    class Meta:
+        ordering = [F('modified').desc()]
+
+    def __str__(self) -> str:
+        return f'{self.created} - {self.modified} - {self.user}'
 
 
 class User(AbstractUser):
