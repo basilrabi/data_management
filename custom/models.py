@@ -14,6 +14,7 @@ from django.db.models import (
 from phonenumber_field.modelfields import PhoneNumberField
 
 from custom.fields import NameField, SpaceLess
+from custom.functions_standalone import print_tz_manila
 
 
 class Classification(Model):
@@ -133,7 +134,9 @@ class TextMessage(Model):
         ordering = [F('modified').desc()]
 
     def __str__(self) -> str:
-        return f'{self.created} - {self.modified} - {self.user}'
+        if self.user:
+            return f'{print_tz_manila(self.modified)[:19]} - {self.user} - {self.sms[:30]}'
+        return f'{print_tz_manila(self.modified)[:19]} {self.sms[:40]}'
 
 
 class User(AbstractUser):

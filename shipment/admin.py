@@ -14,7 +14,8 @@ from import_export.admin import ExportMixin
 from import_export.fields import Field
 from import_export.resources import ModelResource
 
-from custom.functions import Round, print_tz_manila
+from custom.functions import Round
+from custom.functions_standalone import print_tz_manila
 from location.models.shipment import Anchorage
 from .models.lct import LCT, LCTContract, Trip, TripDetail
 from .models.dso import (

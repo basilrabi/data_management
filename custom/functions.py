@@ -35,7 +35,6 @@ from .variables import (
     one_hour,
     one_minute,
     one_second,
-    tz_manila,
     zero_time
 )
 
@@ -234,15 +233,6 @@ def print_localzone(timestamp: datetime) -> (datetime | None):
     """
     if timestamp:
         return timestamp.astimezone(get_localzone())
-
-def print_tz_manila(timestamp: datetime) -> (str | None):
-    """
-    Print the datetime object to a Philippine time stamp without the time zone
-    information.
-    """
-    if timestamp:
-        timestamp = str(timestamp.astimezone(tz_manila))
-        return timestamp[:-6]
 
 def refresh_loading_rate() -> None:
     """

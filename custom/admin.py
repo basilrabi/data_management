@@ -27,6 +27,7 @@ class MobileNumberAdmin(ModelAdmin):
 
 @register(TextMessage)
 class TextMessageAdmin(ModelAdmin):
+    date_hierarchy = 'modified'
     exclude = ['user']
     fieldsets = (
         (None, {'fields': ('sms', 'recipient')}),
@@ -45,7 +46,6 @@ class TextMessageAdmin(ModelAdmin):
         })
     )
     filter_horizontal = ('number', 'group')
-    list_display = ('__str__', 'sms')
     readonly_fields = ('created', 'modified', 'recipient','user')
     search_fields = ('sms',)
 
