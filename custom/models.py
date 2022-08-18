@@ -134,9 +134,12 @@ class TextMessage(Model):
         ordering = [F('modified').desc()]
 
     def __str__(self) -> str:
-        if self.user:
-            return f'{print_tz_manila(self.modified)[:19]} - {self.user} - {self.sms[:30]}'
-        return f'{print_tz_manila(self.modified)[:19]} {self.sms[:40]}'
+        if self.modified:
+            sms = self.sms or 'Empty'
+            if self.user:
+                return f'{print_tz_manila(self.modified)[:19]} - {self.user} - {sms[:30]}'
+            return f'{print_tz_manila(self.modified)[:19]} {sms[:40]}'
+        return 'New'
 
 
 class User(AbstractUser):
