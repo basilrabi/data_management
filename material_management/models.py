@@ -107,7 +107,7 @@ class UnitOfMeasure(Classification):
 
 
 class Valuation(Classification):
-    name = PositiveSmallIntegerField()
+    name = PositiveSmallIntegerField(unique=True)
     gl = ForeignKey(GeneralLedgerAccount, on_delete=PROTECT)
 
     class Meta:
