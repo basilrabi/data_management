@@ -71,10 +71,10 @@ class MobileNumber(Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = [F('spaceless_number').asc()]
+        ordering = [F('user__username').asc(), F('spaceless_number').asc()]
 
     def __str__(self):
-        return f'{self.user} {self.number.as_international}'
+        return f'{self.number.as_international} {self.user}'
 
 
 class TextMessage(Model):
