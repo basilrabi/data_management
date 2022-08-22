@@ -8,6 +8,7 @@ from .models import (
     LegacyMaterial,
     LegacyVendor,
     Material,
+    MaterialGroup,
     MaterialType,
     UnitOfMeasure,
     Valuation
@@ -59,12 +60,17 @@ class LegacyVendorAdmin(ReadOnlyAdmin):
 
 @register(Material)
 class MaterialAdmin(ModelAdmin):
-    pass
+    list_display = ('__str__', 'description')
+
+
+@register(MaterialGroup)
+class MaterialGroupAdmin(ModelAdmin):
+    list_display = ('__str__', 'description')
 
 
 @register(MaterialType)
 class MaterialTypeAdmin(ModelAdmin):
-    pass
+    list_display = ('__str__', 'description')
 
 
 @register(UnitOfMeasure)
