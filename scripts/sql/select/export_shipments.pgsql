@@ -16,10 +16,32 @@ WITH cte AS (
         assay.dmt loading_dmt,
         assay.ni loading_ni,
         assay.fe loading_fe,
+        assay.mgo loading_mgo,
+        assay.sio2 loading_sio2,
+        assay.moisture loading_moisture,
+        assay.cr loading_cr,
+        assay.co loading_co,
         dassay.wmt discharging_wmt,
         dassay.dmt discharging_dmt,
         dassay.ni discharging_ni,
         dassay.fe discharging_fe,
+        CASE
+            WHEN dassay.mgo IS NOT NULL THEN dassay.mgo
+            WHEN dassay.mg IS NOT NULL THEN ROUND(dassay.mg * 1.658259617, 4)
+            ELSE NULL
+        END discharging_mgo,
+        CASE
+            WHEN dassay.sio2 IS NOT NULL THEN dassay.sio2
+            WHEN dassay.si IS NOT NULL THEN ROUND(dassay.si * 2.139327043, 4)
+            ELSE NULL
+        END discharging_sio2,
+        dassay.moisture discharging_moisture,
+        CASE
+            WHEN dassay.cr IS NOT NULL THEN dassay.cr
+            WHEN dassay.cr2o3 IS NOT NULL THEN ROUND(dassay.cr2o3 / 1.461543699, 4)
+            ELSE NULL
+        END discharging_cr,
+        dassay.co discharging_co,
         CASE
             WHEN dassay.wmt IS NOT NULL THEN
                 CASE
@@ -87,10 +109,23 @@ WITH cte AS (
         assay.dmt,
         assay.ni,
         assay.fe,
+        assay.mgo,
+        assay.sio2,
+        assay.moisture,
+        assay.cr,
+        assay.co,
         dassay.wmt,
         dassay.dmt,
         dassay.ni,
         dassay.fe,
+        dassay.mg,
+        dassay.mgo,
+        dassay.si,
+        dassay.sio2,
+        dassay.moisture,
+        dassay.cr,
+        dassay.cr2o3,
+        dassay.co,
         e.geom,
         le.interval_from,
         shipment.final_moisture,
@@ -123,10 +158,20 @@ SELECT
     loading_dmt,
     loading_ni,
     loading_fe,
+    loading_mgo,
+    loading_sio2,
+    loading_moisture,
+    loading_cr,
+    loading_co,
     discharging_wmt,
     discharging_dmt,
     discharging_ni,
     discharging_fe,
+    discharging_mgo,
+    discharging_sio2,
+    discharging_moisture,
+    discharging_cr,
+    discharging_co,
     final_wmt,
     final_moisture,
     final_ni,
@@ -159,10 +204,20 @@ GROUP BY
     loading_dmt,
     loading_ni,
     loading_fe,
+    loading_mgo,
+    loading_sio2,
+    loading_moisture,
+    loading_cr,
+    loading_co,
     discharging_wmt,
     discharging_dmt,
     discharging_ni,
     discharging_fe,
+    discharging_mgo,
+    discharging_sio2,
+    discharging_moisture,
+    discharging_cr,
+    discharging_co,
     final_wmt,
     final_moisture,
     final_ni,
