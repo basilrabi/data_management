@@ -48,6 +48,9 @@ download_sql material_management_legacygoodsreceivednote && \
 download_sql material_management_legacyitemtype && \
 download_sql material_management_legacymaterial && \
 download_sql material_management_legacyvendor && \
+download_sql material_management_materialgroup && \
+download_sql material_management_materialtype && \
+download_sql material_management_unitofmeasure && \
 download_sql organization_organization && \
 download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \

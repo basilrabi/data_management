@@ -94,6 +94,12 @@ sql_script "upload_data" "material_management_legacygoodsissuance" && \
 vacuum "material_management_legacygoodsissuance" && \
 sql_script "upload_data" "material_management_legacygoodsreceivednote" && \
 vacuum "material_management_legacygoodsreceivednote" && \
+sql_script "upload_data" "material_management_materialgroup" && \
+vacuum "material_management_materialgroup" && \
+sql_script "upload_data" "material_management_materialtype" && \
+vacuum "material_management_materialtype" && \
+sql_script "upload_data" "material_management_unitofmeasure" && \
+vacuum "material_management_unitofmeasure" && \
 sql_script "upload_data" "sampling_laboratory" && \
 vacuum "sampling_laboratory" && \
 sql_script "upload_data" "sampling_lithology" && \
