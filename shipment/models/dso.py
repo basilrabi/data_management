@@ -13,6 +13,7 @@ from django.db.models import (
     DecimalField,
     DurationField,
     F,
+    FileField,
     ForeignKey,
     Index,
     Model,
@@ -230,12 +231,19 @@ class LayDaysDetailComputed(Model):
 class ApprovedLayDaysStatement(Model):
     statement = OneToOneField('LayDaysStatement', on_delete=PROTECT)
     approved = BooleanField()
+    signed_statement = FileField(
+        upload_to='laydays/', null=True, blank=True
+    )
 
-    def csv(self):
-        return self.statement.csv()
+    def despatch(self):
+        self.statement._compute()
+        if self.statement.despatch:
+            return "{:,.2f}".format(self.statement.despatch)
+        if self.statement.demurrage:
+            return "{:,.2f}".format(-self.statement.demurrage)
 
-    def PDF(self):
-        return self.statement.PDF()
+    def number(self):
+        return self.statement.number()
 
     def save(self, *args, **kwargs):
         original_obj = ApprovedLayDaysStatement.objects.filter(id=self.id)
@@ -531,6 +539,32 @@ class LayDaysStatement(Model):
                         self.date_computed = now()
                         self.save(compute=True)
 
+    def PDF(self):
+        return mark_safe(
+            '<a class="grp-button" '
+            'href="/shipment/statement/{}" '
+            'target="_blank"'
+            '>'
+            'View'
+            '</a>'.format(self.shipment.name)
+        )
+
+    def approved(self):
+        if hasattr(self, 'approvedlaydaysstatement'):
+            if self.approvedlaydaysstatement.approved:
+                if self.approvedlaydaysstatement.signed_statement:
+                    return mark_safe(
+                        '<a href="{}" target="_blank">'
+                        '<img src="/static/admin/img/icon-yes.svg" alt="True">'
+                        '</a>'.format(self.approvedlaydaysstatement.signed_statement.url)
+                    )
+                return mark_safe(
+                    '<img src="/static/admin/img/icon-yes.svg" alt="True">'
+                )
+        return mark_safe(
+            '<img src="/static/admin/img/icon-no.svg" alt="False">'
+        )
+
     def cargo_description_title(self):
         return self.cargo_description.lower().title()
 
@@ -552,15 +586,8 @@ class LayDaysStatement(Model):
     def latex_remarks(self):
         return to_latex(self.remarks)
 
-    def PDF(self):
-        return mark_safe(
-            '<a class="grp-button" '
-            'href="/shipment/statement/{}" '
-            'target="_blank"'
-            '>'
-            'View'
-            '</a>'.format(self.shipment.name)
-        )
+    def number(self):
+        return self.shipment.shipmentnumber.number
 
     def time_can_test(self):
         return self.can_test * \
@@ -819,7 +846,7 @@ class ShipmentNumber(Model):
     """
     Materialized view.
     """
-    shipment = OneToOneField(Shipment, on_delete=DO_NOTHING)
+    shipment = OneToOneField(Shipment, on_delete=DO_NOTHING, primary_key=True)
     number = CharField(max_length=10, unique=True)
 
     class Meta:

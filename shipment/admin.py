@@ -121,8 +121,8 @@ class TripDetailInline(TabularInline):
 
 @register(ApprovedLayDaysStatement)
 class ApprovedLayDaysStatementAdmin(ModelAdmin):
-    list_display = ('object_name', 'vessel', 'approved', 'PDF', 'csv')
-    readonly_fields = ['csv', 'PDF']
+    list_display = ('object_name', 'number', 'vessel', 'approved', 'signed_statement')
+    readonly_fields = ['number', 'statement', 'despatch']
     search_fields = ['statement__shipment__name',
                      'statement__shipment__vessel__name']
 
@@ -246,6 +246,7 @@ class LayDaysStatementAdmin(ModelAdmin):
         'difference_with_assay'
     )
     readonly_fields = [
+        'approved',
         'date_saved',
         'date_computed',
         'commenced_laytime',
@@ -260,13 +261,9 @@ class LayDaysStatementAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(
-            approved=F('approvedlaydaysstatement__approved'),
             difference_with_assay=F('shipment__shipmentloadingassay__wmt') - F('tonnage')
         )
         return qs
-
-    def approved(self, obj):
-        return obj.approved
 
     def difference_with_assay(self, obj):
         return obj.difference_with_assay
@@ -274,8 +271,6 @@ class LayDaysStatementAdmin(ModelAdmin):
     def object_name(self, obj):
         return LayDaysStatement.objects.get(id=obj.id).shipment.name_html()
 
-    approved.admin_order_field = 'approved'
-    approved.boolean = True
     difference_with_assay.admin_order_field= 'difference_with_assay'
     object_name.short_description = 'Shipment'
 
