@@ -60,7 +60,9 @@ class LegacyVendorAdmin(ReadOnlyAdmin):
 
 @register(Material)
 class MaterialAdmin(ModelAdmin):
-    list_display = ('__str__', 'description')
+    list_display = ('__str__', 'description', 'group', 'type')
+    list_filter = ['type', 'group']
+    search_fields = ['description', 'part_number']
 
 
 @register(MaterialGroup)
