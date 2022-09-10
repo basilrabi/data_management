@@ -7,7 +7,9 @@ CREATE TEMPORARY TABLE temp_sampling_approvedshipmentloadingassay
 
 \copy temp_sampling_approvedshipmentloadingassay FROM 'data/sampling_approvedshipmentloadingassay.csv' DELIMITER ',' CSV;
 
-INSERT INTO sampling_approvedshipmentloadingassay (approved, certificate, assay_id)
+INSERT INTO sampling_approvedshipmentloadingassay (
+    approved, certificate, assay_id
+)
 SELECT a.approved, a.certificate, assay.id
 FROM temp_sampling_approvedshipmentloadingassay a
     LEFT JOIN shipment_shipment s

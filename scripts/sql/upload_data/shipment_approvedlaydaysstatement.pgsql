@@ -1,19 +1,26 @@
 CREATE TEMPORARY TABLE temp_shipment_approvedlaydaysstatement
 (
-    shipment_name character varying(10)
+    shipment_name character varying(10),
+    approved boolean,
+    signed_statement character varying(100)
 );
 
 \copy temp_shipment_approvedlaydaysstatement FROM 'data/shipment_approvedlaydaysstatement.csv' DELIMITER ',' CSV;
 
-WITH a AS (
-    SELECT d.id
-    FROM temp_shipment_approvedlaydaysstatement b
-        LEFT JOIN shipment_shipment c
-            ON c.name = b.shipment_name
-        LEFT JOIN shipment_laydaysstatement d
-            ON d.shipment_id = c.id
+INSERT INTO shipment_approvedlaydaysstatement (
+    approved, signed_statement, statement_id
 )
-UPDATE shipment_approvedlaydaysstatement
-SET approved = 't'
-FROM a
-WHERE statement_id = a.id
+SELECT a.approved, a.signed_statement, b.id
+FROM temp_shipment_approvedlaydaysstatement a
+    LEFT JOIN shipment_shipment s
+        ON s.name = a.shipment_name
+    LEFT JOIN shipment_laydaysstatement b
+        ON b.shipment_id = s.id;
+
+INSERT INTO shipment_approvedlaydaysstatement (approved, statement_id)
+SELECT 'f', a.id
+FROM shipment_laydaysstatement a
+WHERE a.id NOT IN (
+    SELECT statement_id
+    FROM shipment_approvedlaydaysstatement
+)
