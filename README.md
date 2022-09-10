@@ -109,13 +109,6 @@ cp data_management/local.py.sample data_management/local.py
 Edit your database connection variables and django superuser credentials (if
 you will use the automated bash scripts) in `data_management/local.py`.
 
-Set-up the django project
-
-```bash
-./manage.py migrate
-./manage.py collecstatic
-./manage.py createsuperuser
-```
 
 ### Development Environment
 
@@ -156,40 +149,18 @@ export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
 ```
 
 When all environment variables in `~/.bashrc` and variables in `data_management/local.py` are set properly,
-uploading the exported production data and migrating (testing) your changes is done using the command below:
+uploading the exported production data and migrating (testing) your changes is done using the commands below:
 
 ```
-./scripts/clean_db.sh && ./scripts/upload_data.sh && ./scripts/refresh_data.sh
+# export the production files
+./scripts/export_data.sh
+
+# set-up an empty database with all models fully migrated
+./scripts/clean_db.sh
+
+# upload the production data into your development environment
+./scripts/upload_data.sh
+
+# run you development instance
 ./manage.py runserver
-```
-
-### Serving
-
-#### Fedora 34+
-
-See [server_conf](http://datamanagement.tmc.nickelasia.com:3000/basilrabi/server_conf) for:
-
-1. `/etc/nginx/nginx.conf`
-1. `/etc/systemd/system/data_management.service`
-1. `~/.gunicorn_env`
-
-
-##### SELinux Adventures
-
-If you want SELinux activated, running the service might fail since SELinux will prevent a lot of things.
-You may [compile](https://relativkreativ.at/articles/how-to-compile-a-selinux-policy-package) the type enforcement files in the `SELinux/` directory from [here](http://datamanagement.tmc.nickelasia.com:3000/basilrabi/server_conf).
-
-See [this](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security-enhanced_linux/sect-security-enhanced_linux-fixing_problems-allowing_access_audit2allow)
-for further clarification of SELinux.
-
-##### NGINX
-
-After the configuration file, run the following:
-
-```bash
-# Add your account to the group `nginx` so it will be able to access your
-# directory. Change $USER to your user name
-usermod -a -G $USER nginx
-systemctl start nginx
-systemctl enable nginx
 ```
