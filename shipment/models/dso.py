@@ -237,7 +237,7 @@ class ApprovedLayDaysStatement(Model):
 
     def despatch(self):
         self.statement._compute()
-        if self.statement.shipment.demmurrage is not None and self.statement.shipment.despatch is not None:
+        if self.statement.shipment.demurrage is not None and self.statement.shipment.despatch is not None:
             if self.statement.shipment.despatch > 0:
                 return "{:,.2f}".format(self.statement.shipment.despatch)
             if self.statement.shipment.demurrage > 0:
