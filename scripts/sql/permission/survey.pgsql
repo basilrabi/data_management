@@ -7,6 +7,10 @@ GRANT INSERT ON TABLE location_stockpile     TO survey;
 
 GRANT UPDATE (depth)          ON TABLE inventory_block          TO survey;
 GRANT UPDATE                  ON TABLE location_clusterlayout   TO survey;
+GRANT UPDATE (geom)           ON TABLE location_drillhole       TO survey;
+GRANT UPDATE (x)              ON TABLE location_drillhole       TO survey;
+GRANT UPDATE (y)              ON TABLE location_drillhole       TO survey;
+GRANT UPDATE (z)              ON TABLE location_drillhole       TO survey;
 GRANT UPDATE (z_present)      ON TABLE location_drillhole       TO survey;
 GRANT UPDATE (geom)           ON TABLE location_roadarea        TO survey;
 GRANT UPDATE                  ON TABLE location_stockpile       TO survey;
