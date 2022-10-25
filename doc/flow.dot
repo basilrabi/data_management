@@ -1,0 +1,93 @@
+digraph data_flow {
+    node [shape = box]
+        browser [label=<<B>Browser</B>>];
+        browser_input [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Input</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Drill Hole Data</TD></TR>
+            <TR><TD ALIGN="LEFT">Mine Weekly Schedule (block clustering)</TD></TR>
+            <TR><TD ALIGN="LEFT">Mining Contractor Billing</TD></TR>
+            <TR><TD ALIGN="LEFT">Shipment Assay (loading and discharge)</TD></TR>
+            <TR><TD ALIGN="LEFT">Shipment Statement of Facts (vessel and LCT)</TD></TR>
+            <TR><TD ALIGN="LEFT">Topographic Data Update (*.ply import)</TD></TR>
+            </TABLE>>];
+        browser_output [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Output</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Clustered Blocks (*.csv, *.dxf, *.str)</TD></TR>
+            <TR><TD ALIGN="LEFT">Road Gradient Map</TD></TR>
+            <TR><TD ALIGN="LEFT">Shipment Loading Assay Certificate (*.pdf)</TD></TR>
+            <TR><TD ALIGN="LEFT">Shipment Laytime Statement (*.pdf)</TD></TR>
+            <TR><TD ALIGN="LEFT">Shipment Details (*.csv)</TD></TR>
+            <TR><TD ALIGN="LEFT">Topographic Data Export (*.ply)</TD></TR>
+            </TABLE>>];
+        dm_app [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Data Management App</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Python Backend</TD></TR>
+            <TR><TD ALIGN="LEFT">LaTeX for PDF Output</TD></TR>
+            </TABLE>>];
+        dm_db [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>PostgreSQL Database</B></TD></TR>
+            <TR><TD ALIGN="LEFT">PostGIS SFCGAL Extension</TD></TR>
+            <TR><TD ALIGN="LEFT">PL/pgSQL (fuctions and triggers)</TD></TR>
+            </TABLE>>];
+        qgis [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>QGIS</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Database Client</TD></TR>
+            <TR><TD ALIGN="LEFT">Python plugins</TD></TR>
+            </TABLE>>];
+        qgis_input [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Row Inserts, Updates and Deletions</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Clustered Block Survey</TD></TR>
+            <TR><TD ALIGN="LEFT">Drill Hole Data</TD></TR>
+            <TR><TD ALIGN="LEFT">Mine Monthly Schedule (date column update)</TD></TR>
+            <TR><TD ALIGN="LEFT">Mine Pit Limits</TD></TR>
+            <TR><TD ALIGN="LEFT">Mine Weekly Schedule (geometry column update)</TD></TR>
+            <TR><TD ALIGN="LEFT">Road Network (geometry column update)</TD></TR>
+            </TABLE>>];
+        qgis_output [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Survey Layout</B></TD></TR>
+            <TR><TD ALIGN="LEFT">DXF Files</TD></TR>
+            <TR><TD ALIGN="LEFT">3D Points/Lines</TD></TR>
+            <TR><TD ALIGN="LEFT">Compatible with Total Station</TD></TR>
+            <TR><TD ALIGN="LEFT">and other survey intruments</TD></TR>
+            </TABLE>>];
+        qgis_server [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>QGIS Server</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Web Map Service</TD></TR>
+            </TABLE>>];
+        rstudio [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>RStudio Server</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Port: 8787</TD></TR>
+            </TABLE>>];
+        static_files [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Static Files Storage</B></TD></TR>
+            <TR><TD ALIGN="LEFT">User-uploaded data</TD></TR>
+            </TABLE>>];
+        web_server [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>nginx</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Ports: 80,81</TD></TR>
+            </TABLE>>];
+
+    edge [dir = back]
+        browser_output -> browser;
+        dm_app -> qgis_server;
+        qgis_output -> qgis;
+        qgis_server -> dm_db;
+        web_server -> static_files;
+
+    edge [dir = both]
+        browser -> rstudio;
+        browser -> web_server;
+        dm_app -> dm_db;
+        dm_app -> static_files;
+        qgis -> dm_db;
+        qgis_input -> qgis;
+        rstudio -> dm_db;
+        web_server -> dm_app;
+
+    edge [dir = formward]
+        browser_input -> browser;
+
+    {rank = same;
+        browser;
+        qgis;}
+}
