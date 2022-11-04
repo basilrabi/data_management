@@ -1,0 +1,42 @@
+digraph email_flow {
+    node [shape = box]
+        approval [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Approval</B></TD></TR>
+            </TABLE>>];
+        browser_input [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Shipment Data Input</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Assay result</TD></TR>
+            <TR><TD ALIGN="LEFT">Statement of fact</TD></TR>
+            </TABLE>>];
+        draft_document [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Draft Shipment Certificate Printing</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Assay Certificate</TD></TR>
+            <TR><TD ALIGN="LEFT">Laytime Statement</TD></TR>
+            </TABLE>>];
+        draft_document [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Draft Shipment Certificate Printing</B></TD></TR>
+            <TR><TD ALIGN="LEFT">Assay Certificate</TD></TR>
+            <TR><TD ALIGN="LEFT">Laytime Statement</TD></TR>
+            </TABLE>>];
+        receiving [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Receiving of Acknowledgement Receipt</B></TD></TR>
+            <TR><TD ALIGN="LEFT">FROM: MGB</TD></TR>
+            <TR><TD ALIGN="LEFT"><B>IMAP</B></TD></TR>
+            </TABLE>>];
+        sending [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Sending of Certificate</B></TD></TR>
+            <TR><TD ALIGN="LEFT">TO: NAC-HO / MGB</TD></TR>
+            <TR><TD ALIGN="LEFT"><B>SMTP</B></TD></TR>
+            </TABLE>>];
+        uploading [label=<<TABLE BORDER="0">
+            <TR><TD ALIGN="LEFT"><B>Uploading of signed Certificate</B></TD></TR>
+            </TABLE>>];
+
+    approval -> browser_input [constraint=false,xlabel="revise  "];
+    approval -> uploading [label=" approved"];
+    browser_input -> draft_document;
+    draft_document -> approval;
+    sending -> receiving;
+    uploading -> sending;
+
+}
