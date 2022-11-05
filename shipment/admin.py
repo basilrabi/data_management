@@ -189,7 +189,7 @@ class FinalShipmentDetailAdmin(ExportMixin, ModelAdmin):
         'despatch'
     )
     resource_class = ShipmentResource
-    search_fields = ['name', 'vessel__name']
+    search_fields = ['name', 'product__name', 'vessel__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request) \
@@ -278,6 +278,7 @@ class LayDaysStatementAdmin(ModelAdmin):
 @register(Product)
 class ProductAdmin(ModelAdmin):
     list_display = ('__str__', 'ni', 'fe', 'moisture')
+    search_fields = ['name']
 
 
 @register(Shipment)
@@ -323,7 +324,7 @@ class ShipmentAdmin(ModelAdmin):
         'number'
     )
     readonly_fields = ['number']
-    search_fields = ['name', 'vessel__name']
+    search_fields = ['name', 'product__name', 'vessel__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request) \
