@@ -112,7 +112,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        'vessel',
                        'wmt',
                        'zn')
-    search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
+    search_fields = ['assay__shipment__name',
+                     'assay__shipment__product__name',
+                     'assay__shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('assay',)
@@ -318,7 +320,9 @@ class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
     )
     fields = ('assay', 'number', 'approved', 'certificate')
     readonly_fields = ('assay', 'number')
-    search_fields = ['assay__shipment__name', 'assay__shipment__vessel__name']
+    search_fields = ['assay__shipment__name',
+                     'assay__shipment__product__name',
+                     'assay__shipment__vessel__name']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(
@@ -340,7 +344,9 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
     date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = ('__str__', 'number', 'vessel')
     readonly_fields = ('number', 'vessel')
-    search_fields = ['shipment__name', 'shipment__vessel__name']
+    search_fields = ['shipment__name',
+                     'shipment__product__name',
+                     'shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('shipment', 'laboratory')
@@ -479,7 +485,9 @@ class PamcoShipmentAssayAdmin(ModelAdmin):
     inlines = [ShipmentDischargeLotAssayInline]
     list_display = ('object_name', 'number', 'vessel')
     readonly_fields = ('number', 'vessel')
-    search_fields = ['shipment__name', 'shipment__vessel__name']
+    search_fields = ['shipment__name',
+                     'shipment__product__name',
+                     'shipment__vessel__name']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'shipment':
@@ -525,7 +533,9 @@ class ShipmentLoadingAssayAdmin(ModelAdmin):
                     'PDF',
                     'approved_certificate')
     readonly_fields = ('wmt', 'dmt', 'moisture', 'ni', 'ni_ton', 'number')
-    search_fields = ['shipment__name', 'shipment__vessel__name']
+    search_fields = ['shipment__name',
+                     'shipment__product__name',
+                     'shipment__vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ('date', 'shipment', 'chemist')
