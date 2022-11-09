@@ -123,12 +123,18 @@ class Trip(Model):
         return True
 
     def _interval_from(self):
-        if self.tripdetail_set.all().count() > 0:
-            return self.tripdetail_set.all().aggregate(Min('interval_from'))['interval_from__min']
+        try:
+            if self.tripdetail_set.all().count() > 0:
+                return self.tripdetail_set.all().aggregate(Min('interval_from'))['interval_from__min']
+        except ValueError:
+            pass
 
     def _interval_to(self):
-        if self.tripdetail_set.all().count() > 1:
-            return self.tripdetail_set.all().aggregate(Max('interval_from'))['interval_from__max']
+        try:
+            if self.tripdetail_set.all().count() > 1:
+                return self.tripdetail_set.all().aggregate(Max('interval_from'))['interval_from__max']
+        except ValueError:
+            pass
 
     def _valid(self):
         """

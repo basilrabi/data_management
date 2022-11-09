@@ -230,9 +230,12 @@ class MiningSample(AssaySample):
     ready_for_delivery = BooleanField(default=False)
 
     def has_increment(self):
-        if self.miningsampleincrement_set.all().count() > 0:
-            return True
-        return False
+        try:
+            if self.miningsampleincrement_set.all().count() > 0:
+                return True
+            return False
+        except ValueError:
+            return False
 
     def required_trips(self):
         if self.start_collection:
@@ -423,19 +426,22 @@ class ShipmentDischargeAssay(AssaySample):
 
     def save(self, *args, **kwargs):
         if self.laboratory.name == 'PAMCO':
-            qs = self.shipmentdischargelotassay_set.all()
-            if qs.count() > 0:
-                qs = qs \
-                    .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
-                    .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
-                    .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
-                self.wmt = qs['wmt__sum']
-                self.dmt = qs['dmt__sum']
-                if self.wmt and self.dmt:
-                    self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
-                    self.ni_ton = qs['ni_ton__sum']
-                    if self.ni_ton:
-                        self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+            try:
+                qs = self.shipmentdischargelotassay_set.all()
+                if qs.count() > 0:
+                    qs = qs \
+                        .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
+                        .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
+                        .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
+                    self.wmt = qs['wmt__sum']
+                    self.dmt = qs['dmt__sum']
+                    if self.wmt and self.dmt:
+                        self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+                        self.ni_ton = qs['ni_ton__sum']
+                        if self.ni_ton:
+                            self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+            except ValueError:
+                pass
         else:
             if (self.dmt and self.wmt) and not self.moisture:
                 self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
@@ -570,17 +576,20 @@ class ShipmentLoadingAssay(AssaySample):
             return self.mgo / self.sio2
 
     def save(self, *args, **kwargs):
-        qs = self.shipmentloadinglotassay_set.all() \
-            .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
-            .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
-            .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
-        self.wmt = qs['wmt__sum']
-        self.dmt = qs['dmt__sum']
-        if self.wmt and self.dmt:
-            self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
-            self.ni_ton = qs['ni_ton__sum']
-            if self.ni_ton:
-                self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+        try:
+            qs = self.shipmentloadinglotassay_set.all() \
+                .annotate(dmt=Round(F('wmt') * (100 - F('moisture')) * Decimal(0.01), 3)) \
+                .annotate(ni_ton=Round(F('dmt') * F('ni') * Decimal(0.01), 3)) \
+                .aggregate(Sum('wmt'), Sum('dmt'), Sum('ni_ton'))
+            self.wmt = qs['wmt__sum']
+            self.dmt = qs['dmt__sum']
+            if self.wmt and self.dmt:
+                self.moisture = round((1 - (self.dmt / self.wmt)) * 100, 2)
+                self.ni_ton = qs['ni_ton__sum']
+                if self.ni_ton:
+                    self.ni = round(self.ni_ton * 100 / self.dmt, 2)
+        except ValueError:
+            pass
         super().save(*args, **kwargs)
         if not hasattr(self, 'approvedshipmentloadingassay'):
             approval = ApprovedShipmentLoadingAssay(assay=self, approved=False)
