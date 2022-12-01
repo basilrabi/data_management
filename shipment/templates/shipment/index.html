@@ -19,21 +19,26 @@
     <div class="col-12"><h3>Ship Loading Rate</h3></div>
 </div>
 <div>
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a href="#daily" class="nav-link active" data-toggle="tab">Daily Estimate</a>
+    <ul class="nav nav-tabs" id="shiploading-performance" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily-tab-pane" type="button" role="tab" aria-controls="daily-tab-pane" aria-selected="true">
+                Daily Estimate
+            </button>
         </li>
-        <li class="nav-item">
-            <a href="#smooth" class="nav-link" data-toggle="tab">7-Day Average</a>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="smooth-tab" data-bs-toggle="tab" data-bs-target="#smooth-tab-pane" type="button" role="tab" aria-controls="smooth-tab-pane" aria-selected="false">
+                7-Day Average
+            </button>
         </li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="daily">
+        <div class="tab-pane fade show active" id="daily-tab-pane" role="tabpanel" aria-labelledby="daily-tab" tabindex="0">
             {{ loading_rate }}
         </div>
-        <div class="tab-pane fade active" id="smooth">
+        <div class="tab-pane fade" id="smooth-tab-pane" role="tabpanel" aria-labelledby="smooth-tab" tabindex="0">
             {{ loading_rate_smooth }}
         </div>
+        <div></div>
     </div>
 </div>
     {% endautoescape %}
