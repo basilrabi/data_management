@@ -58,7 +58,9 @@ mkvirtualenv data_management
 deactivate
 ```
 
-### Set-up gammu
+### Set-up gammu (temporarily disable)
+
+_Ignore this section for now_
 
 You will need to have `~/gammu-smsdrc` set-up with something like for your testing environment:
 
