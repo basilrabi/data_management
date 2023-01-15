@@ -1,6 +1,6 @@
 CREATE TEMPORARY TABLE temp_inventory_block
 (
-    name character varying(20),
+    name character varying(30),
     z smallint,
     ni double precision,
     fe double precision,

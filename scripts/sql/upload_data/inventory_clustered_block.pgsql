@@ -1,6 +1,6 @@
 CREATE TEMPORARY TABLE temp_clustered_block
 (
-    name character varying(20)
+    name character varying(30)
 );
 
 \copy temp_clustered_block FROM 'data/inventory_clustered_block.csv' DELIMITER ',' CSV;

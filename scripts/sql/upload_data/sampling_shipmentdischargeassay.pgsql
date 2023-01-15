@@ -27,7 +27,7 @@ CREATE TEMPORARY TABLE temp_sampling_shipmentdischargeassay
     ni_ton numeric(7,3),
     wmt numeric(8,3),
     dmt numeric(8,3),
-    laboratory_name character varying(20),
+    laboratory_name character varying(40),
     shipment_name character varying(10)
 );
 

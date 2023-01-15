@@ -1,6 +1,6 @@
 CREATE TEMPORARY TABLE temp_sampling_lithology
 (
-    name character varying(20),
+    name character varying(40),
     description text
 );
 

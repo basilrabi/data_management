@@ -19,9 +19,9 @@ CREATE TEMPORARY TABLE temp_shipment_shipment
     spec_ni numeric(4,2),
     spec_tonnage integer,
     target_tonnage integer,
-    buyer_name character varying(20),
-    destination_name character varying(20),
-    product_name character varying(20),
+    buyer_name character varying(40),
+    destination_name character varying(40),
+    product_name character varying(40),
     vessel_name character varying(50)
 );
 

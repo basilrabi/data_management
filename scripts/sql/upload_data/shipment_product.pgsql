@@ -1,6 +1,6 @@
 CREATE TEMPORARY TABLE temp_shipment_product
 (
-    name character varying(20),
+    name character varying(40),
     description text,
     moisture numeric(6,4),
     ni numeric(6,4),
