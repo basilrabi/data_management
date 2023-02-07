@@ -72,13 +72,13 @@ def import_material(csv_path: Path, enable_log: bool) -> None:
                     for_update = False
                     log = []
                     if valuation.gl != gl:
+                        log += [f'Valuation {valuation} GL mapping to be updated from {valuation.gl} to {gl}.']
                         valuation.gl = gl
                         for_update = True
-                        log += [f'Valuation {valuation} GL mapping to be updated from {valuation.gl} to {gl}.']
                     if valuation.description != row['valuation class']:
+                        log += [f'Valuation {valuation} description to be updated from {valuation.description} to {row["valuation class"]}.']
                         valuation.description = row['valuation class']
                         for_update = True
-                        log += [f'Valuation {valuation} description to be updated from {valuation.description} to {row["valuation class"]}.']
                     if for_update:
                         try:
                             valuation.clean()
@@ -156,21 +156,21 @@ def import_material(csv_path: Path, enable_log: bool) -> None:
                 for_update = False
                 log = []
                 if material.description != row['description']:
+                    log += [f'Material {material} description to be updated from {material.description} to {row["description"]}.']
                     material.description = row['description']
                     for_update = True
-                    log += [f'Material {material} description to be updated from {material.description} to {row["description"]}.']
                 if material.part_number != (row['part number'] or None):
+                    log += [f'Material {material} part number to be updated from {material.part_number} to {row["part number"]}.']
                     material.part_number = row['part number'] or None
                     for_update = True
-                    log += [f'Material {material} part number to be updated from {material.part_number} to {row["part number"]}.']
                 if material.type != material_type:
+                    log += [f'Material {material} material_type to be updated from {material.type} to {material_type}.']
                     material.type = material_type
                     for_update = True
-                    log += [f'Material {material} material_type to be updated from {material.material_type} to {material_type}.']
                 if material.group != material_group:
-                    material.material_group = material_group
+                    log += [f'Material {material} material_group to be updated from {material.group} to {material_group}.']
+                    material.group = material_group
                     for_update = True
-                    log += [f'Material {material} material_group to be updated from {material.material_group} to {material_group}.']
                 if for_update:
                     material.save()
                     log += ['Material {material} updated.']
