@@ -13,6 +13,7 @@ FROM shipment_trip
         ON shipment_trip.lct_id = shipment_lct.id
     LEFT JOIN shipment_vessel
         ON shipment_trip.vessel_id = shipment_vessel.id
+WHERE shipment_trip.interval_from IS NOT NULL
 ORDER BY
     shipment_lct.name,
     shipment_trip.interval_from,
