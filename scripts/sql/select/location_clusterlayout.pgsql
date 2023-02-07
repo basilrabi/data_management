@@ -2,6 +2,7 @@ SELECT b.name, a.layout_date
 FROM location_clusterlayout a
 	LEFT JOIN location_cluster b
 		ON a.cluster_id = b.id
+WHERE b.name <> '111'
 ORDER BY
 	b.count,
 	b.mine_block,
