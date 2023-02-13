@@ -5,4 +5,4 @@ from .models import Organization
 
 @register(Organization)
 class OrganizationAdmin(ModelAdmin):
-    list_display = ('__str__', 'description')
+    list_display = ('name', 'description', 'service')
