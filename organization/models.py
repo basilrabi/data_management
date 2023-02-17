@@ -1,8 +1,9 @@
 from custom.models import Classification
-from django.db.models import CharField
+from django.db.models import CharField, BooleanField
 
 
 class Organization(Classification):
+
     service_choice = (
         ('Contractor', 'Contractor'),
         ('Operating Company', 'OpCo'),
@@ -10,3 +11,4 @@ class Organization(Classification):
     )
 
     service = CharField(max_length = 30, choices=service_choice, null=True, blank= False)
+    active = BooleanField(default=True)
