@@ -1,5 +1,6 @@
 Django
 django-admin-multiple-choice-list-filter
+django-celery-email
 django-import-export
 django-phonenumber-field[phonenumbers]
 ezdxf

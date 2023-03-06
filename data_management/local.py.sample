@@ -1,9 +1,13 @@
+celery_backend_url='rpc://myuser:mypassword@localhost/myvhost'
+celery_broker_url='amqp://myuser:mypassword@localhost/myvhost'
 db_name='database_name'
 db_user='data_management'
 db_password='postgres_user_password'
 db_host='databse_host'
 db_port='5432'
+DEVELOPER=True
 DJANGO_SUPERUSER_USERNAME='username'
 DJANGO_SUPERUSER_PASSWORD='password'
 DJANGO_SUPERUSER_EMAIL='sample.email@domain.com'
-DEVELOPER=True
+email_address='your_account@gmail.com'
+email_password='password'

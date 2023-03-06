@@ -4,7 +4,7 @@
 
 ### System packages
 
-The system packages below are required to be installed in Fedora 34+:
+The system packages below are required to be installed in Fedora 37+:
 
 - gammu-devel
 - nginx
@@ -12,6 +12,7 @@ The system packages below are required to be installed in Fedora 34+:
 - postgresql-llvmjit
 - python3-devel
 - python3-virtualenvwrapper
+- rabbitmq-server
 
 System packages are installed using `dnf`:
 
@@ -31,6 +32,14 @@ Ensure that the database connection is properly set-up as required in
 `data_management.settings.DATABASES`
 
 ## Deployment and Development
+
+### Set-up RabbitMQ Message Broker
+
+```bash
+sudo rabbitmqctl add_user myuser mypassword
+sudo rabbitmqctl add_vhost myvhost
+sudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+```
 
 ### Set-up virtual environment
 
