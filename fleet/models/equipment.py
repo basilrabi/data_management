@@ -1,4 +1,5 @@
 from django.db.models import (
+    BooleanField,
     CharField,
     DateField,
     DecimalField,
@@ -36,9 +37,11 @@ class Equipment(Model):
     )
     date_acquired = DateField(null=True, blank=True)
     date_phased_out = DateField(null=True, blank=True)
-    serial_number = AlphaNumeric(max_length=100, null=True, blank=True)
-    plate_number = CharField(max_length=20, null = True, blank = True)
-    chassis_number = CharField(max_length=100, null = True, blank = True)
+    engine_serial_number = AlphaNumeric(max_length=100, null=True, blank=True)
+    plate_number = NameField(max_length=20, null = True, blank = True)
+    chassis_serial_number = NameField(max_length=100, null = True, blank = True)
+    active = BooleanField(default=True)
+
     equipment_class = ForeignKey(
         'EquipmentClass', on_delete=SET_NULL, null=True, blank=True
     )

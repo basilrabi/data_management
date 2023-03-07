@@ -13,12 +13,12 @@ from .models.equipment import (
 class EquipmentAdmin(ModelAdmin):
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
-    list_display = ('__str__', 'model', 'serial_number')
+    list_display = ('__str__', 'model', 'engine_serial_number')
     list_filter = ['owner', 'equipment_class']
     search_fields = ['fleet_number',
                      'model__manufacturer__name',
                      'model__name',
-                     'serial_number',]
+                     'engine_serial_number',]
 
 
 @register(EquipmentClass)
