@@ -15,6 +15,7 @@ from custom.models import Classification
 from custom.fields import AlphaNumeric, NameField
 from organization.models import Organization
 
+
 class Equipment(Model):
     """
     A single piece of equipment.
