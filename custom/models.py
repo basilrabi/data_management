@@ -1,13 +1,16 @@
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
 from django.db.models import (
+    BooleanField,
     CharField,
     DateField,
     DateTimeField,
+    DecimalField,
     F,
     ForeignKey,
     ManyToManyField,
     Model,
+    PositiveSmallIntegerField,
     SET_NULL,
     TextField
 )
@@ -30,6 +33,35 @@ class Classification(Model):
 
     def __str__(self):
         return self.name
+
+
+class FixedAsset(Model):
+    """
+    Template for fixed asset non-changing data
+    """
+    acquisition_cost = DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2,
+        help_text='Cost in Philippine Peso as recorded by TSD'
+    )
+    acquisition_cost_from_accounting = DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2,
+        help_text='Cost in Philippine Peso'
+    )
+    date_acquired = DateField(null=True, blank=True)
+    date_phased_out = DateField(null=True, blank=True)
+    asset_tag_id = NameField(max_length=20, null = True, blank = True)
+    asset_serial_number = NameField(max_length=20, null = True, blank = True)
+    asset_code = NameField(max_length=20, null = True, blank = True, help_text="SAP ID")
+    service_life = PositiveSmallIntegerField(null=True, blank=True, help_text = "No. of months")
+    description = TextField(max_length = 50, null=True, blank=True)
+    active = BooleanField(default=True)
+
+    class Meta:
+        abstract = True
 
 
 class GeoClassification(GeoModel):

@@ -1,7 +1,5 @@
 from django.db.models import (
-    BooleanField,
     DateField,
-    DecimalField,
     F,
     Model,
     ForeignKey,
@@ -11,37 +9,22 @@ from django.db.models import (
     UniqueConstraint
 )
 
-from custom.models import Classification
 from custom.fields import AlphaNumeric, NameField
+from custom.models import Classification, FixedAsset
 from organization.models import Organization
 
 
-class Equipment(Model):
+class Equipment(FixedAsset):
     """
     A single piece of equipment.
     """
+    owner = ForeignKey(Organization, on_delete=PROTECT)
     fleet_number = PositiveSmallIntegerField()
     model = ForeignKey('EquipmentModel', on_delete=PROTECT)
-    owner = ForeignKey(Organization, on_delete=PROTECT)
-    acquisition_cost = DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2,
-        help_text='Cost in Philippine Peso as recorded by TSD'
-    )
-    acquisition_cost_from_accounting = DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2,
-        help_text='Cost in Philippine Peso'
-    )
-    date_acquired = DateField(null=True, blank=True)
-    date_phased_out = DateField(null=True, blank=True)
     engine_serial_number = AlphaNumeric(max_length=100, null=True, blank=True)
     plate_number = NameField(max_length=20, null = True, blank = True)
     chassis_serial_number = NameField(max_length=100, null = True, blank = True)
-    active = BooleanField(default=True)
-
+    
     equipment_class = ForeignKey(
         'EquipmentClass', on_delete=SET_NULL, null=True, blank=True
     )
@@ -60,7 +43,7 @@ class Equipment(Model):
         ordering = [
             F('owner__name').asc(),
             F('equipment_class__name').asc(),
-            F('fleet_number').asc()
+            F('fleet_number').asc(),
         ]
 
     def __str__(self):
