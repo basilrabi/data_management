@@ -13,23 +13,23 @@ from .models.equipment import (
 class EquipmentAdmin(ModelAdmin):
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
-    fields = (  'fleet_number',
-                'model',
-                'owner',
-                'acquisition_cost',
-                'acquisition_cost_from_accounting',
-                'date_acquired',
-                'date_phased_out',
-                'asset_tag_id',
-                'asset_serial_number',
-                'asset_code',
-                'service_life',
-                'engine_serial_number',
-                'plate_number',
-                'chassis_serial_number',
-                'description',
-                'active',
-                )
+    fields = ('fleet_number',
+              'model',
+              'owner',
+              'acquisition_cost',
+              'acquisition_cost_from_accounting',
+              'date_acquired',
+              'date_phased_out',
+              'asset_tag_id',
+              'asset_serial_number',
+              'asset_code',
+              'service_life',
+              'engine_serial_number',
+              'plate_number',
+              'chassis_serial_number',
+              'description',
+              'active')
+
     list_display = ('__str__', 'model', 'plate_number', 'engine_serial_number')
     list_filter = ['owner', 'equipment_class']
     search_fields = ['fleet_number',
