@@ -20,7 +20,6 @@ from custom.fields import NameField, SpaceLess
 from custom.functions_standalone import print_tz_manila
 
 
-
 class Classification(Model):
     """
     Template for any classification.
@@ -40,7 +39,6 @@ class FixedAsset(Model):
     """
     Template for fixed asset non-changing data
     """
-    
     acquisition_cost = DecimalField(
         default=0,
         max_digits=12,
@@ -64,7 +62,6 @@ class FixedAsset(Model):
 
     class Meta:
         abstract = True
-
 
 
 class GeoClassification(GeoModel):

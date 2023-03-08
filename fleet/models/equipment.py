@@ -9,10 +9,9 @@ from django.db.models import (
     UniqueConstraint
 )
 
-from organization.models import Organization
-from custom.models import Classification, FixedAsset
 from custom.fields import AlphaNumeric, NameField
-
+from custom.models import Classification, FixedAsset
+from organization.models import Organization
 
 
 class Equipment(FixedAsset):
