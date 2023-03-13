@@ -53,6 +53,7 @@ class FixedAsset(Model):
     )
     date_acquired = DateField(null=True, blank=True)
     date_phased_out = DateField(null=True, blank=True)
+    date_disposal = DateField(null=True, blank=True)
     asset_tag_id = NameField(max_length=20, null = True, blank = True)
     asset_serial_number = NameField(max_length=20, null = True, blank = True)
     asset_code = NameField(max_length=20, null = True, blank = True, help_text="SAP ID")
