@@ -1,12 +1,11 @@
 WITH a AS (
     SELECT
         shipment_lct.name,
-        shipment_trip.interval_from trip_start,
+        MIN(shipment_tripdetail.interval_from) OVER (PARTITION BY shipment_tripdetail.trip_id) trip_start,
         shipment_tripdetail.interval_from detail,
         shipment_tripdetail.interval_class,
         shipment_tripdetail.remarks,
-        shipment_trip.id trip_id,
-        COUNT(*) OVER (PARTITION BY shipment_trip.id) siblings
+        COUNT(*) OVER (PARTITION BY shipment_tripdetail.trip_id) siblings
     FROM shipment_tripdetail
         LEFT JOIN shipment_trip
             ON shipment_tripdetail.trip_id = shipment_trip.id

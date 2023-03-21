@@ -1,3 +1,3 @@
-SELECT name, description
+SELECT name, description, service, active
 FROM organization_organization
 ORDER BY name

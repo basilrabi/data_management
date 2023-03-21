@@ -183,13 +183,13 @@ BEGIN
             LEFT JOIN LATERAL (
                 SELECT COUNT(*) shipment_set
                 FROM shipment_shipment
-                LEFT JOIN shipment_laydaysstatement
-                    ON shipment_shipment.id = shipment_laydaysstatement.shipment_id
+                    LEFT JOIN shipment_laydaysstatement
+                        ON shipment_shipment.id = shipment_laydaysstatement.shipment_id
                 WHERE shipment_shipment.vessel_id = shipment_trip.vessel_id
                     AND shipment_laydaysstatement.commenced_loading <= shipment_trip.interval_to
                     AND (
                         shipment_laydaysstatement.completed_loading IS NULL
-                            OR shipment_laydaysstatement.commenced_loading >= shipment_trip.interval_to
+                            OR shipment_laydaysstatement.completed_loading >= shipment_trip.interval_from
                     )
             ) shipment_set ON true
             LEFT JOIN LATERAL (
@@ -307,7 +307,7 @@ FOR EACH ROW EXECUTE PROCEDURE refresh_shipment_trip_after_trip_change();
 CREATE OR REPLACE FUNCTION refresh_shipment_trip_after_tripdetail_delete()
 RETURNS trigger AS
 $BODY$
--- Whenever there are any changes on shipment_tripdetail, interval_from and
+-- Whenever there are any deletions on shipment_tripdetail, interval_from and
 -- interval_to will be updated.
 DECLARE row_count integer;
 BEGIN
@@ -369,7 +369,7 @@ FOR EACH STATEMENT EXECUTE PROCEDURE refresh_shipment_trip_after_tripdetail_dele
 CREATE OR REPLACE FUNCTION refresh_shipment_trip_after_tripdetail_insert()
 RETURNS trigger AS
 $BODY$
--- Whenever there are any changes on shipment_tripdetail, interval_from and
+-- Whenever there are any inserts on shipment_tripdetail, interval_from and
 -- interval_to will be updated.
 DECLARE row_count integer;
 BEGIN

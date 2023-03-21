@@ -39,7 +39,7 @@ tablib==3.3.0
 tenacity==8.2.2
 typing_extensions==4.5.0
 tzdata==2022.7
-tzlocal==4.2
+tzlocal==4.3
 vine==5.0.0
 wcwidth==0.2.6
 xlrd==2.0.1
