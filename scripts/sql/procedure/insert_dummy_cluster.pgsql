@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION insert_dummy_cluster()
-RETURNS void AS
+CREATE OR REPLACE PROCEDURE insert_dummy_cluster()
+AS
 $BODY$
 DECLARE has_dummy boolean;
 BEGIN
@@ -24,5 +24,4 @@ BEGIN
     END IF;
 END;
 $BODY$
-LANGUAGE plpgsql
-VOLATILE;
+LANGUAGE plpgsql;

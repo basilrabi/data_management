@@ -8,7 +8,7 @@ BEGIN
         FROM location_cluster
         WHERE name = '111'
     ) THEN
-        PERFORM insert_dummy_cluster();
+        CALL insert_dummy_cluster();
     END IF;
     RETURN NULL;
 END;
@@ -321,7 +321,7 @@ BEGIN
         SET name = new_name
         WHERE id = NEW.id;
 
-        PERFORM insert_dummy_cluster();
+        CALL insert_dummy_cluster();
     ELSE
         UPDATE location_cluster
         SET name = '111'

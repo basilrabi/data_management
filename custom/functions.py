@@ -308,10 +308,11 @@ def setup_triggers() -> None:
         'function/array_from_geom',
         'function/get_ore_class',
         'function/gradient',
-        'function/insert_dummy_cluster',
         'function/shipment_name_html',
         'function/slope_angle',
         'function/vectors',
+        'procedure/insert_dummy_cluster',
+        'procedure/record_log',
         'lock/location_cluster',
         'lock/location_clusterlayout',
         'lock/location_slice',
@@ -328,7 +329,8 @@ def setup_triggers() -> None:
         'trigger/location_clusterlayout',
         'trigger/location_crest_insert',
         'trigger/location_crest_update',
-        'trigger/location_drillhole_update'
+        'trigger/location_drillhole_update',
+        'trigger/shipment_trip_update'
     ]
     for query in pgsql:
         run_sql(query)

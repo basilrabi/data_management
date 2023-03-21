@@ -1,6 +1,4 @@
-/*
-Convert a PolygonZ to an array of its first 3 points.
-*/
+-- Convert a PolygonZ to an array of its first 3 points.
 CREATE OR REPLACE FUNCTION array_from_geom(input_geom geometry(PolygonZ))
 RETURNS float8[3][3] AS
 $BODY$

@@ -88,8 +88,7 @@ from .models.landuse import (
 
 1. One indentation level is 4 characters.
 1. Use `:=` for assignment while `=` to check for equality.
-1. Each clause of a query shall in a separate line.
-1. Limit identifiers to 63 characters.
+1. Each clause of a query shall be in a separate line.
 
 ### Comments
 
@@ -102,6 +101,7 @@ from .models.landuse import (
 1. Custom  identifiers shall be in small letters with words separated by underscore
 1. Built-in identifiers shall be in capital letters
 1. Avoid meaningless identifiers except for using table alias.
+1. Limit identifiers to 63 characters.
 
 ### Permissions
 

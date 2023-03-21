@@ -45,7 +45,7 @@ class  TripTest(TestCase):
         trip_detail.save()
 
         trip = Trip.objects.get(dump_truck_trips=50)
-        self.assertEqual(trip._continuous(), True)
+        self.assertEqual(trip.continuous, True)
 
         # Another adjacent trip is continous
         trip = Trip(lct=lct,
@@ -68,9 +68,9 @@ class  TripTest(TestCase):
         trip_detail.save()
 
         trip = Trip.objects.get(dump_truck_trips=50)
-        self.assertEqual(trip._continuous(), True)
+        self.assertEqual(trip.continuous, True)
         trip = Trip.objects.get(dump_truck_trips=51)
-        self.assertEqual(trip._continuous(), True)
+        self.assertEqual(trip.continuous, True)
 
         # Another adjacent trip but broken
         trip = Trip(lct=lct,
@@ -93,11 +93,11 @@ class  TripTest(TestCase):
         trip_detail.save()
 
         trip = Trip.objects.get(dump_truck_trips=50)
-        self.assertEqual(trip._continuous(), True)
+        self.assertEqual(trip.continuous, True)
         trip = Trip.objects.get(dump_truck_trips=51)
-        self.assertEqual(trip._continuous(), False)
+        self.assertEqual(trip.continuous, False)
         trip = Trip.objects.get(dump_truck_trips=52)
-        self.assertEqual(trip._continuous(), False)
+        self.assertEqual(trip.continuous, False)
 
     def test_data_is_complete_if_not_rejected(self):
         lct = LCT.objects.all().first()
@@ -268,8 +268,9 @@ class  TripTest(TestCase):
         )
         trip_detail.save()
 
+        trip.refresh_from_db()
         self.assertEqual(trip.valid, True)
         statement.commenced_loading=pd('2019-08-16 10:06:00+0800')
         statement.save()
-        trip = Trip.objects.all().first()
+        trip.refresh_from_db()
         self.assertEqual(trip.valid, False)

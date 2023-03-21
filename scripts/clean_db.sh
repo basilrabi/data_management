@@ -9,11 +9,6 @@ set +a
 template=data_management_template
 
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists $db_name"
-psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists geology"
-psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists gradecontrol"
-psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists planning"
-psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists reader"
-psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop role if exists survey"
 
 # The database data_management_template must exist in $db_host. This database
 # is empty, has the extension postgis_sfcgal enabled and is owned by $db_user.

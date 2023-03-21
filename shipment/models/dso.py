@@ -820,9 +820,6 @@ class Shipment(Model):
         super().save(*args, **kwargs)
         if refresh:
             refresh_shipment_number()
-            if self.vessel:
-                for trip in self.vessel.trip_set.all():
-                    trip.save()
 
     class Meta:
         constraints = [
