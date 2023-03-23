@@ -18,7 +18,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
-from .local import DEVELOPER
 
 admin.site.site_header = 'Data Management'
 admin.site.site_title = 'TMC'
@@ -35,5 +34,9 @@ urlpatterns = [
     path('shipment/', include('shipment.urls'))
 ]
 
-if DEVELOPER:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+try:
+    from .developer import DEVELOPER
+    if DEVELOPER:
+        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+except:
+    pass

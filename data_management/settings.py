@@ -1,8 +1,15 @@
 from os import environ
 from os.path import abspath, dirname, join
 
+try:
+    from .developer import DEVELOPER
+    if DEVELOPER:
+        DEBUG = True
+except:
+    pass
+
+
 from .local import (
-    DEVELOPER,
     db_host,
     db_name,
     db_password,
@@ -114,6 +121,3 @@ USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
 USE_TZ = True
 WSGI_APPLICATION = 'data_management.wsgi.application'
-
-if DEVELOPER:
-    DEBUG = True

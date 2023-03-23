@@ -173,3 +173,9 @@ uploading the exported production data and migrating (testing) your changes is d
 # run you development instance
 ./manage.py runserver
 ```
+
+To ensure that `DEBUG` is enabled in your development environment, make sure that `data_management/developer.py` exists:
+
+```
+cp data_management/developer.py.sample data_management/developer.py
+```
