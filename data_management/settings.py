@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'django_admin_multiple_choice_list_filter',
     'djcelery_email',
     'import_export',
+    'nested_admin',
     'phonenumber_field'
 ]
 LANGUAGE_CODE = 'en-us'
