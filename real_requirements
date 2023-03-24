@@ -2,6 +2,7 @@ Django
 django-admin-multiple-choice-list-filter
 django-celery-email
 django-import-export
+django-nested-admin
 django-phonenumber-field[phonenumbers]
 ezdxf
 gunicorn
