@@ -13,6 +13,7 @@ django-admin-multiple-choice-list-filter==0.1.1
 django-appconf==1.0.5
 django-celery-email==3.0.0
 django-import-export==3.1.0
+django-nested-admin==4.0.2
 django-phonenumber-field==7.0.2
 et-xmlfile==1.1.0
 ezdxf==1.0.2
@@ -30,6 +31,7 @@ psycopg2==2.9.5
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-gammu==3.2.4
+python-monkey-business==1.0.0
 pytz==2022.7.1
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0
