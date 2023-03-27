@@ -16,7 +16,7 @@ from django.db.models import (
 )
 from phonenumber_field.modelfields import PhoneNumberField
 
-from custom.fields import NameField, SpaceLess
+from custom.fields import AlphaNumeric, NameField, SpaceLess
 from custom.functions_standalone import print_tz_manila
 
 
@@ -110,6 +110,13 @@ class MobileNumber(Model):
         return f'{self.number.as_international} {self.user}'
 
 
+class Profession(Classification):
+    name = CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f'{self.name} - {self.description}'
+
+
 class TextMessage(Model):
     """
     SMS to be sent to either a number, user, or a group. SMS is sent once saved.
@@ -183,6 +190,15 @@ class User(AbstractUser):
         null=True,
         blank=True,
         help_text='Junior, Senior, III, etc.'
+    )
+    pic = AlphaNumeric(
+        null=True,
+        blank=True,
+        max_length=8,
+        help_text='Professional Identification Card Number'
+    )
+    profession = ManyToManyField(
+        'Profession', blank=True, related_name='professionals'
     )
 
     SEX_CHOICES = (

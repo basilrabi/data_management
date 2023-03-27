@@ -1,8 +1,9 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import ManyToManyField
 from django.utils.translation import gettext_lazy as _
 
-from .models import Log, MobileNumber, TextMessage, User
+from .models import Log, MobileNumber, Profession, TextMessage, User
 
 
 class MobileNumberInline(TabularInline):
@@ -60,6 +61,11 @@ class TextMessageAdmin(ModelAdmin):
         return obj
 
 
+@register(Profession)
+class ProfessionAdmin(ModelAdmin):
+    pass
+
+
 @register(User)
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
@@ -72,6 +78,8 @@ class CustomUserAdmin(UserAdmin):
                 'email',
                 'birth_date',
                 'sex',
+                'pic',
+                'profession'
             )
         }),
         (_('Permissions'), {
@@ -83,6 +91,7 @@ class CustomUserAdmin(UserAdmin):
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    filter_horizontal = ('groups', 'profession', 'user_permissions')
     inlines = [MobileNumberInline]
 
 
