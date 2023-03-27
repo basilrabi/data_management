@@ -1,5 +1,3 @@
-SELECT
-    a.name,
-    a.description
-FROM comptrollership_costcenter a
-ORDER BY a.name
+SELECT name, description
+FROM comptrollership_costcenter
+ORDER BY name

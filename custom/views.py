@@ -39,6 +39,13 @@ def export_user_group(request):
     ] for user in User.objects.all().order_by('username') for group in user.groups.all().order_by('name'))
     return export_csv(rows, 'user_group')
 
+def export_user_profession(request):
+    rows = ([
+        str(user.get_username()),
+        str(profession.name)
+    ] for user in User.objects.all().order_by('username') for profession in user.profession.all().order_by('name'))
+    return export_csv(rows, 'user_profession')
+
 def export_user_permission(request):
     rows = ([
         str(user.get_username()),
@@ -56,6 +63,7 @@ def export_users(request):
         str(user.sex or ''),
         str(user.email),
         str(user.password),
+        str(user.pic),
         str(user.is_staff),
         str(user.is_active),
         str(user.is_superuser)

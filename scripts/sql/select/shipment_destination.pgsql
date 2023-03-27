@@ -1,5 +1,3 @@
-SELECT
-    a.name,
-    a.description
-FROM shipment_destination a
-ORDER BY a.name
+SELECT name, description
+FROM shipment_destination
+ORDER BY name

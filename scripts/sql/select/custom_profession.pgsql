@@ -1,3 +1,3 @@
 SELECT name, description
-FROM sampling_lithology
+FROM custom_profession
 ORDER BY name

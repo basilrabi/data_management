@@ -1,3 +1,3 @@
-SELECT a.name, a.capacity
-FROM shipment_lct a
-ORDER BY a.name
+SELECT name, capacity
+FROM shipment_lct
+ORDER BY name

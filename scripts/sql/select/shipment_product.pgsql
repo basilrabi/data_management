@@ -1,8 +1,8 @@
 SELECT
-    a.name,
-    a.description,
-    a.moisture,
-    a.ni,
-    a.fe
-FROM shipment_product a
-ORDER BY a.name
+    name,
+    description,
+    moisture,
+    ni,
+    fe
+FROM shipment_product
+ORDER BY name
