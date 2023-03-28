@@ -179,3 +179,7 @@ To ensure that `DEBUG` is enabled in your development environment, make sure tha
 ```
 cp data_management/developer.py.sample data_management/developer.py
 ```
+
+### Notes for Additional Feature Development
+
+1. New installation requirements shall be encoded in the real_requirements file, and not in the requirements.txt file.

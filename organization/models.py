@@ -15,19 +15,19 @@ class Organization(Classification):
 
 
 class Department(Model):
-    name = CharField(max_length=30, null=True, blank=False)
+    name = CharField(max_length=30, null=True, blank=False, unique=True)
     abbreviation = CharField(max_length=10, null=True, blank=False)
     parent_division = ForeignKey('Division', on_delete=PROTECT)
 
 
 class Division(Model):
-    name = CharField(max_length=30, null=True, blank=False)
+    name = CharField(max_length=30, null=True, blank=False, unique=True)
     abbreviation = CharField(max_length=10, null=True, blank=False)
 
-    def __str___(self):
-        return self.Name
+    def __str__(self):
+        return self.name
 
 
 class Section(Model):
-    name = CharField(max_length=30, null=True, blank=False)
-    parent_division = ForeignKey('Department', on_delete=PROTECT)
+    name = CharField(max_length=30, null=True, blank=False, unique=True)
+    parent_department = ForeignKey('Department', on_delete=PROTECT)
