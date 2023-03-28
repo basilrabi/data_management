@@ -30,6 +30,7 @@ download_sql comptrollership_costcenterconversion && \
 download_sql comptrollership_generalledgeraccount && \
 download_sql comptrollership_sapcostcenter && \
 download_sql custom_profession && \
+download_sql custom_professionalidentificationcard && \
 download_sql custom_mobilenumber && \
 download_sql fleet_equipment && \
 download_sql fleet_equipmentclass && \
@@ -85,8 +86,6 @@ echo "Exporting user_group..." && \
 curl $address/custom/export/user-groups -o $datadir/user_group.csv && \
 echo "Exporting user_permissions..." && \
 curl $address/custom/export/user-permissions -o $datadir/user_permission.csv && \
-echo "Exporting user_professions..." && \
-curl $address/custom/export/user-professions -o $datadir/user_profession.csv && \
 echo "Exporting users..." && \
 curl $address/custom/export/users -o $datadir/users.csv
 ./scripts/R/export_external_data.R

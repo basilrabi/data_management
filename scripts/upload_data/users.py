@@ -67,4 +67,5 @@ with open('data/user_permission.csv', newline='') as csvfile:
             exit(1)
         except Exception as e:
             print(f'Error: Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
+            print(e, flush=True)
             exit(1)

@@ -147,10 +147,14 @@ sql_script "upload_data" "sampling_shipmentdischargelotassay" && \
 vacuum "sampling_shipmentdischargelotassay" && \
 sql_script "upload_data" "sampling_approvedshipmentdischargeassay" && \
 vacuum "sampling_approvedshipmentdischargeassay" && \
+sql_script "upload_data" "custom_profession" && \
+vacuum "custom_profession" && \
 upload_orm groups && \
 upload_orm users && \
 sql_script "upload_data" "custom_mobilenumber" && \
 vacuum "custom_mobilenumber" && \
+sql_script "upload_data" "custom_professionalidentificationcard" && \
+vacuum "custom_professionalidentificationcard" && \
 sql_script "upload_data" "location_equipmentlocation" && \
 vacuum "location_equipmentlocation" && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
