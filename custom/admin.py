@@ -1,14 +1,28 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import ManyToManyField
 from django.utils.translation import gettext_lazy as _
 
-from .models import Log, MobileNumber, Profession, TextMessage, User
+from .models import (
+    Log,
+    MobileNumber,
+    Profession,
+    ProfessionalIdentificationCard,
+    TextMessage,
+    User
+)
 
 
 class MobileNumberInline(TabularInline):
     fields = ('user', 'number')
     model = MobileNumber
+    extra = 0
+
+
+class ProfessionalIdentificationCardInline(TabularInline):
+    fields = (
+        'holder', 'number', 'profession', 'date_registered', 'date_expiry'
+    )
+    model = ProfessionalIdentificationCard
     extra = 0
 
 
@@ -77,9 +91,7 @@ class CustomUserAdmin(UserAdmin):
                 'last_name',
                 'email',
                 'birth_date',
-                'sex',
-                'pic',
-                'profession'
+                'sex'
             )
         }),
         (_('Permissions'), {
@@ -91,8 +103,8 @@ class CustomUserAdmin(UserAdmin):
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
-    filter_horizontal = ('groups', 'profession', 'user_permissions')
-    inlines = [MobileNumberInline]
+    filter_horizontal = ('groups', 'user_permissions')
+    inlines = [MobileNumberInline, ProfessionalIdentificationCardInline]
 
 
 class ReadOnlyAdmin(ModelAdmin):

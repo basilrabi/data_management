@@ -11,6 +11,7 @@ from django.db.models import (
     ManyToManyField,
     Model,
     PositiveSmallIntegerField,
+    PROTECT,
     SET_NULL,
     TextField
 )
@@ -110,6 +111,14 @@ class MobileNumber(Model):
         return f'{self.number.as_international} {self.user}'
 
 
+class ProfessionalIdentificationCard(Model):
+    holder = ForeignKey('User', on_delete=PROTECT)
+    number = AlphaNumeric(max_length=8)
+    profession = ForeignKey('Profession', on_delete=PROTECT)
+    date_registered = DateField(blank=True, null=True)
+    date_expiry = DateField(blank=True, null=True)
+
+
 class Profession(Classification):
     name = CharField(max_length=20, unique=True)
 
@@ -190,15 +199,6 @@ class User(AbstractUser):
         null=True,
         blank=True,
         help_text='Junior, Senior, III, etc.'
-    )
-    pic = AlphaNumeric(
-        null=True,
-        blank=True,
-        max_length=8,
-        help_text='Professional Identification Card Number'
-    )
-    profession = ManyToManyField(
-        'Profession', blank=True, related_name='professionals'
     )
 
     SEX_CHOICES = (

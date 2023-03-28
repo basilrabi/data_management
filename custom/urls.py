@@ -6,7 +6,6 @@ from .views import (
      export_groups,
      export_user_group,
      export_user_permission,
-     export_user_profession,
      export_users
 )
 
@@ -23,8 +22,5 @@ urlpatterns = [
      path('export/user-permissions',
           export_user_permission,
           name='export-user-permissions'),
-     path('export/user-professions',
-          export_user_profession,
-          name='export-user-professions'),
      path('export/users', export_users, name='export-users')
 ]
