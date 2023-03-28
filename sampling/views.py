@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 
 from datetime import date
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 from django.db.models.functions import ExtractYear
 from django.http import FileResponse
@@ -137,9 +138,14 @@ def index(request):
 def assay_certificate(request, name):
     assay = ShipmentLoadingAssay.objects.get(shipment__name=name)
     lots = assay.shipmentloadinglotassay_set.all()
+    try:
+        pic = assay.chemist.professionalidentificationcard_set.get(profession__name='RCh')
+    except ObjectDoesNotExist:
+        pic = None
     context = {
         'assay': assay,
-        'lots': lots
+        'lots': lots,
+        'pic': pic
     }
     template = get_template('sampling/assay_certificate.tex')
     rendered_tpl = template.render(context)

@@ -567,7 +567,10 @@ class ShipmentLoadingAssayAdmin(ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'chemist':
-            kwargs["queryset"] = User.objects.filter(groups__name='chemist')
+            kwargs["queryset"] = User.objects.filter(
+                groups__name='chemist',
+                professionalidentificationcard__profession__name='RCh'
+            )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
