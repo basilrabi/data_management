@@ -173,7 +173,7 @@ sql_script "trigger" "location_crest_insert" && \
 sql_script "trigger" "location_crest_update" && \
 sql_script "trigger" "location_drillhole_update" && \
 sql_script "trigger" "shipment_trip_update" && \
-psql -h $db_host -p $db_port -U $db_user -w $db_name -c "select insert_dummy_cluster()"
+psql -h $db_host -p $db_port -U $db_user -w $db_name -c "call insert_dummy_cluster()"
 sql_script "upload_data" "location_drillhole" && \
 sql_script "upload_data" "sampling_drillcoresample" && \
 sql_script "constraint" "location_slice" && \
