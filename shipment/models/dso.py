@@ -1,6 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MinValueValidator
 from django.db.models import (
     BooleanField,
@@ -648,8 +648,11 @@ class LayDaysStatement(Model):
                 raise ValidationError('Acceptance of Notice of Readiness must '
                                       'be later than its tender.')
 
-        if not self.shipment.vessel:
-            raise ValidationError('Cannot save statement without vessel.')
+        try:
+            if not self.shipment.vessel:
+                raise ValidationError('Cannot save statement without vessel.')
+        except ObjectDoesNotExist:
+            raise ValidationError('No shipment selected.')
 
     def save(self, compute=False, *args, **kwargs):
         if not compute:
