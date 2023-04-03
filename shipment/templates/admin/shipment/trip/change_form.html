@@ -4,12 +4,8 @@
 {% block admin_change_form_document_ready %}
 {{ block.super }}
 <script>
-(function($) {
-    $(document).on('formset:added', function(event, $row, formsetName) {
-        $row.children(".field-interval_from").children("p").children("input.vDateField").val(
-            $row.prev().children(".field-interval_from").children("p").children("input.vDateField").val()
-        );
+    document.addEventListener('formset:added', (event) => {
+        event.target.querySelector(".field-interval_from").querySelector(".vDateField").value = event.target.previousElementSibling.querySelector(".field-interval_from").querySelector(".vDateField").value;
     });
-})(django.jQuery);
 </script>
 {% endblock %}

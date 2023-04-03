@@ -378,7 +378,6 @@ class ShipmentAdmin(ModelAdmin):
 class TripAdmin(ModelAdmin):
     autocomplete_fields = ['lct', 'vessel']
     date_hierarchy = 'tripdetail__interval_from'
-    inlines = [TripDetailInline]
     list_display = (
         'lct',
         'interval_from',
@@ -392,6 +391,16 @@ class TripAdmin(ModelAdmin):
     list_filter = ['continuous', 'status', 'valid', 'lct']
     readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
     search_fields = ['lct__name', 'vessel__name']
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.inlines = []
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.inlines = [TripDetailInline]
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )
 
 
 @register(Vessel)
