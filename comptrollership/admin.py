@@ -4,6 +4,8 @@ from .models import (
     CostCenter,
     CostCenterConversion,
     GeneralLedgerAccount,
+    MonthlyCost,
+    ProfitCenter,
     SapCostCenter
 )
 
@@ -29,6 +31,25 @@ class CostCenterConversionAdmin(ModelAdmin):
 class GeneralLedgerAccountAdmin(ModelAdmin):
     list_display = ('code', 'description')
     search_fields = ['code', 'description']
+
+
+@register(MonthlyCost)
+class MonthlyCostAdmin(ModelAdmin):
+    list_display = (
+        '__str__', 'budget', 'adjusted_budget', 'forecast', 'actual'
+    )
+    search_fields = [
+        'cost_center__name',
+        'cost_center__description',
+        'gl__code',
+        'gl__description'
+    ]
+
+
+@register(ProfitCenter)
+class ProfitCenterAdmin(ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ['description', 'name']
 
 
 @register(SapCostCenter)

@@ -1,9 +1,13 @@
 from django.db.models import (
+    DecimalField,
     F,
     ForeignKey,
+    Index,
     Model,
     PositiveIntegerField,
+    PositiveSmallIntegerField,
     PROTECT,
+    SET_NULL,
     TextField,
     UniqueConstraint
 )
@@ -54,9 +58,62 @@ class GeneralLedgerAccount(Model):
         return self.description
 
 
+class MonthlyCost(Model):
+    """
+    Cost provided by finance in pesos.
+    """
+    year = PositiveSmallIntegerField()
+    month = PositiveSmallIntegerField()
+    cost_center = ForeignKey('SapCostCenter', on_delete=PROTECT)
+    gl = ForeignKey('GeneralLedgerAccount', on_delete=PROTECT)
+    budget = DecimalField(
+        decimal_places=2, default=0, max_digits=13,
+        help_text="Planned prior to the fiscal year."
+    )
+    adjusted_budget = DecimalField(
+        decimal_places=2, default=0, max_digits=13,
+        help_text="Approved minor revision of budget. May be updated from time to time."
+    )
+    forecast = DecimalField(
+        decimal_places=2, default=0, max_digits=13,
+        help_text="Recomputed cost for the fiscal year due to major changes in operating assumptions."
+    )
+    actual = DecimalField(
+        decimal_places=2, default=0, max_digits=13,
+        help_text="Actual booked cost."
+    )
+    remarks = TextField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['year', 'month', 'cost_center', 'gl'],
+                name='unique_monthly_cost'
+            )
+        ]
+        indexes = [
+            Index(fields=['year', 'month']),
+            Index(fields=['month'])
+        ]
+        ordering = ['-year', '-month', 'cost_center', 'gl']
+
+    def __str__(self) -> str:
+        return f'{self.year}-{self.month:02}-{self.cost_center.name}-{self.gl.code}'
+
+
+class ProfitCenter(Classification):
+    """
+    Profit center definitions set by NAC.
+    """
+    pass
+
+
 class SapCostCenter(Classification):
     """
     Cost center definitions in SAP ERP.
     """
     long_name = AlphaNumeric(max_length=40, null=True, blank=True)
     remarks = TextField(null=True, blank=True)
+    profit_center = ForeignKey(
+        'ProfitCenter', on_delete=SET_NULL, null=True, blank=True
+    )
