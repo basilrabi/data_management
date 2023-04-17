@@ -4,18 +4,10 @@
 {% block admin_change_form_document_ready %}
 {{ block.super }}
 <script>
-(function($) {
-    $(document).on('formset:added', function(event, $row, formsetName) {
-        $row.children(".field-lot").children("input").val(
-            $row.parent().children().length - 2
-        );
-        $row.children(".field-wmt").children("input").val(
-            $row.parent().children("#shipmentloadinglotassay_set-0").children(
-                ".field-wmt"
-            ).children("input").val()
-        );
-        $row.children(".field-wmt").children("input").focus();
+    document.addEventListener('formset:added', (event) => {
+        event.target.querySelector(".field-lot").querySelector("input").value =  event.target.parentNode.childElementCount - 2;
+        event.target.querySelector(".field-wmt").querySelector("input").value = document.querySelector("#shipmentloadinglotassay_set-0").querySelector(".field-wmt").querySelector("input").value;
+        event.target.querySelector(".field-wmt").querySelector("input").focus();
     });
-})(django.jQuery);
 </script>
 {% endblock %}
