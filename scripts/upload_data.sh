@@ -52,6 +52,12 @@ sql_script "upload_data" "fleet_equipmentmanufacturer" && \
 vacuum "fleet_equipmentmanufacturer" && \
 sql_script "upload_data" "organization_organization" && \
 vacuum "organization_organization" && \
+sql_script "upload_data" "organization_division" && \
+vacuum "organization_division" && \
+sql_script "upload_data" "organization_department" && \
+vacuum "organization_department" && \
+sql_script "upload_data" "organization_section" && \
+vacuum "organization_section" && \
 sql_script "upload_data" "billing_billingtracker" && \
 sql_script "upload_data" "billing_billingtracker_id_seq" && \
 vacuum "billing_billingaddon" && \
