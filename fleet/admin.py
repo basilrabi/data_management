@@ -1,6 +1,7 @@
 from django.contrib.admin import ModelAdmin, register
 
 from .models.equipment import (
+    BodyType,
     Equipment,
     EquipmentClass,
     EquipmentManufacturer,
@@ -8,6 +9,11 @@ from .models.equipment import (
     TrackedExcavator
 )
 
+
+@register(BodyType)
+class BodyTypeAdmin(ModelAdmin):
+    list_display = ('name', 'description')
+    
 
 @register(Equipment)
 class EquipmentAdmin(ModelAdmin):
@@ -22,8 +28,13 @@ class EquipmentAdmin(ModelAdmin):
                      'engine_serial_number',]
 
     fields_1 = ('fleet_number',
-                'model',
                 'owner',
+                'department_assigned',
+                'model',
+                'year_model',
+                'certificate_of_registration_no',
+                'cr_date',
+                'mv_file_no',
                 'acquisition_cost',
                 'acquisition_cost_from_accounting',
                 'date_acquired')
@@ -34,6 +45,8 @@ class EquipmentAdmin(ModelAdmin):
                 'service_life',
                 'engine_serial_number',
                 'plate_number',
+                'body_type',
+                'month_of_registration',
                 'chassis_serial_number',
                 'description',
                 'active')
