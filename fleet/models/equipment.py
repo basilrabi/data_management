@@ -1,28 +1,53 @@
 from django.db.models import (
+    CharField,
     DateField,
-    F,
-    Model,
     ForeignKey,
+    F,
+    IntegerField,
+    Model,
     PositiveSmallIntegerField,
     PROTECT,
     SET_NULL,
     UniqueConstraint
 )
+from django.utils.dateformat import MONTHS
 
 from custom.fields import AlphaNumeric, NameField
 from custom.models import Classification, FixedAsset
-from organization.models import Organization
+from organization.models import Department, Division, Organization, Section
+
+
+class BodyType(Classification):
+    class Meta:
+        ordering = [F('name').asc()]
 
 
 class Equipment(FixedAsset):
     """
     A single piece of equipment.
     """
+
+    def DeptChoices():
+        dept_choices = list(Department.objects.values_list('name', 'name'))
+        div_choices = list(Division.objects.values_list('name', 'name'))
+        sec_choices = list(Section.objects.values_list('name', 'name'))
+
+        return dept_choices + div_choices + sec_choices
+
+    MONTH_CHOICES = [(month_num, month_name) for month_num, month_name in MONTHS.items()]
+
     owner = ForeignKey(Organization, on_delete=PROTECT)
+    department_assigned = CharField(max_length=30, choices=tuple(DeptChoices()), null=True, blank=True)
     fleet_number = PositiveSmallIntegerField()
     model = ForeignKey('EquipmentModel', on_delete=PROTECT)
+    body_type = ForeignKey('BodyType', on_delete=PROTECT, null=True, blank=True)
+    year_model = IntegerField(null = True, blank=True)
+    certificate_of_registration_no = CharField(max_length=30, null = True, blank=True)
+    cr_date = DateField(null = True, blank=True)
+    mv_file_no = CharField(max_length=30, null = True, blank=True)
     engine_serial_number = AlphaNumeric(max_length=100, null=True, blank=True)
     plate_number = NameField(max_length=20, null = True, blank = True)
+    month_of_registration = CharField(max_length=20, null=True, blank=True, choices=MONTH_CHOICES, help_text="Based on plate number")
     chassis_serial_number = NameField(max_length=100, null = True, blank = True)
     
     equipment_class = ForeignKey(
