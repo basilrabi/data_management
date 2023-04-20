@@ -498,6 +498,9 @@ class ApprovedShipmentLoadingAssay(Model):
     certificate = FileField(
         upload_to='assay/shipment/loading/', null=True, blank=True
     )
+    mgb_receipt = FileField(
+        upload_to='assay/shipment/loading_receipt', null=True, blank=True
+    )
 
     def PDF(self):
         return self.assay.PDF()
@@ -511,6 +514,17 @@ class ApprovedShipmentLoadingAssay(Model):
                 '>'
                 'View Certificate'
                 '</a>'.format(self.certificate.url)
+            )
+
+    def mgb_receiving(self):
+        if self.mgb_receipt:
+            return mark_safe(
+                '<a class="grp-button" '
+                'href="{}" '
+                'target="_blank"'
+                '>'
+                'View Acknowledgement'
+                '</a>'.format(self.mgb_receipt.url)
             )
 
     def save(self, *args, **kwargs):

@@ -316,9 +316,15 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
 class ApprovedShipmentLoadingAssayAdmin(ModelAdmin):
     date_hierarchy = 'assay__shipment__laydaysstatement__laydaysdetail__interval_from'
     list_display = (
-        '__str__', 'number', 'vessel', 'approved', 'PDF', 'approved_certificate'
+        '__str__',
+        'number',
+        'vessel',
+        'approved',
+        'PDF',
+        'approved_certificate',
+        'mgb_receiving'
     )
-    fields = ('assay', 'number', 'approved', 'certificate')
+    fields = ('assay', 'number', 'approved', 'certificate', 'mgb_receipt')
     readonly_fields = ('assay', 'number')
     search_fields = ['assay__shipment__name',
                      'assay__shipment__product__name',
