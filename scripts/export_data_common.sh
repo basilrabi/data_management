@@ -4,6 +4,7 @@ then
     mv "$datadir" "$datadir"_$(date +"%Y-%m-%d_%H-%M-%S")
 fi
 mkdir $datadir
+ls -1 | grep -P "^${datadir}_\d{4}-\d{2}" | sort -r | tail -n +4 | xargs -d '\n' rm -r
 
 download_ogr () {
     echo "Exporting $1..." && \
