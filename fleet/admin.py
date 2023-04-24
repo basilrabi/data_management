@@ -19,6 +19,7 @@ class AdditionalEquipmentCostInline(TabularInline):
     fields = ('description',
               'acquisition_cost',
               'date_acquired',
+              'asset_code',
               'service_life')
     formfield_overrides = {
         TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
