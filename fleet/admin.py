@@ -1,6 +1,9 @@
-from django.contrib.admin import ModelAdmin, register
+from django.contrib.admin import ModelAdmin, TabularInline, register
+from django.db.models import TextField
+from django.forms import Textarea
 
 from .models.equipment import (
+    AdditionalEquipmentCost,
     BodyType,
     Equipment,
     EquipmentClass,
@@ -8,6 +11,18 @@ from .models.equipment import (
     EquipmentModel,
     TrackedExcavator
 )
+
+
+class AdditionalEquipmentCostInline(TabularInline):
+    model = AdditionalEquipmentCost
+    extra = 0
+    fields = ('description',
+              'acquisition_cost',
+              'date_acquired',
+              'service_life')
+    formfield_overrides = {
+        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+    }
 
 
 @register(BodyType)
@@ -20,12 +35,13 @@ class EquipmentAdmin(ModelAdmin):
 
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
+    inlines = [AdditionalEquipmentCostInline]
     list_display = ('__str__', 'model', 'plate_number', 'engine_serial_number')
     list_filter = ['owner', 'active', 'equipment_class']
-    search_fields = ['fleet_number',
+    search_fields = ['engine_serial_number',
+                     'fleet_number',
                      'model__manufacturer__name',
-                     'model__name',
-                     'engine_serial_number',]
+                     'model__name',]
 
     fields_1 = ('fleet_number',
                 'owner',

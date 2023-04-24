@@ -1,6 +1,7 @@
 from django.db.models import (
     CharField,
     DateField,
+    DecimalField,
     ForeignKey,
     F,
     IntegerField,
@@ -30,6 +31,12 @@ def organizational_units() -> tuple[tuple[str, str]]:
     except:
         section_choices = []
     return tuple(division_choices + department_choices + section_choices)
+
+class AdditionalEquipmentCost(FixedAsset):
+    """
+    Additional Capitalized Expenses for Equipment
+    """
+    equipment = ForeignKey('Equipment', on_delete=PROTECT)
 
 
 class BodyType(Classification):
