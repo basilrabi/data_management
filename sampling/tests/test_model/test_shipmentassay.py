@@ -283,3 +283,13 @@ class ShipmentLoadingAssayTest(TestCase):
         vessel_new = Vessel.objects.get(name='FAKKU')
         shipment.vessel = vessel_new
         self.assertRaises(ValidationError, shipment.clean)
+
+        # Delete all lot entries
+        assay.shipmentloadinglotassay_set.all().delete()
+        assay.save()
+        assay.refresh_from_db()
+        self.assertEqual(assay.dmt, None)
+        self.assertEqual(assay.moisture, None)
+        self.assertEqual(assay.ni, None)
+        self.assertEqual(assay.ni_ton, None)
+        self.assertEqual(assay.wmt, None)
