@@ -19,18 +19,19 @@ from organization.models import Department, Division, Organization, Section
 
 def organizational_units() -> tuple[tuple[str, str]]:
     try:
-        department_choices = list(Department.objects.values_list('name', 'name'))
+        department_choices = list(Department.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
     except:
         department_choices = []
     try:
-        division_choices = list(Division.objects.values_list('name', 'name'))
+        division_choices = list(Division.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
     except:
         division_choices = []
     try:
-        section_choices = list(Section.objects.values_list('name', 'name'))
+        section_choices = list(Section.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
     except:
         section_choices = []
     return tuple(division_choices + department_choices + section_choices)
+
 
 class AdditionalEquipmentCost(FixedAsset):
     """
