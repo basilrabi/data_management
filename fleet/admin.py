@@ -13,13 +13,13 @@ from .models.equipment import (
 @register(BodyType)
 class BodyTypeAdmin(ModelAdmin):
     list_display = ('name', 'description')
-    
+
 
 @register(Equipment)
 class EquipmentAdmin(ModelAdmin):
 
     autocomplete_fields = ['model']
-    exclude = ('equipment_class',)  
+    exclude = ('equipment_class',)
     list_display = ('__str__', 'model', 'plate_number', 'engine_serial_number')
     list_filter = ['owner', 'equipment_class']
     search_fields = ['fleet_number',
@@ -36,7 +36,6 @@ class EquipmentAdmin(ModelAdmin):
                 'cr_date',
                 'mv_file_no',
                 'acquisition_cost',
-                'acquisition_cost_from_accounting',
                 'date_acquired')
 
     fields_2 = ('asset_tag_id',
@@ -52,7 +51,7 @@ class EquipmentAdmin(ModelAdmin):
                 'active')
 
     def add_view(self, request, form_url='', extra_context=None):
-        
+
         if request.user.groups.all().filter(name='camp admin').exists():
             if_camp = 'date_disposal'
         elif request.user.is_superuser:
@@ -60,11 +59,11 @@ class EquipmentAdmin(ModelAdmin):
         else:
             if_camp = 'date_phased_out'
 
-        self.fields = self.fields_1 + (if_camp,) + self.fields_2             
+        self.fields = self.fields_1 + (if_camp,) + self.fields_2
         return super().add_view(request, form_url, extra_context=extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        
+
         if request.user.groups.all().filter(name='camp admin').exists():
             if_camp = 'date_disposal'
         elif request.user.is_superuser:
@@ -72,7 +71,7 @@ class EquipmentAdmin(ModelAdmin):
         else:
             if_camp = 'date_phased_out'
 
-        self.fields = self.fields_1 + (if_camp,) + self.fields_2    
+        self.fields = self.fields_1 + (if_camp,) + self.fields_2
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
 

@@ -1,7 +1,6 @@
 SELECT
     tab_a.fleet_number,
     tab_a.acquisition_cost,
-    tab_a.acquisition_cost_from_accounting,
     tab_a.date_acquired,
     tab_a.date_phased_out,
     tab_a.date_disposal,

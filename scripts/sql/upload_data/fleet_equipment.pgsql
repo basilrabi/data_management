@@ -2,7 +2,6 @@ CREATE TEMPORARY TABLE temp_fleet_equipment
 (
     fleet_number smallint,
     acquisition_cost numeric(12,2),
-    acquisition_cost_from_accounting numeric(12,2),
     date_acquired date,
     date_phased_out date,
     date_disposal date,
@@ -21,7 +20,6 @@ CREATE TEMPORARY TABLE temp_fleet_equipment
 INSERT INTO fleet_equipment (
     fleet_number,
     acquisition_cost,
-    acquisition_cost_from_accounting,
     date_acquired,
     date_phased_out,
     date_disposal,
@@ -36,7 +34,6 @@ INSERT INTO fleet_equipment (
 SELECT
     tab_a.fleet_number,
     tab_a.acquisition_cost,
-    tab_a.acquisition_cost_from_accounting,
     tab_a.date_acquired,
     tab_a.date_phased_out,
     tab_a.date_disposal,
@@ -62,7 +59,6 @@ WHERE tab_a.model_name = tab_b.name
 GROUP BY
     tab_a.fleet_number,
     tab_a.acquisition_cost,
-    tab_a.acquisition_cost_from_accounting,
     tab_a.date_acquired,
     tab_a.date_phased_out,
     tab_a.date_disposal,
