@@ -21,7 +21,7 @@ class EquipmentAdmin(ModelAdmin):
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
     list_display = ('__str__', 'model', 'plate_number', 'engine_serial_number')
-    list_filter = ['owner', 'equipment_class']
+    list_filter = ['owner', 'active', 'equipment_class']
     search_fields = ['fleet_number',
                      'model__manufacturer__name',
                      'model__name',

@@ -87,7 +87,11 @@ class Equipment(FixedAsset):
         ]
 
     def __str__(self):
-        return f'{self.owner} {self.equipment_class.name}-{self.fleet_number}'
+        if self.date_acquired:
+            year = str(self.date_acquired.year)[2:4]
+        else:
+            year = "00"
+        return f'{self.owner}-{self.equipment_class.name}{year}-{self.fleet_number:03d}'
 
 
 class EquipmentClass(Classification):
