@@ -14,22 +14,7 @@ from django.db.models import (
 from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
 from custom.models import Classification, FixedAsset
-from organization.models import Department, Division, Organization, Section
-
-def organizational_units() -> tuple[tuple[str, str]]:
-    try:
-        department_choices = list(Department.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
-    except:
-        department_choices = []
-    try:
-        division_choices = list(Division.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
-    except:
-        division_choices = []
-    try:
-        section_choices = list(Section.objects.exclude(name__icontains='Independent').values_list('name', 'name'))
-    except:
-        section_choices = []
-    return tuple(division_choices + department_choices + section_choices)
+from organization.models import Organization, OrganizationUnit
 
 
 class AdditionalEquipmentCost(FixedAsset):
@@ -49,8 +34,8 @@ class Equipment(FixedAsset):
     A single piece of equipment.
     """
     owner = ForeignKey(Organization, on_delete=PROTECT)
-    department_assigned = CharField(
-        max_length=30, choices=organizational_units(), null=True, blank=True
+    department_assigned = ForeignKey(
+        OrganizationUnit, on_delete=SET_NULL, null=True, blank=True
     )
     fleet_number = PositiveSmallIntegerField()
     model = ForeignKey('EquipmentModel', on_delete=PROTECT)

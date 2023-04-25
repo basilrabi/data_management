@@ -33,6 +33,9 @@ class OrganizationUnit(Model):
         managed = False
         db_table = 'organization_organizationunit'
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Department(Model):
     name = CharField(max_length=30, null=True, blank=False, unique=True)
