@@ -3,7 +3,6 @@ from django.db.models import (
     DateField,
     ForeignKey,
     F,
-    IntegerField,
     Model,
     PositiveSmallIntegerField,
     PROTECT,
@@ -40,7 +39,7 @@ class Equipment(FixedAsset):
     fleet_number = PositiveSmallIntegerField()
     model = ForeignKey('EquipmentModel', on_delete=PROTECT)
     body_type = ForeignKey('BodyType', on_delete=PROTECT, null=True, blank=True)
-    year_model = IntegerField(null = True, blank=True)
+    year_model = PositiveSmallIntegerField(null = True, blank=True)
     certificate_of_registration_no = CharField(
         max_length=30, null = True, blank=True
     )

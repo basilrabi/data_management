@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX organization_organizationunit_idx ON organization_organizationunit (id)

@@ -58,6 +58,8 @@ sql_script "upload_data" "organization_department" && \
 vacuum "organization_department" && \
 sql_script "upload_data" "organization_section" && \
 vacuum "organization_section" && \
+sql_script "helper" "organization_organizationunit" && \
+vacuum "organization_organizationunit" && \
 sql_script "upload_data" "billing_billingtracker" && \
 sql_script "upload_data" "billing_billingtracker_id_seq" && \
 vacuum "billing_billingaddon" && \
@@ -70,10 +72,14 @@ upload_ogr location_peza identity && \
 upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
 sql_script "trigger" "location_cluster_insert" && \
+sql_script "upload_data" "fleet_bodytype" && \
+vacuum "fleet_bodytype" && \
 sql_script "upload_data" "fleet_equipmentmodel" && \
 vacuum "fleet_equipmentmodel" && \
 sql_script "upload_data" "fleet_equipment" && \
 vacuum "fleet_equipment" && \
+sql_script "upload_data" "fleet_additionalequipmentcost" && \
+vacuum "fleet_additionalequipmentcost" && \
 sql_script "upload_data" "local_calendar_holidayevent" && \
 vacuum "local_calendar_holidayevent" && \
 sql_script "upload_data" "local_calendar_holiday" && \
@@ -178,6 +184,9 @@ sql_script "trigger" "location_clusterlayout" && \
 sql_script "trigger" "location_crest_insert" && \
 sql_script "trigger" "location_crest_update" && \
 sql_script "trigger" "location_drillhole_update" && \
+sql_script "trigger" "organization_organizationunit_delete" && \
+sql_script "trigger" "organization_organizationunit_insert" && \
+sql_script "trigger" "organization_organizationunit_update" && \
 sql_script "trigger" "shipment_trip_update" && \
 psql -h $db_host -p $db_port -U $db_user -w $db_name -c "call insert_dummy_cluster()"
 sql_script "upload_data" "location_drillhole" && \

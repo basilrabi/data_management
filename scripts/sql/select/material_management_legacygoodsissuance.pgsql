@@ -19,4 +19,6 @@ ORDER BY
     a.order_type,
     b.name,
     a.cost_center,
-    a.equipment
+    a.equipment,
+    a.quantity,
+    a.total_cost

@@ -24,4 +24,5 @@ ORDER BY
     a.purchase_order,
     b.name,
     c.name,
-    a.invoice_number
+    a.invoice_number,
+    a.quantity

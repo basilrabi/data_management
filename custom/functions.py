@@ -316,10 +316,8 @@ def setup_triggers() -> None:
         'lock/location_cluster',
         'lock/location_clusterlayout',
         'lock/location_slice',
-        'select/organization_organizationunit',
         'select/shipment_loadingrate',
         'select/shipment_number',
-        'index/organization_organizationunit',
         'index/shipment_loadingrate',
         'index/shipment_number',
         'trigger/inventory_block_exposed',
@@ -332,6 +330,9 @@ def setup_triggers() -> None:
         'trigger/location_crest_insert',
         'trigger/location_crest_update',
         'trigger/location_drillhole_update',
+        'trigger/organization_organizationunit_delete',
+        'trigger/organization_organizationunit_insert',
+        'trigger/organization_organizationunit_update',
         'trigger/shipment_trip_update'
     ]
     for query in pgsql:

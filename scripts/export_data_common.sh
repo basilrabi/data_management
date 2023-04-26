@@ -33,6 +33,8 @@ download_sql comptrollership_sapcostcenter && \
 download_sql custom_profession && \
 download_sql custom_professionalidentificationcard && \
 download_sql custom_mobilenumber && \
+download_sql fleet_additionalequipmentcost && \
+download_sql fleet_bodytype && \
 download_sql fleet_equipment && \
 download_sql fleet_equipmentclass && \
 download_sql fleet_equipmentmanufacturer && \
