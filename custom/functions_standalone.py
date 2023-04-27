@@ -8,8 +8,8 @@ from django.utils.dateformat import MONTHS
 
 from .variables import tz_manila
 
-def month_choices() -> list[(int, str)]:
-    return [(month_num, month_name) for month_num, month_name in MONTHS.items()]
+def month_choices() -> list[(str, str)]:
+    return [(str(month_num), month_name) for month_num, month_name in MONTHS.items()]
 
 def print_tz_manila(timestamp: datetime) -> (str | None):
     """
