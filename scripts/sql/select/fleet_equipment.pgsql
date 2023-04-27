@@ -10,7 +10,6 @@ SELECT
     tab_a.date_acquired,
     tab_a.date_disposal,
     tab_a.date_phased_out,
-    tab_a.department_assigned,
     tab_a.description,
     tab_a.engine_serial_number,
     tab_a.fleet_number,
@@ -23,7 +22,9 @@ SELECT
     tab_c.name owner_name,
     tab_d.name class_name,
     tab_e.name manufacturer,
-    tab_f.name body_type
+    tab_f.name body_type,
+    (regexp_match(tab_g.uid, '^[a-z]+'))[1] unit_class,
+    tab_g.name unit_name
 FROM fleet_equipment tab_a
     LEFT JOIN fleet_equipmentmodel tab_b
         ON tab_a.model_id = tab_b.id
@@ -35,6 +36,8 @@ FROM fleet_equipment tab_a
         ON tab_b.manufacturer_id = tab_e.id
     LEFT JOIN fleet_bodytype tab_f
         ON tab_a.body_type_id = tab_f.id
+    LEFT JOIN organization_organizationunit tab_g
+        ON tab_a.department_assigned_id = tab_g.id
 ORDER BY
     tab_c.name,
     tab_d.name,

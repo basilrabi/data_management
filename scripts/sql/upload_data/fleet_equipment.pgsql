@@ -11,7 +11,6 @@ CREATE TEMPORARY TABLE temp_fleet_equipment
     date_acquired date,
     date_disposal date,
     date_phased_out date,
-    department_assigned text,
     description text,
     engine_serial_number character varying(100),
     fleet_number smallint,
@@ -24,7 +23,9 @@ CREATE TEMPORARY TABLE temp_fleet_equipment
     owner_name character varying(40),
     class_name character varying(40),
     manufacturer character varying(40),
-    body_type character varying(40)
+    body_type character varying(40),
+    unit_class text,
+    unit_name character varying(30)
 );
 
 \copy temp_fleet_equipment FROM 'data/fleet_equipment.csv' DELIMITER ',' CSV;
@@ -36,6 +37,7 @@ WITH cte_a AS (
         tab_a.asset_code,
         tab_a.asset_serial_number,
         tab_a.asset_tag_id,
+        tab_a.body_type,
         tab_a.certificate_of_registration_no,
         tab_a.chassis_serial_number,
         tab_a.cr_date,
@@ -49,11 +51,12 @@ WITH cte_a AS (
         tab_a.mv_file_no,
         tab_a.plate_number,
         tab_a.service_life,
+        tab_a.unit_class,
+        tab_a.unit_name,
         tab_a.year_model,
-        tab_b.id fleet_equipmentmodel_id,
-        tab_c.id organization_organization_id,
         tab_b.equipment_class_id,
-        tab_a.body_type
+        tab_b.id fleet_equipmentmodel_id,
+        tab_c.id organization_organization_id
     FROM temp_fleet_equipment tab_a,
         fleet_equipmentmodel tab_b,
         organization_organization tab_c,
@@ -86,16 +89,23 @@ WITH cte_a AS (
         tab_a.mv_file_no,
         tab_a.plate_number,
         tab_a.service_life,
+        tab_a.unit_class,
+        tab_a.unit_name,
         tab_a.year_model,
         tab_b.id,
         tab_c.id,
         tab_b.equipment_class_id
 ),
 cte_b AS (
-    SELECT cte_a.*, bt.id body_type_id
+    SELECT cte_a.*, bt.id body_type_id, ou.id oid
     FROM cte_a
     LEFT JOIN fleet_bodytype bt
         ON cte_a.body_type = bt.name
+    LEFT JOIN organization_organizationunit ou
+        ON (
+            (regexp_match(ou.uid, '^[a-z]+'))[1] = cte_a.unit_class
+            AND ou.name = cte_a.unit_name
+        )
 )
 INSERT INTO fleet_equipment (
     acquisition_cost,
@@ -120,7 +130,8 @@ INSERT INTO fleet_equipment (
     model_id,
     owner_id,
     equipment_class_id,
-    body_type_id
+    body_type_id,
+    department_assigned_id
 )
 SELECT
     acquisition_cost,
@@ -145,5 +156,6 @@ SELECT
     fleet_equipmentmodel_id,
     organization_organization_id,
     equipment_class_id,
-    body_type_id
+    body_type_id,
+    oid
 FROM cte_b
