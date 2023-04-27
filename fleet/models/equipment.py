@@ -62,22 +62,25 @@ class Equipment(FixedAsset):
     )
 
     def clean(self) -> None:
-        error = f'{self.owner}-{self.model.equipment_class.name}-{self.fleet_number:03d} already exists.'
-        if self.id:
-            if Equipment.objects.filter(
-                fleet_number=self.fleet_number,
-                owner=self.owner,
-                equipment_class=self.model.equipment_class
-            ).exclude(id=self.id).exists():
-                raise ValidationError(error)
-        else:
-            if Equipment.objects.filter(
-                fleet_number=self.fleet_number,
-                owner=self.owner,
-                equipment_class=self.model.equipment_class
-            ).exists():
-                raise ValidationError(error)
-        return super().clean()
+        super().clean()
+        try:
+            error = f'{self.owner}-{self.model.equipment_class.name}-{self.fleet_number:03d} already exists.'
+            if self.id:
+                if Equipment.objects.filter(
+                    fleet_number=self.fleet_number,
+                    owner=self.owner,
+                    equipment_class=self.model.equipment_class
+                ).exclude(id=self.id).exists():
+                    raise ValidationError(error)
+            else:
+                if Equipment.objects.filter(
+                    fleet_number=self.fleet_number,
+                    owner=self.owner,
+                    equipment_class=self.model.equipment_class
+                ).exists():
+                    raise ValidationError(error)
+        except:
+            pass
 
     def save(self, *args, **kwargs):
         self.equipment_class = self.model.equipment_class
