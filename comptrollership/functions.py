@@ -67,10 +67,11 @@ def import_cost_centers(csv_path: Path, enable_log: bool) -> None:
                         description=cc_description,
                         profit_center=profit_center
                     ).save()
-                if enable_log:
-                    Log(log=log).save()
-                else:
-                    print(log)
+                if log != '':
+                    if enable_log:
+                        Log(log=log).save()
+                    else:
+                        print(log)
             except KeyboardInterrupt:
                 log = 'Uploading cost centers interrupted.'
                 if enable_log:
