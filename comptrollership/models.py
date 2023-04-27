@@ -12,7 +12,6 @@ from django.db.models import (
     UniqueConstraint
 )
 
-from custom.fields import AlphaNumeric
 from custom.models import Classification
 
 
@@ -112,7 +111,7 @@ class SapCostCenter(Classification):
     """
     Cost center definitions in SAP ERP.
     """
-    long_name = AlphaNumeric(max_length=40, null=True, blank=True)
+    long_name = TextField(null=True, blank=True)
     remarks = TextField(null=True, blank=True)
     profit_center = ForeignKey(
         'ProfitCenter', on_delete=SET_NULL, null=True, blank=True
