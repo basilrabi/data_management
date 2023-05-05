@@ -1,4 +1,5 @@
 from django.db.models import (
+    CheckConstraint,
     DecimalField,
     F,
     ForeignKey,
@@ -7,6 +8,7 @@ from django.db.models import (
     PositiveIntegerField,
     PositiveSmallIntegerField,
     PROTECT,
+    Q,
     SET_NULL,
     TextField,
     UniqueConstraint
@@ -85,6 +87,15 @@ class MonthlyCost(Model):
 
     class Meta:
         constraints = [
+            CheckConstraint(
+                check=Q(year__gte=2021), name='monthlycost_year_min'
+            ),
+            CheckConstraint(
+                check=Q(month__gte=1), name='monthlycost_month_min'
+            ),
+            CheckConstraint(
+                check=Q(month__lte=13), name='monthlycost_month_max'
+            ),
             UniqueConstraint(
                 fields=['year', 'month', 'cost_center', 'gl'],
                 name='unique_monthly_cost'

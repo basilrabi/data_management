@@ -12,4 +12,5 @@ class Command(BaseCommand):
         parser.add_argument('--disable-log', action='store_false')
 
     def handle(self, *args, **options):
-        return import_cost_centers(options['source_file'][0], options['disable_log'])
+        return import_cost_centers(options['source_file'][0],
+                                   options['disable_log'])
