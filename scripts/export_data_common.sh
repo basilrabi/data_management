@@ -29,6 +29,7 @@ download_sql billing_billingtracker && \
 download_sql comptrollership_costcenter && \
 download_sql comptrollership_costcenterconversion && \
 download_sql comptrollership_generalledgeraccount && \
+download_sql comptrollership_monthlycost && \
 download_sql comptrollership_sapcostcenter && \
 download_sql custom_profession && \
 download_sql custom_professionalidentificationcard && \

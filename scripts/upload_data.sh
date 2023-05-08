@@ -46,6 +46,8 @@ sql_script "upload_data" "comptrollership_sapcostcenter" && \
 vacuum "comptrollership_sapcostcenter" && \
 sql_script "upload_data" "comptrollership_costcenterconversion" && \
 vacuum "comptrollership_costcenterconversion" && \
+sql_script "upload_data" "comptrollership_monthlycost" && \
+vacuum "comptrollership_monthlycost" && \
 sql_script "upload_data" "fleet_equipmentclass" && \
 vacuum "fleet_equipmentclass" && \
 sql_script "upload_data" "fleet_equipmentmanufacturer" && \
