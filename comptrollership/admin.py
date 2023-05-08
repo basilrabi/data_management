@@ -39,6 +39,14 @@ class MonthlyCostAdmin(ModelAdmin):
         '__str__', 'budget', 'adjusted_budget', 'forecast', 'actual'
     )
     list_filter = ['year', 'month']
+    readonly_fields = ['year',
+                       'month',
+                       'cost_center',
+                       'gl',
+                       'actual',
+                       'adjusted_budget',
+                       'budget',
+                       'forecast']
     search_fields = [
         'cost_center__name',
         'cost_center__description',
