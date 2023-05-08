@@ -2,6 +2,7 @@ from django.contrib.admin import ModelAdmin, register
 
 from custom.admin import ReadOnlyAdmin
 from .models import (
+    IFCU,
     LegacyGoodsIssuance,
     LegacyGoodsReceivedNote,
     LegacyItemType,
@@ -13,6 +14,11 @@ from .models import (
     UnitOfMeasure,
     Valuation
 )
+
+
+@register(IFCU)
+class IFCUAdmin(ReadOnlyAdmin):
+    date_hierarchy = 'date'
 
 
 @register(LegacyGoodsIssuance)

@@ -5,6 +5,7 @@ from django.db.models import (
     ForeignKey,
     Model,
     PROTECT,
+    PositiveIntegerField,
     PositiveSmallIntegerField,
     SET_NULL,
     TextField
@@ -13,6 +14,21 @@ from django.db.models import (
 from comptrollership.models import GeneralLedgerAccount
 from custom.fields import NameField
 from custom.models import Classification
+from fleet.models.equipment import Equipment
+
+
+class IFCU(Model):
+    """
+    SAP transactions for issuances of diesel, gasoline and adblue.
+    """
+    date = DateField()
+    equipment = ForeignKey(Equipment, on_delete=PROTECT)
+    liters = FloatField()
+    measurement_document = PositiveIntegerField(unique=True)
+    material = CharField(max_length=1,
+                         choices=(('A', 'ADBLUE'),
+                                  ('D', 'DIESEL'),
+                                  ('G', 'GASOLINE')))
 
 # Legacy Models refers to data from the old ERP (Lawsown M3)
 
