@@ -58,6 +58,7 @@ EMAIL_HOST_USER = email_address
 EMAIL_HOST_PASSWORD = email_password
 INSTALLED_APPS = [
     'billing',
+    'camp_admin',
     'comptrollership',
     'custom',
     'fleet',
