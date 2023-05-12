@@ -8,6 +8,7 @@ The system packages below are required to be installed in Fedora 37+:
 
 - gammu-devel
 - gdal
+- libpq-devel
 - nginx
 - postgis-llvmjit
 - postgresql-llvmjit
