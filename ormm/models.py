@@ -16,6 +16,7 @@ class ExternalCommunication(Model):
     transmittal_number = CharField(max_length=13, null=False, blank=True, primary_key=True)
     date = DateField(null=True, blank=False)
     nature_of_content = TextField(max_length=99, null=True, blank=True)
+    recipient = CharField(max_length=30, null=False, blank=False, default='')
     receiving_copy = FileField(upload_to=filepath,null=True, blank=True)
 
     def save(self, *args, **kwargs):
