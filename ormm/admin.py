@@ -7,8 +7,11 @@ from .models import ExternalCommunication
 class ExternalCommunicationAdmin(ModelAdmin):
     fields = ('date',
               'nature_of_content',
+              'recipient',
               'receiving_copy',)
 
     list_display = ('transmittal_number',
-                    'receiving_copy'
+                    'nature_of_content',
+                    'recipient',
+                    'receiving_copy',
     )
