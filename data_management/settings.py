@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'map',
     'material_management',
     'organization',
+    'ormm',
     'personnel',
     'sampling',
     'shipment',
