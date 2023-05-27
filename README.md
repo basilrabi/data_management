@@ -11,6 +11,7 @@ The system packages below are required to be installed in Fedora 37+:
 - libpq-devel
 - nginx
 - postgis-llvmjit
+- postgresql-contrib
 - postgresql-llvmjit
 - python3-devel
 - python3-virtualenvwrapper

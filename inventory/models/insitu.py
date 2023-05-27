@@ -15,6 +15,8 @@ from django.contrib.gis.db.models import (
     Q,
     SmallIntegerField
 )
+from django.contrib.postgres.indexes import GinIndex
+
 from location.models.source import Cluster, DrillHole
 
 
@@ -29,11 +31,21 @@ class Block(Model):
     However, geometry is only saved as a 2-dimensional square in the database.
     """
     name = CharField(max_length=20, unique=True)
-    z = SmallIntegerField(help_text='Elevation of the top face of the block.')
-    ni = FloatField(help_text='Estimated nickel content of the block in percent.')
-    fe = FloatField(help_text='Estimated iron content of the block in percent.')
-    co = FloatField(help_text='Estimated cobalt content of the block in percent.')
-    cluster = ForeignKey(Cluster, null=True, blank=True, on_delete=PROTECT)
+    z = SmallIntegerField(
+        help_text='Elevation of the top face of the block.'
+    )
+    ni = FloatField(
+        help_text='Estimated nickel content of the block in percent.'
+    )
+    fe = FloatField(
+        help_text='Estimated iron content of the block in percent.'
+    )
+    co = FloatField(
+        help_text='Estimated cobalt content of the block in percent.'
+    )
+    cluster = ForeignKey(
+        Cluster, null=True, blank=True, on_delete=PROTECT
+    )
     depth = FloatField(
         null=True,
         blank=True,
@@ -47,9 +59,20 @@ class Block(Model):
 
     class Meta:
         indexes = [
-            Index(fields=['z']),
-            Index(fields=['exposed', 'z', 'planned_excavation_date']),
-            Index(fields=['exposed', 'fe', 'ni', 'z', 'planned_excavation_date'])
+            GinIndex(
+                fields=['name'],
+                name='inventory_name_trgm',
+                opclasses=['gin_trgm_ops']
+            ),
+            Index(
+                fields=['z']
+            ),
+            Index(
+                fields=['exposed', 'z', 'planned_excavation_date']
+            ),
+            Index(
+                fields=['exposed', 'fe', 'ni', 'z', 'planned_excavation_date']
+            )
         ]
 
     def __str__(self):
