@@ -5,13 +5,15 @@ from .models import ExternalCommunication
 
 @register(ExternalCommunication)
 class ExternalCommunicationAdmin(ModelAdmin):
+    
     fields = ('date',
               'nature_of_content',
               'recipient',
-              'receiving_copy',)
+              'receiving_copy',
+              'cancel',)
 
     list_display = ('transmittal_number',
-                    'nature_of_content',
-                    'recipient',
+                    'content',
+                    'recipient_render',
                     'receiving_copy',
     )

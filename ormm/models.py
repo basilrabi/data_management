@@ -1,12 +1,14 @@
+from datetime import datetime
 from django.db.models import (
+    BooleanField,
     CharField,
     DateField, 
     FileField,
     Max, 
-    Model, 
+    Model,
     TextField
 )
-from datetime import datetime
+from django.utils.html import mark_safe
 import re
 
 from .functions import filepath
@@ -18,6 +20,23 @@ class ExternalCommunication(Model):
     nature_of_content = TextField(max_length=99, null=True, blank=True)
     recipient = CharField(max_length=30, null=False, blank=False, default='')
     receiving_copy = FileField(upload_to=filepath,null=True, blank=True)
+    cancel = BooleanField(null=False, default=False)
+    
+    def content(self):
+        if self.cancel is True:
+            return mark_safe(
+                f'<s>{format(self.nature_of_content)}</s>'
+            )
+        else:
+            return self.nature_of_content
+
+    def recipient_render(self):
+        if self.cancel is True:
+            return mark_safe(
+                f'<s>{format(self.recipient)}</s>'
+            )
+        else:
+            return self.recipient
 
     def save(self, *args, **kwargs):
         if not self.transmittal_number:
@@ -32,7 +51,7 @@ class ExternalCommunication(Model):
             number = int(re.search(r"\-(\d+)\-", max_number).group(1)) + 1
 
             self.transmittal_number = f"ORMM-{number:03d}-{year}"
-       
+
         super().save(*args, **kwargs)
 
     def __str__(self):
