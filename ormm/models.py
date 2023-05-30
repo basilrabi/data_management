@@ -4,19 +4,24 @@ from django.db.models import (
     CharField,
     DateField, 
     FileField,
+    ForeignKey,
     Max, 
     Model,
+    PROTECT,
     TextField
 )
 from django.utils.html import mark_safe
 import re
 
 from .functions import filepath
+from organization.models import OrganizationUnit
 
 
 class ExternalCommunication(Model):
+
     transmittal_number = CharField(max_length=13, null=False, blank=True, primary_key=True)
     date = DateField(null=True, blank=False)
+    requesting_department = ForeignKey(OrganizationUnit, null=True, blank=True, on_delete=PROTECT)
     nature_of_content = TextField(max_length=99, null=True, blank=True)
     recipient = CharField(max_length=30, null=False, blank=False, default='')
     receiving_copy = FileField(upload_to=filepath,null=True, blank=True)
