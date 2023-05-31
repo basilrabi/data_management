@@ -1,6 +1,6 @@
 from django.contrib.admin import ModelAdmin, register
 
-from .models import ExternalCommunication
+from .models import ExternalCommunication, ExternalIncomingCommunication
 from organization.models import Division
 
 
@@ -19,4 +19,14 @@ class ExternalCommunicationAdmin(ModelAdmin):
                     'recipient_render',
                     'receiving_copy',
                     'requesting_department'
-    )    
+    )
+
+
+@register(ExternalIncomingCommunication)    
+class ExternalIncomingCommunicationAdmin(ModelAdmin):
+
+    list_display = ('subject',
+                    'sender',
+                    'datetime_received',
+                    'scan'
+    )
