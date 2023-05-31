@@ -2,7 +2,8 @@ from datetime import datetime
 from django.db.models import (
     BooleanField,
     CharField,
-    DateField, 
+    DateField,
+    DateTimeField, 
     FileField,
     ForeignKey,
     Max, 
@@ -13,11 +14,14 @@ from django.db.models import (
 from django.utils.html import mark_safe
 import re
 
-from .functions import filepath
+from .functions import filepath, filepath_extincomingcomm
 from organization.models import OrganizationUnit
 
 
 class ExternalCommunication(Model):
+    """
+    Digital log of outgoing external communication from ORMM.
+    """
 
     transmittal_number = CharField(max_length=13, null=False, blank=True, primary_key=True)
     date = DateField(null=True, blank=False)
@@ -62,3 +66,13 @@ class ExternalCommunication(Model):
     def __str__(self):
         return self.transmittal_number
 
+
+class ExternalIncomingCommunication(Model):
+    """
+    Digital log of incoming communications from external sources
+    """
+
+    datetime_received = DateTimeField(null=True, blank=False)
+    sender = CharField(max_length=30, null=True, blank=False)
+    subject = CharField(max_length=50, null=True, blank=False)
+    scan = FileField(upload_to=filepath_extincomingcomm, null=True, blank=True)
