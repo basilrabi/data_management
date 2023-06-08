@@ -14,7 +14,8 @@ class ExternalCommunicationAdmin(ModelAdmin):
               'receiving_copy',
               'cancel',)
 
-    list_display = ('transmittal_number',
+    list_display = ('date',
+                    'transmittal_number',
                     'content',
                     'recipient_render',
                     'receiving_copy',
