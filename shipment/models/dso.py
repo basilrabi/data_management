@@ -282,7 +282,7 @@ class LayDaysStatement(Model):
     A vessel's laydays statement for a shipment loading.
     """
     shipment = OneToOneField('Shipment', on_delete=CASCADE)
-    vessel_voyage = PositiveSmallIntegerField(default=0)
+    vessel_voyage = AlphaNumeric(max_length=8, null=True, blank=True)
     arrival_pilot = DateTimeField(
         null=True, blank=True, verbose_name='Arrival at Surigao Pilot Station'
     )
