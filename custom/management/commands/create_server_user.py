@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from os import environ
 from subprocess import PIPE, run
 
-from custom.models import User
+from custom.models import Log, User
 
 
 class Command(BaseCommand):
