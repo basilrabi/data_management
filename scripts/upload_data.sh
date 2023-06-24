@@ -119,6 +119,8 @@ sql_script "upload_data" "material_management_valuation" && \
 vacuum "material_management_valuation" && \
 sql_script "upload_data" "material_management_material" && \
 vacuum "material_management_material" && \
+sql_script "upload_data" "ormm_externalcommunication" && \
+vacuum "ormm_externalcommunication" && \
 sql_script "upload_data" "sampling_laboratory" && \
 vacuum "sampling_laboratory" && \
 sql_script "upload_data" "sampling_lithology" && \

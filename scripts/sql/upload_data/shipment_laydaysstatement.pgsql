@@ -26,7 +26,7 @@ CREATE TEMPORARY TABLE temp_shipment_laydaysstatement
     revised boolean,
     time_allowed interval,
     tonnage integer,
-    vessel_voyage smallint,
+    vessel_voyage character varying(8),
     shipment_name character varying(10)
 );
 

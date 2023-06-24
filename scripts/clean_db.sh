@@ -15,6 +15,7 @@ psql -h $db_host -p $db_port -U $db_user -w postgres -c "drop database if exists
 # An sql dump of the template is shown in
 # scripts/sql/data_management_template.pgsql
 psql -h $db_host -p $db_port -U $db_user -w postgres -c "create database $db_name template $template"
+psql -h $db_host -p $db_port -U data_management -w $db_name -c "alter schema staging owner to $db_user"
 
 # Set-up django database
 ./manage.py migrate

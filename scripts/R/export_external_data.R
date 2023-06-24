@@ -43,6 +43,7 @@ where a.table_type = 'BASE TABLE'
     and not a.table_name ilike any (array[
         'auth_%',
         'billing_%',
+	'camp_admin_%',
         'comptrollership_%',
         'custom_%',
         'django_%',
@@ -54,6 +55,7 @@ where a.table_type = 'BASE TABLE'
         'location_%',
         'material_management_%',
         'organization_%',
+	'ormm_%',
         'outbox',
         'outbox_multipart',
         'personnel_%',

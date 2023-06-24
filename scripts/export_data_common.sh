@@ -63,6 +63,7 @@ download_sql organization_department && \
 download_sql organization_division && \
 download_sql organization_organization && \
 download_sql organization_section && \
+download_sql ormm_externalcommunication && \
 download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \
 download_sql sampling_drillcoresample && \
