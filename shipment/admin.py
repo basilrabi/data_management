@@ -320,6 +320,7 @@ class ShipmentAdmin(ModelAdmin):
         'moisture',
         'demurrage',
         'despatch',
+        'commenced_laytime',
         'completion',
         'number'
     )
@@ -333,6 +334,7 @@ class ShipmentAdmin(ModelAdmin):
                 ni=Round(F('shipmentloadingassay__ni'), 2),
                 fe=Round(F('shipmentloadingassay__fe'), 2),
                 moisture=Round(F('shipmentloadingassay__moisture'), 2),
+                commenced_laytime=F('laydaysstatement__commenced_laytime'),
                 completion=F('laydaysstatement__completed_loading'),
                 number=F('shipmentnumber__number')
             ) \
@@ -346,6 +348,9 @@ class ShipmentAdmin(ModelAdmin):
 
     def balance(self, obj):
         return obj.balance
+
+    def commenced_laytime(self, obj):
+        return obj.commenced_laytime
 
     def completion(self, obj):
         return obj.completion
