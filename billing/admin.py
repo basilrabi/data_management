@@ -2,7 +2,8 @@ from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
 
-from .models import BillingTracker, BillingAddOn
+from .forms import CMBillingForm
+from .models import BillingTracker, BillingAddOn, CMBilling
 
 
 class BillingAddOnInline(TabularInline):
@@ -30,3 +31,16 @@ class BillingTrackerAdmin(ModelAdmin):
                    'start_date',
                    'end_date',
                    'specification']
+
+
+@register(CMBilling)
+class CMBillingAdmin(ModelAdmin):
+    form = CMBillingForm
+    list_display = ['contractor',
+                    'month',
+                    'half',
+                    'billing_year',
+                    'amount',
+                    'tonnage',
+                    'last_update']
+    list_filter = ['contractor']

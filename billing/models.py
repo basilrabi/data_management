@@ -7,8 +7,13 @@ from django.db.models import (
     FloatField,
     ForeignKey,
     Model,
+    PROTECT,
     TextField
 )
+from datetime import datetime
+import calendar
+
+from organization.models import Organization
 
 def filepath(instance, filename):
     filename = f"{instance.contractor}-{instance.purpose}-{instance.start_date}{instance.specification}.pdf"
@@ -72,3 +77,22 @@ class BillingTracker(Model):
     last_update = DateTimeField(auto_now=True)
     invoice_number = CharField(max_length=32, null=True, blank=True)
     fileup = FileField(upload_to=filepath, null=True, blank=True)
+
+
+class CMBilling(Model):
+    
+    month_choices = [(str(i), calendar.month_name[i]) for i in range(1,13)]
+    half = [('1','1st'),('2','2nd')]
+    year_now = datetime.now().year
+
+    contractor = ForeignKey(Organization, on_delete = PROTECT, null=True)
+    billing_year = CharField(max_length=4, default=year_now, null=True, blank=False)
+    month = CharField(max_length=9, choices=month_choices, default='1', null=True, blank=False)
+    half = CharField(max_length=3, choices=half, default='1', null=True, blank=False)
+    amount = FloatField(null=True, blank=False)
+    tonnage = FloatField(null=True, blank=False)
+    last_update = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Contract Mining Billing"
+        verbose_name_plural = "Contract Mining Billings"
