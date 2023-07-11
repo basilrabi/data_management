@@ -6,7 +6,7 @@ from organization.models import Division
 
 @register(ExternalCommunication)
 class ExternalCommunicationAdmin(ModelAdmin):
-    
+    date_hierarchy = 'date'
     fields = ('date',
               'nature_of_content',
               'requesting_department',
