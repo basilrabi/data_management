@@ -96,7 +96,7 @@ class ClusterTest(TestCase):
         block.save()
 
         # 2 blocks assigned with grade of 1.5
-        cluster = Cluster.objects.get(name='F1-099-104')
+        cluster = Cluster.objects.get(name='D1-099-104')
         self.assertEqual(cluster.geom.area, 200)
         self.assertEqual(cluster.ni, 1.5)
         self.assertEqual(cluster.fe, 41)
@@ -106,7 +106,7 @@ class ClusterTest(TestCase):
         cluster.save()
 
         # Road assigned without buffer
-        cluster = Cluster.objects.get(name='F1-099-104')
+        cluster = Cluster.objects.get(name='D1-099-104')
         self.assertEqual(cluster.geom.area, 200)
         self.assertEqual(cluster.ni, 1.5)
         self.assertEqual(cluster.fe, 41)
@@ -116,7 +116,7 @@ class ClusterTest(TestCase):
         cluster.save()
 
         # Road assigned with buffer
-        cluster = Cluster.objects.get(name='L1-099-104')
+        cluster = Cluster.objects.get(name='F1-099-104')
         self.assertEqual(cluster.geom.area, 150)
         self.assertEqual(cluster.ni, 1.33)
         self.assertEqual(cluster.fe, 40.67)
@@ -135,7 +135,7 @@ class ClusterTest(TestCase):
         self.assertEqual(cluster.ni, 1.51)
         self.assertEqual(cluster.fe, 12.41)
         self.assertEqual(cluster.co, 0.02)
-        self.assertEqual(cluster.name, 'F1-114-202')
+        self.assertEqual(cluster.name, 'D1-114-202')
 
     def test_excavated_and_exposed_are_set(self):
         b4 = Block.objects.get(name='b4')
@@ -378,7 +378,7 @@ class ClusterTest(TestCase):
         block.save()
 
         # With cluster
-        cluster = Cluster.objects.get(name='F1-099-104')
+        cluster = Cluster.objects.get(name='D1-099-104')
         self.assertEqual(cluster.geom.area, 200)
         self.assertEqual(cluster.ni, 1.5)
         self.assertEqual(cluster.fe, 41)
