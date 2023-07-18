@@ -2,8 +2,8 @@ from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
 
-from .forms import CMBillingForm
-from .models import BillingTracker, BillingAddOn, CMBilling
+from .forms import CMBillingForm, ShipmentBillingForm
+from .models import BillingTracker, BillingAddOn, CMBilling, ShipmentBilling
 
 
 class BillingAddOnInline(TabularInline):
@@ -44,3 +44,8 @@ class CMBillingAdmin(ModelAdmin):
                     'tonnage',
                     'last_update']
     list_filter = ['contractor']
+
+
+@register(ShipmentBilling)
+class ShipmentBillingAdmin(ModelAdmin):
+    form = ShipmentBillingForm
