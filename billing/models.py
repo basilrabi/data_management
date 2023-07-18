@@ -14,6 +14,7 @@ from datetime import datetime
 import calendar
 
 from organization.models import Organization
+from shipment.models.dso import LayDaysStatement
 
 def filepath(instance, filename):
     filename = f"{instance.contractor}-{instance.purpose}-{instance.start_date}{instance.specification}.pdf"
@@ -96,3 +97,12 @@ class CMBilling(Model):
     class Meta:
         verbose_name = "Contract Mining Billing"
         verbose_name_plural = "Contract Mining Billings"
+
+
+class ShipmentBilling(Model):
+
+    contractor = ForeignKey(Organization, on_delete = PROTECT, null=True)
+    shipment = ForeignKey(LayDaysStatement, on_delete = PROTECT, null=True)
+    amount = FloatField(null=True, blank=False)
+    tonnage = FloatField(null=True, blank=False)
+    last_update = DateTimeField(auto_now=True)
