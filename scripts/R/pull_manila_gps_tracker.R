@@ -1,0 +1,204 @@
+#!/usr/bin/Rscript
+
+library(dplyr)
+library(jsonlite)
+library(lubridate)
+library(RPostgres)
+
+con <- RPostgres::dbConnect(RPostgres::Postgres(),
+                            user = "data_management",
+                            host = "datamanagement.tmc.nickelasia.com",
+                            dbname = "data_management")
+
+hash <- "hash=cb28e57165139a65de1e458737d2186d"
+host <- "https://api.gpstrack.global/"
+minimum_timestamp <-"2023-02-10 11:10:58+08"
+
+api_equipment_list <- paste0(host, "vehicle/list/?", hash)
+
+gps_equipment_list <- jsonlite::fromJSON(api_equipment_list)[[1]] %>%
+  dplyr::mutate(equipment_class = substr(tracker_label, 5L, 6L),
+                fleet_number = as.integer(substr(tracker_label, 10L, 12L))) %>%
+  dplyr::select(tracker_id, equipment_class, fleet_number)
+
+
+dm_equipment <- RPostgres::dbGetQuery(con, "
+select
+  tab_a.id,
+  tab_b.name equipment_class,
+  tab_a.fleet_number
+from fleet_equipment tab_a,
+  fleet_equipmentclass tab_b,
+  organization_organization tab_c
+where tab_a.equipment_class_id = tab_b.id
+  and tab_a.owner_id = tab_c.id
+  and tab_c.name = 'TMC'
+                                      ")
+
+exec_retry <- function(x) {
+  attempts <- 0L
+  while(TRUE) {
+    attempts <- attempts + 1L
+    try_command <- tryCatch({
+      RPostgres::dbExecute(con, x)
+    }, error = function(err) {
+      cat(paste("Error on attempt", attempts, ":", conditionMessage(err), "\n"))
+      NULL
+    })
+    if (!is.null(try_command)) {
+      return(try_command)
+    }
+    Sys.sleep(2)
+  }
+}
+
+latest_point <- RPostgres::dbGetQuery(con, "
+select equipment_id as id, max(time_stamp)
+from location_equipmentlocation
+group by equipment_id
+                                      ") %>%
+  dplyr::mutate(max = lubridate::with_tz(max, "Asia/Manila") + lubridate::seconds(1))
+
+equipment_list <- dplyr::left_join(gps_equipment_list, dm_equipment) %>%
+  dplyr::left_join(latest_point) %>%
+  dplyr::mutate(max = dplyr::case_when(
+    is.na(max) ~ as.POSIXct(minimum_timestamp),
+    TRUE ~ max
+  ))
+
+if (any(is.na(equipment_list$id))) {
+  stop("Unregistered equipment detected.")
+}
+
+now <- Sys.time()
+tracker_period <- lapply(1:nrow(equipment_list), function(x) {
+  data.frame(
+    x = equipment_list$tracker_id[x],
+    y = seq(from = equipment_list$max[x],
+            to = now,
+            by = "7 days")
+  )
+}) %>%
+  dplyr::bind_rows()
+
+lapply(1:nrow(tracker_period), function(z) {
+  url <- paste0(
+    host,
+    "track/read/?simplify=false&tracker_id=",
+    tracker_period$x[z],
+    "&from=",
+    format(tracker_period$y[z], format = "%Y-%m-%d%%20%H:%M:%S"),
+    "&to=",
+    format(tracker_period$y[z] + lubridate::days(7) - lubridate::seconds(1),
+           format = "%Y-%m-%d%%20%H:%M:%S"),
+    "&",
+    hash
+  )
+  api_output <- jsonlite::fromJSON(url)[[1]]
+  cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
+  if (is.data.frame(api_output)) {
+    equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]
+    output <- sf::st_as_sf(api_output, coords = c("lng", "lat")) %>%
+      dplyr::select(time_stamp = get_time,
+                    satellites,
+                    heading,
+                    speed) %>%
+      dplyr::arrange(time_stamp)
+    output$id <- 1:nrow(output)
+    table_name <- paste0(tracker_period$x[z], "-", tracker_period$y[z])
+    sf::st_write(output, con, table_name)
+    sql <- sprintf("select UpdateGeometrySRID('public', '%s', 'geometry', 4326)", table_name)
+    exec_retry(sql)
+    sql <- sprintf('alter table "%s" add unique(id)', table_name)
+    exec_retry(sql)
+    sql <- sprintf('vacuum analyze "%s"', table_name)
+    exec_retry(sql)
+    sql <- sprintf('
+        with cte_a as (
+          select
+            tab_a.time_stamp,
+            tab_a.satellites,
+            tab_a.heading,
+            tab_a.speed,
+            tab_a.geometry,
+            previous_point.heading as pp_heading,
+            previous_point.speed as pp_speed,
+            previous_point.geometry as pp_geom,
+            next_point.heading as np_heading,
+            next_point.speed as np_speed,
+            next_point.geometry as np_geom
+          from "%s" as tab_a
+          left join lateral (
+            select *
+            from "%s" as tab_b
+            where tab_a.id > tab_b.id
+            order by tab_b.id desc
+            limit 1
+          ) previous_point on true
+          left join lateral (
+            select *
+            from "%s" as tab_b
+            where tab_a.id < tab_b.id
+            order by tab_b.id asc
+            limit 1
+          ) next_point on true
+        ),
+        cte_b as (
+          select
+            time_stamp,
+            satellites,
+            heading,
+            speed,
+            geometry as geom,
+            case
+              when pp_heading is null then true
+              when np_heading is null then true
+              when (
+                speed = 0 and
+                pp_speed = 0 and
+                np_speed = 0 and
+                pp_heading = heading and
+                np_heading = heading and
+                st_distance(geometry, pp_geom) < 1 and
+                st_distance(geometry, np_geom) < 1
+              ) then false
+              else true
+            end as included
+          from cte_a
+        ),
+        cte_c as (
+          select
+            time_stamp,
+            avg(satellites)::int as satellites,
+            avg(heading)::int as heading,
+            avg(speed)::int as speed,
+            st_centroid(st_union(geom)) as geom
+          from cte_b
+          where included
+          group by time_stamp
+        )
+        insert into location_equipmentlocation(
+          equipment_id,
+          time_stamp,
+          satellites,
+          heading,
+          speed,
+          geom
+        )
+        select
+          %s,
+          cast(time_stamp as timestamp),
+          case
+            when satellites > -1 then satellites
+            else 0
+          end,
+          heading,
+          speed,
+          geom
+        from cte_c', table_name, table_name, table_name, equipment_id)
+    exec_retry(sql)
+    sql <- sprintf('drop table "%s"', table_name)
+    exec_retry(sql)
+  }
+})
+
