@@ -26,6 +26,7 @@ download_ogr location_roadarea && \
 download_ogr location_slice && \
 download_sql billing_billingaddon && \
 download_sql billing_billingtracker && \
+download_sql billing_cmbilling && \
 download_sql comptrollership_costcenter && \
 download_sql comptrollership_costcenterconversion && \
 download_sql comptrollership_generalledgeraccount && \

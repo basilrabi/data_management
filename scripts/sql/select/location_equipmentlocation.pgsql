@@ -1,4 +1,7 @@
 SELECT
+    tab_a.heading,
+    tab_a.satellites,
+    tab_a.speed,
     tab_a.time_stamp,
     ST_AsEWKT(tab_a.geom),
     tab_c.name organization,
@@ -17,4 +20,7 @@ FROM location_equipmentlocation tab_a
     LEFT JOIN custom_user tab_f
         ON tab_a.user_id = tab_f.id
 ORDER BY
-    tab_a.time_stamp
+    tab_a.time_stamp,
+    tab_c.name,
+    tab_e.name,
+    tab_b.fleet_number

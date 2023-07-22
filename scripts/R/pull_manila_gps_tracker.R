@@ -21,7 +21,6 @@ gps_equipment_list <- jsonlite::fromJSON(api_equipment_list)[[1]] %>%
                 fleet_number = as.integer(substr(tracker_label, 10L, 12L))) %>%
   dplyr::select(tracker_id, equipment_class, fleet_number)
 
-
 dm_equipment <- RPostgres::dbGetQuery(con, "
 select
   tab_a.id,
@@ -47,6 +46,23 @@ exec_retry <- function(x) {
     })
     if (!is.null(try_command)) {
       return(try_command)
+    }
+    Sys.sleep(2)
+  }
+}
+
+pull_retry <- function(x) {
+  attempts <- 0L
+  while (attempts <= 10L) {
+    attempts <- attempts + 1L
+    try_pull <- tryCatch({
+      jsonlite::fromJSON(x)[[1]]
+    }, error = function(err) {
+      cat(paste("Error on attempt", attempts, ":", conditionMessage(err), "\n"))
+      NULL
+    })
+    if (!is.null(try_pull)) {
+      return(try_pull)
     }
     Sys.sleep(2)
   }
@@ -94,7 +110,7 @@ lapply(1:nrow(tracker_period), function(z) {
     "&",
     hash
   )
-  api_output <- jsonlite::fromJSON(url)[[1]]
+  api_output <- pull_retry(url)
   cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
   if (is.data.frame(api_output)) {
     equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]

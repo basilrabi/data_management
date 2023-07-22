@@ -66,6 +66,8 @@ sql_script "upload_data" "billing_billingtracker" && \
 sql_script "upload_data" "billing_billingtracker_id_seq" && \
 vacuum "billing_billingaddon" && \
 vacuum "billing_billingtracker" && \
+sql_script "upload_data" "billing_cmbilling" && \
+vacuum "billing_cmbilling" && \
 sql_script "upload_data" "inventory_block" && \
 upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \
