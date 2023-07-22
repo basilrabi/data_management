@@ -49,3 +49,8 @@ class CMBillingAdmin(ModelAdmin):
 @register(ShipmentBilling)
 class ShipmentBillingAdmin(ModelAdmin):
     form = ShipmentBillingForm
+    list_display = ['contractor',
+                    'shipment',
+                    'amount',
+                    'tonnage',
+                    'last_update']
