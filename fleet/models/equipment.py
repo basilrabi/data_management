@@ -1,9 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.db.models import (
+    BooleanField,
     CharField,
     DateField,
+    DateTimeField,
     ForeignKey,
     F,
+    Index,
     Model,
     PositiveSmallIntegerField,
     PROTECT,
@@ -116,6 +119,24 @@ class EquipmentClass(Classification):
 
     def __str__(self):
         return f'{self.name} - {self.description}'
+
+
+class EquipmentIgnitionStatus(Model):
+    """
+    The model to capture ignition status from Manila GPS.
+    """
+    equipment = ForeignKey(Equipment, on_delete=PROTECT)
+    time_stamp = DateTimeField()
+    ignition = BooleanField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['equipment', 'time_stamp'],
+                name='unique_equipment_ignition_timestamp'
+            )
+        ]
+        indexes = [Index(fields=['time_stamp'])]
 
 
 class EquipmentManufacturer(Classification):

@@ -2,11 +2,13 @@ from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
 
+from custom.admin import ReadOnlyAdmin
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
     Equipment,
     EquipmentClass,
+    EquipmentIgnitionStatus,
     EquipmentManufacturer,
     EquipmentModel,
     TrackedExcavator
@@ -95,6 +97,11 @@ class EquipmentAdmin(ModelAdmin):
 @register(EquipmentClass)
 class EquipmentClassAdmin(ModelAdmin):
     list_display = ('name', 'description')
+
+
+@register(EquipmentIgnitionStatus)
+class EquipmentIgnitionStatusAdmin(ReadOnlyAdmin):
+    date_hierarchy = 'time_stamp'
 
 
 @register(EquipmentManufacturer)
