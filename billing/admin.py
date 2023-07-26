@@ -54,3 +54,4 @@ class ShipmentBillingAdmin(ModelAdmin):
                     'amount',
                     'tonnage',
                     'last_update']
+                    

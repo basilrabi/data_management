@@ -24,3 +24,5 @@ class ShipmentBillingForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['contractor'].queryset = Organization.objects.filter(active=True, service='Contractor')
         self.fields['shipment'].queryset = LayDaysStatement.objects.all().order_by('-id')[:20]
+
+        
