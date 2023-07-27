@@ -105,4 +105,6 @@ class ShipmentBilling(Model):
     shipment = ForeignKey(LayDaysStatement, on_delete = PROTECT, null=True)
     amount = FloatField(null=True, blank=False)
     tonnage = FloatField(null=True, blank=False)
+    onboard_handling_amount = FloatField(null=True, blank=True)
+    onboard_handling_ton = FloatField(null=True, blank=True)
     last_update = DateTimeField(auto_now=True)
