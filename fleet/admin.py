@@ -102,6 +102,7 @@ class EquipmentClassAdmin(ModelAdmin):
 @register(EquipmentIgnitionStatus)
 class EquipmentIgnitionStatusAdmin(ReadOnlyAdmin):
     date_hierarchy = 'time_stamp'
+    list_display = ('equipment', 'time_stamp', 'ignition')
 
 
 @register(EquipmentManufacturer)

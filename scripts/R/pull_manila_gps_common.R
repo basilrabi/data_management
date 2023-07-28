@@ -30,7 +30,7 @@ exec_retry <- function(x) {
 
 pull_retry <- function(x) {
   attempts <- 0L
-  while (attempts <= 10L) {
+  while (TRUE) {
     attempts <- attempts + 1L
     try_pull <- tryCatch({
       jsonlite::fromJSON(x)[[1]]

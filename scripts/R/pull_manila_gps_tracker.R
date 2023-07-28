@@ -139,10 +139,10 @@ lapply(1:nrow(tracker_period), function(z) {
         )
         select
           %s,
-          cast(time_stamp as timestamp),
+          cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
           case
             when satellites > -1 then satellites
-            else 0
+            else null
           end,
           heading,
           speed,

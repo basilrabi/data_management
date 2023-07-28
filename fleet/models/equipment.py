@@ -137,6 +137,7 @@ class EquipmentIgnitionStatus(Model):
             )
         ]
         indexes = [Index(fields=['time_stamp'])]
+        verbose_name_plural = 'equipment ignition statuses'
 
 
 class EquipmentManufacturer(Classification):
