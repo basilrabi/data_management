@@ -11,6 +11,15 @@ con <- RPostgres::dbConnect(RPostgres::Postgres(),
 hash <- "hash=cb28e57165139a65de1e458737d2186d"
 host <- "https://api.gpstrack.global/"
 
+print_log <- function(x, attempts, err) {
+  cat(x,
+      "\n",
+      format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      "\n",
+      paste("Error on attempt", attempts, ":", conditionMessage(err), "\n")
+  )
+}
+
 exec_retry <- function(x) {
   attempts <- 0L
   while(TRUE) {
@@ -18,7 +27,7 @@ exec_retry <- function(x) {
     try_command <- tryCatch({
       RPostgres::dbExecute(con, x)
     }, error = function(err) {
-      cat(paste("Error on attempt", attempts, ":", conditionMessage(err), "\n"))
+      print_log(x, attempts, err)
       NULL
     })
     if (!is.null(try_command)) {
@@ -35,7 +44,7 @@ pull_retry <- function(x) {
     try_pull <- tryCatch({
       jsonlite::fromJSON(x)[[1]]
     }, error = function(err) {
-      cat(paste("Error on attempt", attempts, ":", conditionMessage(err), "\n"))
+      print_log(x, attempts, err)
       NULL
     })
     if (!is.null(try_pull)) {
