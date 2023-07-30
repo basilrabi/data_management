@@ -51,7 +51,7 @@ lapply(1:nrow(ignition_period), function(z) {
   api_output <- pull_retry(url)
   cat(sprintf("Processing %s out of %s.\n", z, nrow(ignition_period)))
   if (is.data.frame(api_output)) {
-    equipment_id <- equipment_list$id[equipment_list$tracker_id == ignition_period$x[z]]
+    equipment_id <- equipment_list$id[equipment_list$tracker_id == ignition_period$tracker_id[z]]
     output <- dplyr::filter(api_output,
                             stringr::str_detect(message, "Ignition")) %>%
       dplyr::arrange(time)
@@ -68,9 +68,9 @@ lapply(1:nrow(ignition_period), function(z) {
         dplyr::group_by(time_stamp) %>%
         dplyr::mutate(n = dplyr::n()) %>%
         dplyr::filter(n < 2)
-      table_name <- paste0(ignition_period$x[z],
+      table_name <- paste0(ignition_period$tracker_id[z],
                            "-",
-                           ignition_period$y[z],
+                           as.Date(ignition_period$start[z]),
                            "-ignition")
       sf::st_write(df_ignition, con, table_name)
       sql <- sprintf('
