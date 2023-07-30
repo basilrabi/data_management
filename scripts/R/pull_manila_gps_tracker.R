@@ -2,17 +2,10 @@
 
 source("scripts/R/pull_manila_gps_common.R")
 
-minimum_timestamp <-"2023-02-10 11:10:58+08"
-
-latest_point <- RPostgres::dbGetQuery(con, "
-select equipment_id as id, max(time_stamp)
-from location_equipmentlocation
-group by equipment_id
-                                      ") %>%
-  dplyr::mutate(max = lubridate::with_tz(max, "Asia/Manila") + lubridate::seconds(1))
-
-equipment_list <- dplyr::left_join(gps_equipment_list, dm_equipment) %>%
-  dplyr::left_join(latest_point) %>%
+equipment_list <- dplyr::left_join(
+  dm_equipment,
+  dplyr::mutate(latest_point, max = max + lubridate::seconds(1))
+) %>%
   dplyr::mutate(max = dplyr::case_when(
     is.na(max) ~ as.POSIXct(minimum_timestamp),
     TRUE ~ max
@@ -49,6 +42,7 @@ lapply(1:nrow(tracker_period), function(z) {
   api_output <- pull_retry(url)
   cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
   if (is.data.frame(api_output)) {
+    cat(url, "\n")
     equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]
     output <- sf::st_as_sf(api_output, coords = c("lng", "lat")) %>%
       dplyr::select(time_stamp = get_time,

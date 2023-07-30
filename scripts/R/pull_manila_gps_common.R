@@ -10,6 +10,7 @@ con <- RPostgres::dbConnect(RPostgres::Postgres(),
 
 hash <- "hash=cb28e57165139a65de1e458737d2186d"
 host <- "https://api.gpstrack.global/"
+minimum_timestamp <-"2023-02-10 11:10:58+08"
 
 print_log <- function(x, attempts, err) {
   cat(x,
@@ -72,4 +73,12 @@ from fleet_equipment tab_a,
 where tab_a.equipment_class_id = tab_b.id
   and tab_a.owner_id = tab_c.id
   and tab_c.name = 'TMC'
-                                      ")
+                                      ") %>%
+  dplyr::right_join(gps_equipment_list)
+
+latest_point <- RPostgres::dbGetQuery(con, "
+select equipment_id as id, max(time_stamp)
+from location_equipmentlocation
+group by equipment_id
+                                      ") %>%
+  dplyr::mutate(max = lubridate::with_tz(max, "Asia/Manila"))

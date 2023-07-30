@@ -4,35 +4,51 @@ source("scripts/R/pull_manila_gps_common.R")
 
 library(stringr)
 
-equipment_list <- dplyr::left_join(gps_equipment_list, dm_equipment)
+latest_status <- RPostgres::dbGetQuery(con, "
+select equipment_id as id, max(time_stamp) as max_status
+from fleet_equipmentignitionstatus
+group by equipment_id
+                                      ") %>%
+  dplyr::mutate(max_status = lubridate::with_tz(max_status, "Asia/Manila"))
+
+equipment_list <- dplyr::left_join(dm_equipment, latest_status) %>%
+  dplyr::left_join(latest_point) %>%
+  dplyr::mutate(start = dplyr::case_when(
+    !is.na(max_status) ~ max_status + lubridate::seconds(1),
+    TRUE ~ as.POSIXct(minimum_timestamp)
+  ))
 
 if (any(is.na(equipment_list$id))) {
   stop("Unregistered equipment detected.")
 }
 
-dates_included <- seq(from = as.Date("2023-02-01"),
-                      to = as.Date("2023-07-27"),
-                      by = "7 days")
+ignition_period <- lapply(1:nrow(equipment_list), function(x) {
+  data.frame(
+    tracker_id = equipment_list$tracker_id[x],
+    start = seq(from = equipment_list$start[x],
+                to = equipment_list$max[x],
+                by = "7 days")
+  )
+}) %>%
+  dplyr::bind_rows() %>%
+  dplyr::left_join(dplyr::select(equipment_list, tracker_id, max)) %>%
+  dplyr::mutate(next_week = start + lubridate::days(7) - lubridate::seconds()) %>%
+  dplyr::mutate(end = dplyr::case_when(next_week > max ~ max, TRUE ~ next_week))
 
-ignition_period <- expand.grid(x = equipment_list$tracker_id,
-                               y = dates_included,
-                               KEEP.OUT.ATTRS = FALSE) %>%
-  dplyr::mutate(id = dplyr::row_number())
 
 lapply(1:nrow(ignition_period), function(z) {
   url <- paste0(
     host,
     "history/tracker/list/?trackers=[",
-    ignition_period$x[z],
+    ignition_period$tracker_id[z],
     "]&from=",
-    ignition_period$y[z],
-    "%2000:00:00&to=",
-    ignition_period$y[z] + lubridate::days(6),
-    "%2023:59:59&",
+    format(ignition_period$start[z], format = "%Y-%m-%d%%20%H:%M:%S"),
+    "&to=",
+    format(ignition_period$end[z], format = "%Y-%m-%d%%20%H:%M:%S"),
+    "&",
     hash
   )
   api_output <- pull_retry(url)
-  cat(url, "\n")
   cat(sprintf("Processing %s out of %s.\n", z, nrow(ignition_period)))
   if (is.data.frame(api_output)) {
     equipment_id <- equipment_list$id[equipment_list$tracker_id == ignition_period$x[z]]
@@ -40,6 +56,7 @@ lapply(1:nrow(ignition_period), function(z) {
                             stringr::str_detect(message, "Ignition")) %>%
       dplyr::arrange(time)
     if (nrow(output) > 0) {
+      cat(url, "\n")
       df_ignition <- lapply(1:nrow(output), function(i) {
         data.frame(equipment_id = equipment_id,
                    time_stamp = output$time[i],
