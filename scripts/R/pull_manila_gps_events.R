@@ -16,7 +16,8 @@ equipment_list <- dplyr::left_join(dm_equipment, latest_status) %>%
   dplyr::mutate(start = dplyr::case_when(
     !is.na(max_status) ~ max_status + lubridate::seconds(1),
     TRUE ~ as.POSIXct(minimum_timestamp)
-  ))
+  )) %>%
+  dplyr::filter(start < max)
 
 if (any(is.na(equipment_list$id))) {
   stop("Unregistered equipment detected.")
