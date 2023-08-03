@@ -22,7 +22,15 @@ class ShipmentBillingForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['contractor'].queryset = Organization.objects.filter(active=True, service='Contractor')
-        self.fields['shipment'].queryset = LayDaysStatement.objects.all().order_by('-id')[:20]
+        self.fields['shipment'].queryset = LayDaysStatement.objects.filter(completed_loading__year=datetime.now().year)
+        #self.fields['shipment'].queryset = LayDaysStatement.objects.all().order_by('-id')[:20]
 
-        
+
+class ShipmentBillingEntryForm(ModelForm):
+    class Meta:
+        model = ShipmentBilling
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['contractor'].queryset = Organization.objects.filter(active=True, service='Contractor')
