@@ -2,8 +2,8 @@ from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
 
-from .forms import CMBillingForm, ShipmentBillingForm
-from .models import BillingTracker, BillingAddOn, CMBilling, ShipmentBilling
+from .forms import CMBillingForm, ShipmentBillingForm, ShipmentBillingEntryForm
+from .models import BillingTracker, BillingAddOn, CMBilling, ShipmentBilling, ShipmentBillingEntry
 
 
 class BillingAddOnInline(TabularInline):
@@ -46,14 +46,15 @@ class CMBillingAdmin(ModelAdmin):
     list_filter = ['contractor']
 
 
+class ShipmentBillingEntryInline(TabularInline):
+    form = ShipmentBillingEntryForm
+    model = ShipmentBillingEntry
+    extra = 0
+    ordering = ['contractor']
+
 @register(ShipmentBilling)
 class ShipmentBillingAdmin(ModelAdmin):
     form = ShipmentBillingForm
-    list_display = ['contractor',
-                    'shipment',
-                    'amount',
-                    'tonnage',
-                    'onboard_handling_amount',
-                    'onboard_handling_ton',
-                    'last_update']
-                    
+    inlines = [ShipmentBillingEntryInline]
+    list_display = ['shipment']
+    ordering = ['-shipment',]
