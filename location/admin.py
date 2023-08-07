@@ -11,6 +11,7 @@ from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
 from .models.equipment import EquipmentLocation
 from .models.landuse import (
+    BLGU,
     Facility,
     FacilityClassification,
     FLA,
@@ -57,6 +58,12 @@ class ClusterChangeList(ChangeList):
         self.blocks = self.queryset \
             .annotate(blocks=Count('block')) \
             .aggregate(Sum('blocks'))['blocks__sum']
+
+
+@register(BLGU)
+class BLGUAdmin(TMCLocationAdmin):
+    modifiable = False
+    search_fields = ['name']
 
 
 @register(Cluster)
