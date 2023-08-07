@@ -10,6 +10,12 @@ from django.contrib.gis.db.models import (
 from custom.models import Classification, GeoClassification
 
 
+class BLGU(GeoClassification):
+    class Meta:
+        verbose_name = 'Barangay Political Boundary'
+        verbose_name_plural = 'Barangay Political Boundaries'
+
+
 class MPSA(GeoClassification):
     class Meta:
         verbose_name = 'Mineral Production Sharing Agreement'
