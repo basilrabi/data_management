@@ -12,7 +12,7 @@ def filepath(instance, filename):
 def get_expiring():
     expiring = models.Insurance.objects.filter(date_expiry__range=[date.today(), date.today()+timedelta(30)]).values_list('date_registered','date_expiry',named=True)
     subject = "Insurance Expiry Notice"
-    message = str(expiring)
+    message = "Still a WIP. THIS IS A TEST MESSAGE. \n\n"+str(expiring)
     send_mail(
         "EXPIRING INSURANCES",
         message,
