@@ -1,5 +1,6 @@
 from django.contrib.gis.db.models import (
     DateTimeField,
+    DO_NOTHING,
     ForeignKey,
     Index,
     Model,
@@ -36,3 +37,28 @@ class EquipmentLocation(Model):
 
     def __str__(self) -> str:
         return f'{self.time_stamp} - {self.equipment}'
+
+
+class HaulingEquipment(Model):
+    equipment = ForeignKey(Equipment, on_delete=DO_NOTHING)
+    ts_begin = DateTimeField()
+    ts_end = DateTimeField()
+    time_stamp = DateTimeField()
+    geom = PointField(srid=4326)
+
+    class Meta:
+        db_table = 'location_haulingequipment'
+        managed = False
+
+
+class LoadingEquipment(Model):
+    equipment = ForeignKey(Equipment, on_delete=DO_NOTHING)
+    ts_begin = DateTimeField()
+    ts_end = DateTimeField()
+    time_stamp = DateTimeField()
+    geom = PointField(srid=4326)
+
+    class Meta:
+        db_table = 'location_loadingequipment'
+        managed = False
+

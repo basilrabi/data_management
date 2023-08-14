@@ -234,6 +234,14 @@ def print_localzone(timestamp: datetime) -> (datetime | None):
     if timestamp:
         return timestamp.astimezone(get_localzone())
 
+def refresh_equipment_location() -> None:
+    """
+    Refresh the views for equipment locations.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY location_haulingequipment')
+        cursor.execute('REFRESH MATERIALIZED VIEW CONCURRENTLY location_loadingequipment')
+
 def refresh_loading_rate() -> None:
     """
     Refresh the view shipment_loadingrate.
