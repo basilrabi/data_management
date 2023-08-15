@@ -4,6 +4,7 @@ from django.db.models import (
     CharField,
     DateField,
     DateTimeField,
+    DurationField,
     ForeignKey,
     F,
     Index,
@@ -120,6 +121,23 @@ class EquipmentClass(Classification):
     def __str__(self):
         return f'{self.name} - {self.description}'
 
+
+class EquipmentIdlingTime(Model):
+    """
+    The model to capture equipment idling from Manila GPS.
+    """
+    equipment = ForeignKey(Equipment, on_delete=PROTECT)
+    time_stamp = DateTimeField()
+    duration = DurationField()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=['equipment', 'time_stamp'],
+                name='unique_equipment_idling_timestamp'
+            )
+        ]
+        indexes = [Index(fields=['time_stamp'])]
 
 class EquipmentIgnitionStatus(Model):
     """

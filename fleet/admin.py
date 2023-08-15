@@ -8,6 +8,7 @@ from .models.equipment import (
     BodyType,
     Equipment,
     EquipmentClass,
+    EquipmentIdlingTime,
     EquipmentIgnitionStatus,
     EquipmentManufacturer,
     EquipmentModel,
@@ -97,6 +98,12 @@ class EquipmentAdmin(ModelAdmin):
 @register(EquipmentClass)
 class EquipmentClassAdmin(ModelAdmin):
     list_display = ('name', 'description')
+
+
+@register(EquipmentIdlingTime)
+class EquipmentIdlingTimeAdmin(ReadOnlyAdmin):
+    date_hierarchy = 'time_stamp'
+    list_display = ('equipment', 'time_stamp', 'duration')
 
 
 @register(EquipmentIgnitionStatus)
