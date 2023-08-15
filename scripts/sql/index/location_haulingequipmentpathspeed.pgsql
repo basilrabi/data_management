@@ -1,0 +1,3 @@
+CREATE UNIQUE INDEX location_haulingequipmentpathspeed_idx ON location_haulingequipmentpathspeed (id);
+CREATE INDEX location_haulingequipmentpathspeed_kph ON location_haulingequipmentpathspeed (kph);
+
