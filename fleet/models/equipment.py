@@ -128,7 +128,7 @@ class EquipmentIdlingTime(Model):
     """
     equipment = ForeignKey(Equipment, on_delete=PROTECT)
     time_stamp = DateTimeField()
-    duration = DurationField()
+    idling = BooleanField()
 
     class Meta:
         constraints = [

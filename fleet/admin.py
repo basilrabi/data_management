@@ -103,7 +103,7 @@ class EquipmentClassAdmin(ModelAdmin):
 @register(EquipmentIdlingTime)
 class EquipmentIdlingTimeAdmin(ReadOnlyAdmin):
     date_hierarchy = 'time_stamp'
-    list_display = ('equipment', 'time_stamp', 'duration')
+    list_display = ('equipment', 'time_stamp', 'idling')
 
 
 @register(EquipmentIgnitionStatus)
