@@ -97,7 +97,7 @@ lapply(1:nrow(ignition_period), function(z) {
                    lat = output$location$lat[i])
       }) %>%
         dplyr::bind_rows() %>%
-        dplyr::group_by(equipment_id, time_stamp, lng, lat) %>%
+        dplyr::group_by(equipment_id, time_stamp) %>%
         dplyr::summarise(lng = mean(lng), lat = mean(lat)) %>%
         sf::st_as_sf(coords = c("lng", "lat"))
       sf::st_write(df_tracker, con, table_name)
