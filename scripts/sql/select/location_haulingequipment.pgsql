@@ -1,6 +1,7 @@
 CREATE MATERIALIZED VIEW location_haulingequipment AS
 WITH hauling_equipment AS (
     SELECT tab_a.equipment_id,
+        tab_a.id,
         tab_a.time_stamp ts_begin,
         lat_a.time_stamp ts_end
     FROM fleet_equipmentignitionstatus tab_a
@@ -20,8 +21,7 @@ WITH hauling_equipment AS (
     WHERE tab_a.ignition
         AND tab_c.name in ('AD', 'DT', 'GT', 'MD')
 )
-SELECT ROW_NUMBER() OVER() AS id,
-    hauling_equipment.*,
+SELECT hauling_equipment.*,
     tab_a.time_stamp,
     ST_TRANSFORM(tab_a.geom, 3125) geom
 FROM hauling_equipment

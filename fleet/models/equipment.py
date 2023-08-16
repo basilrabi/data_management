@@ -137,7 +137,10 @@ class EquipmentIdlingTime(Model):
                 name='unique_equipment_idling_timestamp'
             )
         ]
-        indexes = [Index(fields=['time_stamp'])]
+        indexes = [
+            Index(fields=['time_stamp']),
+            Index(fields=['idling'])
+        ]
 
 class EquipmentIgnitionStatus(Model):
     """
@@ -154,7 +157,10 @@ class EquipmentIgnitionStatus(Model):
                 name='unique_equipment_ignition_timestamp'
             )
         ]
-        indexes = [Index(fields=['time_stamp'])]
+        indexes = [
+            Index(fields=['time_stamp']),
+            Index(fields=['ignition'])
+        ]
         verbose_name_plural = 'equipment ignition statuses'
 
 

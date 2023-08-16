@@ -1,8 +1,15 @@
 CREATE MATERIALIZED VIEW location_loadingequipmentpath AS
-SELECT ROW_NUMBER() OVER() AS id,
+SELECT tab_a.id,
     tab_a.equipment_id,
     tab_a.time_stamp ts_begin,
     lat_a.time_stamp ts_end,
+    (
+        ST_DISTANCE(tab_a.geom, lat_a.geom) / 1000
+    ) / (
+        EXTRACT(
+            epoch FROM (lat_a.time_stamp - tab_a.time_stamp)
+        ) / 3600
+    ) kph,
     ST_MAKELINE(tab_a.geom, lat_a.geom) geom
 FROM location_loadingequipment tab_a
 LEFT JOIN LATERAL (
