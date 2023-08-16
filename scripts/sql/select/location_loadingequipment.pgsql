@@ -23,7 +23,7 @@ WITH loading_equipment AS (
 SELECT ROW_NUMBER() OVER() AS id,
     loading_equipment.*,
     tab_a.time_stamp,
-    ST_TRANSFROM(tab_a.geom, 3125) geom
+    ST_TRANSFORM(tab_a.geom, 3125) geom
 FROM loading_equipment
 LEFT JOIN location_equipmentlocation tab_a
     ON loading_equipment.equipment_id = tab_a.equipment_id
