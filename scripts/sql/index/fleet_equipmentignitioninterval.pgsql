@@ -1,0 +1,4 @@
+CREATE UNIQUE INDEX fleet_equipmentignitioninterval_idx ON fleet_equipmentignitioninterval (id);
+CREATE INDEX fleet_equipmentignitioninterval_equipment_id ON fleet_equipmentignitioninterval (equipment_id);
+CREATE INDEX fleet_equipmentignitioninterval_ts_interval ON fleet_equipmentignitioninterval (ts_begin, ts_end);
+

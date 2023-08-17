@@ -114,9 +114,10 @@ class Equipment(FixedAsset):
 class EquipmentClass(Classification):
 
     class Meta:
+        indexes = [Index(fields=['name'])]
+        ordering = [F('name').asc()]
         verbose_name = 'Equipment Class'
         verbose_name_plural = 'Equipment Classes'
-        ordering = [F('name').asc()]
 
     def __str__(self):
         return f'{self.name} - {self.description}'
