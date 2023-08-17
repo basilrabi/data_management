@@ -14,5 +14,5 @@ WHERE tab_a.equipment_id = tab_b.equipment_id
     AND tab_a.time_stamp <= tab_b.ts_end
     AND tab_b.equipment_id = tab_c.id
     AND tab_c.equipment_class_id = tab_d.id
-    AND tab_c.name IN ('MW', 'MX', 'TX', 'WL', 'WX')
+    AND tab_d.name IN ('MW', 'MX', 'TX', 'WL', 'WX')
 
