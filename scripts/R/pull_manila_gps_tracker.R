@@ -142,8 +142,10 @@ lapply(1:nrow(tracker_period), function(z) {
           speed,
           geom
         from cte_c', table_name, table_name, table_name, equipment_id)
-    exec_retry(sql)
+    cat("Inserted", exec_retry(sql), "new equipment locations.\n")
     sql <- sprintf('drop table "%s"', table_name)
     exec_retry(sql)
   }
 })
+
+exec_retry("vacuum analyze location_equipmentlocation")
