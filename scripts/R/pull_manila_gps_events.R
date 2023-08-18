@@ -42,14 +42,36 @@ lapply(1:nrow(events_period), function(z) {
   cat(sprintf("Processing %s out of %s.\n", z, nrow(events_period)))
   if (is.data.frame(api_output)) {
     equipment_id <- equipment_list$id[equipment_list$tracker_id == events_period$tracker_id[z]]
+    cat(url, "\n")
+    if (nrow(api_output) > 99) {
+      while (TRUE) {
+        cat("History limit reached. Fetching new datetime range.\n")
+        new_from <- as.POSIXct(sprintf("%s+8", max(api_output$time))) %>%
+          format(format = "%Y-%m-%d%%20%H:%M:%S")
+        new_url <- stringr::str_replace(
+          url,
+          "from=\\d{4}-\\d{2}-\\d{2}%20\\d{2}:\\d{2}:\\d{2}",
+          sprintf("from=%s", new_from)
+        )
+        additional_output <- pull_retry(new_url)
+        if (is.data.frame(additional_output)) {
+          master <- api_output[nrow(api_output), "id"]
+          additional <- additional_output[nrow(additional_output), "id"]
+          if (master == additional)
+            break
+          cat(new_url, "\n")
+          api_output <- dplyr::bind_rows(api_output, additional_output)
+        } else {
+          break
+        }
+      }
+    }
 
     # idling
     output <- dplyr::filter(api_output,
                             stringr::str_detect(event, "idle")) %>%
       dplyr::arrange(time)
     if (nrow(output) > 0) {
-      cat(url, "\n")
-
       df_idle <- lapply(1:nrow(output), function(i) {
         data.frame(equipment_id = equipment_id,
                    time_stamp = output$time[i],
@@ -134,8 +156,6 @@ lapply(1:nrow(events_period), function(z) {
                             stringr::str_detect(message, "Ignition")) %>%
       dplyr::arrange(time)
     if (nrow(output) > 0) {
-      cat(url, "\n")
-
       df_ignition <- lapply(1:nrow(output), function(i) {
         data.frame(equipment_id = equipment_id,
                    time_stamp = output$time[i],
@@ -216,3 +236,6 @@ lapply(1:nrow(events_period), function(z) {
     }
   }
 })
+
+exec_retry("vacuum analyze fleet_equipmentidlingtime")
+exec_retry("vacuum analyze fleet_equipmentignitionstatus")
