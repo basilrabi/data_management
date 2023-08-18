@@ -34,15 +34,33 @@ class Block(Model):
     z = SmallIntegerField(
         help_text='Elevation of the top face of the block.'
     )
+    density_br = FloatField()
+    density_lim = FloatField()
+    density_sap = FloatField()
+    pp_air = FloatField()
+    pp_lim = FloatField()
+    pp_sap = FloatField()
+    pp_br = FloatField()
     ni = FloatField(
         help_text='Estimated nickel content of the block in percent.'
     )
+    ni_lim = FloatField()
+    ni_sap = FloatField()
     fe = FloatField(
         help_text='Estimated iron content of the block in percent.'
     )
+    fe_lim = FloatField()
+    fe_sap = FloatField()
     co = FloatField(
         help_text='Estimated cobalt content of the block in percent.'
     )
+    co_lim = FloatField()
+    co_sap = FloatField()
+    mg = FloatField(
+        help_text='Estimated magnesium content of the block in percent.'
+    )
+    mg_lim = FloatField()
+    mg_sap = FloatField()
     cluster = ForeignKey(
         Cluster, null=True, blank=True, on_delete=PROTECT
     )
