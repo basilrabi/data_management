@@ -8,8 +8,32 @@ if (any(is.na(dm_equipment$id))) {
   stop("Unregistered equipment detected.")
 }
 
+latest_idle <- RPostgres::dbGetQuery(con, "
+select equipment_id id,
+    max(time_stamp) time_stamp
+from fleet_equipmentidlingtime
+group by equipment_id
+                                         ") %>%
+  dplyr::mutate(time_stamp = lubridate::with_tz(time_stamp, "Asia/Manila"))
+
+latest_ignition <- RPostgres::dbGetQuery(con, "
+select equipment_id id,
+    max(time_stamp) time_stamp
+from fleet_equipmentignitionstatus
+group by equipment_id
+                                         ") %>%
+  dplyr::mutate(time_stamp = lubridate::with_tz(time_stamp, "Asia/Manila"))
+
+latest_status <- dplyr::bind_rows(latest_idle, latest_ignition) %>%
+  dplyr::group_by(id) %>%
+  dplyr::summarise(max_status = max(time_stamp))
+
 equipment_list <- dplyr::left_join(dm_equipment, latest_point) %>%
-  dplyr::mutate(start = max(as.POSIXct(minimum_timestamp), max - lubridate::years())) %>%
+  dplyr::left_join(latest_status) %>%
+  dplyr::mutate(start = dplyr::case_when(
+    !is.na(max_status) ~ max_status,
+    TRUE ~ as.POSIXct(minimum_timestamp)
+  )) %>%
   dplyr::filter(start < max)
 
 events_period <- lapply(1:nrow(equipment_list), function(x) {
@@ -24,7 +48,6 @@ events_period <- lapply(1:nrow(equipment_list), function(x) {
   dplyr::left_join(dplyr::select(equipment_list, tracker_id, max)) %>%
   dplyr::mutate(next_week = start + lubridate::days(7) - lubridate::seconds()) %>%
   dplyr::mutate(end = dplyr::case_when(next_week > max ~ max, TRUE ~ next_week))
-
 
 lapply(1:nrow(events_period), function(z) {
   url <- paste0(
