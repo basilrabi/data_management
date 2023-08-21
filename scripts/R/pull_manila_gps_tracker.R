@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 
+begin <- Sys.time()
+
 source("scripts/R/pull_manila_gps_common.R")
 
 equipment_list <- dplyr::left_join(
@@ -149,3 +151,8 @@ lapply(1:nrow(tracker_period), function(z) {
 })
 
 exec_retry("vacuum analyze location_equipmentlocation")
+
+end <- Sys.time()
+time_elapsed <- end - begin
+cat("Finished in", format(time_elapsed), "\n")
+

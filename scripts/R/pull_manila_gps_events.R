@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 
+begin <- Sys.time()
+
 source("scripts/R/pull_manila_gps_common.R")
 
 library(stringr)
@@ -262,3 +264,8 @@ lapply(1:nrow(events_period), function(z) {
 
 exec_retry("vacuum analyze fleet_equipmentidlingtime")
 exec_retry("vacuum analyze fleet_equipmentignitionstatus")
+
+end <- Sys.time()
+time_elapsed <- end - begin
+cat("Finished in", format(time_elapsed), "\n")
+
