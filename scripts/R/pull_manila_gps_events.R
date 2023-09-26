@@ -265,6 +265,10 @@ lapply(1:nrow(events_period), function(z) {
 exec_retry("vacuum analyze fleet_equipmentidlingtime")
 exec_retry("vacuum analyze fleet_equipmentignitionstatus")
 
+cat("Refreshing fleet_equipmentignitioninterval")
+exec_retry("refresh materialized view concurrently fleet_equipmentignitioninterval")
+exec_retry("vacuum analyze fleet_equipmentignitioninterval")
+
 end <- Sys.time()
 time_elapsed <- end - begin
 cat("Finished in", format(time_elapsed), "\n")
