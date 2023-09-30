@@ -273,6 +273,10 @@ cat("Refreshing fleet_equipmentidlinginterval")
 exec_retry("refresh materialized view concurrently fleet_equipmentidlinginterval")
 exec_retry("vacuum analyze fleet_equipmentidlinginterval")
 
+cat("Refreshing dash_equipmentusage")
+exec_retry("refresh materialized view concurrently dash_equipmentusage")
+exec_retry("vacuum analyze dash_equipmentusage")
+
 end <- Sys.time()
 time_elapsed <- end - begin
 cat("Finished in", format(time_elapsed), "\n")
