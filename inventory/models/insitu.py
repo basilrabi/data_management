@@ -34,33 +34,35 @@ class Block(Model):
     z = SmallIntegerField(
         help_text='Elevation of the top face of the block.'
     )
-    density_br = FloatField()
-    density_lim = FloatField()
-    density_sap = FloatField()
-    pp_air = FloatField()
-    pp_lim = FloatField()
-    pp_sap = FloatField()
-    pp_br = FloatField()
+    density_br = FloatField(null=True, blank=True)
+    density_lim = FloatField(null=True, blank=True)
+    density_sap = FloatField(null=True, blank=True)
+    pp_air = FloatField(null=True, blank=True)
+    pp_lim = FloatField(null=True, blank=True)
+    pp_sap = FloatField(null=True, blank=True)
+    pp_br = FloatField(null=True, blank=True)
     ni = FloatField(
         help_text='Estimated nickel content of the block in percent.'
     )
-    ni_lim = FloatField()
-    ni_sap = FloatField()
+    ni_lim = FloatField(null=True, blank=True)
+    ni_sap = FloatField(null=True, blank=True)
     fe = FloatField(
         help_text='Estimated iron content of the block in percent.'
     )
-    fe_lim = FloatField()
-    fe_sap = FloatField()
+    fe_lim = FloatField(null=True, blank=True)
+    fe_sap = FloatField(null=True, blank=True)
     co = FloatField(
         help_text='Estimated cobalt content of the block in percent.'
     )
-    co_lim = FloatField()
-    co_sap = FloatField()
+    co_lim = FloatField(null=True, blank=True)
+    co_sap = FloatField(null=True, blank=True)
     mg = FloatField(
-        help_text='Estimated magnesium content of the block in percent.'
+        help_text='Estimated magnesium content of the block in percent.',
+        null=True,
+        blank=True
     )
-    mg_lim = FloatField()
-    mg_sap = FloatField()
+    mg_lim = FloatField(null=True, blank=True)
+    mg_sap = FloatField(null=True, blank=True)
     cluster = ForeignKey(
         Cluster, null=True, blank=True, on_delete=PROTECT
     )

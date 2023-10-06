@@ -112,6 +112,9 @@ class AssaySample(Model):
     sio2 = DecimalField(
         '%SiO₂', max_digits=6, decimal_places=4, null=True, blank=True
     )
+    tio2 = DecimalField(
+        '%TiO₂', max_digits=6, decimal_places=4, null=True, blank=True
+    )
     zn = DecimalField(
         '%Zn', max_digits=6, decimal_places=4, null=True, blank=True
     )
@@ -145,6 +148,7 @@ class AssaySample(Model):
                 self.sc is not None or \
                 self.si is not None or \
                 self.sio2 is not None or \
+                self.tio2 is not None or \
                 self.zn is not None or \
                 self.ignition_loss is not None or \
                 self.moisture is not None

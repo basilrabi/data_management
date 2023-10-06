@@ -109,6 +109,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                        's',
                        'shipment',
                        'sio2',
+                       'tio2',
                        'vessel',
                        'wmt',
                        'zn')
@@ -145,6 +146,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
                            'pb',
                            's',
                            'sio2',
+                           'tio2',
                            'zn',
                            'ignition_loss',
                            'approved')
@@ -199,6 +201,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
             s=F('assay__s'),
             shipment=F('assay__shipment__name'),
             sio2=F('assay__sio2'),
+            tio2=F('assay__tio2'),
             vessel=F('assay__shipment__vessel__name'),
             wmt=F('assay__wmt'),
             zn=F('assay__zn')
@@ -278,6 +281,9 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     def sio2(self, obj):
         return obj.sio2
 
+    def tio2(self, obj):
+        return obj.tio2
+
     def vessel(self, obj):
         return obj.vessel
 
@@ -308,6 +314,7 @@ class ApprovedShipmentDischargeAssayAdmin(ModelAdmin):
     pb.short_description = '%Pb'
     s.short_description = '%S'
     sio2.short_description = '%SiO₂'
+    tio2.short_description= '%TiO₂'
     wmt.short_description = 'WMT'
     zn.short_description = '%Zn'
 
@@ -381,6 +388,7 @@ class ChinaShipmentAssayAdmin(ModelAdmin):
                        'pb',
                        's',
                        'sio2',
+                       'tio2',
                        'zn',
                        'ignition_loss')
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
