@@ -74,8 +74,8 @@ class ExternalIncomingCommunication(Model):
 
     transmittal_number = CharField(max_length=20, null=False, blank=True, primary_key=True)
     datetime_received = DateTimeField(null=True, blank=False)
-    sender = CharField(max_length=30, null=True, blank=False)
-    subject = CharField(max_length=50, null=True, blank=False)
+    sender = CharField(max_length=99, null=True, blank=False)
+    subject = TextField(max_length=499, null=True, blank=False)
     scan = FileField(upload_to=filepath_extincomingcomm, null=True, blank=True)
 
 
