@@ -26,8 +26,15 @@ class ExternalCommunicationAdmin(ModelAdmin):
 @register(ExternalIncomingCommunication)    
 class ExternalIncomingCommunicationAdmin(ModelAdmin):
 
-    list_display = ('subject',
-                    'sender',
+    date_hierarchy = 'datetime_received'
+    fields = ('datetime_received',
+              'subject',
+              'sender',
+              'scan',)
+
+    list_display = ('transmittal_number',
                     'datetime_received',
+                    'subject',
+                    'sender',
                     'scan'
     )
