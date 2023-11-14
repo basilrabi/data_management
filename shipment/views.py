@@ -80,32 +80,36 @@ def index(request):
         FROM cte_c
         ORDER BY completed_loading
         """)
-        df = DataFrame.from_records(cursor.fetchall())
-        box_data = []
-        for interval_class in [
-            'Loading', 'Natural Delay', 'Idle'
-        ]:
-            df_filtered = df[df[2] == interval_class]
-            box_data.append(
-                go.Bar(
-                    name=interval_class,
-                    x=df_filtered[0],
-                    y=df_filtered[3],
-                    text=df_filtered[4]
+        qs = cursor.fetchall()
+        if len(qs) > 0:
+            df = DataFrame.from_records(qs)
+            box_data = []
+            for interval_class in [
+                'Loading', 'Natural Delay', 'Idle'
+            ]:
+                df_filtered = df[df[2] == interval_class]
+                box_data.append(
+                    go.Bar(
+                        name=interval_class,
+                        x=df_filtered[0],
+                        y=df_filtered[3],
+                        text=df_filtered[4]
+                    )
                 )
+            fig_loading_per_shipment = go.Figure(data=box_data)
+            fig_loading_per_shipment.update_layout(
+                barmode='stack',
+                legend_title_text='Component',
+                xaxis_title='Shipment',
+                yaxis_title='Laydays'
             )
-        fig_loading_per_shipment = go.Figure(data=box_data)
-        fig_loading_per_shipment.update_layout(
-            barmode='stack',
-            legend_title_text='Component',
-            xaxis_title='Shipment',
-            yaxis_title='Laydays'
-        )
-        loading_per_shipment = plot(
-            fig_loading_per_shipment,
-            output_type='div',
-            include_plotlyjs=False
-        )
+            loading_per_shipment = plot(
+                fig_loading_per_shipment,
+                output_type='div',
+                include_plotlyjs=False
+            )
+        else:
+            loading_per_shipment = "No record"
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -122,30 +126,34 @@ def index(request):
         ORDER BY loading_date
         """)
         year_data = []
-        df = DataFrame.from_records(cursor.fetchall())
-        for year in df[2].unique()[::-1]:
-            df_filtered = df[df[2] == year]
-            year_data.append(
-                go.Scatter(
-                    name=f'{year}',
-                    mode='lines',
-                    x=df_filtered[3],
-                    y=df_filtered[1],
-                    text=df_filtered[0],
-                    hovertemplate='%{text}<br>%{y:,.2f} WMT'
+        qs = cursor.fetchall()
+        if len(qs) > 0:
+            df = DataFrame.from_records(qs)
+            for year in df[2].unique()[::-1]:
+                df_filtered = df[df[2] == year]
+                year_data.append(
+                    go.Scatter(
+                        name=f'{year}',
+                        mode='lines',
+                        x=df_filtered[3],
+                        y=df_filtered[1],
+                        text=df_filtered[0],
+                        hovertemplate='%{text}<br>%{y:,.2f} WMT'
+                    )
                 )
+            fig_loading_rate = go.Figure(data=year_data)
+            fig_loading_rate.update_layout(
+                legend_title_text='Year',
+                xaxis_title='Year Fraction',
+                yaxis_title='WMT per Day'
             )
-        fig_loading_rate = go.Figure(data=year_data)
-        fig_loading_rate.update_layout(
-            legend_title_text='Year',
-            xaxis_title='Year Fraction',
-            yaxis_title='WMT per Day'
-        )
-        loading_rate = plot(
-            fig_loading_rate,
-            output_type='div',
-            include_plotlyjs=False
-        )
+            loading_rate = plot(
+                fig_loading_rate,
+                output_type='div',
+                include_plotlyjs=False
+            )
+        else:
+            loading_rate = "No record"
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -171,30 +179,34 @@ def index(request):
         FROM cte_a
         """)
         year_data_smooth = []
-        df = DataFrame.from_records(cursor.fetchall())
-        for year in df[2].unique()[::-1]:
-            df_filtered = df[df[2] == year]
-            year_data_smooth.append(
-                go.Scatter(
-                    name=f'{year}',
-                    mode='lines',
-                    x=df_filtered[3],
-                    y=df_filtered[1],
-                    text=df_filtered[0],
-                    hovertemplate='%{text}<br>%{y:,.2f} WMT'
+        qs = cursor.fetchall()
+        if len(qs) > 0:
+            df = DataFrame.from_records(qs)
+            for year in df[2].unique()[::-1]:
+                df_filtered = df[df[2] == year]
+                year_data_smooth.append(
+                    go.Scatter(
+                        name=f'{year}',
+                        mode='lines',
+                        x=df_filtered[3],
+                        y=df_filtered[1],
+                        text=df_filtered[0],
+                        hovertemplate='%{text}<br>%{y:,.2f} WMT'
+                    )
                 )
+            fig_loading_rate_smooth = go.Figure(data=year_data_smooth)
+            fig_loading_rate_smooth.update_layout(
+                legend_title_text='Year',
+                xaxis_title='Year Fraction',
+                yaxis_title='WMT per Day'
             )
-        fig_loading_rate_smooth = go.Figure(data=year_data_smooth)
-        fig_loading_rate_smooth.update_layout(
-            legend_title_text='Year',
-            xaxis_title='Year Fraction',
-            yaxis_title='WMT per Day'
-        )
-        loading_rate_smooth = plot(
-            fig_loading_rate_smooth,
-            output_type='div',
-            include_plotlyjs=False
-        )
+            loading_rate_smooth = plot(
+                fig_loading_rate_smooth,
+                output_type='div',
+                include_plotlyjs=False
+            )
+        else:
+            loading_rate_smooth = "No record"
 
     return render(request, 'shipment/index.html', {
         'loading_per_shipment': loading_per_shipment,
