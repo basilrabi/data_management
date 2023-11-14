@@ -18,6 +18,7 @@ download_sql () {
     psql -h $db_host -U $db_user $db_name -c "$cmd"
 }
 
+download_ogr location_blgu && \
 download_ogr location_fla && \
 download_ogr location_mineblock && \
 download_ogr location_mpsa && \
@@ -27,10 +28,13 @@ download_ogr location_slice && \
 download_sql billing_billingaddon && \
 download_sql billing_billingtracker && \
 download_sql billing_cmbilling && \
+download_sql billing_shipmentbilling && \
+download_sql billing_shipmentbillingentry && \
 download_sql comptrollership_costcenter && \
 download_sql comptrollership_costcenterconversion && \
 download_sql comptrollership_generalledgeraccount && \
 download_sql comptrollership_monthlycost && \
+download_sql comptrollership_profitcenter && \
 download_sql comptrollership_sapcostcenter && \
 download_sql custom_profession && \
 download_sql custom_professionalidentificationcard && \
@@ -39,6 +43,8 @@ download_sql fleet_additionalequipmentcost && \
 download_sql fleet_bodytype && \
 download_sql fleet_equipment && \
 download_sql fleet_equipmentclass && \
+download_sql fleet_equipmentidlingtime && \
+download_sql fleet_equipmentignitionstatus && \
 download_sql fleet_equipmentmanufacturer && \
 download_sql fleet_equipmentmodel && \
 download_sql inventory_block && \
@@ -65,6 +71,7 @@ download_sql organization_division && \
 download_sql organization_organization && \
 download_sql organization_section && \
 download_sql ormm_externalcommunication && \
+download_sql ormm_externalincomingcommunication && \
 download_sql sampling_approvedshipmentdischargeassay && \
 download_sql sampling_approvedshipmentloadingassay && \
 download_sql sampling_drillcoresample && \

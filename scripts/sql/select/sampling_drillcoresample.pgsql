@@ -24,6 +24,7 @@ SELECT
     core.sc,
     core.si,
     core.sio2,
+    core.tio2,
     core.zn,
     core.ignition_loss,
     core.moisture,

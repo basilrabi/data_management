@@ -20,6 +20,7 @@ SELECT
     a.sc,
     a.si,
     a.sio2,
+    a.tio2,
     a.zn,
     a.ignition_loss,
     a.moisture,

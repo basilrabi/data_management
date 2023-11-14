@@ -42,6 +42,8 @@ sql_script "upload_data" "comptrollership_costcenter" && \
 vacuum "comptrollership_costcenter" && \
 sql_script "upload_data" "comptrollership_generalledgeraccount" && \
 vacuum "comptrollership_generalledgeraccount" && \
+sql_script "upload_data" "comptrollership_profitcenter" && \
+vacuum "comptrollership_profitcenter" && \
 sql_script "upload_data" "comptrollership_sapcostcenter" && \
 vacuum "comptrollership_sapcostcenter" && \
 sql_script "upload_data" "comptrollership_costcenterconversion" && \
@@ -69,6 +71,7 @@ vacuum "billing_billingtracker" && \
 sql_script "upload_data" "billing_cmbilling" && \
 vacuum "billing_cmbilling" && \
 sql_script "upload_data" "inventory_block" && \
+upload_ogr location_blgu identity && \
 upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \
 upload_ogr location_mpsa identity && \
@@ -82,6 +85,16 @@ sql_script "upload_data" "fleet_equipmentmodel" && \
 vacuum "fleet_equipmentmodel" && \
 sql_script "upload_data" "fleet_equipment" && \
 vacuum "fleet_equipment" && \
+sql_script "upload_data" "fleet_equipmentidlingtime" && \
+vacuum "fleet_equipmentidlingtime" && \
+sql_script "select" "fleet_equipmentidlinginterval" && \
+sql_script "index" "fleet_equipmentidlinginterval" && \
+vacuum "fleet_equipmentidlinginterval" && \
+sql_script "upload_data" "fleet_equipmentignitionstatus" && \
+vacuum "fleet_equipmentignitionstatus" && \
+sql_script "select" "fleet_equipmentignitioninterval" && \
+sql_script "index" "fleet_equipmentignitioninterval" && \
+vacuum "fleet_equipmentignitioninterval" && \
 sql_script "upload_data" "fleet_additionalequipmentcost" && \
 vacuum "fleet_additionalequipmentcost" && \
 sql_script "upload_data" "local_calendar_holidayevent" && \
@@ -121,6 +134,8 @@ sql_script "upload_data" "material_management_valuation" && \
 vacuum "material_management_valuation" && \
 sql_script "upload_data" "material_management_material" && \
 vacuum "material_management_material" && \
+sql_script "upload_data" "ormm_externalincomingcommunication" && \
+vacuum "ormm_externalincomingcommunication" && \
 sql_script "upload_data" "ormm_externalcommunication" && \
 vacuum "ormm_externalcommunication" && \
 sql_script "upload_data" "sampling_laboratory" && \
@@ -143,6 +158,10 @@ sql_script "upload_data" "shipment_shipment" && \
 vacuum "shipment_shipment" && \
 sql_script "upload_data" "shipment_laydaysstatement" && \
 vacuum "shipment_laydaysstatement" && \
+sql_script "upload_data" "billing_shipmentbilling" && \
+vacuum "billing_shipmentbilling" && \
+sql_script "upload_data" "billing_shipmentbillingentry" && \
+vacuum "billing_shipmentbillingentry" && \
 sql_script "upload_data" "location_anchorage" && \
 vacuum "location_anchorage" && \
 sql_script "upload_data" "shipment_laydaysdetail" && \
@@ -175,12 +194,27 @@ sql_script "upload_data" "custom_professionalidentificationcard" && \
 vacuum "custom_professionalidentificationcard" && \
 sql_script "upload_data" "location_equipmentlocation" && \
 vacuum "location_equipmentlocation" && \
+sql_script "select" "location_haulingequipment" && \
+sql_script "index" "location_haulingequipment" && \
+vacuum "location_haulingequipment" && \
+sql_script "select" "location_haulingequipmentpath" && \
+sql_script "index" "location_haulingequipmentpath" && \
+vacuum "location_haulingequipmentpath" && \
+sql_script "select" "location_loadingequipment" && \
+sql_script "index" "location_loadingequipment" && \
+vacuum "location_loadingequipment" && \
+sql_script "select" "location_loadingequipmentpath" && \
+sql_script "index" "location_loadingequipmentpath" && \
+vacuum "location_loadingequipmentpath" && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
 vacuum "sampling_shipmentloadingassay" && \
 sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
 vacuum "sampling_shipmentloadinglotassay" && \
 sql_script "upload_data" "sampling_approvedshipmentloadingassay" && \
 vacuum "sampling_approvedshipmentloadingassay" && \
+sql_script "select" "dash_equipmentusage" && \
+sql_script "index" "dash_equipmentusage" && \
+vacuum "dash_equipmentusage" && \
 sql_script "trigger" "inventory_block_exposed" && \
 sql_script "trigger" "location_anchorage_update" && \
 sql_script "trigger" "location_clippedcluster_insert" && \
