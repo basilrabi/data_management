@@ -31,5 +31,6 @@ SELECT
     b.id
 FROM temp_ormm_externalcommunication a
     LEFT JOIN organization_organizationunit b
-        ON a.unit_class || '%' ILIKE b.uid
+        ON b.uid ILIKE a.unit_class || '%'
             AND a.unit_name = b.name
+
