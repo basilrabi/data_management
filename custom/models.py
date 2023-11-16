@@ -18,7 +18,7 @@ from django.db.models import (
 from phonenumber_field.modelfields import PhoneNumberField
 
 from custom.fields import AlphaNumeric, NameField, SpaceLess
-from custom.functions_standalone import print_tz_manila
+from custom.functions_standalone import print_tz_manila, render_to_string
 
 
 class Classification(Model):
@@ -74,6 +74,42 @@ class GeoClassification(GeoModel):
 
     def __str__(self):
         return self.name
+
+
+class GroupMail(Model):
+    """
+    An email to be sent to certain group members.
+    """
+    subject = CharField(max_length=100)
+    template = TextField(help_text = 'An email body template which uses two contexts: user and group.')
+    group = ForeignKey(Group, on_delete=PROTECT)
+    created = DateTimeField(auto_now_add=True)
+    modified = DateTimeField(auto_now=True)
+    user = ForeignKey('User', blank=True, null=True, on_delete=SET_NULL)
+
+    def messages(self) -> (tuple[tuple[str, str, str, list[str]]] | None):
+        """
+        Renders the batch email.
+        """
+        if self.group:
+            if self.group.user_set.all().count() > 0:
+                messages = list()
+                for user in self.group.user_set.all():
+                    if user.email:
+                        context = {
+                            'user': user.full_name(),
+                            'group': self.group.name
+                        }
+                        body = render_to_string(self.template, context)
+                        messages.append((self.subject, body, 'Data Core', [user.email]))
+                if len(messages) > 0:
+                    return tuple(messages)
+        return None
+
+    def __str__(self) -> str:
+        if self.subject:
+            return self.subject
+        return 'New'
 
 
 class Log(Model):
@@ -202,7 +238,15 @@ class User(AbstractUser):
     )
     sex = CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)
 
-    def middle_initial(self):
+    def full_name(self) -> str:
+        fname = ''
+        if self.first_name:
+            fname += self.first_name
+        if self.last_name:
+            fname += ' ' + self.last_name
+        return fname.strip()
+
+    def middle_initial(self) -> str:
         if self.middle_name:
             mi = [x[:1].upper() for x in str(self.middle_name).split(' ')]
             return '.'.join(mi) + '.'

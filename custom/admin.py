@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import (
+    GroupMail,
     Log,
     MobileNumber,
     Profession,
@@ -24,6 +25,24 @@ class ProfessionalIdentificationCardInline(TabularInline):
     )
     model = ProfessionalIdentificationCard
     extra = 0
+
+
+@register(GroupMail)
+class GroupMailAdmin(ModelAdmin):
+    date_heirarchy = 'modified'
+    exclude = ['user']
+    readonly_fields = ('created', 'modified', 'user')
+    search_fields = ('subject', 'template')
+
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            return super().get_queryset(request).filter(user=request.user)
+        return super().get_queryset(request)
+
+    def save_form(self, request, form, change):
+        obj = super().save_form(request, form, change)
+        obj.user = request.user
+        return obj
 
 
 @register(Log)
