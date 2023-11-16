@@ -1,8 +1,8 @@
 CREATE MATERIALIZED VIEW dash_equipmentusage AS
 WITH cte_a AS (
     SELECT  equipment_id,
-        DATE_TRUNC('day', min(ts_begin)) + INTERVAL '6 hours' ts_begin,
-        DATE_TRUNC('day', max(ts_end)) + INTERVAL '6 hours' ts_end
+        DATE_TRUNC('day', min(ts_begin) AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Manila') + INTERVAL '6 hours' ts_begin,
+        DATE_TRUNC('day', max(ts_end) AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Manila') + INTERVAL '6 hours' ts_end
     FROM fleet_equipmentignitioninterval
     GROUP BY equipment_id
 ),
