@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.gis.db.models import (Model as GeoModel, MultiPolygonField)
 from django.db.models import (
@@ -100,8 +101,12 @@ class GroupMail(Model):
                             'user': user.full_name(),
                             'group': self.group.name
                         }
-                        body = render_to_string(self.template, context)
-                        messages.append((self.subject, body, 'Data Core', [user.email]))
+                        messages.append((
+                            self.subject,
+                            render_to_string(self.template, context),
+                            settings.EMAIL_HOST_USER,
+                            [user.email]
+                        ))
                 if len(messages) > 0:
                     return tuple(messages)
         return None
