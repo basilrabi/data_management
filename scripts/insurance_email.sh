@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-source $HOME/.virtualenvs/data_management/bin/activate
+source $HOME/datamanagement/.virtualenvs/data_management/bin/activate
 
-cd $HOME/data_management/
+cd $HOME/datamanagement/data_management/
 
 #Make sure to activate celery worker. Instruction below
 #celery -A data_management worker -l INFO -f $HOME/%n%I.log
