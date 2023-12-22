@@ -22,11 +22,12 @@ from .models.dso import (
     ApprovedLayDaysStatement,
     Buyer,
     Destination,
+    DraftSurvey,
     LayDaysDetail,
     LayDaysStatement,
     Product,
     Shipment,
-    Vessel
+    Vessel,
 )
 from .models.proxy import FinalShipmentDetail
 
@@ -149,6 +150,13 @@ class BuyerAdmin(ModelAdmin):
 @register(Destination)
 class DestinationAdmin(ModelAdmin):
     search_fields = ['name']
+
+
+@register(DraftSurvey)
+class DraftSurveyAdmin(ModelAdmin):
+    list_display = ['shipment', 
+                    'video', 
+                    'images_in_pdf']
 
 
 @register(FinalShipmentDetail)

@@ -46,6 +46,7 @@ from custom.functions import (
 )
 from custom.models import Classification
 from custom.variables import one_day, zero_time
+from shipment.functions import filepath_shipmentvideo, filepath_shipmentimages
 
 
 class Buyer(Classification):
@@ -57,6 +58,13 @@ class Destination(Classification):
     Discharging port.
     """
     pass
+
+
+class DraftSurvey(Model):
+
+    shipment = OneToOneField('Shipment', on_delete=CASCADE)
+    video = FileField(upload_to=filepath_shipmentvideo,null=True, blank=True)
+    images_in_pdf = FileField(upload_to=filepath_shipmentimages,null=True, blank=True)
 
 
 class LayDaysDetail(Model):
@@ -886,3 +894,4 @@ class Vessel(Model):
 
     def __str__(self):
         return self.name
+
