@@ -34,7 +34,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
-DATA_UPLOAD_MAX_MEMORY_SIZE = 50000000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1000000000
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 DATABASES = {
     'default': {
