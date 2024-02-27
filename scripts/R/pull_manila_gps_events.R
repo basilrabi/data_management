@@ -38,6 +38,20 @@ equipment_list <- dplyr::left_join(dm_equipment, latest_point) %>%
   )) %>%
   dplyr::filter(start < max)
 
+if (nrow(equipment_list) < nrow(dm_equipment)) {
+  inactive <- dplyr::left_join(dm_equipment, latest_point) %>%
+    dplyr::left_join(latest_status) %>%
+    dplyr::mutate(start = dplyr::case_when(
+      !is.na(max_status) ~ max_status,
+      TRUE ~ as.POSIXct(minimum_timestamp)
+    )) %>%
+    dplyr::filter(start >= max)
+  write.csv(inactive, "/home/datamanagement/media/static/TMC/inactive_gps.csv")
+} else {
+  if (file.exists("/home/datamanagement/media/static/TMC/inactive_gps.csv"))
+    file.remove("/home/datamanagement/media/static/TMC/inactive_gps.csv")
+}
+
 events_period <- lapply(1:nrow(equipment_list), function(x) {
   data.frame(
     tracker_id = equipment_list$tracker_id[x],

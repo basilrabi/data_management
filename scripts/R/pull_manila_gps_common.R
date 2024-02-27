@@ -83,3 +83,12 @@ from location_equipmentlocation
 group by equipment_id
                                       ") %>%
   dplyr::mutate(max = lubridate::with_tz(max, "Asia/Manila"))
+
+if (nrow(latest_point) != nrow(gps_equipment_list)) {
+  cat("GPS tracker IDs missing.\n")
+  missing <- jsonlite::fromJSON(api_equipment_list)[[1]] %>%
+    dplyr::filter(is.na(tracker_id))
+  for (label in missing$label) {
+    cat(paste0(label, "\n"))
+  }
+}
