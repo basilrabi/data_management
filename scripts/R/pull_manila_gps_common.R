@@ -60,7 +60,8 @@ api_equipment_list <- paste0(host, "vehicle/list/?", hash)
 gps_equipment_list <- jsonlite::fromJSON(api_equipment_list)[[1]] %>%
   dplyr::mutate(equipment_class = substr(tracker_label, 5L, 6L),
                 fleet_number = as.integer(substr(tracker_label, 10L, 12L))) %>%
-  dplyr::select(tracker_id, equipment_class, fleet_number)
+  dplyr::select(tracker_id, equipment_class, fleet_number) %>%
+  dplyr::filter(!is.na(tracker_id))
 
 dm_equipment <- RPostgres::dbGetQuery(con, "
 select
