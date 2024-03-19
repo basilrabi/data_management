@@ -1,8 +1,10 @@
 from django.db.models import  (
     BooleanField,
     CharField,
+    F,
     ForeignKey,
-    Model, PROTECT
+    Model,
+    PROTECT
 )
 
 from custom.models import Classification
@@ -20,6 +22,20 @@ class Division(Model):
 
     def __str__(self):
         return self.name
+
+
+class ManilaGpsApiKey(Model):
+    owner = ForeignKey('Organization', on_delete=PROTECT)
+    key = CharField(max_length=15, unique=True)
+
+    class Meta:
+        ordering = [
+            F('owner__name').asc(),
+            F('key').asc()
+        ]
+
+    def __str__(self):
+        return f'{self.owner} : {self.key}'
 
 
 class Organization(Classification):

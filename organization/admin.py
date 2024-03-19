@@ -1,7 +1,12 @@
 from django.contrib.admin import ModelAdmin, register
 from nested_admin import NestedTabularInline, NestedModelAdmin
 
-from .models import Department, Division, Organization, Section
+from .models import Department, Division, ManilaGpsApiKey, Organization, Section
+
+
+@register(ManilaGpsApiKey)
+class ManilaGpsApiKeyAdmin(ModelAdmin):
+    list_display = ('owner', 'key')
 
 
 @register(Organization)
