@@ -26,7 +26,7 @@ class Division(Model):
 
 class ManilaGpsApiKey(Model):
     owner = ForeignKey('Organization', on_delete=PROTECT)
-    key = CharField(max_length=15, unique=True)
+    key = CharField(max_length=60, unique=True)
 
     class Meta:
         ordering = [
