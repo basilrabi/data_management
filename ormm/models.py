@@ -3,10 +3,10 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateField,
-    DateTimeField, 
+    DateTimeField,
     FileField,
     ForeignKey,
-    Max, 
+    Max,
     Model,
     PROTECT,
     TextField
@@ -30,7 +30,7 @@ class ExternalCommunication(Model):
     recipient = CharField(max_length=30, null=False, blank=False, default='')
     receiving_copy = FileField(upload_to=filepath,null=True, blank=True)
     cancel = BooleanField(null=False, default=False)
-    
+
     def content(self):
         if self.cancel is True:
             return mark_safe(
@@ -49,16 +49,19 @@ class ExternalCommunication(Model):
 
     def save(self, *args, **kwargs):
         if not self.transmittal_number:
-            year = datetime.now().year
+            if not self.date:
+                year = datetime.now().year
+            else:
+                year = self.date.year
+
             max_number = ExternalCommunication.objects.filter(transmittal_number__endswith=str(year)).aggregate(Max('transmittal_number'))
-        
+
             if max_number['transmittal_number__max']:
                 max_number = max_number['transmittal_number__max']
             else:
                 max_number = f"ORMM-0-{year}"
 
             number = int(re.search(r"\-(\d+)\-", max_number).group(1)) + 1
-
             self.transmittal_number = f"ORMM-{number:03d}-{year}"
 
         super().save(*args, **kwargs)
@@ -84,7 +87,7 @@ class ExternalIncomingCommunication(Model):
             year = datetime.now().year
             month = datetime.now().month
             max_number = ExternalIncomingCommunication.objects.filter(transmittal_number__endswith=str(year)).aggregate(Max('transmittal_number'))
-        
+
             if max_number['transmittal_number__max']:
                 max_number = max_number['transmittal_number__max']
             else:
