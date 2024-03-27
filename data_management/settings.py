@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'location',
     'map',
     'material_management',
+    'mine_planning',
     'organization',
     'ormm',
     'personnel',
