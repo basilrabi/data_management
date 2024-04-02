@@ -17,6 +17,11 @@ class MapDocumentControlAdmin(ModelAdmin):
                     'map_creator',
                     'revision'
     )
+    list_filter = ('map_type',
+                   'ridge',
+                   'company',
+                   'month' 
+    )
     readonly_fields=('number', 'revision',)
 
 @register(MapType)

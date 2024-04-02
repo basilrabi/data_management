@@ -54,6 +54,7 @@ class MapDocumentControl(Model):
     ridge_choices = (
         ('', ''),
         ('ALL_', 'ALL Ridges'),
+        ('CA_', 'Cagdianao'),
         ('HY_', 'Haya'),
         ('T1_', 'Taga 1'),
         ('T2_', 'Taga 2'),
