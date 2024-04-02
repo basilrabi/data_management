@@ -8,10 +8,14 @@ from .models import MapDocumentControl, MapType, MinePlanningEngineer
 class MapDocumentControlAdmin(ModelAdmin):
     list_display = ('reference_map_no',
                     'date_created',
-                    'revision',
+                    'material',
+                    'ridge',
+                    'year_on_map',
+                    'month',
                     'company',
                     'map_uploads_img',
-                    'map_creator'
+                    'map_creator',
+                    'revision'
     )
     readonly_fields=('number', 'revision',)
 
