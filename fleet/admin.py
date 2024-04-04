@@ -40,7 +40,7 @@ class EquipmentAdmin(ModelAdmin):
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
     inlines = [AdditionalEquipmentCostInline]
-    list_display = ('__str__', 'model', 'plate_number', 'engine_serial_number')
+    list_display = ('__str__', 'model', 'plate_number', 'fleet_number','engine_serial_number')
     list_filter = ['owner', 'active', 'equipment_class']
     search_fields = ['engine_serial_number',
                      'fleet_number',
