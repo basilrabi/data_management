@@ -1,4 +1,6 @@
 from django.contrib.admin import ModelAdmin, register
+from django.db.models import TextField
+from django.forms import Textarea
 
 from .models import (
     ActivityCategory,
@@ -28,10 +30,13 @@ class ActivityCodeAdmin(ModelAdmin):
 
 @register(CostCenter)
 class CostCenterAdmin(ModelAdmin):
-    search_fields = ['description', 'name']
+    formfield_overrides = {
+        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':80})}
+    }
     list_display = ('name', 'description', 'material')
     list_editable = ('description', 'material')
     list_filter = ['material',]
+    search_fields = ['description', 'name']
 
 
 @register(CostCenterConversion)

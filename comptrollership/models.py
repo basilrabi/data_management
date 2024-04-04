@@ -24,7 +24,9 @@ class ActivityCategory(Classification):
     """
     SAP sub-activity category
     """
-    pass
+
+    class Meta:
+        verbose_name_plural = 'Activity categories'
 
 
 class ActivityCode(Classification):
