@@ -1,24 +1,61 @@
 from django.contrib.admin import ModelAdmin, register
 
 from .models import (
+    ActivityCategory,
+    ActivityCode,
     CostCenter,
     CostCenterConversion,
     GeneralLedgerAccount,
+    Material,
     MonthlyCost,
+    OperationHead,
     ProfitCenter,
     SapCostCenter
 )
 
 
+@register(ActivityCategory)
+class ActivityCategoryAdmin(ModelAdmin):
+    search_fields = ['description', 'name']
+    list_display = ('name', 'description')
+
+
+@register(ActivityCode)
+class ActivityCodeAdmin(ModelAdmin):
+    search_fields = ['description', 'name']
+    list_display = ('name', 'description')
+
+
 @register(CostCenter)
 class CostCenterAdmin(ModelAdmin):
     search_fields = ['description', 'name']
-    list_display = ('name', 'description')
+    list_display = ('name', 'description', 'material')
+    list_editable = ('description', 'material')
+    list_filter = ['material',]
 
 
 @register(CostCenterConversion)
 class CostCenterConversionAdmin(ModelAdmin):
     autocomplete_fields = ['old_cost_center', 'sap_cost_center']
+    list_display = (
+        '__str__',
+        'operation_code',
+        'with_contract',
+        'with_inhouse',
+        'with_rental',
+        'operation_head',
+        'activity_code',
+        'activity_category'
+    )
+    list_editable = (
+        'activity_category',
+        'activity_code',
+        'operation_code',
+        'operation_head',
+        'with_contract',
+        'with_inhouse',
+        'with_rental',
+    )
     search_fields = [
         'old_cost_center__name',
         'old_cost_center__description',
@@ -31,6 +68,12 @@ class CostCenterConversionAdmin(ModelAdmin):
 class GeneralLedgerAccountAdmin(ModelAdmin):
     list_display = ('code', 'description')
     search_fields = ['code', 'description']
+
+
+@register(Material)
+class MaterialAdmin(ModelAdmin):
+    search_fields = ['description', 'name']
+    list_display = ('name', 'description')
 
 
 @register(MonthlyCost)
@@ -55,6 +98,12 @@ class MonthlyCostAdmin(ModelAdmin):
     ]
 
 
+@register(OperationHead)
+class OperationHeadAdmin(ModelAdmin):
+    search_fields = ['description', 'name']
+    list_display = ('name', 'description')
+
+
 @register(ProfitCenter)
 class ProfitCenterAdmin(ModelAdmin):
     list_display = ('name', 'description')
@@ -65,3 +114,4 @@ class ProfitCenterAdmin(ModelAdmin):
 class SapCostCenterAdmin(ModelAdmin):
     list_display = ('name', 'description')
     search_fields = ['description', 'long_name', 'name']
+

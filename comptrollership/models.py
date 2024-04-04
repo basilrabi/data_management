@@ -1,9 +1,11 @@
 from django.db.models import (
+    BooleanField,
     CheckConstraint,
     DecimalField,
     F,
     ForeignKey,
     Index,
+    ManyToManyField,
     Model,
     PositiveIntegerField,
     PositiveSmallIntegerField,
@@ -15,21 +17,51 @@ from django.db.models import (
 )
 
 from custom.models import Classification
+from fleet.models.equipment import EquipmentClass
+
+
+class ActivityCategory(Classification):
+    """
+    SAP sub-activity category
+    """
+    pass
+
+
+class ActivityCode(Classification):
+    """
+    SAP activity code
+    """
+    pass
 
 
 class CostCenter(Classification):
     """
     TMC's in-house cost center names.
     """
-    pass
+    material = ForeignKey('Material', blank=True, null=True, on_delete=SET_NULL)
 
 
 class CostCenterConversion(Model):
     """
     Matching between in-house and SAP-ERP cost center naming convention.
     """
+    activity_category = ForeignKey(
+        ActivityCategory, blank=True, null=True, on_delete=PROTECT
+    )
+    activity_code = ForeignKey(
+        ActivityCode, blank=True, null=True, on_delete=PROTECT
+    )
+    equipment = ManyToManyField(EquipmentClass)
     old_cost_center = ForeignKey('CostCenter', on_delete=PROTECT)
+    operation_code = PositiveSmallIntegerField(blank=True, null=True)
+    operation_head = ForeignKey(
+        'OperationHead', blank=True, null=True, on_delete=PROTECT
+    )
+    rental = BooleanField(default=False)
     sap_cost_center = ForeignKey('SapCostCenter', on_delete=PROTECT)
+    with_contract = BooleanField(default=False)
+    with_inhouse = BooleanField(default=False)
+    with_rental = BooleanField(default=False)
 
     class Meta:
         constraints = [UniqueConstraint(
@@ -57,6 +89,13 @@ class GeneralLedgerAccount(Model):
 
     def __str__(self) -> str:
         return self.description
+
+
+class Material(Classification):
+    """
+    Material handled for an activity
+    """
+    pass
 
 
 class MonthlyCost(Model):
@@ -109,6 +148,13 @@ class MonthlyCost(Model):
 
     def __str__(self) -> str:
         return f'{self.year}-{self.month:02}-{self.cost_center.name}-{self.gl.code}'
+
+
+class OperationHead(Classification):
+    """
+    SAP operation head
+    """
+    pass
 
 
 class ProfitCenter(Classification):
