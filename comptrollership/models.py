@@ -53,13 +53,12 @@ class CostCenterConversion(Model):
     activity_code = ForeignKey(
         ActivityCode, blank=True, null=True, on_delete=PROTECT
     )
-    equipment = ManyToManyField(EquipmentClass)
+    equipment = ManyToManyField(EquipmentClass, blank=True)
     old_cost_center = ForeignKey('CostCenter', on_delete=PROTECT)
     operation_code = PositiveSmallIntegerField(blank=True, null=True)
     operation_head = ForeignKey(
         'OperationHead', blank=True, null=True, on_delete=PROTECT
     )
-    rental = BooleanField(default=False)
     sap_cost_center = ForeignKey('SapCostCenter', on_delete=PROTECT)
     with_contract = BooleanField(default=False)
     with_inhouse = BooleanField(default=False)
