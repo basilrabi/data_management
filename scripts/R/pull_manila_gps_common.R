@@ -2,6 +2,7 @@ library(dplyr)
 library(jsonlite)
 library(lubridate)
 library(RPostgres)
+library(stringr)
 
 con <- RPostgres::dbConnect(RPostgres::Postgres(),
                             user = "data_management",
@@ -58,10 +59,11 @@ pull_retry <- function(x) {
 api_equipment_list <- paste0(host, "vehicle/list/?", hash)
 
 gps_equipment_list <- jsonlite::fromJSON(api_equipment_list)[[1]] %>%
+  dplyr::filter(!is.na(tracker_id),
+                stringr::str_detect(tracker_label, "TMC")) %>%
   dplyr::mutate(equipment_class = substr(tracker_label, 5L, 6L),
                 fleet_number = as.integer(substr(tracker_label, 10L, 12L))) %>%
-  dplyr::select(tracker_id, equipment_class, fleet_number) %>%
-  dplyr::filter(!is.na(tracker_id))
+  dplyr::select(tracker_id, equipment_class, fleet_number)
 
 dm_equipment <- RPostgres::dbGetQuery(con, "
 select
