@@ -244,7 +244,7 @@ class PlateNumber(Model):
     plate_number = AlphaNumeric(max_length=10)
 
     class Meta:
-        ordering = [F('name').asc()]
+        ordering = [F('plate_number').asc()]
 
     def __str__(self) -> str:
         return self.plate_number
