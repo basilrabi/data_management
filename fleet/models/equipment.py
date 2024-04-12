@@ -18,7 +18,6 @@ from django.db.models import (
     SET_NULL,
     UniqueConstraint
 )
-from django.db.models.functions import Concat
 
 from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
@@ -300,8 +299,10 @@ class ProviderEquipmentRegistry(Model):
     safety_inspection_id = PositiveSmallIntegerField()
     sap_registered = BooleanField(default=False)
     warehouse_registered = BooleanField(default=False)
+    year = PositiveSmallIntegerField(default=2010)
 
     def save(self, *args, **kwargs):
+        self.year = self.registration_date.year
         super().save(*args, **kwargs)
         latest_registry = self.equipment \
             .providerequipmentregistry_set \
@@ -326,12 +327,12 @@ class ProviderEquipmentRegistry(Model):
             CheckConstraint(check=Q(delivery_year__lt=2050),
                             name='contractor_registry_max_year'),
             UniqueConstraint(
-                Concat('registration_date__year', 'safety_inspection_id'),
+                fields=['safety_inspection_id', 'year'],
                 name='unique_safety_inspection_id'
             )
         ]
         ordering = [
-            F('registration_date__year').desc(),
+            F('year').desc(),
             F('equipment__owner__name').asc(),
             F('equipment__class__name').asc(),
             F('equipment__fleet_number').asc()
