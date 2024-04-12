@@ -336,7 +336,7 @@ class ProviderEquipmentRegistry(Model):
         ordering = [
             F('year').desc(),
             F('equipment__owner__name').asc(),
-            F('equipment__class__name').asc(),
+            F('equipment__equipment_class__name').asc(),
             F('equipment__fleet_number').asc()
         ]
         verbose_name_plural = 'provider equipment registry'
