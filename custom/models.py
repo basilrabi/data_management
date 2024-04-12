@@ -226,6 +226,10 @@ class TextMessage(Model):
         return 'New'
 
 
+class UnitOfMeasure(Classification):
+    pass
+
+
 class User(AbstractUser):
     middle_name = CharField(null=True, blank=True, max_length=100)
     birth_date = DateField(null=True, blank=True)

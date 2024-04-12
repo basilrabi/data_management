@@ -3,15 +3,22 @@ from django.db.models import TextField
 from django.forms import Textarea
 
 from custom.admin import ReadOnlyAdmin
+from organization.models import Organization
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
+    Capacity,
+    ChassisSerialNumber,
+    EngineSerialNumber,
     Equipment,
     EquipmentClass,
     EquipmentIdlingTime,
     EquipmentIgnitionStatus,
     EquipmentManufacturer,
     EquipmentModel,
+    PlateNumber,
+    ProviderEquipment,
+    ProviderEquipmentRegistry,
     TrackedExcavator
 )
 
@@ -32,6 +39,23 @@ class AdditionalEquipmentCostInline(TabularInline):
 @register(BodyType)
 class BodyTypeAdmin(ModelAdmin):
     list_display = ('name', 'description')
+
+
+@register(Capacity)
+class CapacityAdmin(ModelAdmin):
+    list_display = ('__str__', 'value', 'unit_of_measure')
+    list_editable = ('unit_of_measure', 'value')
+    search_fields = ['value', 'unit_of_measure']
+
+
+@register(ChassisSerialNumber)
+class SerialNumberAdmin(ModelAdmin):
+    search_fields = ['name']
+
+
+@register(EngineSerialNumber)
+class EngineSerialNumberAdmin(ModelAdmin):
+    search_fields = ['name']
 
 
 @register(Equipment)
@@ -123,6 +147,58 @@ class EquipmentModelAdmin(ModelAdmin):
     search_fields = ['equipment_class__name', 'manufacturer__name', 'name']
 
 
+@register(PlateNumber)
+class PlateNumberAdmin(ModelAdmin):
+    search_fields = ['plate_number']
+
+
+@register(ProviderEquipment)
+class ProviderEquipmentAdmin(ModelAdmin):
+    autocomplete_fields = ['owner']
+    fields = ['owner', 'equipment_class', 'fleet_number']
+    search_fields = ['chassis_serial_number__name',
+                     'engine_serial_number__name',
+                     'fleet_number',
+                     'model__manufacturer__name',
+                     'model__name',
+                     'owner__name']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'owner':
+            kwargs['queryset'] = Organization.objects.filter(
+                service='Contractor'
+            )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(owner__service='Contractor')
+
+
+@register(ProviderEquipmentRegistry)
+class ProviderEquipmentRegistryAdmin(ModelAdmin):
+    autocomplete_fields = ['capacity',
+                           'chassis_serial_number',
+                           'engine_serial_number',
+                           'equipment',
+                           'model',
+                           'plate_number']
+    fields = ['registration_date',
+              'equipment',
+              'safety_inspection_id',
+              'model',
+              'engine_serial_number',
+              'chassis_serial_number',
+              'plate_number',
+              'delivery_year',
+              'acquisition_condition',
+              'capacity',
+              'pull_out_date',
+              'sap_registered',
+              'warehouse_registered']
+    list_display = ['__str__'] + fields
+    list_editable = fields
+
+
 @register(TrackedExcavator)
 class TrackedExcavatorAdmin(ModelAdmin):
     pass
+

@@ -9,6 +9,7 @@ from .models import (
     Profession,
     ProfessionalIdentificationCard,
     TextMessage,
+    UnitOfMeasure,
     User
 )
 
@@ -97,6 +98,12 @@ class TextMessageAdmin(ModelAdmin):
 @register(Profession)
 class ProfessionAdmin(ModelAdmin):
     pass
+
+
+@register(UnitOfMeasure)
+class UnitOfMeasureAdmin(ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ['name', 'description']
 
 
 @register(User)

@@ -1,9 +1,12 @@
+from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.db.models import (
     BooleanField,
     CharField,
+    CheckConstraint,
     DateField,
     DateTimeField,
+    DecimalField,
     DurationField,
     F,
     ForeignKey,
@@ -11,13 +14,14 @@ from django.db.models import (
     Model,
     PositiveSmallIntegerField,
     PROTECT,
+    Q,
     SET_NULL,
     UniqueConstraint
 )
 
 from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
-from custom.models import Classification, FixedAsset
+from custom.models import Classification, FixedAsset, UnitOfMeasure
 from organization.models import Organization, OrganizationUnit
 
 
@@ -31,6 +35,46 @@ class AdditionalEquipmentCost(FixedAsset):
 class BodyType(Classification):
     class Meta:
         ordering = [F('name').asc()]
+
+
+class Capacity(Model):
+    value = DecimalField(max_digits=10, decimal_places=2)
+    unit_of_measure = ForeignKey(UnitOfMeasure, on_delete=PROTECT)
+
+    class Meta:
+        ordering = [
+            F('unit_of_measure__name').asc(),
+            F('value').asc()
+        ]
+
+    def __str__(self) -> str:
+        return f'{self.value:,.2f} {self.unit_of_measure.name}'
+
+
+class ChassisSerialNumber(Model):
+    """
+    Serial number used in equipment manufacturing
+    """
+    name = AlphaNumeric(max_length=100)
+
+    class Meta:
+        ordering = [F('name').asc()]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class EngineSerialNumber(Model):
+    """
+    Serial number used in equipment manufacturing
+    """
+    name = AlphaNumeric(max_length=100)
+
+    class Meta:
+        ordering = [F('name').asc()]
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Equipment(FixedAsset):
@@ -103,7 +147,7 @@ class Equipment(FixedAsset):
             F('fleet_number').asc(),
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.date_acquired:
             year = str(self.date_acquired.year)[2:4]
         else:
@@ -119,7 +163,7 @@ class EquipmentClass(Classification):
         verbose_name = 'Equipment Class'
         verbose_name_plural = 'Equipment Classes'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.name} - {self.description}'
 
 
@@ -142,6 +186,7 @@ class EquipmentIdlingTime(Model):
             Index(fields=['time_stamp']),
             Index(fields=['idling'])
         ]
+
 
 class EquipmentIgnitionStatus(Model):
     """
@@ -187,8 +232,114 @@ class EquipmentModel(Classification):
             F('name').asc()
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.equipment_class.name} - {self.manufacturer.name} {self.name}'
+
+
+class PlateNumber(Model):
+    """
+    LTO conduction number of equipment
+    """
+    plate_number = AlphaNumeric(max_length=10)
+
+    class Meta:
+        ordering = [F('name').asc()]
+
+    def __str__(self) -> str:
+        return self.plate_number
+
+
+class ProviderEquipment(Equipment):
+    """
+    Equipment units of external service providers. The input should only be the
+    providers name, equipment type, and the body number of equipment.
+    """
+
+    def clean(self) -> None:
+        if not self.equipment_class:
+            raise ValidationError("Equipment class should not be empty.")
+        if not self.model:
+            self.model = EquipmentModel.objects.get(
+                equipment_class__name=self.equipment_class.name,
+                name='Unknown'
+            )
+        super().clean()
+
+    class Meta:
+        proxy = True
+
+
+class ProviderEquipmentRegistry(Model):
+    """
+    Annual registry of providers' equipment units.
+    """
+    ACQUISITION_CONDITION = (
+        (True, 'Used'),
+        (False, 'New')
+    )
+
+    acquisition_condition = BooleanField(
+        default=True, choices=ACQUISITION_CONDITION
+    )
+    capacity = ForeignKey(Capacity, blank=True, null=True, on_delete=SET_NULL)
+    chassis_serial_number = ForeignKey(
+        ChassisSerialNumber, blank=True, null=True, on_delete=PROTECT
+    )
+    delivery_year = PositiveSmallIntegerField()
+    engine_serial_number = ForeignKey(
+        EngineSerialNumber, blank=True, null=True, on_delete=PROTECT
+    )
+    equipment = ForeignKey(ProviderEquipment, on_delete=PROTECT)
+    model = ForeignKey(EquipmentModel, on_delete=PROTECT)
+    plate_number = ForeignKey(
+        PlateNumber, blank=True, null=True, on_delete=PROTECT
+    )
+    pull_out_date = DateField(blank=True, null=True)
+    registration_date = DateField()
+    safety_inspection_id = PositiveSmallIntegerField()
+    sap_registered = BooleanField(default=False)
+    warehouse_registered = BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        latest_registry = self.equipment \
+            .providerequipmentregistry_set \
+            .order_by('-registration_date') \
+            .first()
+        self.equipment.date_acquired = datetime(
+            latest_registry.delivery_year, 1, 1
+        )
+        self.equipment.model = self.model
+        if self.chassis_serial_number:
+            self.equipment.chassis_serial_number = self.chassis_serial_number.name
+        if self.engine_serial_number:
+            self.equipment.engine_serial_number = self.engine_serial_number.name
+        if self.plate_number:
+            self.equipment.plate_number = self.plate_number.plate_number
+        self.equipment.save()
+
+    class Meta:
+        constraints = [
+            CheckConstraint(check=Q(delivery_year__gt=2010),
+                            name='contractor_registry_min_year'),
+            CheckConstraint(check=Q(delivery_year__lt=2050),
+                            name='contractor_registry_max_year'),
+            UniqueConstraint(
+                fields=['registration_date__year', 'safety_inspection_id'],
+                name='unique_safety_inspection_id'
+            )
+        ]
+        ordering = [
+            F('registration_date__year').desc(),
+            F('equipment__owner__name').asc(),
+            F('equipment__class__name').asc(),
+            F('equipment__fleet_number').asc()
+        ]
+
+    def __str__(self) -> str:
+        if self.registration_date:
+            return f'{self.registration_date.year} - {super.__str__()}'
+        return super.__str__()
 
 
 class TrackedExcavator(Model):
@@ -199,3 +350,4 @@ class TrackedExcavator(Model):
 
     def __str__(self):
         return f'TX-{self.fleet_number}'
+

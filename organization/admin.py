@@ -12,6 +12,7 @@ class ManilaGpsApiKeyAdmin(ModelAdmin):
 @register(Organization)
 class OrganizationAdmin(ModelAdmin):
     list_display = ('name', 'description', 'service', 'active')
+    search_fields = ['description', 'name', 'service']
 
 
 class SectionInline(NestedTabularInline):
