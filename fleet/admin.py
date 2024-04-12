@@ -168,6 +168,7 @@ class ProviderEquipmentAdmin(ModelAdmin):
             kwargs['queryset'] = Organization.objects.filter(
                 service='Contractor'
             )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
         return super().get_queryset(request).filter(owner__service='Contractor')
