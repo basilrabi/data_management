@@ -46,6 +46,7 @@ class Capacity(Model):
             F('unit_of_measure__name').asc(),
             F('value').asc()
         ]
+        verbose_name_plural = 'Capacities'
 
     def __str__(self) -> str:
         return f'{self.value:,.2f} {self.unit_of_measure.name}'
@@ -267,6 +268,7 @@ class ProviderEquipment(Equipment):
 
     class Meta:
         proxy = True
+        verbose_name_plural = 'provider equipment units'
 
 
 class ProviderEquipmentRegistry(Model):
@@ -337,6 +339,7 @@ class ProviderEquipmentRegistry(Model):
             F('equipment__class__name').asc(),
             F('equipment__fleet_number').asc()
         ]
+        verbose_name_plural = 'provider equipment registry'
 
     def __str__(self) -> str:
         if self.registration_date:
