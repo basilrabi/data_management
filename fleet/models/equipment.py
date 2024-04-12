@@ -18,6 +18,7 @@ from django.db.models import (
     SET_NULL,
     UniqueConstraint
 )
+from django.db.models.functions import Concat
 
 from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
@@ -325,7 +326,7 @@ class ProviderEquipmentRegistry(Model):
             CheckConstraint(check=Q(delivery_year__lt=2050),
                             name='contractor_registry_max_year'),
             UniqueConstraint(
-                fields=['registration_date__year', 'safety_inspection_id'],
+                Concat('registration_date__year', 'safety_inspection_id'),
                 name='unique_safety_inspection_id'
             )
         ]
