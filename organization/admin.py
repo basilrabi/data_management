@@ -37,6 +37,9 @@ class OrganizationAdmin(ModelAdmin):
     list_display = ('name', 'description', 'service', 'active')
     search_fields = ['description', 'name', 'service']
 
+    # TODO: modify jquery GET REQUEST when being requested in ProviderEquipment
+    # as foreign key. What should be fetched are only contractors.
+
 
 @register(ServiceProvider)
 class ServiceProviderAdmin(ModelAdmin):
