@@ -3,7 +3,8 @@ from django.db.models import TextField
 from django.forms import Textarea
 
 from custom.admin import ReadOnlyAdmin
-from organization.models import Organization
+from organization.admin import ServiceProviderAdmin
+from organization.models import Organization, ServiceProvider
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
@@ -165,9 +166,8 @@ class ProviderEquipmentAdmin(ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'owner':
-            kwargs['queryset'] = Organization.objects.filter(
-                service='Contractor'
-            )
+            kwargs['form'] = ServiceProviderAdmin().get_form(request)
+            kwargs['queryet'] = Provider.objects.filter(services='Contractor')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):

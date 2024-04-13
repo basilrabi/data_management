@@ -65,6 +65,20 @@ class OrganizationUnit(Model):
         return self.name
 
 
+class ServiceProvider(Organization):
+    """
+    Service contractors
+    """
+
+    def save(self, *args, **kwargs):
+        self.service = 'Contract'
+        super().save(*args, **kwargs)
+
+    class Meta:
+        proxy = True
+
+
 class Section(Model):
     name = CharField(max_length=30, null=True, blank=False, unique=True)
     parent_department = ForeignKey('Department', on_delete=PROTECT)
+

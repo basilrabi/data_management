@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import (
     BooleanField,
     CharField,
@@ -22,7 +22,7 @@ from django.db.models import (
 from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
 from custom.models import Classification, FixedAsset, UnitOfMeasure
-from organization.models import Organization, OrganizationUnit
+from organization.models import Organization, OrganizationUnit, ServiceProvider
 
 
 class AdditionalEquipmentCost(FixedAsset):
@@ -260,10 +260,19 @@ class ProviderEquipment(Equipment):
         if not self.equipment_class:
             raise ValidationError("Equipment class should not be empty.")
         if not self.model:
-            self.model = EquipmentModel.objects.get(
-                equipment_class__name=self.equipment_class.name,
-                name='Unknown'
-            )
+            try:
+                model = EquipmentModel.objects.get(
+                    equipment_class__name=self.equipment_class.name,
+                    name='Unknown'
+                )
+            except ObjectDoesNotExist:
+                manufacturer = EquipmentModel.objects.get(name='Unkown')
+                model = EquipmentModel(name='Unkown',
+                                       equipment_class=self.equipment_class,
+                                       manufacturer=manufacturer)
+                model.save()
+                model.refresh_from_db()
+            self.model = model
         super().clean()
 
     class Meta:
