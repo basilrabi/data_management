@@ -167,7 +167,7 @@ class ProviderEquipmentAdmin(ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'owner':
             kwargs['form'] = ServiceProviderAdmin().get_form(request)
-            kwargs['queryet'] = Provider.objects.filter(services='Contractor')
+            kwargs['queryset'] = Provider.objects.filter(services='Contractor')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_queryset(self, request):
