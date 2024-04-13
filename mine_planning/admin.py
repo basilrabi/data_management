@@ -3,9 +3,11 @@ from django.contrib.admin import ModelAdmin, TabularInline, register
 # Register your models here.
 
 from .models import MapDocumentControl, MapType, MinePlanningEngineer
+from .forms import MapDocumentControlForm
 
 @register(MapDocumentControl)
 class MapDocumentControlAdmin(ModelAdmin):
+    form = MapDocumentControlForm
     list_display = ('reference_map_no',
                     'date_created',
                     'material',
