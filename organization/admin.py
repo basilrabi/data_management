@@ -50,7 +50,7 @@ class ServiceProviderAdmin(ModelAdmin):
             search_term,
         )
         try:
-            queryset = queryset.filter(service='Contract')
+            queryset = queryset.filter(service='Contractor')
         except:
             pass
         return queryset, may_have_duplicates

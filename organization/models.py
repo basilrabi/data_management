@@ -71,7 +71,7 @@ class ServiceProvider(Organization):
     """
 
     def save(self, *args, **kwargs):
-        self.service = 'Contract'
+        self.service = 'Contractor'
         super().save(*args, **kwargs)
 
     class Meta:
