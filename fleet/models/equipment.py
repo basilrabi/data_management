@@ -259,20 +259,20 @@ class ProviderEquipment(Equipment):
     def clean(self) -> None:
         if not self.equipment_class:
             raise ValidationError("Equipment class should not be empty.")
-        if not self.model:
-            try:
-                model = EquipmentModel.objects.get(
-                    equipment_class__name=self.equipment_class.name,
-                    name='Unknown'
-                )
-            except ObjectDoesNotExist:
-                manufacturer = EquipmentModel.objects.get(name='Unkown')
-                model = EquipmentModel(name='Unkown',
-                                       equipment_class=self.equipment_class,
-                                       manufacturer=manufacturer)
-                model.save()
-                model.refresh_from_db()
-            self.model = model
+        try:
+            model = EquipmentModel.objects.get(
+                equipment_class__name=self.equipment_class.name,
+                manufacturer__name='Unknown',
+                name='Unknown'
+            )
+        except ObjectDoesNotExist:
+            manufacturer = EquipmentModel.objects.get(name='Unkown')
+            model = EquipmentModel(name='Unkown',
+                                   equipment_class=self.equipment_class,
+                                   manufacturer=manufacturer)
+            model.save()
+            model.refresh_from_db()
+        self.model = model
         super().clean()
 
     class Meta:
@@ -352,8 +352,8 @@ class ProviderEquipmentRegistry(Model):
 
     def __str__(self) -> str:
         if self.registration_date:
-            return f'{self.registration_date.year} - {super.__str__()}'
-        return super.__str__()
+            return f'{self.registration_date.year} - {self.equipment.__str__()}'
+        return self.equipment.__str__()
 
 
 class TrackedExcavator(Model):
