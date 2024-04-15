@@ -38,7 +38,7 @@ class Classification(Model):
         abstract = True
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -78,7 +78,7 @@ class GeoClassification(GeoModel):
         abstract = True
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -147,7 +147,7 @@ class MobileNumber(Model):
     class Meta:
         ordering = [F('user__username').asc(), F('spaceless_number').asc()]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.number.as_international} {self.user}'
 
 
@@ -162,7 +162,7 @@ class ProfessionalIdentificationCard(Model):
 class Profession(Classification):
     name = CharField(max_length=20, unique=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.name} - {self.description}'
 
 

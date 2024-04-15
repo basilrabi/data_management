@@ -23,6 +23,7 @@ from custom.fields import AlphaNumeric, NameField
 from custom.functions_standalone import month_choices
 from custom.models import Classification, FixedAsset, UnitOfMeasure
 from organization.models import Organization, OrganizationUnit, ServiceProvider
+from ..manager import ProviderEquipmentManager
 
 
 class AdditionalEquipmentCost(FixedAsset):
@@ -255,6 +256,7 @@ class ProviderEquipment(Equipment):
     Equipment units of external service providers. The input should only be the
     providers name, equipment type, and the body number of equipment.
     """
+    objects = ProviderEquipmentManager()
 
     def clean(self) -> None:
         if not self.equipment_class:

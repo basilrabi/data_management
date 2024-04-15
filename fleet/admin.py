@@ -5,6 +5,10 @@ from django.forms import Textarea
 from custom.admin import ReadOnlyAdmin
 from organization.admin import ServiceProviderAdmin
 from organization.models import Organization, ServiceProvider
+from .filters import (
+    ProviderEquipmentRegistryClassFilter,
+    ProviderEquipmentRegistryProviderFilter
+)
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
@@ -176,9 +180,6 @@ class ProviderEquipmentAdmin(ModelAdmin):
             pass
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).filter(owner__service='Contractor')
-
 
 @register(ProviderEquipmentRegistry)
 class ProviderEquipmentRegistryAdmin(ModelAdmin):
@@ -204,6 +205,10 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
               'warehouse_registered']
     list_display = ['__str__'] + fields
     list_editable = fields
+    list_filter = [
+        ProviderEquipmentRegistryClassFilter,
+        ProviderEquipmentRegistryProviderFilter
+    ]
 
 
 @register(TrackedExcavator)
