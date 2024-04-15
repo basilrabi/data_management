@@ -18,7 +18,12 @@ from django.db.models import (
 )
 from phonenumber_field.modelfields import PhoneNumberField
 
-from custom.fields import AlphaNumeric, NameField, SpaceLess
+from custom.fields import (
+    AlphaNumeric,
+    NameField,
+    NameFieldWithSmallCase,
+    SpaceLess
+)
 from custom.functions_standalone import print_tz_manila, render_to_string
 
 
@@ -227,7 +232,7 @@ class TextMessage(Model):
 
 
 class UnitOfMeasure(Classification):
-    pass
+    name = NameFieldWithSmallCase(max_length=40, unique=True)
 
 
 class User(AbstractUser):

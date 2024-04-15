@@ -52,6 +52,19 @@ class NameField(CharField):
             return sub(r'\s+', ' ', str(value).upper().strip())
 
 
+class NameFieldWithSmallCase(CharField):
+    """
+    https://stackoverflow.com/questions/36330677/
+    django-model-set-default-charfield-in-lowercase
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        if value:
+            return sub(r'\s+', ' ', str(value).strip())
+
+
 class PileField(CharField):
     """
     This field must always start with an alphabet
