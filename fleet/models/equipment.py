@@ -320,6 +320,10 @@ class ProviderEquipmentRegistry(Model):
 
     def save(self, *args, **kwargs):
         self.year = self.registration_date.year
+        #TODO: remove this when triggers are created
+        self.x_equipment_class = self.equipment.equipment_class.name
+        self.x_contractor = self.equipment.owner.name
+        # ENDTODO
         super().save(*args, **kwargs)
         latest_registry = self.equipment \
             .providerequipmentregistry_set \
@@ -335,10 +339,6 @@ class ProviderEquipmentRegistry(Model):
             self.equipment.engine_serial_number = self.engine_serial_number.name
         if self.plate_number:
             self.equipment.plate_number = self.plate_number.plate_number
-        #TODO: remove this when triggers are created
-        self.x_equipment_class = self.equipment.equipment_class.name
-        self.x_contractor = self.equipment.owner.name
-        # ENDTODO
         self.equipment.save()
 
     class Meta:
