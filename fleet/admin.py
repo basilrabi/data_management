@@ -46,7 +46,9 @@ class BodyTypeAdmin(ModelAdmin):
 class CapacityAdmin(ModelAdmin):
     list_display = ('__str__', 'value', 'unit_of_measure')
     list_editable = ('unit_of_measure', 'value')
-    search_fields = ['value', 'unit_of_measure']
+    search_fields = ['unit_of_measure__description',
+                     'unit_of_measure__name',
+                     'value']
 
 
 @register(ChassisSerialNumber)
