@@ -9,7 +9,9 @@ def contractor_equipment_classes() -> list[str]:
             .values_list('equipment_class__name', flat=True) \
             .distinct()
     )
-    return list(filter(None, equipment_classes)).sort()
+    choices = list(filter(None, equipment_classes))
+    choices.sort()
+    return choices
 
 def contractor_with_equipment() -> list[str]:
     """
@@ -20,5 +22,7 @@ def contractor_with_equipment() -> list[str]:
             .values_list('owner__name', flat=True) \
             .distinct()
     )
-    return list(filter(None, contractors)).sort()
+    choices = list(filter(None, contractors))
+    choices.sort()
+    return choices
 
