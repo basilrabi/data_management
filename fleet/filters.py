@@ -4,7 +4,7 @@ from .functions import contractor_equipment_classes, contractor_with_equipment
 
 class ProviderEquipmentRegistryClassFilter(MultipleChoiceListFilter):
     title = 'Equipment Class'
-    parameter_name = 'equipment__equipment_class__name__in'
+    parameter_name = 'x_equipment_class__in'
 
     def lookups(self, request, model_admin):
         equipment_classes = contractor_equipment_classes()
@@ -16,7 +16,7 @@ class ProviderEquipmentRegistryClassFilter(MultipleChoiceListFilter):
 
 class ProviderEquipmentRegistryProviderFilter(MultipleChoiceListFilter):
     title = 'Contractor'
-    parameter_name = 'equipment__owner__name__in'
+    parameter_name = 'x_contractor__in'
 
     def lookups(self, request, model_admin):
         contractors = contractor_with_equipment()

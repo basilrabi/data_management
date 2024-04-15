@@ -314,6 +314,10 @@ class ProviderEquipmentRegistry(Model):
     warehouse_registered = BooleanField(default=False)
     year = PositiveSmallIntegerField(default=2010)
 
+    # Auto-computed fields used for multiplechoice filters
+    x_equipment_class = CharField(max_length=40, blank=True, null=True)
+    x_contractor = CharField(max_length=40, blank=True, null=True)
+
     def save(self, *args, **kwargs):
         self.year = self.registration_date.year
         super().save(*args, **kwargs)
@@ -331,6 +335,10 @@ class ProviderEquipmentRegistry(Model):
             self.equipment.engine_serial_number = self.engine_serial_number.name
         if self.plate_number:
             self.equipment.plate_number = self.plate_number.plate_number
+        #TODO: remove this when triggers are created
+        self.x_equipment_class = self.equipment.equipment_class.name
+        self.x_contractor = self.equipment.owner.name
+        # ENDTODO
         self.equipment.save()
 
     class Meta:
