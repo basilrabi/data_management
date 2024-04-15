@@ -186,6 +186,7 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
                            'equipment',
                            'model',
                            'plate_number']
+    date_hierarchy = 'registration_date'
     fields = ['registration_date',
               'equipment',
               'safety_inspection_id',
