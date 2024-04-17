@@ -175,11 +175,8 @@ class PlateNumberAdmin(ModelAdmin):
 class ProviderEquipmentAdmin(ModelAdmin):
     autocomplete_fields = ['owner']
     fields = ['owner', 'equipment_class', 'fleet_number']
-    search_fields = ['chassis_serial_number__name',
-                     'engine_serial_number__name',
+    search_fields = ['equipment_class__name',
                      'fleet_number',
-                     'model__manufacturer__name',
-                     'model__name',
                      'owner__name']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -221,6 +218,10 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
         ProviderEquipmentRegistryClassFilter,
         ProviderEquipmentRegistryProviderFilter
     ]
+    search_fields = ['chassis_serial_number__name',
+                     'engine_serial_number__name',
+                     'plate_number__plate_number',
+                     'safety_inspection_id']
 
 
 @register(TrackedExcavator)
