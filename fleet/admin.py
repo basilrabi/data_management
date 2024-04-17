@@ -20,6 +20,7 @@ from .models.equipment import (
     EquipmentIdlingTime,
     EquipmentIgnitionStatus,
     EquipmentManufacturer,
+    EquipmentMobileNumber,
     EquipmentModel,
     PlateNumber,
     ProviderEquipment,
@@ -146,6 +147,17 @@ class EquipmentIgnitionStatusAdmin(ReadOnlyAdmin):
 @register(EquipmentManufacturer)
 class EquipmentManufacturerAdmin(ModelAdmin):
     list_display = ('__str__', 'description')
+
+
+@register(EquipmentMobileNumber)
+class EquipmentMobileNumberAdmin(ModelAdmin):
+    fields = ('equipment', 'number')
+    list_display = ('equipment', 'number')
+    search_fields = (
+        'equipment__equipment_class__name',
+        'equipment__fleet_number',
+        'equipment__owner__name'
+    )
 
 
 @register(EquipmentModel)

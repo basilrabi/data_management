@@ -12,14 +12,16 @@ from django.db.models import (
     ForeignKey,
     Index,
     Model,
+    OneToOneField,
     PositiveSmallIntegerField,
     PROTECT,
     Q,
     SET_NULL,
     UniqueConstraint
 )
+from phonenumber_field.modelfields import PhoneNumberField
 
-from custom.fields import AlphaNumeric, NameField
+from custom.fields import AlphaNumeric, NameField, SpaceLess
 from custom.functions_standalone import month_choices
 from custom.models import Classification, FixedAsset, UnitOfMeasure
 from organization.models import Organization, OrganizationUnit, ServiceProvider
@@ -216,6 +218,37 @@ class EquipmentManufacturer(Classification):
 
     class Meta:
         ordering = [F('name').asc()]
+
+
+class EquipmentMobileNumber(Model):
+    """
+    Mobile number assigned to an equipment for receiving and sending SMS data.
+    """
+    equipment = OneToOneField(
+        Equipment, blank=True, null=True, on_delete=SET_NULL
+    )
+    number = PhoneNumberField(unique=True)
+    spaceless_number = SpaceLess(
+        blank=True, max_length=20, null=True, unique=True
+    )
+
+    def save(self, *args, **kwargs):
+        self.spaceless_number = self.number
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = [
+            F('equipment__owner__name').asc(),
+            F('equipment__equipment_class__name').asc(),
+            F('equipment__fleet_number').asc()
+        ]
+
+    def __str__(self) -> str:
+        try:
+            equipment = f'{self.equipment.__str__()} {self.number.as_international}'
+        except ObjectDoesNotExist:
+            equipment = f'UNASSIGNED {self.number.as_international}'
+        return equipment
 
 
 class EquipmentModel(Classification):
