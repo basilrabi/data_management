@@ -179,16 +179,6 @@ class ProviderEquipmentAdmin(ModelAdmin):
                      'fleet_number',
                      'owner__name']
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'owner':
-            # TODO: This is a stub. The goal is to filter the Organization in
-            # the auto-complete field to only contractors. This should more
-            # realistic to implement in java script by capturing the GET
-            # Request and filter the query set in the searchable foreign key.
-            # kwargs['queryset'] = ServiceProvider.objects.filter(service='Contractor')
-            pass
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 @register(ProviderEquipmentRegistry)
 class ProviderEquipmentRegistryAdmin(ModelAdmin):

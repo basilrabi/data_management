@@ -37,8 +37,14 @@ class OrganizationAdmin(ModelAdmin):
     list_display = ('name', 'description', 'service', 'active')
     search_fields = ['description', 'name', 'service']
 
-    # TODO: modify jquery GET REQUEST when being requested in ProviderEquipment
-    # as foreign key. What should be fetched are only contractors.
+    def get_search_results(self, request, queryset, search_term):
+        queryset, may_have_duplicates = super().get_search_results(
+            request, queryset, search_term,
+        )
+        if 'HTTP_REFERER' in request.META:
+            if 'providerequipment' in request.META['HTTP_REFERER']:
+                queryset = queryset.filter(service='Contractor')
+        return queryset, may_have_duplicates
 
 
 @register(ServiceProvider)
@@ -48,9 +54,7 @@ class ServiceProviderAdmin(ModelAdmin):
 
     def get_search_results(self, request, queryset, search_term):
         queryset, may_have_duplicates = super().get_search_results(
-            request,
-            queryset,
-            search_term,
+            request, queryset, search_term,
         )
         try:
             queryset = queryset.filter(service='Contractor')
