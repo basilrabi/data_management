@@ -1,0 +1,21 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementsByClassName('results')[0];
+    document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 37) {
+            container.scrollLeft -= 50;
+        } else if (event.keyCode === 39) {
+            container.scrollLeft += 50;
+        }
+    });
+});
+</script>
+
+{% endblock %}
+
