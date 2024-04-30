@@ -10,4 +10,5 @@ pandas
 plotly
 psycopg2
 python-gammu
+setuptools
 tzlocal
