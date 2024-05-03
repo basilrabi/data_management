@@ -106,7 +106,7 @@ class GroupMail(Model):
                             'group': self.group.name,
                             'user': user.full_name(),
                             'username': user.username,
-                            'vnc_id': str(user.vnc_id) or '____'
+                            'vnc_id': str(user.vnc_id)
                         }
                         messages.append((
                             self.subject,

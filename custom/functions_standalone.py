@@ -4,6 +4,7 @@ circular import.
 """
 
 from datetime import datetime
+from django.template import Context, Engine
 from django.utils.dateformat import MONTHS
 from re import sub
 
@@ -21,15 +22,15 @@ def print_tz_manila(timestamp: datetime) -> (str | None):
         timestamp = str(timestamp.astimezone(tz_manila))
         return timestamp[:-6]
 
-def render_to_string(template: str, context: dict[str, str]) -> (str | None):
+def render_to_string(template: str, context: dict) -> str:
     """
     An implementation of django.template.loader.render_to_string using raw
     strings to avoid referring to a template.
     """
     if template:
-        rendered = template
-        for key, value in context.items():
-            rendered = sub(rf"{{{{\s*{key}\s*}}}}", value, rendered)
+        django_engine = Engine.get_default()
+        new_template = django_engine.from_string(template)
+        rendered = new_template.render(Context(context))
         return rendered
-    return None
+    return ''
 
