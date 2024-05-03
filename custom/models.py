@@ -104,7 +104,8 @@ class GroupMail(Model):
                     if user.email:
                         context = {
                             'user': user.full_name(),
-                            'group': self.group.name
+                            'group': self.group.name,
+                            'vnc_id': user.vnc_id or None
                         }
                         messages.append((
                             self.subject,
@@ -236,13 +237,25 @@ class UnitOfMeasure(Classification):
 
 
 class User(AbstractUser):
-    middle_name = CharField(null=True, blank=True, max_length=100)
     birth_date = DateField(null=True, blank=True)
+    middle_name = CharField(null=True, blank=True, max_length=100)
     name_suffix = NameField(
-        max_length=20,
-        null=True,
         blank=True,
-        help_text='Junior, Senior, III, etc.'
+        help_text='Junior, Senior, III, etc.',
+        max_length=20,
+        null=True
+    )
+    uid = PositiveSmallIntegerField(
+        blank=True,
+        help_text='Linux User ID',
+        null=True,
+        unique=True
+    )
+    vnc_id = PositiveSmallIntegerField(
+        blank=True,
+        help_text='Tiger VNC Port',
+        null=True,
+        unique=True
     )
 
     SEX_CHOICES = (

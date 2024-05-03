@@ -127,6 +127,11 @@ class CustomUserAdmin(UserAdmin):
                        'groups',
                        'user_permissions'),
         }),
+        (_('Server User Info'), {
+            'classes': ['collapse'],
+            'fields': ('uid',
+                       'vnc_id'),
+        }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     filter_horizontal = ('groups', 'user_permissions')
