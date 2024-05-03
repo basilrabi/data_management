@@ -103,8 +103,9 @@ class GroupMail(Model):
                 for user in self.group.user_set.all():
                     if user.email:
                         context = {
-                            'user': user.full_name(),
                             'group': self.group.name,
+                            'user': user.full_name(),
+                            'username': user.username,
                             'vnc_id': user.vnc_id or None
                         }
                         messages.append((
