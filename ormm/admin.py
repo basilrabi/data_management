@@ -13,7 +13,7 @@ class ExternalCommunicationAdmin(ModelAdmin):
               'recipient',
               'receiving_copy',
               'cancel',)
-    
+
     list_display = ('date',
                     'transmittal_number',
                     'content',
@@ -21,10 +21,11 @@ class ExternalCommunicationAdmin(ModelAdmin):
                     'receiving_copy',
                     'requesting_department'
     )
+    list_filter = ['requesting_department']
     ordering = ('-date', '-transmittal_number')
 
 
-@register(ExternalIncomingCommunication)    
+@register(ExternalIncomingCommunication)
 class ExternalIncomingCommunicationAdmin(ModelAdmin):
 
     date_hierarchy = 'datetime_received'
