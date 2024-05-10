@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db.models import (
     BooleanField,
     CheckConstraint,
@@ -63,6 +64,11 @@ class CostCenterConversion(Model):
     with_contract = BooleanField(default=False)
     with_inhouse = BooleanField(default=False)
     with_rental = BooleanField(default=False)
+
+    def clean(self) -> None:
+        super().clean()
+        if not self.with_contract and not self.with_inhouse and not self.with_rental:
+            raise ValidationError("At least one of With Contract, Inhouse, or Rental must be checked.")
 
     class Meta:
         constraints = [UniqueConstraint(
