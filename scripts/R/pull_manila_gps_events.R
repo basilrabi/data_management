@@ -4,8 +4,6 @@ begin <- Sys.time()
 
 source("scripts/R/pull_manila_gps_common.R")
 
-library(stringr)
-
 if (any(is.na(dm_equipment$id))) {
   stop("Unregistered equipment detected.")
 }
@@ -247,6 +245,7 @@ lapply(1:nrow(events_period), function(z) {
         dplyr::bind_rows() %>%
         dplyr::group_by(equipment_id, time_stamp) %>%
         dplyr::summarise(lng = mean(lng), lat = mean(lat)) %>%
+        as.data.frame() %>%
         sf::st_as_sf(coords = c("lng", "lat"))
       sf::st_write(df_tracker, con, table_name)
       sql <- sprintf('

@@ -2,6 +2,7 @@ library(dplyr)
 library(jsonlite)
 library(lubridate)
 library(RPostgres)
+library(sf)
 library(stringr)
 
 con <- RPostgres::dbConnect(RPostgres::Postgres(),
