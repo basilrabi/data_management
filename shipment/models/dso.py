@@ -46,7 +46,11 @@ from custom.functions import (
 )
 from custom.models import Classification
 from custom.variables import one_day, zero_time
-from shipment.functions import filepath_shipmentvideo, filepath_shipmentimages
+from shipment.functions import (
+    filepath_shipment_draftsurvey_receipt,
+    filepath_shipmentvideo,
+    filepath_shipmentimages
+)
 
 
 class Buyer(Classification):
@@ -61,10 +65,23 @@ class Destination(Classification):
 
 
 class DraftSurvey(Model):
-
+    """
+    Uploaded files for MGB Submissions
+    """
+    images_in_pdf = FileField(blank=True, null=True, upload_to=filepath_shipmentimages)
+    mgb_receipt = FileField(blank=True, null=True, upload_to=filepath_shipment_draftsurvey_receipt)
     shipment = OneToOneField('Shipment', on_delete=CASCADE)
-    video = FileField(upload_to=filepath_shipmentvideo,null=True, blank=True)
-    images_in_pdf = FileField(upload_to=filepath_shipmentimages,null=True, blank=True)
+    video = FileField(blank=True, null=True, upload_to=filepath_shipmentvideo)
+
+    class Meta:
+        ordering = [
+            F('shipment__laydaysstatement__completed_loading').desc(nulls_last=False),
+            F('shipment__laydaysstatement__nor_accepted').desc(nulls_last=False),
+            F('shipment__laydaysstatement__nor_tender').desc(nulls_last=False),
+            F('shipment__laydaysstatement__arrival_tmc').desc(nulls_last=False),
+            F('shipment__laydaysstatement__arrival_pilot').desc(nulls_last=False),
+            F('shipment__name').desc()
+        ]
 
 
 class LayDaysDetail(Model):

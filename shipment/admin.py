@@ -154,9 +154,12 @@ class DestinationAdmin(ModelAdmin):
 
 @register(DraftSurvey)
 class DraftSurveyAdmin(ModelAdmin):
-    list_display = ['shipment', 
-                    'video', 
-                    'images_in_pdf']
+    date_hierarchy = 'shipment__laydaysstatement__laydaysdetail__interval_from'
+    list_display = ['shipment',
+                    'video',
+                    'images_in_pdf',
+                    'mgb_receipt']
+    search_fields = ['shipment__name']
 
 
 @register(FinalShipmentDetail)
