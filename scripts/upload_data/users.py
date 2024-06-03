@@ -5,29 +5,37 @@ from sys import exit
 from custom.models import User
 
 with open('data/users.csv', newline='') as csvfile:
-    reader = DictReader(csvfile, fieldnames=['username',
-                                             'first_name',
-                                             'middle_name',
-                                             'last_name',
-                                             'birth_date',
-                                             'sex',
-                                             'email',
-                                             'password',
-                                             'is_staff',
-                                             'is_active',
-                                             'is_superuser'])
+    reader = DictReader(csvfile, fieldnames=[
+        'birth_date',
+        'email',
+        'first_name',
+        'username',
+        'is_active',
+        'is_staff',
+        'is_superuser',
+        'last_name',
+        'middle_name',
+        'password',
+        'sex',
+        'uid',
+        'vnc_id'
+    ])
     for row in reader:
-        user = User(username=row['username'],
-                    first_name=row['first_name'],
-                    middle_name=row['middle_name'],
-                    last_name=row['last_name'],
-                    birth_date=row['birth_date'] or None,
-                    sex=row['sex'] or None,
-                    email=row['email'],
-                    password=row['password'],
-                    is_staff=row['is_staff'],
-                    is_active=row['is_active'],
-                    is_superuser=row['is_superuser'])
+        user = User(
+            birth_date=row['birth_date'] or None,
+            email=row['email'],
+            first_name=row['first_name'],
+            is_active=row['is_active'],
+            is_staff=row['is_staff'],
+            is_superuser=row['is_superuser'],
+            last_name=row['last_name'],
+            middle_name=row['middle_name'],
+            password=row['password'],
+            sex=row['sex'] or None,
+            username=row['username'],
+            uid=row['uid'] or None,
+            vnc_id=row['vnc_id'] or None
+        )
         try:
             user.clean()
             user.save()
@@ -69,3 +77,4 @@ with open('data/user_permission.csv', newline='') as csvfile:
             print(f'Error: Permission `{permission.name}` was not assigned to User `{user.username}`', flush=True)
             print(e, flush=True)
             exit(1)
+

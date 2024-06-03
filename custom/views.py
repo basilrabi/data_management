@@ -48,16 +48,19 @@ def export_user_permission(request):
 
 def export_users(request):
     rows = ([
-        str(user.get_username()),
-        str(user.first_name),
-        str(user.middle_name or ''),
-        str(user.last_name),
         str(user.birth_date or ''),
-        str(user.sex or ''),
         str(user.email),
-        str(user.password),
-        str(user.is_staff),
+        str(user.first_name),
+        str(user.get_username()),
         str(user.is_active),
-        str(user.is_superuser)
+        str(user.is_staff),
+        str(user.is_superuser),
+        str(user.last_name),
+        str(user.middle_name or ''),
+        str(user.password),
+        str(user.sex or ''),
+        str(user.uid or ''),
+        str(user.vnc_id or '')
     ] for user in User.objects.all().order_by('username'))
     return export_csv(rows, 'users')
+
