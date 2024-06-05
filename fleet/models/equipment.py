@@ -76,7 +76,7 @@ class EngineSerialNumber(Model):
     """
     Serial number used in equipment manufacturing
     """
-    name = AlphaNumeric(max_length=100)
+    name = AlphaNumeric(max_length=100, unique=True)
 
     class Meta:
         ordering = [F('name').asc()]
