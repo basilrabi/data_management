@@ -225,7 +225,7 @@ class EquipmentMobileNumber(Model):
     Mobile number assigned to an equipment for receiving and sending SMS data.
     """
     equipment = OneToOneField(
-        Equipment, blank=True, null=True, on_delete=SET_NULL
+        Equipment, blank=True, null=True, on_delete=PROTECT
     )
     number = PhoneNumberField(unique=True)
     spaceless_number = SpaceLess(
@@ -327,7 +327,7 @@ class ProviderEquipmentRegistry(Model):
     acquisition_condition = BooleanField(
         default=True, choices=ACQUISITION_CONDITION
     )
-    capacity = ForeignKey(Capacity, blank=True, null=True, on_delete=SET_NULL)
+    capacity = ForeignKey(Capacity, blank=True, null=True, on_delete=PROTECT)
     chassis_serial_number = ForeignKey(
         ChassisSerialNumber, blank=True, null=True, on_delete=PROTECT
     )
