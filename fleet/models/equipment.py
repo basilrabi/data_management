@@ -45,6 +45,10 @@ class Capacity(Model):
     unit_of_measure = ForeignKey(UnitOfMeasure, on_delete=PROTECT)
 
     class Meta:
+        constraints = [UniqueConstraint(
+            fields=['unit_of_measure', 'value'],
+            name='unique_equipment_capacity'
+        )]
         ordering = [
             F('unit_of_measure__name').asc(),
             F('value').asc()
