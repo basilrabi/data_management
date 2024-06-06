@@ -16,3 +16,4 @@ GRANT UPDATE                      ON TABLE location_stockpile TO gradecontrol;
 GRANT SELECT ON SEQUENCE location_stockpile_id_seq TO gradecontrol;
 
 GRANT USAGE  ON SEQUENCE location_stockpile_id_seq TO gradecontrol;
+

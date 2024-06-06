@@ -34,3 +34,4 @@ GRANT UPDATE (excavated_date)          ON TABLE sampling_drillcoresample TO plan
 GRANT SELECT ON SEQUENCE location_slice_id_seq TO planning;
 
 GRANT USAGE  ON SEQUENCE location_slice_id_seq TO planning;
+

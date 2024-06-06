@@ -21,3 +21,4 @@ GRANT SELECT ON SEQUENCE location_stockpile_id_seq     TO survey;
 
 GRANT USAGE  ON SEQUENCE location_clusterlayout_id_seq TO survey;
 GRANT USAGE  ON SEQUENCE location_stockpile_id_seq     TO survey;
+
