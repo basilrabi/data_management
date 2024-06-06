@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_shipment_destination
 INSERT INTO shipment_destination (name, description)
 SELECT name, description
 FROM temp_shipment_destination
+

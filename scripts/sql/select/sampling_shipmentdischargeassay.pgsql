@@ -39,3 +39,4 @@ FROM sampling_shipmentdischargeassay a
 ORDER BY
     statement.completed_loading,
     s.name
+

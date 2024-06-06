@@ -31,3 +31,4 @@ FROM shipment_laydaysstatement a
     LEFT JOIN shipment_shipment b
         ON a.shipment_id = b.id
 ORDER BY a.completed_loading, b.name
+

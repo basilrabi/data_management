@@ -8,3 +8,4 @@ FROM comptrollership_sapcostcenter a
 LEFT JOIN comptrollership_profitcenter b
     ON a.profit_center_id = b.id
 ORDER BY a.name
+

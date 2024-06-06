@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_fleet_bodytype
 INSERT INTO fleet_bodytype (name, description)
 SELECT name, description
 FROM temp_fleet_bodytype
+

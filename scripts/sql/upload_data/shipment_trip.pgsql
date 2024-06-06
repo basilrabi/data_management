@@ -39,3 +39,4 @@ FROM temp_shipment_trip
         ON temp_shipment_trip.lct = shipment_lct.name
     LEFT JOIN shipment_vessel
         ON temp_shipment_trip.vessel = shipment_vessel.name;
+

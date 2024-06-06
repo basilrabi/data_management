@@ -32,3 +32,4 @@ SET
     exposure_rate = cte_b.exposure_rate
 FROM cte_b
 WHERE location_cluster.id = cte_b.cluster_id
+

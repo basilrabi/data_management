@@ -13,3 +13,4 @@ WHERE a.approved OR a.certificate IS NOT NULL
 ORDER BY
     statement.completed_loading DESC,
     s.name DESC
+

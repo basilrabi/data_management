@@ -22,3 +22,4 @@ ORDER BY
     a.equipment,
     a.quantity,
     a.total_cost
+

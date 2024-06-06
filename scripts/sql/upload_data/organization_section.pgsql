@@ -11,3 +11,4 @@ SELECT a.name, b.id
 FROM temp_organization_section a
     LEFT JOIN organization_department b
         ON a.department = b.name
+

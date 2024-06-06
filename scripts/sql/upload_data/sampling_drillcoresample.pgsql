@@ -122,3 +122,4 @@ FROM temp_sampling_drillcoresample core
         ON litho.name = core.lithology
     LEFT JOIN sampling_lithology litho_mod
         ON litho_mod.name = core.lithology_modified;
+

@@ -22,3 +22,4 @@ WHERE a.id NOT IN (
     SELECT b.assay_id
     FROM sampling_approvedshipmentdischargeassay b
 )
+

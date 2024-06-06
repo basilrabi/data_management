@@ -43,3 +43,4 @@ FROM sampling_drillcoresample as core
     LEFT JOIN sampling_lithology as litho_mod
         ON core.lithology_modified_id = litho_mod.id
 ORDER BY hole.name, core.interval_from
+

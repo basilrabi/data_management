@@ -24,3 +24,4 @@ WHERE tab2.to IS NOT NULL
 ORDER BY
 	shipment_trip.id,
 	tab1.interval_from
+

@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_material_management_legacyvendor
 INSERT INTO material_management_legacyvendor (name, description)
 SELECT name, description
 FROM temp_material_management_legacyvendor
+

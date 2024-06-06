@@ -26,3 +26,4 @@ SELECT
     ST_Y(geom) y
 FROM inventory_block
 ORDER BY name
+

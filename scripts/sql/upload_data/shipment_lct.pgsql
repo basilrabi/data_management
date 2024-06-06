@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_shipment_lct
 INSERT INTO shipment_lct (name, capacity)
 SELECT name, capacity
 FROM temp_shipment_lct
+

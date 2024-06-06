@@ -12,3 +12,4 @@ CREATE TEMPORARY TABLE temp_shipment_product
 INSERT INTO shipment_product (name, description, moisture, ni, fe)
 SELECT name, description, moisture, ni, fe
 FROM temp_shipment_product
+

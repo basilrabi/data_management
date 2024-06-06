@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_custom_profession
 INSERT INTO custom_profession (name, description)
 SELECT name, description
 FROM temp_custom_profession
+

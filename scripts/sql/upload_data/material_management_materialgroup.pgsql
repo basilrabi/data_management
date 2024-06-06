@@ -12,3 +12,4 @@ INSERT INTO material_management_materialgroup (
 )
 SELECT name, description, long_description
 FROM temp_material_management_materialgroup
+

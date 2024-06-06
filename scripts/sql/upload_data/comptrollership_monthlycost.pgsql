@@ -39,3 +39,4 @@ FROM temp_comptrollership_monthlycost tab_a
         ON tab_a.cost_center = tab_b.name
     LEFT JOIN comptrollership_generalledgeraccount tab_c
         ON tab_a.gl = tab_c.code
+

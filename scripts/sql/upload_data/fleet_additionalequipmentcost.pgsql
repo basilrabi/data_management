@@ -65,3 +65,4 @@ GROUP BY
     tab_a.description,
     tab_a.service_life,
     tab_b.id
+

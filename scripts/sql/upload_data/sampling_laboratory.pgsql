@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_sampling_laboratory
 INSERT INTO sampling_laboratory (name, description)
 SELECT name, description
 FROM temp_sampling_laboratory
+

@@ -32,3 +32,4 @@ UPDATE inventory_block
 SET cluster_id = b.c_id
 FROM b
 WHERE id = b.b_id;
+

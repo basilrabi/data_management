@@ -13,3 +13,4 @@ ORDER BY
     shipment_laydaysstatement.completed_loading,
     shipment_shipment.name,
     shipment_laydaysdetail.interval_from
+

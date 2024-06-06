@@ -116,3 +116,4 @@ SELECT
 	END unplanned_blocks_clustered_and_excavated
 FROM qe
 ORDER BY qe.year, qe.month, qe.ore_class, qe.mine_block
+

@@ -28,3 +28,4 @@ ORDER BY
     tab_a.date_acquired,
     tab_a.description,
     tab_a.asset_code
+

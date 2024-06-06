@@ -15,3 +15,4 @@ SELECT id,
 FROM cte_a
 WHERE ignition
     AND NOT next_ignition
+

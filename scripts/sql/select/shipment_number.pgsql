@@ -53,3 +53,4 @@ SELECT
     id shipment_id,
     the_year || '-' || LPAD(shipment_number::text, 2, '0') number
 FROM numbered
+

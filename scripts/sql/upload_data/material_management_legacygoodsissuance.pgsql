@@ -40,3 +40,4 @@ SELECT
 FROM temp_material_management_legacygoodsissuance a
     LEFT JOIN material_management_legacymaterial b
         ON a.material = b.name
+

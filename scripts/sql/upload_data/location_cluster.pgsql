@@ -57,3 +57,4 @@ FROM temp_location_cluster a
         ON a.road_date = b.date_surveyed
     LEFT JOIN location_stockpile c
         ON a.dumping_area = c.name
+

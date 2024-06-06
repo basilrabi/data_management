@@ -12,3 +12,4 @@ SELECT a.date, a.type, b.id
 FROM temp_local_calendar_holiday a
     LEFT JOIN local_calendar_holidayevent b
         ON a.name = b.name
+

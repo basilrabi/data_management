@@ -24,3 +24,4 @@ WHERE a.id NOT IN (
     SELECT statement_id
     FROM shipment_approvedlaydaysstatement
 )
+

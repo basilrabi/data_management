@@ -41,33 +41,34 @@ left join pg_tables b
 where a.table_type = 'BASE TABLE'
     and a.table_schema not in ('information_schema', 'pg_catalog')
     and not a.table_name ilike any (array[
-        'auth_%',
-        'billing_%',
-	'camp_admin_%',
-        'comptrollership_%',
-        'custom_%',
-        'django_%',
-        'fleet_%',
-        'gammu',
-        'inbox',
-        'inventory_%',
-        'local_calendar_%',
-        'location_%',
-        'material_management_%',
-        'organization_%',
-	'ormm_%',
-        'outbox',
-        'outbox_multipart',
-        'personnel_%',
-        'phones',
-        'sampling_%',
-        'sentitems',
-        'shipment_%',
-        'spatial_ref_sys',
-        'surface_green',
-        'surface_lower',
-        'surface_upper',
-        'temp_ply_%'
+      'auth_%',
+      'billing_%',
+      'camp_admin_%',
+      'comptrollership_%',
+      'custom_%',
+      'django_%',
+      'fleet_%',
+      'gammu',
+      'inbox',
+      'inventory_%',
+      'local_calendar_%',
+      'location_%',
+      'material_management_%',
+      'mine_planning_%',
+      'organization_%',
+      'ormm_%',
+      'outbox',
+      'outbox_multipart',
+      'personnel_%',
+      'phones',
+      'sampling_%',
+      'sentitems',
+      'shipment_%',
+      'spatial_ref_sys',
+      'surface_green',
+      'surface_lower',
+      'surface_upper',
+      'temp_ply_%'
     ])
 order by a.table_schema, a.table_name
 "
@@ -81,19 +82,21 @@ external_tables <- RPostgres::dbGetQuery(conn = con, statement = query) %>%
                        sep = "-")
   )
 
-if (any(duplicated(external_tables$valid_name)))
-  stop("Duplicated name exists.")
+if (nrow(external_tables) > 0) {
+  if (any(duplicated(external_tables$valid_name)))
+    stop("Duplicated name exists.")
 
-if (!dir.exists(paste0(datadir, "/external_tables")))
-  dir.create(paste0(datadir, "/external_tables"))
+  if (!dir.exists(paste0(datadir, "/external_tables")))
+    dir.create(paste0(datadir, "/external_tables"))
 
-write.csv(external_tables,
-          file = paste0(datadir, "/external_tables/tables.csv"),
-          row.names = FALSE,
-          na = "")
+  write.csv(external_tables,
+            file = paste0(datadir, "/external_tables/tables.csv"),
+            row.names = FALSE,
+            na = "")
 
-for (i in 1:nrow(external_tables)) {
-  download_ogr(external_tables$table_schema[i],
-               external_tables$table_name[i],
-               external_tables$valid_name[i])
+  for (i in 1:nrow(external_tables)) {
+    download_ogr(external_tables$table_schema[i],
+                 external_tables$table_name[i],
+                 external_tables$valid_name[i])
+  }
 }

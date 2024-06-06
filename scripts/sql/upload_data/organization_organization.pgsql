@@ -13,3 +13,4 @@ INSERT INTO organization_organization (
 )
 SELECT name, description, service, active
 FROM temp_organization_organization
+

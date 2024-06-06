@@ -29,3 +29,4 @@ ORDER BY
     ld_statement.completed_loading,
     shipment.name,
     detail_from.interval_from
+

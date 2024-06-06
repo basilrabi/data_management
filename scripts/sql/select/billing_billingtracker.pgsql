@@ -14,3 +14,4 @@ SELECT
     tonnage
 FROM billing_billingtracker
 ORDER BY id
+

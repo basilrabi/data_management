@@ -27,3 +27,4 @@ FROM temp_custom_professionalidentificationcard a
         ON a.username = b.username
     LEFT JOIN custom_profession c
         ON a.name = c.name
+

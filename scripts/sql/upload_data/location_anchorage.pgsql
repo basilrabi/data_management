@@ -35,3 +35,4 @@ FROM temp_location_anchorage a
         ON a.name = b.name
     LEFT JOIN shipment_laydaysstatement c
         ON b.id = c.shipment_id;
+

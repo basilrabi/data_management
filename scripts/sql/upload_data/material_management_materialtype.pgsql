@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_material_management_materialtype
 INSERT INTO material_management_materialtype (name, description)
 SELECT name, description
 FROM temp_material_management_materialtype
+

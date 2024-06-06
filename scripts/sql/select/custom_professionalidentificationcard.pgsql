@@ -11,3 +11,4 @@ FROM custom_professionalidentificationcard a
         ON a.profession_id = c.id
 ORDER BY
     c.name, a.number
+

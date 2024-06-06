@@ -85,3 +85,4 @@ FROM temp_shipment_shipment a
         ON p.name = a.product_name
     LEFT JOIN shipment_vessel v
         ON v.name = a.vessel_name
+

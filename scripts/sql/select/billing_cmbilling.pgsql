@@ -14,3 +14,4 @@ ORDER BY
     tab_a.month,
     tab_a.half,
     tab_b.name
+

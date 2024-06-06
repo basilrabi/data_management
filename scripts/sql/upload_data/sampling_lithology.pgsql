@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_sampling_lithology
 INSERT INTO sampling_lithology (name, description)
 SELECT name, description
 FROM temp_sampling_lithology
+

@@ -24,3 +24,4 @@ ORDER BY
 	a.count,
 	a.mine_block,
 	a.ore_class
+

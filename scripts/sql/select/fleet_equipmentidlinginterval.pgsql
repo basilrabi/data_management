@@ -15,3 +15,4 @@ SELECT id,
 FROM cte_a
 WHERE idling
     AND NOT next_idling
+

@@ -79,3 +79,4 @@ SELECT
     lc.z
 FROM clipped, grade_average, location_cluster lc
 WHERE clipped.id = grade_average.id AND grade_average.id = lc.id
+

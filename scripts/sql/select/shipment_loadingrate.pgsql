@@ -80,3 +80,4 @@ SELECT
 FROM cte_g
     LEFT JOIN cte_f
         ON cte_f.loading_date = cte_g.loading_date
+

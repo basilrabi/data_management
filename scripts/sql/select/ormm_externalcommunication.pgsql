@@ -13,3 +13,4 @@ FROM ormm_externalcommunication a
 ORDER BY
     RIGHT(a.transmittal_number, 4),
     LEFT(RIGHT(a.transmittal_number, 8), 3)
+

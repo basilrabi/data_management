@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_fleet_equipmentclass
 INSERT INTO fleet_equipmentclass (name, description)
 SELECT name, description
 FROM temp_fleet_equipmentclass
+

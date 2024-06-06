@@ -14,3 +14,4 @@ FROM temp_billing_shipmentbilling a,
     shipment_laydaysstatement c
 WHERE a.shipment = b.name
     AND b.id = c.shipment_id
+

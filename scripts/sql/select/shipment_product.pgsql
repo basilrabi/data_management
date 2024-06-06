@@ -6,3 +6,4 @@ SELECT
     fe
 FROM shipment_product
 ORDER BY name
+

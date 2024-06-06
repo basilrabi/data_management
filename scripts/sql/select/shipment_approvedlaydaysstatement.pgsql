@@ -9,3 +9,4 @@ FROM shipment_approvedlaydaysstatement a
         ON s.id = b.shipment_id
 WHERE a.approved or a.signed_statement IS NOT NULL
 ORDER BY b.completed_loading DESC
+

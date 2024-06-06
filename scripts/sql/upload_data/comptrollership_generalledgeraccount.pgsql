@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_comptrollership_generalledgeraccount
 INSERT INTO comptrollership_generalledgeraccount (code, description)
 SELECT code, description
 FROM temp_comptrollership_generalledgeraccount
+

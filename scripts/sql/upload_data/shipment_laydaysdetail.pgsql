@@ -27,3 +27,4 @@ FROM temp_shipment_laydaysdetail
         ON temp_shipment_laydaysdetail.name = shipment_shipment.name
     LEFT JOIN shipment_laydaysstatement
         ON shipment_shipment.id = shipment_laydaysstatement.shipment_id;
+

@@ -24,3 +24,4 @@ FROM temp_fleet_equipmentmodel a
         ON a.equipment_class = b.name
     LEFT JOIN fleet_equipmentmanufacturer c
         ON a.manufacturer = c.name;
+

@@ -8,3 +8,4 @@ ORDER BY
 	b.mine_block,
 	b.ore_class,
 	a.layout_date
+

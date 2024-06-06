@@ -51,3 +51,4 @@ FROM temp_material_management_legacygoodsreceivednote a
         ON a.material = b.name
     LEFT JOIN material_management_legacyvendor c
         ON a.vendor = c.name
+

@@ -13,3 +13,4 @@ FROM location_cluster
 WHERE geom IS NOT NULL
 	AND NOT excavated
 ORDER BY ore_class, count
+

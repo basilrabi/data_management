@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_shipment_vessel
 INSERT INTO shipment_vessel (name, stripped_name)
 SELECT name, stripped_name
 FROM temp_shipment_vessel
+

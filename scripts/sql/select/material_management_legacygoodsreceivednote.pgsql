@@ -26,3 +26,4 @@ ORDER BY
     c.name,
     a.invoice_number,
     a.quantity
+

@@ -55,3 +55,4 @@ SELECT
 FROM cte_a
 LEFT JOIN custom_user tab_b
     ON cte_a.username = tab_b.username
+

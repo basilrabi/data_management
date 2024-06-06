@@ -94,3 +94,4 @@ SELECT
 FROM temp_shipment_laydaysstatement a
     LEFT JOIN shipment_shipment b
         ON b.name = a.shipment_name
+

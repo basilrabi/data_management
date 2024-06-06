@@ -18,3 +18,4 @@ FROM temp_sampling_shipmentloadinglotassay a
         ON s.name = a.shipment_name
     LEFT JOIN sampling_shipmentloadingassay assay
         ON assay.shipment_id = s.id
+

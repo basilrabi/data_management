@@ -38,3 +38,4 @@ SELECT
     z,
     z_present
 FROM temp_location_drillhole;
+

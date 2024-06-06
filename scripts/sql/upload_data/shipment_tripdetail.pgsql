@@ -28,3 +28,4 @@ GROUP BY
     temp_shipment_tripdetail.interval_class,
     temp_shipment_tripdetail.remarks,
     shipment_trip.id
+

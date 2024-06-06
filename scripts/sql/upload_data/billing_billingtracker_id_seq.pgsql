@@ -3,3 +3,4 @@ WITH cte as (
 )
 SELECT setval('billing_billingtracker_id_seq'::regclass, id)
 FROM cte;
+

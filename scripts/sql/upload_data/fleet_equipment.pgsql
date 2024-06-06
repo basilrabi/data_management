@@ -159,3 +159,4 @@ SELECT
     body_type_id,
     oid
 FROM cte_b
+

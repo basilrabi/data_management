@@ -9,3 +9,4 @@ FROM fleet_equipmentmodel a
     LEFT JOIN fleet_equipmentmanufacturer c
         ON a.manufacturer_id = c.id
 ORDER BY a.name
+

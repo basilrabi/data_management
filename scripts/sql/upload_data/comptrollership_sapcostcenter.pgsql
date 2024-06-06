@@ -25,3 +25,4 @@ SELECT
 FROM temp_comptrollership_sapcostcenter a
 LEFT JOIN comptrollership_profitcenter b
     ON a.profit_center = b.name
+

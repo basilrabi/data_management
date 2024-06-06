@@ -13,3 +13,4 @@ SELECT a.start, a."end", b.id
 FROM temp_shipment_lctcontract a
     LEFT JOIN shipment_lct b
         ON a.name = b.name
+

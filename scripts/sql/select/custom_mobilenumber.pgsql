@@ -7,3 +7,4 @@ FROM custom_mobilenumber a
         ON a.user_id = b.id
 ORDER BY
     a.spaceless_number
+

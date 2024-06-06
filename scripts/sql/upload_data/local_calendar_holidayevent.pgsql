@@ -9,3 +9,4 @@ CREATE TEMPORARY TABLE temp_local_calendar_holidayevent
 INSERT INTO local_calendar_holidayevent (name, description)
 SELECT name, description
 FROM temp_local_calendar_holidayevent
+

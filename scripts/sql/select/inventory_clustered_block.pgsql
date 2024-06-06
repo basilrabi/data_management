@@ -1,4 +1,5 @@
-SELECT block.name
-FROM inventory_block block
-WHERE block.cluster_id IS NOT NULL
-ORDER BY block.name
+SELECT name
+FROM inventory_block
+WHERE cluster_id IS NOT NULL
+ORDER BY name
+

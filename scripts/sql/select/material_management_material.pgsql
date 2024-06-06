@@ -16,3 +16,4 @@ FROM material_management_material tab_a
     LEFT JOIN material_management_valuation tab_e
         ON tab_a.valuation_id = tab_e.id
 ORDER BY tab_a.name
+

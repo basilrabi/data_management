@@ -30,3 +30,4 @@ FROM temp_shipment_laydaysdetailcomputed a
         ON a.name = b.name
     LEFT JOIN shipment_laydaysstatement c
         ON b.id = c.shipment_id;
+

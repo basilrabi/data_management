@@ -18,6 +18,14 @@ fi
 
 source scripts/functions.sh
 
+if [ "$db_name" = "data_management" ] && [ "$db_user" = "data_management" ]; then
+    echo "Uploading in production." 2>&1 | tee -a log_upload_data
+    extra=""
+else
+    echo "Uploading in test environment" 2>&1 | tee -a log_upload_data
+    extra="subset"
+fi
+
 upload_ogr () {
     echo "Uploading $1." 2>&1 | tee -a log_upload_data && \
     time_start=$(date +%s) && \
@@ -38,28 +46,50 @@ sql_script "function" "slope_angle" && \
 sql_script "function" "vectors" && \
 sql_script "procedure" "insert_dummy_cluster" && \
 sql_script "procedure" "record_log" && \
-sql_script "upload_data" "comptrollership_costcenter" && \
-vacuum "comptrollership_costcenter" && \
+sql_script "upload_data" "comptrollership_activitycategory" && \
+vacuum "comptrollership_activitycategory" && \
+sql_script "upload_data" "comptrollership_activitycode" && \
+vacuum "comptrollership_activitycode" && \
 sql_script "upload_data" "comptrollership_generalledgeraccount" && \
 vacuum "comptrollership_generalledgeraccount" && \
+sql_script "upload_data" "comptrollership_material" && \
+vacuum "comptrollership_material" && \
+sql_script "upload_data" "comptrollership_costcenter" && \
+vacuum "comptrollership_costcenter" && \
+sql_script "upload_data" "comptrollership_operationhead" && \
+vacuum "comptrollership_operationhead" && \
 sql_script "upload_data" "comptrollership_profitcenter" && \
 vacuum "comptrollership_profitcenter" && \
 sql_script "upload_data" "comptrollership_sapcostcenter" && \
 vacuum "comptrollership_sapcostcenter" && \
-sql_script "upload_data" "comptrollership_costcenterconversion" && \
-vacuum "comptrollership_costcenterconversion" && \
 sql_script "upload_data" "comptrollership_monthlycost" && \
 vacuum "comptrollership_monthlycost" && \
+sql_script "upload_data" "custom_unitofmeasure" && \
+vacuum "custom_unitofmeasure" && \
+sql_script "upload_data" "fleet_capacity" && \
+vacuum "fleet_capacity" && \
+sql_script "upload_data" "fleet_chassisserialnumber" && \
+vacuum "fleet_chassisserialnumber" && \
+sql_script "upload_data" "fleet_engineserialnumber" && \
+vacuum "fleet_engineserialnumber" && \
 sql_script "upload_data" "fleet_equipmentclass" && \
 vacuum "fleet_equipmentclass" && \
 sql_script "upload_data" "fleet_equipmentmanufacturer" && \
 vacuum "fleet_equipmentmanufacturer" && \
+sql_script "upload_data" "fleet_platenumber" && \
+vacuum "fleet_platenumber" && \
+sql_script "upload_data" "mine_planning_maptype" && \
+vacuum "mine_planning_maptype" && \
+sql_script "upload_data" "mine_planning_mineplanningengineer" && \
+vacuum "mine_planning_mineplanningengineer" && \
 sql_script "upload_data" "organization_organization" && \
 vacuum "organization_organization" && \
 sql_script "upload_data" "organization_division" && \
 vacuum "organization_division" && \
 sql_script "upload_data" "organization_department" && \
 vacuum "organization_department" && \
+sql_script "upload_data" "organization_manilagpsapikey" && \
+vacuum "organization_manilagpsapikey" && \
 sql_script "upload_data" "organization_section" && \
 vacuum "organization_section" && \
 sql_script "helper" "organization_organizationunit" && \
@@ -70,7 +100,7 @@ vacuum "billing_billingaddon" && \
 vacuum "billing_billingtracker" && \
 sql_script "upload_data" "billing_cmbilling" && \
 vacuum "billing_cmbilling" && \
-sql_script "upload_data" "inventory_block" && \
+sql_script "upload_data" "inventory_block$extra" && \
 upload_ogr location_blgu identity && \
 upload_ogr location_fla identity && \
 upload_ogr location_mineblock identity && \
@@ -79,6 +109,10 @@ upload_ogr location_peza identity && \
 upload_ogr location_roadarea identity && \
 upload_ogr location_slice identity && \
 sql_script "trigger" "location_cluster_insert" && \
+sql_script "upload_data" "comptrollership_costcenterconversion" && \
+vacuum "comptrollership_costcenterconversion" && \
+sql_script "upload_data" "comptrollership_costcenterconversion_equipment" && \
+vacuum "comptrollership_costcenterconversion_equipment" && \
 sql_script "upload_data" "fleet_bodytype" && \
 vacuum "fleet_bodytype" && \
 sql_script "upload_data" "fleet_equipmentmodel" && \
@@ -97,6 +131,10 @@ sql_script "index" "fleet_equipmentignitioninterval" && \
 vacuum "fleet_equipmentignitioninterval" && \
 sql_script "upload_data" "fleet_additionalequipmentcost" && \
 vacuum "fleet_additionalequipmentcost" && \
+sql_script "upload_data" "fleet_equipmentmobilenumber" && \
+vacuum "fleet_equipmentmobilenumber" && \
+sql_script "upload_data" "fleet_providerequipmentregistry" && \
+vacuum "fleet_providerequipmentregistry" && \
 sql_script "upload_data" "local_calendar_holidayevent" && \
 vacuum "local_calendar_holidayevent" && \
 sql_script "upload_data" "local_calendar_holiday" && \
@@ -134,6 +172,8 @@ sql_script "upload_data" "material_management_valuation" && \
 vacuum "material_management_valuation" && \
 sql_script "upload_data" "material_management_material" && \
 vacuum "material_management_material" && \
+sql_script "upload_data" "mine_planning_mapdocumentcontrol" && \
+vacuum "mine_planning_mapdocumentcontrol" && \
 sql_script "upload_data" "ormm_externalincomingcommunication" && \
 vacuum "ormm_externalincomingcommunication" && \
 sql_script "upload_data" "ormm_externalcommunication" && \
@@ -156,6 +196,8 @@ sql_script "upload_data" "shipment_vessel" && \
 vacuum "shipment_vessel" && \
 sql_script "upload_data" "shipment_shipment" && \
 vacuum "shipment_shipment" && \
+sql_script "upload_data" "shipment_draftsurvey" && \
+vacuum "shipment_draftsurvey" && \
 sql_script "upload_data" "shipment_laydaysstatement" && \
 vacuum "shipment_laydaysstatement" && \
 sql_script "upload_data" "billing_shipmentbilling" && \
@@ -192,7 +234,7 @@ sql_script "upload_data" "custom_mobilenumber" && \
 vacuum "custom_mobilenumber" && \
 sql_script "upload_data" "custom_professionalidentificationcard" && \
 vacuum "custom_professionalidentificationcard" && \
-sql_script "upload_data" "location_equipmentlocation" && \
+sql_script "upload_data" "location_equipmentlocation$extra" && \
 vacuum "location_equipmentlocation" && \
 sql_script "select" "location_haulingequipment" && \
 sql_script "index" "location_haulingequipment" && \

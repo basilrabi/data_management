@@ -39,3 +39,4 @@ FROM sampling_shipmentloadingassay a
 ORDER BY
     statement.completed_loading DESC,
     s.name DESC
+

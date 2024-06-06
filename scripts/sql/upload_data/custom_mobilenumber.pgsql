@@ -19,3 +19,4 @@ SELECT
 FROM temp_custom_mobilenumber a
     LEFT JOIN custom_user b
         ON a.username = b.username
+

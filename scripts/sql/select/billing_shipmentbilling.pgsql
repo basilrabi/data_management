@@ -5,3 +5,4 @@ FROM billing_shipmentbilling a,
 WHERE a.shipment_id = b.id
     AND b.shipment_id = c.id
 ORDER BY b.completed_loading, c.name
+

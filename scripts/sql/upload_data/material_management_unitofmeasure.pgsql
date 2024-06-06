@@ -11,3 +11,4 @@ CREATE TEMPORARY TABLE temp_material_management_unitofmeasure
 INSERT INTO material_management_unitofmeasure (name, description, iso, unit)
 SELECT name, description, iso, unit
 FROM temp_material_management_unitofmeasure
+

@@ -82,3 +82,4 @@ ORDER BY
     shipment_lct.name,
     cte.interval_from,
     cte.vessel
+

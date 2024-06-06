@@ -16,3 +16,4 @@ WHERE a.approved OR
 ORDER BY
     statement.completed_loading DESC,
     s.name DESC
+

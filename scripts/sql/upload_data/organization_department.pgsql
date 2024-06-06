@@ -12,3 +12,4 @@ SELECT a.abbreviation, a.name, b.id
 FROM temp_organization_department a
     LEFT JOIN organization_division b
         ON a.division = b.name
+

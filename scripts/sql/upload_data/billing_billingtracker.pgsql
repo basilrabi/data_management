@@ -79,3 +79,4 @@ SELECT
 FROM temp_billing_billingaddon a
     LEFT JOIN temp_billing_billingtracker b
         ON a.billing_id = b.id;
+

@@ -102,3 +102,4 @@ FROM temp_sampling_shipmentdischargeassay a
         ON l.name = a.laboratory_name
     LEFT JOIN shipment_shipment s
         ON s.name = a.shipment_name
+
