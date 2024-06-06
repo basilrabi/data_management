@@ -13,6 +13,7 @@ from .local import (
     db_host,
     db_name,
     db_password,
+    db_template,
     db_user,
     db_port,
     email_address,
@@ -45,7 +46,7 @@ DATABASES = {
         'HOST': db_host,
         'PORT': db_port,
         'TEST': {
-            'TEMPLATE': 'data_management_template',
+            'TEMPLATE': db_template,
         },
     }
 }

@@ -75,11 +75,11 @@ class DraftSurvey(Model):
 
     class Meta:
         ordering = [
-            F('shipment__laydaysstatement__completed_loading').desc(nulls_last=False),
-            F('shipment__laydaysstatement__nor_accepted').desc(nulls_last=False),
-            F('shipment__laydaysstatement__nor_tender').desc(nulls_last=False),
-            F('shipment__laydaysstatement__arrival_tmc').desc(nulls_last=False),
-            F('shipment__laydaysstatement__arrival_pilot').desc(nulls_last=False),
+            F('shipment__laydaysstatement__completed_loading').desc(),
+            F('shipment__laydaysstatement__nor_accepted').desc(),
+            F('shipment__laydaysstatement__nor_tender').desc(),
+            F('shipment__laydaysstatement__arrival_tmc').desc(),
+            F('shipment__laydaysstatement__arrival_pilot').desc(),
             F('shipment__name').desc()
         ]
 
@@ -294,8 +294,8 @@ class ApprovedLayDaysStatement(Model):
     class Meta:
         ordering = [
             'approved',
-            F('statement__completed_loading').desc(nulls_last=False),
-            F('statement__arrival_tmc').desc(nulls_last=False)
+            F('statement__completed_loading').desc(),
+            F('statement__arrival_tmc').desc()
         ]
 
     def __str__(self):
@@ -692,11 +692,11 @@ class LayDaysStatement(Model):
 
     class Meta:
         ordering = [
-            F('completed_loading').desc(nulls_last=False),
-            F('nor_accepted').desc(nulls_last=False),
-            F('nor_tender').desc(nulls_last=False),
-            F('arrival_tmc').desc(nulls_last=False),
-            F('arrival_pilot').desc(nulls_last=False)
+            F('completed_loading').desc(),
+            F('nor_accepted').desc(),
+            F('nor_tender').desc(),
+            F('arrival_tmc').desc(),
+            F('arrival_pilot').desc()
         ]
 
     def __str__(self):
@@ -858,11 +858,11 @@ class Shipment(Model):
         ]
         indexes = [Index(fields=['name'])]
         ordering = [
-            F('laydaysstatement__completed_loading').desc(nulls_last=False),
-            F('laydaysstatement__nor_accepted').desc(nulls_last=False),
-            F('laydaysstatement__nor_tender').desc(nulls_last=False),
-            F('laydaysstatement__arrival_tmc').desc(nulls_last=False),
-            F('laydaysstatement__arrival_pilot').desc(nulls_last=False),
+            F('laydaysstatement__completed_loading').desc(),
+            F('laydaysstatement__nor_accepted').desc(),
+            F('laydaysstatement__nor_tender').desc(),
+            F('laydaysstatement__arrival_tmc').desc(),
+            F('laydaysstatement__arrival_pilot').desc(),
             F('name').desc()
         ]
 
