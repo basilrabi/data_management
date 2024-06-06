@@ -279,7 +279,7 @@ class PlateNumber(Model):
     """
     LTO conduction number of equipment
     """
-    plate_number = AlphaNumeric(max_length=10)
+    plate_number = AlphaNumeric(max_length=10, unique=True)
 
     class Meta:
         ordering = [F('plate_number').asc()]
