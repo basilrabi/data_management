@@ -10,9 +10,9 @@ The system packages below are required to be installed in Fedora 37+:
 - gdal
 - libpq-devel
 - nginx
-- postgis-llvmjit
+- postgis
 - postgresql-contrib
-- postgresql-llvmjit
+- postgresql-server
 - python3-devel
 - python3-virtualenvwrapper
 - rabbitmq-server
@@ -165,15 +165,10 @@ uploading the exported production data and migrating (testing) your changes is d
 
 ```
 # export the production files
-./scripts/export_data.sh
-
-# set-up an empty database with all models fully migrated
-./scripts/clean_db.sh
-
-# upload the production data into your development environment
-./scripts/upload_data.sh
+./scripts/clone_data.sh
 
 # run you development instance
+workon data_management
 ./manage.py runserver
 ```
 
@@ -186,3 +181,4 @@ cp data_management/developer.py.sample data_management/developer.py
 ### Notes for Additional Feature Development
 
 1. New installation requirements shall be encoded in the real_requirements file, and not in the requirements.txt file.
+
