@@ -409,7 +409,7 @@ class TripAdmin(ModelAdmin):
         'continuous'
     )
     list_filter = ['continuous', 'status', 'valid', 'lct']
-    readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to']
+    readonly_fields = ['valid', 'continuous', 'interval_from', 'interval_to', 'valid_vessels']
     search_fields = ['lct__name', 'vessel__name']
 
     def add_view(self, request, form_url='', extra_context=None):

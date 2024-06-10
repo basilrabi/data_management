@@ -17,6 +17,7 @@ from django.db.models import (
 )
 
 from custom.fields import NameField
+from .dso import LayDaysStatement
 
 
 class LCT(Model):
@@ -97,6 +98,16 @@ class Trip(Model):
         if self.interval_to:
             return self.interval_to - self.interval_from
         return timedelta(0)
+
+    def valid_vessels(self) -> str:
+        if self.interval_from and self.interval_to:
+            vessels = []
+            for statement in LayDaysStatement.objects.filter(commenced_loading__lte=self.interval_to, completed_loading__gte=self.interval_from):
+                vessels.append(statement.shipment.vessel.name)
+            if len(vessels) > 0:
+                vessels.sort()
+                return ', '.join(vessels)
+        return ''
 
     def clean(self):
         if self.status != 'rejected':
