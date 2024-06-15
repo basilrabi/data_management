@@ -4,64 +4,72 @@ begin <- Sys.time()
 
 source("scripts/R/pull_manila_gps_common.R")
 
-equipment_list <- dplyr::left_join(
-  dm_equipment,
-  dplyr::mutate(latest_point, max = max + lubridate::seconds(1))
-) %>%
-  dplyr::mutate(max = dplyr::case_when(
-    is.na(max) ~ as.POSIXct(minimum_timestamp),
-    TRUE ~ max
-  ))
+lapply(1:length(data_set), function(idx) {
+  owner <- data_set[[idx]][[1]]
+  equipment_list <- dplyr::left_join(
+    data_set[[idx]][[3]],
+    dplyr::mutate(latest_point, max = max + lubridate::seconds(1))
+  ) %>%
+    dplyr::mutate(max = dplyr::case_when(
+      is.na(max) ~ as.POSIXct(minimum_timestamp),
+      TRUE ~ max
+    ))
 
-if (any(is.na(equipment_list$id))) {
-  stop("Unregistered equipment detected.")
-}
+  if (any(is.na(equipment_list$id))) {
+    cat(sprintf("WARNING. Unregistered equipment detected for %s:", owner))
+    unregistered <- dplyr::filter(equipment_list, is.na(id)) %>%
+      dplyr::mutate(unit = sprintf(
+        "%s-%s-%03i", owner, equipment_class, fleet_number
+      ))
+    cat(paste(unregistered$unit, collapse = "\n"))
+    equipment_list <- dplyr::filter(equipment_list, !is.na(id))
+  }
 
-now <- Sys.time()
-tracker_period <- lapply(1:nrow(equipment_list), function(x) {
-  data.frame(
-    x = equipment_list$tracker_id[x],
-    y = seq(from = equipment_list$max[x],
-            to = now,
-            by = "7 days")
-  )
-}) %>%
-  dplyr::bind_rows()
+  now <- Sys.time()
+  tracker_period <- lapply(1:nrow(equipment_list), function(x) {
+    data.frame(
+      x = equipment_list$tracker_id[x],
+      y = seq(from = equipment_list$max[x],
+              to = now,
+              by = "7 days")
+    )
+  }) %>%
+    dplyr::bind_rows()
 
-lapply(1:nrow(tracker_period), function(z) {
-  url <- paste0(
-    host,
-    "track/read/?simplify=false&tracker_id=",
-    tracker_period$x[z],
-    "&from=",
-    format(tracker_period$y[z], format = "%Y-%m-%d%%20%H:%M:%S"),
-    "&to=",
-    format(tracker_period$y[z] + lubridate::days(7) - lubridate::seconds(1),
-           format = "%Y-%m-%d%%20%H:%M:%S"),
-    "&",
-    hash
-  )
-  api_output <- pull_retry(url)
-  cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
-  if (is.data.frame(api_output)) {
-    cat(url, "\n")
-    equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]
-    output <- sf::st_as_sf(api_output, coords = c("lng", "lat")) %>%
-      dplyr::select(time_stamp = get_time,
-                    satellites,
-                    heading,
-                    speed) %>%
-      dplyr::arrange(time_stamp)
-    output$id <- 1:nrow(output)
-    table_name <- paste0(tracker_period$x[z], "-", tracker_period$y[z])
-    sf::st_write(output, con, table_name)
-    sql <- sprintf("select UpdateGeometrySRID('public', '%s', 'geometry', 4326)", table_name)
-    exec_retry(sql)
-    sql <- sprintf('alter table "%s" add unique(id)', table_name)
-    exec_retry(sql)
-    sql <- sprintf('vacuum analyze "%s"', table_name)
-    exec_retry(sql)
-    sql <- sprintf('
+  lapply(1:nrow(tracker_period), function(z) {
+    url <- paste0(
+      host,
+      "track/read/?simplify=false&tracker_id=",
+      tracker_period$x[z],
+      "&from=",
+      format(tracker_period$y[z], format = "%Y-%m-%d%%20%H:%M:%S"),
+      "&to=",
+      format(tracker_period$y[z] + lubridate::days(7) - lubridate::seconds(1),
+             format = "%Y-%m-%d%%20%H:%M:%S"),
+      "&hash=",
+      hashes$key[idx]
+    )
+    api_output <- pull_retry(url)
+    cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
+    if (is.data.frame(api_output)) {
+      cat(url, "\n")
+      equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]
+      output <- sf::st_as_sf(api_output, coords = c("lng", "lat")) %>%
+        dplyr::select(time_stamp = get_time,
+                      satellites,
+                      heading,
+                      speed) %>%
+        dplyr::arrange(time_stamp)
+      output$id <- 1:nrow(output)
+      table_name <- paste0(tracker_period$x[z], "-", tracker_period$y[z])
+      sf::st_write(output, con, table_name)
+      sql <- sprintf("select UpdateGeometrySRID('public', '%s', 'geometry', 4326)", table_name)
+      exec_retry(sql)
+      sql <- sprintf('alter table "%s" add unique(id)', table_name)
+      exec_retry(sql)
+      sql <- sprintf('vacuum analyze "%s"', table_name)
+      exec_retry(sql)
+      sql <- sprintf('
         with cte_a as (
           select
             tab_a.time_stamp,
@@ -144,10 +152,12 @@ lapply(1:nrow(tracker_period), function(z) {
           speed,
           geom
         from cte_c', table_name, table_name, table_name, equipment_id)
-    cat("Inserted", exec_retry(sql), "new equipment locations.\n")
-    sql <- sprintf('drop table "%s"', table_name)
-    exec_retry(sql)
-  }
+      cat("Inserted", exec_retry(sql), "new equipment locations.\n")
+      sql <- sprintf('drop table "%s"', table_name)
+      exec_retry(sql)
+    }
+  })
+
 })
 
 exec_retry("vacuum analyze location_equipmentlocation")
