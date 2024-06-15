@@ -16,12 +16,12 @@ lapply(1:length(data_set), function(idx) {
     ))
 
   if (any(is.na(equipment_list$id))) {
-    cat(sprintf("WARNING. Unregistered equipment detected for %s:", owner))
+    cat(sprintf("WARNING. Unregistered equipment detected for %s:\n", owner))
     unregistered <- dplyr::filter(equipment_list, is.na(id)) %>%
       dplyr::mutate(unit = sprintf(
         "%s-%s-%03i", owner, equipment_class, fleet_number
       ))
-    cat(paste(unregistered$unit, collapse = "\n"))
+    cat(paste(unregistered$unit, collapse = "\n"), "\n")
     equipment_list <- dplyr::filter(equipment_list, !is.na(id))
   }
 

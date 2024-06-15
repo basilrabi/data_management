@@ -28,12 +28,12 @@ lapply(1:length(data_set), function(idx) {
   owner <- data_set[[idx]][[1]]
   dm_equipment <- data_set[[idx]][[3]]
   if (any(is.na(dm_equipment$id))) {
-    cat(sprintf("WARNING. Unregistered equipment detected for %s:", owner))
+    cat(sprintf("WARNING. Unregistered equipment detected for %s:\n", owner))
     unregistered <- dplyr::filter(dm_equipment, is.na(id)) %>%
       dplyr::mutate(unit = sprintf(
         "%s-%s-%03i", owner, equipment_class, fleet_number
       ))
-    cat(paste(unregistered$unit, collapse = "\n"))
+    cat(paste(unregistered$unit, collapse = "\n"), "\n")
     dm_equipment <- dplyr::filter(dm_equipment, !is.na(id))
   }
 
