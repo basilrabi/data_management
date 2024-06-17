@@ -119,3 +119,4 @@ from location_equipmentlocation
 group by equipment_id
                                       ") %>%
   dplyr::mutate(max = lubridate::with_tz(max, "Asia/Manila"))
+

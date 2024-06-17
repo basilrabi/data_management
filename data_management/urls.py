@@ -30,6 +30,7 @@ urlpatterns = [
     path('inventory/', include('inventory.urls')),
     path('location/', include('location.urls')),
     path('map/', include('map.urls')),
+    path('organization/', include('organization.urls')),
     path('sampling/', include('sampling.urls')),
     path('shipment/', include('shipment.urls'))
 ]

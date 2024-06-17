@@ -1,3 +1,4 @@
+from datetime import date
 from django.db.models import  (
     BooleanField,
     CharField,
@@ -76,6 +77,54 @@ class ServiceProvider(Organization):
 
     class Meta:
         proxy = True
+
+    def count_equipment(self, equipment_class, year=None) -> int:
+        """
+        Given an equipment_class and a year, return the count of equipment in the registry.
+        """
+        if not year:
+            year = date.today().year
+        units = self.equipment_set.filter(equipment_class__name=equipment_class)
+        count = 0
+        if units.count() > 0:
+            for unit in units:
+                try:
+                    if unit.providerequipmentregistry_set.filter(year=year, pull_out_date__isnull=True).exists():
+                        count += 1
+                except ValueError:
+                    pass
+        return count
+
+    def equipment_registry_count(self, year=None) -> dict:
+        ad = self.count_equipment('AD', year)
+        ct = self.count_equipment('CT', year)
+        dt = self.count_equipment('DT', year)
+        ft = self.count_equipment('FT', year)
+        rg = self.count_equipment('RG', year)
+        st = self.count_equipment('ST', year)
+        sv = self.count_equipment('SV', year)
+        tl = self.count_equipment('TL', year)
+        tx = self.count_equipment('TX', year)
+        vr = self.count_equipment('VR', year)
+        wl = self.count_equipment('WL', year)
+        wt = self.count_equipment('WT', year)
+        total = ad + ct + dt + ft + rg + st + sv + tl + tx + vr + wl + wt
+        return {
+            'contractor': self.__str__(),
+            'AD': ad,
+            'CT': ct,
+            'DT': dt,
+            'FT': ft,
+            'RG': rg,
+            'ST': st,
+            'SV': sv,
+            'TL': tl,
+            'TX': tx,
+            'VR': vr,
+            'WL': wl,
+            'WT': wt,
+            'Total': total
+        }
 
 
 class Section(Model):

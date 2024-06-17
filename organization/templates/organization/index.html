@@ -1,0 +1,77 @@
+{% extends "custom/base_generic.html" %}
+{% block title %}
+<title>Mining Contractors</title>
+{% endblock %}
+{% load static %}
+{% block activecontractors %} active{% endblock %}
+{% block content %}
+<p class="ws1"></p>
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10"><h3>Summary of Equipment Registry</h3></div>
+    <div class="col-1"></div>
+</div>
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Contractor</th>
+                    <th class="text-end">AD</th>
+                    <th class="text-end">CT</th>
+                    <th class="text-end">DT</th>
+                    <th class="text-end">FT</th>
+                    <th class="text-end">RG</th>
+                    <th class="text-end">ST</th>
+                    <th class="text-end">SV</th>
+                    <th class="text-end">TL</th>
+                    <th class="text-end">TX</th>
+                    <th class="text-end">VR</th>
+                    <th class="text-end">WL</th>
+                    <th class="text-end">WT</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contractor in contractors %}
+                <tr>
+                    {% if contractor.contractor == 'TOTAL' %}
+                    <td><b>{{ contractor.contractor }}</b></td>
+                    <td class="text-end"><b>{{ contractor.AD }}</b></td>
+                    <td class="text-end"><b>{{ contractor.CT }}</b></td>
+                    <td class="text-end"><b>{{ contractor.DT }}</b></td>
+                    <td class="text-end"><b>{{ contractor.FT }}</b></td>
+                    <td class="text-end"><b>{{ contractor.RG }}</b></td>
+                    <td class="text-end"><b>{{ contractor.ST }}</b></td>
+                    <td class="text-end"><b>{{ contractor.SV }}</b></td>
+                    <td class="text-end"><b>{{ contractor.TL }}</b></td>
+                    <td class="text-end"><b>{{ contractor.TX }}</b></td>
+                    <td class="text-end"><b>{{ contractor.VR }}</b></td>
+                    <td class="text-end"><b>{{ contractor.WL }}</b></td>
+                    <td class="text-end"><b>{{ contractor.WT }}</b></td>
+                    <td class="text-end"><b>{{ contractor.Total }}</b></td>
+                    {% else %}
+                    <td>{{ contractor.contractor }}</td>
+                    <td class="text-end">{{ contractor.AD }}</td>
+                    <td class="text-end">{{ contractor.CT }}</td>
+                    <td class="text-end">{{ contractor.DT }}</td>
+                    <td class="text-end">{{ contractor.FT }}</td>
+                    <td class="text-end">{{ contractor.RG }}</td>
+                    <td class="text-end">{{ contractor.ST }}</td>
+                    <td class="text-end">{{ contractor.SV }}</td>
+                    <td class="text-end">{{ contractor.TL }}</td>
+                    <td class="text-end">{{ contractor.TX }}</td>
+                    <td class="text-end">{{ contractor.VR }}</td>
+                    <td class="text-end">{{ contractor.WL }}</td>
+                    <td class="text-end">{{ contractor.WT }}</td>
+                    <td class="text-end"><b>{{ contractor.Total }}</b></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-1"></div>
+</div>
+{% endblock %}
