@@ -129,7 +129,7 @@ class EquipmentAdmin(ModelAdmin):
 
 @register(EquipmentClass)
 class EquipmentClassAdmin(ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'description', 'code')
 
 
 @register(EquipmentIdlingTime)

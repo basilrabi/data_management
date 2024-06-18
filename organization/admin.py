@@ -34,8 +34,8 @@ class ManilaGpsApiKeyAdmin(ModelAdmin):
 
 @register(Organization)
 class OrganizationAdmin(ModelAdmin):
-    list_display = ('name', 'description', 'service', 'active')
-    search_fields = ['description', 'name', 'service']
+    list_display = ('name', 'description', 'service', 'active', 'warehouse_code')
+    search_fields = ['description', 'name', 'service', 'warehouse_code']
 
     def get_search_results(self, request, queryset, search_term):
         queryset, may_have_duplicates = super().get_search_results(

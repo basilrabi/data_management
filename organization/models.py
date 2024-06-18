@@ -8,6 +8,7 @@ from django.db.models import  (
     PROTECT
 )
 
+from custom.fields import NameField
 from custom.models import Classification
 
 
@@ -47,8 +48,9 @@ class Organization(Classification):
         ('Government Agency', 'Govt')
     )
 
-    service = CharField(max_length = 30, choices=service_choice, null=True, blank= False)
     active = BooleanField(default=True)
+    service = CharField(blank=False, choices=service_choice, max_length=30, null=True)
+    warehouse_code = NameField(blank=True, max_length=3, null=True)
 
 
 class OrganizationUnit(Model):

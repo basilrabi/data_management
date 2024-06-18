@@ -164,6 +164,12 @@ class Equipment(FixedAsset):
 
 
 class EquipmentClass(Classification):
+    code = NameField(
+        blank=True,
+        help_text='A single letter used for equipment code assignment for SAP resources.',
+        max_length=1,
+        null=True
+    )
 
     class Meta:
         indexes = [Index(fields=['name'])]
