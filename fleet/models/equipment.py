@@ -168,7 +168,8 @@ class EquipmentClass(Classification):
         blank=True,
         help_text='A single letter used for equipment code assignment for SAP resources.',
         max_length=1,
-        null=True
+        null=True,
+        unique=True
     )
 
     class Meta:

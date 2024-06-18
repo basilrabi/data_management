@@ -49,8 +49,15 @@ class Organization(Classification):
     )
 
     active = BooleanField(default=True)
+    resource_code = NameField(
+        blank=True,
+        help_text='A single letter used for equipment code assignment for SAP resources.',
+        max_length=1,
+        null=True,
+        unique=True
+    )
     service = CharField(blank=False, choices=service_choice, max_length=30, null=True)
-    warehouse_code = NameField(blank=True, max_length=3, null=True)
+    warehouse_code = NameField(blank=True, max_length=3, null=True, unique=True)
 
 
 class OrganizationUnit(Model):
