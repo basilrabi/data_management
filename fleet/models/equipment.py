@@ -348,6 +348,7 @@ class ProviderEquipmentRegistry(Model):
     )
     equipment = ForeignKey(ProviderEquipment, on_delete=PROTECT)
     model = ForeignKey(EquipmentModel, on_delete=PROTECT)
+    omt_registered = BooleanField(default=False)
     plate_number = ForeignKey(
         PlateNumber, blank=True, null=True, on_delete=PROTECT
     )

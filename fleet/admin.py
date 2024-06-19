@@ -201,10 +201,14 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
               'capacity',
               'pull_out_date',
               'sap_registered',
-              'warehouse_registered']
+              'warehouse_registered',
+              'omt_registered']
     list_display = ['__str__'] + fields
     list_editable = fields
     list_filter = [
+        'sap_registered',
+        'warehouse_registered',
+        'omt_registered',
         ProviderEquipmentRegistryClassFilter,
         ProviderEquipmentRegistryProviderFilter
     ]
