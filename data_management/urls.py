@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/map/')),
     path('custom/', include('custom.urls')),
+    path('fleet/', include('fleet.urls')),
     path('inventory/', include('inventory.urls')),
     path('location/', include('location.urls')),
     path('map/', include('map.urls')),
@@ -41,3 +42,4 @@ try:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 except:
     pass
+
