@@ -437,6 +437,7 @@ class ProviderEquipmentRequirement(Model):
 
 class ProviderEquipmentRequirementDetail(Model):
     ACTIVITY_CHOICES = (
+        ('A', 'All'),
         ('M', 'Mining'),
         ('S', 'Shipment')
     )
