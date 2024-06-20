@@ -24,7 +24,7 @@ latest_status <- dplyr::bind_rows(latest_idle, latest_ignition) %>%
   dplyr::group_by(id) %>%
   dplyr::summarise(max_status = max(time_stamp))
 
-lapply(1:length(data_set), function(idx) {
+dummy <- lapply(1:length(data_set), function(idx) {
   owner <- data_set[[idx]][[1]]
   dm_equipment <- data_set[[idx]][[3]]
   if (any(is.na(dm_equipment$id))) {
@@ -37,8 +37,10 @@ lapply(1:length(data_set), function(idx) {
     dm_equipment <- dplyr::filter(dm_equipment, !is.na(id))
   }
 
-  equipment_list <- dplyr::left_join(dm_equipment, latest_point) %>%
-    dplyr::left_join(latest_status) %>%
+  equipment_list <- dplyr::left_join(dm_equipment,
+                                     latest_point,
+                                     by = c("id")) %>%
+    dplyr::left_join(latest_status, by = c("id")) %>%
     dplyr::mutate(start = dplyr::case_when(
       !is.na(max_status) ~ max_status,
       TRUE ~ as.POSIXct(minimum_timestamp)
@@ -48,8 +50,10 @@ lapply(1:length(data_set), function(idx) {
   if (nrow(equipment_list) > 0) {
     file_inactive <- sprintf("/home/datamanagement/media/static/TMC/inactive_gps_%s.csv", owner)
     if (nrow(equipment_list) < nrow(dm_equipment)) {
-      inactive <- dplyr::left_join(dm_equipment, latest_point) %>%
-        dplyr::left_join(latest_status) %>%
+      inactive <- dplyr::left_join(dm_equipment,
+                                   latest_point,
+                                   by = c("id")) %>%
+        dplyr::left_join(latest_status, by = c("id")) %>%
         dplyr::mutate(start = dplyr::case_when(
           !is.na(max_status) ~ max_status,
           TRUE ~ as.POSIXct(minimum_timestamp)
@@ -72,7 +76,8 @@ lapply(1:length(data_set), function(idx) {
       )
     }) %>%
       dplyr::bind_rows() %>%
-      dplyr::left_join(dplyr::select(equipment_list, tracker_id, max)) %>%
+      dplyr::left_join(dplyr::select(equipment_list, tracker_id, max),
+                       by = c("tracker_id")) %>%
       dplyr::mutate(next_week = start + lubridate::days(7) - lubridate::seconds()) %>%
       dplyr::mutate(end = dplyr::case_when(next_week > max ~ max, TRUE ~ next_week))
 
@@ -165,11 +170,9 @@ lapply(1:length(data_set), function(idx) {
           from cte_a
           where id is null
                      ', table_name)
-          if (debug) {
-            cat("Inserted", exec_retry(sql), "for idling.\n")
-          } else {
-            exec_retry(sql)
-          }
+          insert_count <- exec_retry(sql)
+          if (debug)
+            cat("Inserted", insert_count, "for idling.\n")
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
 
@@ -205,11 +208,9 @@ lapply(1:length(data_set), function(idx) {
           from cte_a
           where id is null
                      ', table_name)
-          if (debug) {
-            cat("Inserted", exec_retry(sql), "for idling location.\n")
-          } else {
-            exec_retry(sql)
-          }
+          insert_count <- exec_retry(sql)
+          if (debug)
+            cat("Inserted", insert_count, "for idling location.\n")
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
         }
@@ -258,11 +259,9 @@ lapply(1:length(data_set), function(idx) {
           from cte_a
           where id is null
                      ', table_name)
-          if (debug) {
-            cat("Inserted", exec_retry(sql), "for ignition status.\n")
-          } else {
-            exec_retry(sql)
-          }
+          insert_count <- exec_retry(sql)
+          if (debug)
+            cat("Inserted", insert_count, "for ignition status.\n")
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
 
@@ -298,11 +297,9 @@ lapply(1:length(data_set), function(idx) {
           from cte_a
           where id is null
                      ', table_name)
-          if (debug) {
-            cat("Inserted", exec_retry(sql), "for ignition status location.\n")
-          } else {
-            exec_retry(sql)
-          }
+          insert_count <- exec_retry(sql)
+          if (debug)
+            cat("Inserted", insert_count, "for ignition status location.\n")
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
         }

@@ -105,18 +105,19 @@ data_set <- lapply(1:nrow(hashes), function(x) {
 
   query <- sprintf("
   select
-  tab_a.id,
-  tab_b.name equipment_class,
-  tab_a.fleet_number
-from fleet_equipment tab_a,
-  fleet_equipmentclass tab_b,
-  organization_organization tab_c
-where tab_a.equipment_class_id = tab_b.id
-  and tab_a.owner_id = tab_c.id
-  and tab_c.name = '%s'
+    tab_a.id,
+    tab_b.name equipment_class,
+    tab_a.fleet_number
+  from fleet_equipment tab_a,
+    fleet_equipmentclass tab_b,
+    organization_organization tab_c
+  where tab_a.equipment_class_id = tab_b.id
+    and tab_a.owner_id = tab_c.id
+    and tab_c.name = '%s'
                    ", owner)
   dm_equipment <- RPostgres::dbGetQuery(con, query) %>%
-    dplyr::right_join(gps_equipment_list)
+    dplyr::right_join(gps_equipment_list,
+                      by = c("equipment_class", "fleet_number"))
   return(list(owner, gps_equipment_list, dm_equipment))
 })
 

@@ -4,11 +4,12 @@ begin <- Sys.time()
 
 source("scripts/R/pull_manila_gps_common.R")
 
-lapply(1:length(data_set), function(idx) {
+dummy <- lapply(1:length(data_set), function(idx) {
   owner <- data_set[[idx]][[1]]
   equipment_list <- dplyr::left_join(
     data_set[[idx]][[3]],
-    dplyr::mutate(latest_point, max = max + lubridate::seconds(1))
+    dplyr::mutate(latest_point, max = max + lubridate::seconds(1)),
+    by = c("id")
   ) %>%
     dplyr::mutate(max = dplyr::case_when(
       is.na(max) ~ as.POSIXct(minimum_timestamp),
@@ -154,11 +155,9 @@ lapply(1:length(data_set), function(idx) {
         speed,
         geom
       from cte_c', table_name, table_name, table_name, equipment_id)
-      if (debug) {
-        cat("Inserted", exec_retry(sql), "new equipment locations.\n")
-      } else {
-        exec_retry(sql)
-      }
+      insert_count <- exec_retry(sql)
+      if (debug)
+        cat("Inserted", insert_count, "new equipment locations.\n")
       sql <- sprintf('drop table "%s"', table_name)
       exec_retry(sql)
     }
@@ -172,4 +171,3 @@ exec_retry("vacuum analyze location_equipmentlocation")
 end <- Sys.time()
 time_elapsed <- end - begin
 cat("Finished in", format(time_elapsed), "\n")
-
