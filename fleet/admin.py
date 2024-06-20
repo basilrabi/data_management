@@ -25,12 +25,13 @@ from .models.equipment import (
     PlateNumber,
     ProviderEquipment,
     ProviderEquipmentRegistry,
+    ProviderEquipmentRequirement,
+    ProviderEquipmentRequirementDetail,
     TrackedExcavator
 )
 
 
 class AdditionalEquipmentCostInline(TabularInline):
-    model = AdditionalEquipmentCost
     extra = 0
     fields = ('description',
               'acquisition_cost',
@@ -38,8 +39,14 @@ class AdditionalEquipmentCostInline(TabularInline):
               'asset_code',
               'service_life')
     formfield_overrides = {
-        TextField: {'widget': Textarea(attrs={'rows':1, 'cols':40})}
+        TextField: {'widget': Textarea(attrs={'rows': 1, 'cols': 40})}
     }
+    model = AdditionalEquipmentCost
+
+
+class ProviderEquipmentRequirementDetailInline(TabularInline):
+    extra = 0
+    model = ProviderEquipmentRequirementDetail
 
 
 @register(BodyType)
@@ -216,6 +223,13 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
                      'engine_serial_number__name',
                      'plate_number__plate_number',
                      'safety_inspection_id']
+
+
+@register(ProviderEquipmentRequirement)
+class ProviderEquipmentRequirementAdmin(ModelAdmin):
+    autocomplete_fields = ['contractor']
+    inlines = [ProviderEquipmentRequirementDetailInline]
+    list_filter = ['contractor', 'year']
 
 
 @register(TrackedExcavator)

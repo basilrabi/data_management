@@ -411,6 +411,55 @@ class ProviderEquipmentRegistry(Model):
         return self.equipment.__str__()
 
 
+class ProviderEquipmentRequirement(Model):
+    contractor = ForeignKey(ServiceProvider, on_delete=PROTECT)
+    year = PositiveSmallIntegerField()
+
+    class Meta:
+        constraints = [
+            CheckConstraint(check=Q(year__gt=2023),
+                            name='provider_equipment_requirement_min_year'),
+            CheckConstraint(check=Q(year__lt=2050),
+                            name='provider_equipment_requirement_max_year'),
+            UniqueConstraint(fields=['contractor', 'year'],
+                             name='unique_provider_equipment_requirement')
+        ]
+        ordering = [
+            F('year').desc(),
+            F('contractor__name').asc()
+        ]
+
+    def __str__(self) -> str:
+        if self.contractor and self.year:
+            return f'{self.year} - {self.contractor.name}'
+        return ''
+
+
+class ProviderEquipmentRequirementDetail(Model):
+    ACTIVITY_CHOICES = (
+        ('M', 'Mining'),
+        ('S', 'Shipment')
+    )
+
+    activity = CharField(choices=ACTIVITY_CHOICES, max_length=1)
+    equipment = ForeignKey(EquipmentClass, on_delete=PROTECT)
+    requirement = ForeignKey(ProviderEquipmentRequirement, on_delete=PROTECT)
+    running = PositiveSmallIntegerField()
+    with_spare = PositiveSmallIntegerField()
+
+    class Meta:
+        constraints = [
+            CheckConstraint(check=Q(with_spare__gte=F('running')),
+                            name='provider_equipment_requirement_spare_gte_running'),
+            UniqueConstraint(fields=['activity', 'equipment', 'requirement'],
+                             name='unique_equip')
+        ]
+        ordering = [
+            F('activity').asc(),
+            F('equipment__name').asc()
+        ]
+
+
 class TrackedExcavator(Model):
     fleet_number = PositiveSmallIntegerField(unique=True)
 
