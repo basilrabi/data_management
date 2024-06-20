@@ -50,9 +50,11 @@ lapply(1:length(data_set), function(idx) {
       hashes$key[idx]
     )
     api_output <- pull_retry(url)
-    cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
+    if (debug)
+      cat(sprintf("Processing %s out of %s.\n", z, nrow(tracker_period)))
     if (is.data.frame(api_output)) {
-      cat(url, "\n")
+      if (debug)
+        cat(url, "\n")
       equipment_id <- equipment_list$id[equipment_list$tracker_id == tracker_period$x[z]]
       output <- sf::st_as_sf(api_output, coords = c("lng", "lat")) %>%
         dplyr::select(time_stamp = get_time,
@@ -70,94 +72,99 @@ lapply(1:length(data_set), function(idx) {
       sql <- sprintf('vacuum analyze "%s"', table_name)
       exec_retry(sql)
       sql <- sprintf('
-        with cte_a as (
-          select
-            tab_a.time_stamp,
-            tab_a.satellites,
-            tab_a.heading,
-            tab_a.speed,
-            tab_a.geometry,
-            previous_point.heading as pp_heading,
-            previous_point.speed as pp_speed,
-            previous_point.geometry as pp_geom,
-            next_point.heading as np_heading,
-            next_point.speed as np_speed,
-            next_point.geometry as np_geom
-          from "%s" as tab_a
-          left join lateral (
-            select *
-            from "%s" as tab_b
-            where tab_a.id > tab_b.id
-            order by tab_b.id desc
-            limit 1
-          ) previous_point on true
-          left join lateral (
-            select *
-            from "%s" as tab_b
-            where tab_a.id < tab_b.id
-            order by tab_b.id asc
-            limit 1
-          ) next_point on true
-        ),
-        cte_b as (
-          select
-            time_stamp,
-            satellites,
-            heading,
-            speed,
-            geometry as geom,
-            case
-              when pp_heading is null then true
-              when np_heading is null then true
-              when (
-                speed = 0 and
-                pp_speed = 0 and
-                np_speed = 0 and
-                pp_heading = heading and
-                np_heading = heading and
-                st_distance(geometry, pp_geom) < 1 and
-                st_distance(geometry, np_geom) < 1
-              ) then false
-              else true
-            end as included
-          from cte_a
-        ),
-        cte_c as (
-          select
-            time_stamp,
-            avg(satellites)::int as satellites,
-            avg(heading)::int as heading,
-            avg(speed)::int as speed,
-            st_centroid(st_union(geom)) as geom
-          from cte_b
-          where included
-          group by time_stamp
-        )
-        insert into location_equipmentlocation(
-          equipment_id,
+      with cte_a as (
+        select
+          tab_a.time_stamp,
+          tab_a.satellites,
+          tab_a.heading,
+          tab_a.speed,
+          tab_a.geometry,
+          previous_point.heading as pp_heading,
+          previous_point.speed as pp_speed,
+          previous_point.geometry as pp_geom,
+          next_point.heading as np_heading,
+          next_point.speed as np_speed,
+          next_point.geometry as np_geom
+        from "%s" as tab_a
+        left join lateral (
+          select *
+          from "%s" as tab_b
+          where tab_a.id > tab_b.id
+          order by tab_b.id desc
+          limit 1
+        ) previous_point on true
+        left join lateral (
+          select *
+          from "%s" as tab_b
+          where tab_a.id < tab_b.id
+          order by tab_b.id asc
+          limit 1
+        ) next_point on true
+      ),
+      cte_b as (
+        select
           time_stamp,
           satellites,
           heading,
           speed,
-          geom
-        )
-        select
-          %s,
-          cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
+          geometry as geom,
           case
-            when satellites > -1 then satellites
-            else null
-          end,
-          heading,
-          speed,
-          geom
-        from cte_c', table_name, table_name, table_name, equipment_id)
-      cat("Inserted", exec_retry(sql), "new equipment locations.\n")
+            when pp_heading is null then true
+            when np_heading is null then true
+            when (
+              speed = 0 and
+              pp_speed = 0 and
+              np_speed = 0 and
+              pp_heading = heading and
+              np_heading = heading and
+              st_distance(geometry, pp_geom) < 1 and
+              st_distance(geometry, np_geom) < 1
+            ) then false
+            else true
+          end as included
+        from cte_a
+      ),
+      cte_c as (
+        select
+          time_stamp,
+          avg(satellites)::int as satellites,
+          avg(heading)::int as heading,
+          avg(speed)::int as speed,
+          st_centroid(st_union(geom)) as geom
+        from cte_b
+        where included
+        group by time_stamp
+      )
+      insert into location_equipmentlocation(
+        equipment_id,
+        time_stamp,
+        satellites,
+        heading,
+        speed,
+        geom
+      )
+      select
+        %s,
+        cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
+        case
+          when satellites > -1 then satellites
+          else null
+        end,
+        heading,
+        speed,
+        geom
+      from cte_c', table_name, table_name, table_name, equipment_id)
+      if (debug) {
+        cat("Inserted", exec_retry(sql), "new equipment locations.\n")
+      } else {
+        exec_retry(sql)
+      }
       sql <- sprintf('drop table "%s"', table_name)
       exec_retry(sql)
     }
+    invisible(NULL)
   })
-
+  invisible(NULL)
 })
 
 exec_retry("vacuum analyze location_equipmentlocation")

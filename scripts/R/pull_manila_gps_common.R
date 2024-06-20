@@ -5,6 +5,13 @@ library(RPostgres)
 library(sf)
 library(stringr)
 
+debug <- as.logical(Sys.getenv("DATA_MANAGEMENT_DEBUG"))
+if (is.na(debug))
+  debug <- FALSE
+
+if (!debug)
+  options(dplyr.summarise.inform = FALSE)
+
 con <- RPostgres::dbConnect(RPostgres::Postgres(),
                             user = "data_management",
                             host = "datamanagement.tmc.nickelasia.com",

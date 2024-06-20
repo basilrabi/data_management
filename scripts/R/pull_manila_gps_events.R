@@ -89,13 +89,16 @@ lapply(1:length(data_set), function(idx) {
         hashes$key[idx]
       )
       api_output <- pull_retry(url)
-      cat(sprintf("Processing %s out of %s.\n", z, nrow(events_period)))
+      if (debug)
+        cat(sprintf("Processing %s out of %s.\n", z, nrow(events_period)))
       if (is.data.frame(api_output)) {
         equipment_id <- equipment_list$id[equipment_list$tracker_id == events_period$tracker_id[z]]
-        cat(url, "\n")
+        if (debug)
+          cat(url, "\n")
         if (nrow(api_output) > 99) {
           while (TRUE) {
-            cat("History limit reached. Fetching new datetime range.\n")
+            if (debug)
+              cat("History limit reached. Fetching new datetime range.\n")
             new_from <- as.POSIXct(sprintf("%s+8", max(api_output$time))) %>%
               format(format = "%Y-%m-%d%%20%H:%M:%S")
             new_url <- stringr::str_replace(
@@ -109,7 +112,8 @@ lapply(1:length(data_set), function(idx) {
               additional <- additional_output[nrow(additional_output), "id"]
               if (master == additional)
                 break
-              cat(new_url, "\n")
+              if (debug)
+                cat(new_url, "\n")
               api_output <- dplyr::bind_rows(api_output, additional_output)
             } else {
               break
@@ -139,29 +143,33 @@ lapply(1:length(data_set), function(idx) {
                                "-idle")
           sf::st_write(df_idle, con, table_name)
           sql <- sprintf('
-        with cte_a as (
-          select tab_a.equipment_id,
+          with cte_a as (
+            select tab_a.equipment_id,
             cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' as ts,
             tab_a.idling,
             tab_b.id
           from "%s" tab_a
-          left join fleet_equipmentidlingtime tab_b
-            on tab_a.equipment_id = tab_b.equipment_id
-              and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
-        )
-        insert into fleet_equipmentidlingtime (
-          equipment_id,
-          time_stamp,
-          idling
-        )
-        select
-          equipment_id,
-          ts,
-          idling
-        from cte_a
-        where id is null
+            left join fleet_equipmentidlingtime tab_b
+              on tab_a.equipment_id = tab_b.equipment_id
+                and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
+          )
+          insert into fleet_equipmentidlingtime (
+            equipment_id,
+            time_stamp,
+            idling
+          )
+          select
+            equipment_id,
+            ts,
+            idling
+          from cte_a
+          where id is null
                      ', table_name)
-          cat("Inserted", exec_retry(sql), "for idling.\n")
+          if (debug) {
+            cat("Inserted", exec_retry(sql), "for idling.\n")
+          } else {
+            exec_retry(sql)
+          }
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
 
@@ -178,26 +186,30 @@ lapply(1:length(data_set), function(idx) {
             sf::st_as_sf(coords = c("lng", "lat"))
           sf::st_write(df_tracker, con, table_name)
           sql <- sprintf('
-        with cte_a as (
-          select tab_a.*, tab_b.id
-          from "%s" tab_a
-          left join location_equipmentlocation tab_b
-            on tab_a.equipment_id = tab_b.equipment_id
-              and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
-        )
-        insert into location_equipmentlocation (
-          equipment_id,
-          time_stamp,
-          geom
-        )
-        select
-          equipment_id,
-          cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
-          geometry
-        from cte_a
-        where id is null
+          with cte_a as (
+            select tab_a.*, tab_b.id
+            from "%s" tab_a
+            left join location_equipmentlocation tab_b
+              on tab_a.equipment_id = tab_b.equipment_id
+                and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
+          )
+          insert into location_equipmentlocation (
+            equipment_id,
+            time_stamp,
+            geom
+          )
+          select
+            equipment_id,
+            cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
+            geometry
+          from cte_a
+          where id is null
                      ', table_name)
-          cat("Inserted", exec_retry(sql), "for idling location.\n")
+          if (debug) {
+            cat("Inserted", exec_retry(sql), "for idling location.\n")
+          } else {
+            exec_retry(sql)
+          }
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
         }
@@ -224,29 +236,33 @@ lapply(1:length(data_set), function(idx) {
                                "-ignition")
           sf::st_write(df_ignition, con, table_name)
           sql <- sprintf('
-        with cte_a as (
-          select tab_a.equipment_id,
-            cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' as ts,
-            tab_a.ignition,
-            tab_b.id
-          from "%s" tab_a
-          left join fleet_equipmentignitionstatus tab_b
-            on tab_a.equipment_id = tab_b.equipment_id
-              and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
-        )
-        insert into fleet_equipmentignitionstatus (
-          equipment_id,
-          time_stamp,
-          ignition
-        )
-        select
-          equipment_id,
-          ts,
-          ignition
-        from cte_a
-        where id is null
+          with cte_a as (
+            select tab_a.equipment_id,
+              cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' as ts,
+              tab_a.ignition,
+              tab_b.id
+            from "%s" tab_a
+            left join fleet_equipmentignitionstatus tab_b
+              on tab_a.equipment_id = tab_b.equipment_id
+                and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
+          )
+          insert into fleet_equipmentignitionstatus (
+            equipment_id,
+            time_stamp,
+            ignition
+          )
+          select
+            equipment_id,
+            ts,
+            ignition
+          from cte_a
+          where id is null
                      ', table_name)
-          cat("Inserted", exec_retry(sql), "for ignition status.\n")
+          if (debug) {
+            cat("Inserted", exec_retry(sql), "for ignition status.\n")
+          } else {
+            exec_retry(sql)
+          }
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
 
@@ -263,48 +279,56 @@ lapply(1:length(data_set), function(idx) {
             sf::st_as_sf(coords = c("lng", "lat"))
           sf::st_write(df_tracker, con, table_name)
           sql <- sprintf('
-        with cte_a as (
-          select tab_a.*, tab_b.id
-          from "%s" tab_a
-          left join location_equipmentlocation tab_b
-            on tab_a.equipment_id = tab_b.equipment_id
-              and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
-        )
-        insert into location_equipmentlocation (
-          equipment_id,
-          time_stamp,
-          geom
-        )
-        select
-          equipment_id,
-          cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
-          geometry
-        from cte_a
-        where id is null
+          with cte_a as (
+            select tab_a.*, tab_b.id
+            from "%s" tab_a
+            left join location_equipmentlocation tab_b
+              on tab_a.equipment_id = tab_b.equipment_id
+                and cast(tab_a.time_stamp as timestamp) at time zone \'Asia/Manila\' = tab_b.time_stamp
+          )
+          insert into location_equipmentlocation (
+            equipment_id,
+            time_stamp,
+            geom
+          )
+          select
+            equipment_id,
+            cast(time_stamp as timestamp) at time zone \'Asia/Manila\',
+            geometry
+          from cte_a
+          where id is null
                      ', table_name)
-          cat("Inserted", exec_retry(sql), "for ignition status location.\n")
+          if (debug) {
+            cat("Inserted", exec_retry(sql), "for ignition status location.\n")
+          } else {
+            exec_retry(sql)
+          }
           sql <- sprintf('drop table "%s"', table_name)
           exec_retry(sql)
         }
       }
+      invisible(NULL)
     })
   }
-
+  invisible(NULL)
 })
 
 
 exec_retry("vacuum analyze fleet_equipmentidlingtime")
 exec_retry("vacuum analyze fleet_equipmentignitionstatus")
 
-cat("Refreshing fleet_equipmentignitioninterval")
+if (debug)
+  cat("Refreshing fleet_equipmentignitioninterval")
 exec_retry("refresh materialized view concurrently fleet_equipmentignitioninterval")
 exec_retry("vacuum analyze fleet_equipmentignitioninterval")
 
-cat("Refreshing fleet_equipmentidlinginterval")
+if (debug)
+  cat("Refreshing fleet_equipmentidlinginterval")
 exec_retry("refresh materialized view concurrently fleet_equipmentidlinginterval")
 exec_retry("vacuum analyze fleet_equipmentidlinginterval")
 
-cat("Refreshing dash_equipmentusage")
+if (debug)
+  cat("Refreshing dash_equipmentusage")
 exec_retry("refresh materialized view concurrently dash_equipmentusage")
 exec_retry("vacuum analyze dash_equipmentusage")
 
