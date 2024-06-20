@@ -45,6 +45,7 @@ class AdditionalEquipmentCostInline(TabularInline):
 
 
 class ProviderEquipmentRequirementDetailInline(TabularInline):
+    autocomplete_fields = ['equipment']
     extra = 0
     model = ProviderEquipmentRequirementDetail
 
@@ -137,6 +138,7 @@ class EquipmentAdmin(ModelAdmin):
 @register(EquipmentClass)
 class EquipmentClassAdmin(ModelAdmin):
     list_display = ('name', 'description', 'code')
+    search_fields = ('name',)
 
 
 @register(EquipmentIdlingTime)
