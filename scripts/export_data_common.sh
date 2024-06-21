@@ -59,6 +59,8 @@ download_sql fleet_equipmentmobilenumber && \
 download_sql fleet_equipmentmodel && \
 download_sql fleet_platenumber && \
 download_sql fleet_providerequipmentregistry && \
+download_sql fleet_providerequipmentrequirement && \
+download_sql fleet_providerequipmentrequirementdetail && \
 download_sql inventory_block && \
 download_sql inventory_blocksubset && \
 download_sql inventory_clustered_block && \

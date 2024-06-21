@@ -135,6 +135,10 @@ sql_script "upload_data" "fleet_equipmentmobilenumber" && \
 vacuum "fleet_equipmentmobilenumber" && \
 sql_script "upload_data" "fleet_providerequipmentregistry" && \
 vacuum "fleet_providerequipmentregistry" && \
+sql_script "upload_data" "fleet_providerequipmentrequirement" && \
+vacuum "fleet_providerequipmentrequirement" && \
+sql_script "upload_data" "fleet_providerequipmentrequirementdetail" && \
+vacuum "fleet_providerequipmentrequirementdetail" && \
 sql_script "upload_data" "local_calendar_holidayevent" && \
 vacuum "local_calendar_holidayevent" && \
 sql_script "upload_data" "local_calendar_holiday" && \

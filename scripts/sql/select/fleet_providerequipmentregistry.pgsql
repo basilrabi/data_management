@@ -1,6 +1,7 @@
 SELECT
     tab_a.acquisition_condition,
     tab_a.delivery_year,
+    tab_a.omt_registered,
     tab_a.pull_out_date,
     tab_a.registration_date,
     tab_a.safety_inspection_id,

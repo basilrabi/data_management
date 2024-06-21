@@ -2,6 +2,7 @@ CREATE TEMPORARY TABLE temp_fleet_providerequipmentregistry
 (
     acquisition_condition boolean,
     delivery_year smallint,
+    omt_registered boolean,
     pull_out_date date,
     registration_date date,
     safety_inspection_id smallint,
@@ -30,6 +31,7 @@ INSERT INTO fleet_providerequipmentregistry (
     engine_serial_number_id,
     equipment_id,
     model_id,
+    omt_registered,
     plate_number_id,
     pull_out_date,
     registration_date,
@@ -48,6 +50,7 @@ SELECT
     tab_e.id,
     tab_h.id,
     tab_j.id,
+    tab_a.omt_registered,
     tab_k.id,
     tab_a.pull_out_date,
     tab_a.registration_date,
