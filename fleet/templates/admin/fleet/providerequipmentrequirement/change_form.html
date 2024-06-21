@@ -1,0 +1,18 @@
+{% extends 'admin/change_form.html' %}
+{% load static %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+
+<script>
+document.addEventListener('formset:added', function(event) {
+    const previousNodeCount = event.target.parentNode.childElementCount - 4;
+    if (previousNodeCount >= 0) {
+        const selectedValue = event.target.parentNode.querySelector(`#id_providerequipmentrequirementdetail_set-${previousNodeCount}-activity`).value;
+        event.target.querySelector(`#id_providerequipmentrequirementdetail_set-${previousNodeCount + 1}-activity`).value = selectedValue;
+    }
+});
+</script>
+
+{% endblock %}
+
