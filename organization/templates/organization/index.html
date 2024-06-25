@@ -22,7 +22,7 @@
             <thead>
                 <tr>
                     <th>Contractor</th>
-                    <th class="text-end">AD</th>
+                    <!-- <th class="text-end">AD</th> -->
                     <th class="text-end">CT</th>
                     <th class="text-end">DT</th>
                     <th class="text-end">FT</th>
@@ -42,7 +42,7 @@
                 <tr>
                     {% if contractor.contractor == 'TOTAL' %}
                     <td><b>{{ contractor.contractor }}</b></td>
-                    <td class="text-end"><b>{{ contractor.AD }}</b></td>
+                    <!-- <td class="text-end"><b>{{ contractor.AD }}</b></td> -->
                     <td class="text-end"><b>{{ contractor.CT }}</b></td>
                     <td class="text-end"><b>{{ contractor.DT }}</b></td>
                     <td class="text-end"><b>{{ contractor.FT }}</b></td>
@@ -57,7 +57,7 @@
                     <td class="text-end"><b>{{ contractor.Total }}</b></td>
                     {% else %}
                     <td>{{ contractor.contractor }}</td>
-                    <td class="text-end">{{ contractor.AD }}</td>
+                    <!-- <td class="text-end">{{ contractor.AD }}</td> -->
                     <td class="text-end">{{ contractor.CT }}</td>
                     <td class="text-end">{{ contractor.DT }}</td>
                     <td class="text-end">{{ contractor.FT }}</td>
@@ -70,6 +70,101 @@
                     <td class="text-end">{{ contractor.WL }}</td>
                     <td class="text-end">{{ contractor.WT }}</td>
                     <td class="text-end"><b>{{ contractor.Total }}</b></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-1"></div>
+</div>
+<p class="ws1"></p>
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <h3>Summary of Equipment Requirement with Spare (Lacking)</h3>
+    </div>
+    <div class="col-1"></div>
+</div>
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Contractor</th>
+                    <!-- <th class="text-end">AD</th> -->
+                    <th colspan="2" class="text-center">CT</th>
+                    <th colspan="2" class="text-center">DT</th>
+                    <th colspan="2" class="text-center">FT</th>
+                    <th colspan="2" class="text-center">RG</th>
+                    <th colspan="2" class="text-center">ST</th>
+                    <th colspan="2" class="text-center">SV</th>
+                    <th colspan="2" class="text-center">TL</th>
+                    <th colspan="2" class="text-center">TX</th>
+                    <th colspan="2" class="text-center">VR</th>
+                    <th colspan="2" class="text-center">WL</th>
+                    <th colspan="2" class="text-center">WT</th>
+                    <th colspan="2" class="text-center">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contractor in contractors %}
+                <tr>
+                    {% if contractor.contractor == 'TOTAL' %}
+                    <td><b>{{ contractor.contractor }}</b></td>
+                    <!-- <td class="text-end"><b>{{ contractor.AD_req }}{% if contractor.AD_bal > 0 %}({{ contractor.AD_bal }}){% endif %}</b></td> -->
+                    <td class="text-end"><b>{{ contractor.CT_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.CT_bal > 0 %}({{ contractor.CT_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.DT_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.DT_bal > 0 %}({{ contractor.DT_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.FT_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.FT_bal > 0 %}({{ contractor.FT_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.RG_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.RG_bal > 0 %}({{ contractor.RG_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.ST_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.ST_bal > 0 %}({{ contractor.ST_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.SV_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.SV_bal > 0 %}({{ contractor.SV_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.TL_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.TL_bal > 0 %}({{ contractor.TL_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.TX_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.TX_bal > 0 %}({{ contractor.TX_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.VR_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.VR_bal > 0 %}({{ contractor.VR_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.WL_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.WL_bal > 0 %}({{ contractor.WL_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.WT_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.WT_bal > 0 %}({{ contractor.WT_bal }}){% endif %}</b></td>
+                    <td class="text-end"><b>{{ contractor.Total_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.Total_bal > 0 %}({{ contractor.Total_bal }}){% endif %}</b></td>
+                    {% else %}
+                    <td>{{ contractor.contractor }}</b></td>
+                    <!-- <td class="text-end">{{ contractor.AD_req }}{% if contractor.AD_bal > 0 %}({{ contractor.AD_bal }}){% endif %}</td> -->
+                    <td class="text-end">{{ contractor.CT_req }}</td>
+                    <td class="text-end">{% if contractor.CT_bal > 0 %}({{ contractor.CT_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.DT_req }}</td>
+                    <td class="text-end">{% if contractor.DT_bal > 0 %}({{ contractor.DT_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.FT_req }}</td>
+                    <td class="text-end">{% if contractor.FT_bal > 0 %}({{ contractor.FT_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.RG_req }}</td>
+                    <td class="text-end">{% if contractor.RG_bal > 0 %}({{ contractor.RG_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.ST_req }}</td>
+                    <td class="text-end">{% if contractor.ST_bal > 0 %}({{ contractor.ST_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.SV_req }}</td>
+                    <td class="text-end">{% if contractor.SV_bal > 0 %}({{ contractor.SV_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.TL_req }}</td>
+                    <td class="text-end">{% if contractor.TL_bal > 0 %}({{ contractor.TL_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.TX_req }}</td>
+                    <td class="text-end">{% if contractor.TX_bal > 0 %}({{ contractor.TX_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.VR_req }}</td>
+                    <td class="text-end">{% if contractor.VR_bal > 0 %}({{ contractor.VR_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.WL_req }}</td>
+                    <td class="text-end">{% if contractor.WL_bal > 0 %}({{ contractor.WL_bal }}){% endif %}</td>
+                    <td class="text-end">{{ contractor.WT_req }}</td>
+                    <td class="text-end">{% if contractor.WT_bal > 0 %}({{ contractor.WT_bal }}){% endif %}</td>
+                    <td class="text-end"><b>{{ contractor.Total_req }}</b></td>
+                    <td class="text-end"><b>{% if contractor.Total_bal > 0 %}({{ contractor.Total_bal }}){% endif %}</b></td>
                     {% endif %}
                 </tr>
                 {% endfor %}

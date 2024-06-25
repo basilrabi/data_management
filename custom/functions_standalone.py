@@ -10,6 +10,11 @@ from re import sub
 
 from .variables import tz_manila
 
+def balance_int(plan: int, actual: int) -> int:
+    if plan > actual:
+        return plan - actual
+    return 0
+
 def month_choices() -> list[(str, str)]:
     return [(str(month_num), month_name) for month_num, month_name in MONTHS.items()]
 
