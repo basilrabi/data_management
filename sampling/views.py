@@ -147,7 +147,7 @@ def assay_certificate(request, name):
     assay = ShipmentLoadingAssay.objects.get(shipment__name=name)
     lots = assay.shipmentloadinglotassay_set.all()
     try:
-        pic = assay.chemist.professionalidentificationcard_set.get(profession__name='RCh')
+        pic = assay.chemist.professionalidentificationcard_set.get(profession__description__icontains='chem')
     except ObjectDoesNotExist:
         pic = None
     context = {
