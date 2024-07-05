@@ -9,6 +9,7 @@ from .filters import (
     ProviderEquipmentRegistryClassFilter,
     ProviderEquipmentRegistryProviderFilter
 )
+from .forms import ProviderEquipmentRegistryAdminForm
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
@@ -212,6 +213,7 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
               'sap_registered',
               'warehouse_registered',
               'omt_registered']
+    form = ProviderEquipmentRegistryAdminForm
     list_display = ['__str__'] + fields
     list_editable = fields
     list_filter = [
