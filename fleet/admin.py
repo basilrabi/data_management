@@ -9,7 +9,7 @@ from .filters import (
     ProviderEquipmentRegistryClassFilter,
     ProviderEquipmentRegistryProviderFilter
 )
-from .forms import ProviderEquipmentRegistryAdminForm
+from .forms import EquipmentAdminForm, ProviderEquipmentRegistryAdminForm
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
@@ -77,9 +77,9 @@ class EngineSerialNumberAdmin(ModelAdmin):
 
 @register(Equipment)
 class EquipmentAdmin(ModelAdmin):
-
     autocomplete_fields = ['model']
     exclude = ('equipment_class',)
+    form = EquipmentAdminForm
     inlines = [AdditionalEquipmentCostInline]
     list_display = ('__str__', 'model', 'plate_number', 'fleet_number','department_assigned')
     list_filter = ['owner', 'active', 'equipment_class']
