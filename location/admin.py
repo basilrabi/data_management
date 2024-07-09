@@ -9,7 +9,7 @@ from import_export.resources import ModelResource
 from custom.admin_gis import TMCLocationAdmin
 from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
-from .models.equipment import EquipmentLocation
+from .models.equipment import EquipmentLocation, ManilaGpsWebsocketData
 from .models.landuse import (
     BLGU,
     Facility,
@@ -153,6 +153,11 @@ class FacilityClassificationAdmin(ModelAdmin):
 class FLAAdmin(TMCLocationAdmin):
     modifiable = False
     search_fields = ['name']
+
+
+@register(ManilaGpsWebsocketData)
+class ManilaGpsWebsocketDataAdmin(TMCLocationAdmin):
+    modifiable = False
 
 
 @register(MineBlock)

@@ -11,6 +11,7 @@ from django.db.models import (
     ForeignKey,
     ManyToManyField,
     Model,
+    PositiveBigIntegerField,
     PositiveSmallIntegerField,
     PROTECT,
     SET_NULL,
@@ -279,3 +280,12 @@ class User(AbstractUser):
             mi = [x[:1].upper() for x in str(self.middle_name).split(' ')]
             return '.'.join(mi) + '.'
         return ''
+
+
+class WebsocketListener(Model):
+    id = PositiveBigIntegerField(primary_key=True)
+    start = DateTimeField()
+
+    class Meta:
+        ordering = ['-start']
+

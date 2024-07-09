@@ -10,7 +10,8 @@ from .models import (
     ProfessionalIdentificationCard,
     TextMessage,
     UnitOfMeasure,
-    User
+    User,
+    WebsocketListener
 )
 
 
@@ -138,6 +139,11 @@ class CustomUserAdmin(UserAdmin):
     inlines = [MobileNumberInline, ProfessionalIdentificationCardInline]
 
 
+@register(WebsocketListener)
+class WebsocketListenerAdmin(ModelAdmin):
+    pass
+
+
 class ReadOnlyAdmin(ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
@@ -148,3 +154,4 @@ class ReadOnlyAdmin(ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
