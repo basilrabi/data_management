@@ -64,6 +64,8 @@ class CostCenterConversionAdmin(ModelAdmin):
     search_fields = [
         'old_cost_center__name',
         'old_cost_center__description',
+        'operation_head__name',
+        'operation_head__description',
         'sap_cost_center__name',
         'sap_cost_center__description'
     ]
