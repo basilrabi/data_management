@@ -12,6 +12,49 @@ group by equipment_id
                                          ") %>%
   dplyr::mutate(time_stamp = lubridate::with_tz(time_stamp, "Asia/Manila"))
 
+dummy <- lapply(1:length(data_set), function(idx) {
+  equipment_list <- data_set[[idx]][[3]] %>%
+    dplyr::rename(equipment_id = id) %>%
+    dplyr::select(equipment_id, tracker_id) %>%
+    dplyr::filter(!is.na(equipment_id))
+  RPostgres::dbWriteTable(con, "staging_tracker_id",
+                          equipment_list,
+                          overwrite = TRUE)
+  sql <- "
+  with cte_a as (
+    select equipment_id, tracker_id
+    from staging_tracker_id
+    where equipment_id not in (
+      select equipment_id
+      from location_manilagpswebsocketdata
+    )
+  )
+  insert into location_manilagpswebsocketdata (equipment_id, tracker_id)
+  select equipment_id, tracker_id
+  from cte_a
+  "
+  rows <- exec_retry(sql)
+  if (rows > 0) {
+    cat(sprintf("Inserted %i new trackers from %s.\n", rows, hashes$name[idx]))
+  }
+
+  sql <- "
+  update location_manilagpswebsocketdata
+  set tracker_id = staging_tracker_id.tracker_id
+  from staging_tracker_id
+  where location_manilagpswebsocketdata.equipment_id = staging_tracker_id.equipment_id
+    and location_manilagpswebsocketdata.tracker_id <> staging_tracker_id.tracker_id
+  "
+  rows <- exec_retry(sql)
+  if (rows > 0) {
+    cat(sprintf("Updated %i trackers from %s.\n", rows, hashes$name[idx]))
+  }
+
+  invisible(NULL)
+})
+sql <- "drop table if exists staging_tracker_id"
+exec_retry(sql)
+
 latest_ignition <- RPostgres::dbGetQuery(con, "
 select equipment_id id,
     max(time_stamp) time_stamp

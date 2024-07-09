@@ -90,3 +90,10 @@ class ManilaGpsWebsocketData(Model):
     update_gsm = DateTimeField(blank=True, null=True)
     update_last = DateTimeField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Manila GPS Websocket Data'
+        verbose_name_plural = 'Manila GPS Websocket Data'
+
+    def __str__(self) -> str:
+        return self.equipment.__str__()
+

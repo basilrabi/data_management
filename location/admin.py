@@ -6,7 +6,7 @@ from import_export.admin import ExportMixin
 from import_export.fields import Field
 from import_export.resources import ModelResource
 
-from custom.admin_gis import TMCLocationAdmin
+from custom.admin_gis import TMCLocationAdmin, TMCLocationAdminReadOnly
 from custom.filters import MineBlockListFilter
 from sampling.models.proxy import DrillCore
 from .models.equipment import EquipmentLocation, ManilaGpsWebsocketData
@@ -156,9 +156,8 @@ class FLAAdmin(TMCLocationAdmin):
 
 
 @register(ManilaGpsWebsocketData)
-class ManilaGpsWebsocketDataAdmin(TMCLocationAdmin):
-    modifiable = False
-
+class ManilaGpsWebsocketDataAdmin(TMCLocationAdminReadOnly):
+    pass
 
 @register(MineBlock)
 class MineBlockAdmin(TMCLocationAdmin):
