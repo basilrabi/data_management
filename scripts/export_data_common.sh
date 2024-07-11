@@ -72,6 +72,7 @@ download_sql location_clusterlayout && \
 download_sql location_drillhole && \
 download_sql location_equipmentlocation && \
 download_sql location_equipmentlocationsubset && \
+download_sql location_manilagpswebsocketdata && \
 download_sql material_management_legacygoodsissuance && \
 download_sql material_management_legacygoodsreceivednote && \
 download_sql material_management_legacyitemtype && \

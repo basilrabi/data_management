@@ -240,6 +240,8 @@ sql_script "upload_data" "custom_professionalidentificationcard" && \
 vacuum "custom_professionalidentificationcard" && \
 sql_script "upload_data" "location_equipmentlocation$extra" && \
 vacuum "location_equipmentlocation" && \
+sql_script "upload_data" "location_manilagpswebsocketdata" && \
+vacuum "location_manilagpswebsocketdata" && \
 sql_script "select" "location_haulingequipment" && \
 sql_script "index" "location_haulingequipment" && \
 vacuum "location_haulingequipment" && \
