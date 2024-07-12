@@ -1,8 +1,10 @@
+from datetime import datetime
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
 
-from .forms import CMBillingForm, ShipmentBillingForm, ShipmentBillingEntryForm
+from organization.models import Organization
+from shipment.models.dso import LayDaysStatement
 from .models import BillingTracker, BillingAddOn, CMBilling, ShipmentBilling, ShipmentBillingEntry
 
 
@@ -35,7 +37,6 @@ class BillingTrackerAdmin(ModelAdmin):
 
 @register(CMBilling)
 class CMBillingAdmin(ModelAdmin):
-    form = CMBillingForm
     list_display = ['contractor',
                     'month',
                     'half',
@@ -45,16 +46,31 @@ class CMBillingAdmin(ModelAdmin):
                     'last_update']
     list_filter = ['contractor']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'contractor':
+            kwargs['queryset'] = Organization.objects.filter(active=True, service='Contractor')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class ShipmentBillingEntryInline(TabularInline):
-    form = ShipmentBillingEntryForm
     model = ShipmentBillingEntry
     extra = 0
     ordering = ['contractor']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'contractor':
+            kwargs['queryset'] = Organization.objects.filter(active=True, service='Contractor')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 @register(ShipmentBilling)
 class ShipmentBillingAdmin(ModelAdmin):
-    form = ShipmentBillingForm
     inlines = [ShipmentBillingEntryInline]
     list_display = ['shipment']
-    ordering = ['-shipment',]
+    ordering = ['-shipment']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'shipment':
+            kwargs['queryset'] = LayDaysStatement.objects.filter(completed_loading__year=datetime.now().year)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
