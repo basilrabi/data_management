@@ -6,7 +6,7 @@ try:
     if DEVELOPER:
         DEBUG = True
 except:
-    pass
+    DEBUG = False
 
 
 from .local import (
@@ -35,6 +35,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1000000000
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 DATABASES = {
@@ -83,6 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_admin_multiple_choice_list_filter',
+    'django_celery_beat',
     'djcelery_email',
     'import_export',
     'nested_admin',

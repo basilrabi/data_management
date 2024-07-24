@@ -178,6 +178,21 @@ To ensure that `DEBUG` is enabled in your development environment, make sure tha
 cp data_management/developer.py.sample data_management/developer.py
 ```
 
+### Celery Tasks
+
+This project uses [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html) for sending emails and other recurring tasks.
+In order to carry out the task queue, input the command below while the data_management virtual environment is activated:
+
+```
+celery -A data_management worker -l INFO
+```
+
+To carry out recurring task, such as fetching websocket data from ManilaGPS:
+
+```
+celery -A data_management worker --beat --scheduler django -l INFO
+```
+
 ### Notes for Additional Feature Development
 
 1. New installation requirements shall be encoded in the real_requirements file, and not in the requirements.txt file.

@@ -6,6 +6,10 @@
 1. Operators must have 1 space at both left and right sides.
 1. The equal sign in a function or object initializer used in argument assigning is not an operator thus it must not have spaces at both left and right side.
 
+### Strings
+
+1. Whenever possible, use single quotes to indicate strings.
+
 ### Classes
 
 1. Separate each class definition by 2 empty lines.

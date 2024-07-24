@@ -284,7 +284,7 @@ class User(AbstractUser):
 
 class WebsocketListener(Model):
     id = PositiveBigIntegerField(primary_key=True)
-    start = DateTimeField()
+    start = DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-start']

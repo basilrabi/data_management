@@ -1,5 +1,6 @@
 Django
 django-admin-multiple-choice-list-filter
+django-celery-beat
 django-celery-email
 django-import-export
 django-nested-admin
@@ -12,3 +13,5 @@ psycopg2
 python-gammu
 setuptools
 tzlocal
+websockets
+
