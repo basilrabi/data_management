@@ -1,5 +1,5 @@
 from celery import shared_task
-from django.db.models import Subquery
+from django.db.models import F, Subquery
 from django.template.loader import get_template
 from os import environ, getcwd
 from os.path import join
@@ -11,7 +11,7 @@ from location.models.equipment import ManilaGpsWebsocketData
 
 @shared_task
 def pull_manilagps_websocket_data():
-    data = ManilaGpsWebsocketData.objects.exclude(id__in=Subquery(WebsocketListener.objects.all().values('id'))).order_by('-call_time').first()
+    data = ManilaGpsWebsocketData.objects.exclude(id__in=Subquery(WebsocketListener.objects.all().values('id'))).order_by(F('call_time').asc(nulls_first=True)).first()
     WebsocketListener(id=data.id).save()
     context = {
         'EQUIPMENT': data.__str__(),

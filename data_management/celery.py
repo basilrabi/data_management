@@ -11,7 +11,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'pull-manilagps-websocket-data': {
         'task': 'location.tasks.pull_manilagps_websocket_data',
-        'schedule': 5.0,
+        'schedule': 1.0,
     },
 }
 
