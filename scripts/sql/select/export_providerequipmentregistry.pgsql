@@ -49,7 +49,8 @@ SELECT
         tab_d.name,
         RIGHT(tab_a.delivery_year::text, 2),
         LPAD(tab_b.fleet_number::text, 3, '0')
-    ) omt_code
+    ) omt_code,
+    tab_l.tracker_id
 FROM fleet_providerequipmentregistry tab_a
     LEFT JOIN fleet_equipment tab_b
         ON tab_a.equipment_id = tab_b.id
@@ -71,4 +72,6 @@ FROM fleet_providerequipmentregistry tab_a
         ON tab_a.capacity_id = tab_j.id
     LEFT JOIN custom_unitofmeasure tab_k
         ON tab_j.unit_of_measure_id = tab_k.id
+    LEFT JOIN location_manilagpswebsocketdata tab_l
+        ON tab_a.equipment_id = tab_l.equipment_id
 
