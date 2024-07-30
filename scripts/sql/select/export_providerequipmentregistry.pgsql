@@ -16,7 +16,7 @@ SELECT
     ) safety_number,
     tab_f.name equipment_make,
     tab_e.name equipment_model,
-    tab_g.name enginer_serial_number,
+    tab_g.name engine_serial_number,
     tab_h.name chassis_serial_number,
     tab_i.plate_number,
     tab_a.delivery_year year_acquired,
