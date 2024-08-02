@@ -97,11 +97,18 @@ dummy <- lapply(1:length(data_set), function(idx) {
                                    latest_point,
                                    by = c("id")) %>%
         dplyr::left_join(latest_status, by = c("id")) %>%
-        dplyr::mutate(start = dplyr::case_when(
-          !is.na(max_status) ~ max_status,
-          TRUE ~ as.POSIXct(minimum_timestamp)
-        )) %>%
-        dplyr::filter(start >= max)
+        dplyr::mutate(
+          start = dplyr::case_when(
+            !is.na(max_status) & !is.na(max) & (max_status > max)  ~ max_status,
+            !is.na(max_status) & !is.na(max) & (max > max_status)  ~ max,
+            !is.na(max_status) ~ max_status,
+            !is.na(max) ~ max,
+            TRUE ~ as.POSIXct(minimum_timestamp)
+          ),
+          now = Sys.time()
+        ) %>%
+        dplyr::mutate(diff = as.numeric(difftime(now, start, units = "days"))) %>%
+        dplyr::filter(diff >= 7)
       if (nrow(inactive) > 0) {
         write.csv(inactive, file_inactive)
       }
