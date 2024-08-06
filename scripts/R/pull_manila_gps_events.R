@@ -92,26 +92,24 @@ dummy <- lapply(1:length(data_set), function(idx) {
 
   if (nrow(equipment_list) > 0) {
     file_inactive <- sprintf("/home/datamanagement/media/static/TMC/inactive_gps_%s.csv", owner)
-    if (nrow(equipment_list) < nrow(dm_equipment)) {
-      inactive <- dplyr::left_join(dm_equipment,
-                                   latest_point,
-                                   by = c("id")) %>%
-        dplyr::left_join(latest_status, by = c("id")) %>%
-        dplyr::mutate(
-          start = dplyr::case_when(
-            !is.na(max_status) & !is.na(max) & (max_status > max)  ~ max_status,
-            !is.na(max_status) & !is.na(max) & (max > max_status)  ~ max,
-            !is.na(max_status) ~ max_status,
-            !is.na(max) ~ max,
-            TRUE ~ as.POSIXct(minimum_timestamp)
-          ),
-          now = Sys.time()
-        ) %>%
-        dplyr::mutate(diff = as.numeric(difftime(now, start, units = "days"))) %>%
-        dplyr::filter(diff >= 7)
-      if (nrow(inactive) > 0) {
-        write.csv(inactive, file_inactive)
-      }
+    inactive <- dplyr::left_join(dm_equipment,
+                                 latest_point,
+                                 by = c("id")) %>%
+      dplyr::left_join(latest_status, by = c("id")) %>%
+      dplyr::mutate(
+        start = dplyr::case_when(
+          !is.na(max_status) & !is.na(max) & (max_status > max)  ~ max_status,
+          !is.na(max_status) & !is.na(max) & (max > max_status)  ~ max,
+          !is.na(max_status) ~ max_status,
+          !is.na(max) ~ max,
+          TRUE ~ as.POSIXct(minimum_timestamp)
+        ),
+        now = Sys.time()
+      ) %>%
+      dplyr::mutate(diff = as.numeric(difftime(now, start, units = "days"))) %>%
+      dplyr::filter(diff >= 7)
+    if (nrow(inactive) > 0) {
+      write.csv(inactive, file_inactive)
     } else {
       if (file.exists(file_inactive))
         file.remove(file_inactive)
