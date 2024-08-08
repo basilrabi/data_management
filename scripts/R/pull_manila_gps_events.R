@@ -106,10 +106,20 @@ dummy <- lapply(1:length(data_set), function(idx) {
         ),
         now = Sys.time()
       ) %>%
-      dplyr::mutate(diff = as.numeric(difftime(now, start, units = "days"))) %>%
-      dplyr::filter(diff >= 7)
+      dplyr::mutate(days_delay = as.numeric(difftime(now, start, units = "days"))) %>%
+      dplyr::filter(days_delay >= 7) %>%
+      dplyr::arrange(-days_delay)
     if (nrow(inactive) > 0) {
-      write.csv(inactive, file_inactive)
+      inactive %>%
+        dplyr::mutate(company = owner) %>%
+        dplyr::select(company,
+                      equipment_class,
+                      fleet_number,
+                      tracker_id,
+                      last_record = start,
+                      now,
+                      days_delay) %>%
+        write.csv(file = file_inactive)
     } else {
       if (file.exists(file_inactive))
         file.remove(file_inactive)
