@@ -80,6 +80,11 @@ data_set <- lapply(1:nrow(hashes), function(x) {
   pattern <- "[A-Z]+-([A-Z]+)\\d+-(\\d+)"
   mgps_equipment_list <- jsonlite::fromJSON(api_equipment_list)[[1]]
 
+  if (!is.data.frame(mgps_equipment_list)) {
+    cat("Error: No equipment list for", owner, "\n")
+    return(list(owner, NA))
+  }
+
   # Print units with missing trackers:
   missing <- dplyr::filter(mgps_equipment_list, is.na(tracker_id))
   if (nrow(missing) > 0) {
@@ -120,6 +125,9 @@ data_set <- lapply(1:nrow(hashes), function(x) {
                       by = c("equipment_class", "fleet_number"))
   return(list(owner, gps_equipment_list, dm_equipment))
 })
+data_set <- data_set[sapply(data_set, function(x) {
+  is.data.frame(x[[2]])
+})]
 
 latest_point <- RPostgres::dbGetQuery(con, "
 select equipment_id as id, max(time_stamp)
