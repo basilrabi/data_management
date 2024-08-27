@@ -81,6 +81,9 @@ class CostCenterConversion(Model):
         ]
 
     def __str__(self) -> str:
+        if self.equipment.all().exists():
+            equipment = [e.name for e in self.equipment.all()]
+            return f'{self.old_cost_center} - {self.sap_cost_center} {str(equipment)}'
         return f'{self.old_cost_center} - {self.sap_cost_center}'
 
 
