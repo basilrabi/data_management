@@ -8,7 +8,11 @@
 \usepackage{multicol}
 \usepackage{tabularx}
 \usepackage{wallpaper}
+{% if lots.count > 12 %}
+\linespread{1.3}
+{% else %}
 \linespread{1.4}
+{% endif %}
 
 \setmainfont[Mapping=tex-text-ms]{Mark Pro}
 
