@@ -1,19 +1,40 @@
 from django.contrib.admin import ModelAdmin, register
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
 from .models import MapDocumentControl, MapType, MinePlanningEngineer
 from .forms import MapDocumentControlForm
-
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
-
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 
 @register(MapDocumentControl)
 class MapDocumentControlAdmin(ModelAdmin):
     form = MapDocumentControlForm
-    list_display = ('reference_map_no', 'date_created', 'material', 'ridge', 'year_on_map', 'month', 'company', 'map_uploads_img', 'map_creator', 'revision')
+    list_display = (
+        'reference_map_no', 'date_created', 'material', 'ridge', 'year_on_map',
+        'month', 'company', 'short_map_uploads_img', 'short_map_uploads_zip',
+        'map_creator', 'revision'
+    )
     list_filter = ('map_type', 'ridge', 'company', 'month')
     readonly_fields = ('number', 'revision',)
+
+    # Define a short link for map_uploads_img
+    def short_map_uploads_img(self, obj):
+        if obj.map_uploads_img:
+            return format_html(
+                '<a href="{}" target="_blank">Map File</a>',
+                obj.map_uploads_img.url
+            )
+        return "-"
+    short_map_uploads_img.short_description = "Map Upload (Image)"
+
+    # Define a short link for map_uploads_zip
+    def short_map_uploads_zip(self, obj):
+        if obj.map_uploads_zip:
+            return format_html(
+                '<a href="{}" target="_blank">Map File</a>',
+                obj.map_uploads_zip.url
+            )
+        return "-"
+    short_map_uploads_zip.short_description = "Map Upload (ZIP)"
 
     # Define the action
     actions = ['duplicate_map_document']
@@ -32,7 +53,10 @@ class MapDocumentControlAdmin(ModelAdmin):
             obj.revision = 0  # Reset revision to 0 for the new entry
 
             # Automatically generate a new `number`
-            count = MapDocumentControl.objects.filter(map_type=obj.map_type, year_on_map=obj.year_on_map).count()
+            count = MapDocumentControl.objects.filter(
+                map_type=obj.map_type,
+                year_on_map=obj.year_on_map
+            ).count()
             obj.number = str(count + 1).zfill(3)
 
             # Save the duplicated object
@@ -49,4 +73,3 @@ class MapTypeAdmin(ModelAdmin):
 @register(MinePlanningEngineer)
 class MinePlanningEngineerAdmin(ModelAdmin):
     pass
-
