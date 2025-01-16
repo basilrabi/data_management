@@ -19,7 +19,7 @@ def filepath(instance, filename):
     filename = f"{instance.reference_map_no}.png"
     return f"mine_planning/map_uploads/{instance.year_on_map}/{filename}"
 
-def filepath_pdf(instance, filename):
+def filepath_zip(instance, filename):
     filename = f"{instance.reference_map_no}.zip"
     return f"mine_planning/map_uploads/{instance.year_on_map}/pdf/{filename}"
 
@@ -149,7 +149,7 @@ class MapDocumentControl(Model):
     )
 
     map_uploads_zip = FileField(
-        upload_to=filepath, null=True, blank=True
+        upload_to=filepath_zip, null=True, blank=True
     )
 
     map_creator = ForeignKey(
