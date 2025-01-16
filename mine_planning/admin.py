@@ -9,9 +9,9 @@ from .forms import MapDocumentControlForm
 class MapDocumentControlAdmin(ModelAdmin):
     form = MapDocumentControlForm
     list_display = (
-        'reference_map_no', 'date_created', 'material', 'ridge', 'year_on_map',
-        'month', 'company', 'short_map_uploads_img', 'short_map_uploads_zip',
-        'map_creator', 'revision'
+        'reference_map_no', 'map_title','date_created',
+        'short_map_uploads_img', 'short_map_uploads_zip',
+        'map_creator'
     )
     list_filter = ('map_type', 'ridge', 'company', 'month')
     readonly_fields = ('number', 'revision',)

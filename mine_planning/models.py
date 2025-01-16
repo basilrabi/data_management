@@ -84,6 +84,10 @@ class MapDocumentControl(Model):
         ('W4', 'Week 4')
     )
 
+    map_title = TextField(
+        max_length=100, null=True, blank=True
+    )
+
     date_created = DateField(
         null = True, blank=False
     )
