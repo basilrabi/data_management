@@ -242,18 +242,6 @@ sql_script "upload_data" "location_equipmentlocation$extra" && \
 vacuum "location_equipmentlocation" && \
 sql_script "upload_data" "location_manilagpswebsocketdata" && \
 vacuum "location_manilagpswebsocketdata" && \
-sql_script "select" "location_haulingequipment" && \
-sql_script "index" "location_haulingequipment" && \
-vacuum "location_haulingequipment" && \
-sql_script "select" "location_haulingequipmentpath" && \
-sql_script "index" "location_haulingequipmentpath" && \
-vacuum "location_haulingequipmentpath" && \
-sql_script "select" "location_loadingequipment" && \
-sql_script "index" "location_loadingequipment" && \
-vacuum "location_loadingequipment" && \
-sql_script "select" "location_loadingequipmentpath" && \
-sql_script "index" "location_loadingequipmentpath" && \
-vacuum "location_loadingequipmentpath" && \
 sql_script "upload_data" "sampling_shipmentloadingassay" && \
 vacuum "sampling_shipmentloadingassay" && \
 sql_script "upload_data" "sampling_shipmentloadinglotassay" && \
@@ -312,3 +300,16 @@ sql_script "permission" "reader-default" "geology"
 sql_script "permission" "reader-default" "gradecontrol"
 sql_script "permission" "reader-default" "survey"
 sql_script "permission" "reader-default" "planning"
+sql_script "select" "location_haulingequipment" && \
+sql_script "index" "location_haulingequipment" && \
+vacuum "location_haulingequipment" && \
+sql_script "select" "location_haulingequipmentpath" && \
+sql_script "index" "location_haulingequipmentpath" && \
+vacuum "location_haulingequipmentpath" && \
+sql_script "select" "location_loadingequipment" && \
+sql_script "index" "location_loadingequipment" && \
+vacuum "location_loadingequipment" && \
+sql_script "select" "location_loadingequipmentpath" && \
+sql_script "index" "location_loadingequipmentpath" && \
+vacuum "location_loadingequipmentpath"
+
