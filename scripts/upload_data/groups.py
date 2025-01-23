@@ -1,8 +1,9 @@
 from csv import DictReader
 from django.contrib.auth.models import Group, Permission
+from os import environ
 from sys import exit
 
-with open('data/groups.csv', newline='') as csvfile:
+with open(environ['datadir']+ '/groups.csv', newline='') as csvfile:
     reader = DictReader(csvfile, fieldnames=['name'])
     for row in reader:
         group = Group(name=row['name'])
@@ -18,7 +19,7 @@ with open('data/groups.csv', newline='') as csvfile:
             print(e, flush=True)
             exit(1)
 
-with open('data/group_permission.csv', newline='') as csvfile:
+with open(environ['datadir']+ '/group_permission.csv', newline='') as csvfile:
     reader = DictReader(csvfile, fieldnames=['group', 'permission'])
     for row in reader:
         group = Group.objects.get(name=row['group'])

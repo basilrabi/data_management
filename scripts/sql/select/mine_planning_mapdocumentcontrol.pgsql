@@ -3,6 +3,7 @@ SELECT
     a.bench,
     a.date_created,
     a.id,
+    a.map_title,
     a.map_uploads_img,
     a.map_uploads_zip,
     a.material,

@@ -32,7 +32,7 @@ upload_ogr () {
     ogr2ogr -update -append -progress \
         -f PostgreSQL "PG:host=$db_host port=$db_port user=$db_user dbname=$db_name password=$db_password" \
         -fieldmap "$2" \
-        -nln $1 data/$1.gpkg 2>&1 | tee -a log_upload_data && \
+        -nln $1 $datadir/$1.gpkg 2>&1 | tee -a log_upload_data && \
     time_end=$(date +%s) && \
     time_elapsed=$(($time_end - $time_start)) && \
     echo "ogr $1, $time_elapsed" >> log_upload_data_time.csv

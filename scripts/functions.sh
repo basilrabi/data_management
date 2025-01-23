@@ -7,9 +7,11 @@ sql_script () {
     fi
     echo "Running $1/$2 script." 2>&1 | tee -a log_upload_data && \
     time_start=$(date +%s) && \
-    psql -h $db_host -p $db_port -U $db_role -w $db_name -a -f scripts/sql/$1/$2.pgsql 2>&1 | tee -a log_upload_data && \
+    sed -e "s|'data/|'$datadir/|" scripts/sql/"$1"/"$2".pgsql > temp_"$2".pgsql && \
+    psql -h $db_host -p $db_port -U $db_role -w $db_name -a -f temp_$2.pgsql 2>&1 | tee -a log_upload_data && \
     time_end=$(date +%s) && \
     time_elapsed=$(($time_end - $time_start)) && \
+    rm temp_"$2".pgsql && \
     echo "sql $1-$2, $time_elapsed" >> log_upload_data_time.csv
 }
 

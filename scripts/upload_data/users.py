@@ -1,10 +1,11 @@
 from csv import DictReader
 from django.contrib.auth.models import Group, Permission
+from os import environ
 from sys import exit
 
 from custom.models import User
 
-with open('data/users.csv', newline='') as csvfile:
+with open(environ['datadir'] + '/users.csv', newline='') as csvfile:
     reader = DictReader(csvfile, fieldnames=[
         'birth_date',
         'email',
@@ -47,7 +48,7 @@ with open('data/users.csv', newline='') as csvfile:
             print(f'Error: User {user.username} was not saved.', flush=True)
             print(e, flush=True)
 
-with open('data/user_group.csv', newline='') as csvfile:
+with open(environ['datadir'] + '/user_group.csv', newline='') as csvfile:
     reader = DictReader(csvfile, fieldnames=['user', 'group'])
     for row in reader:
         user = User.objects.get(username=row['user'])
@@ -62,7 +63,7 @@ with open('data/user_group.csv', newline='') as csvfile:
             print(f'Error: User `{user.username}` was not assigned to Group `{group.name}`.', flush=True)
             print(e, flush=True)
 
-with open('data/user_permission.csv', newline='') as csvfile:
+with open(environ['datadir'] + '/user_permission.csv', newline='') as csvfile:
     reader = DictReader(csvfile, fieldnames=['user', 'permission'])
     for row in reader:
         user = User.objects.get(username=row['user'])

@@ -158,6 +158,7 @@ export DATA_MANAGEMENT_MEDIA_URL=where_your_media_root_or_url_is
 export DJANGO_SUPERUSER_USERNAME=username
 export DJANGO_SUPERUSER_PASSWORD=password
 export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
+datadir=your_cloned_data_directory
 ```
 
 When all environment variables in `~/.bashrc` and variables in `data_management/local.py` are set properly,
