@@ -6,7 +6,7 @@ db_password <- Sys.getenv("db_password")
 db_port <- Sys.getenv("db_port")
 db_user <- Sys.getenv("db_user")
 
-external_table_list <- "data/external_tables/tables.csv"
+external_table_list <- sprintf("%s/external_tables/tables.csv", Sys.getenv("datadir"))
 
 if (file.exists(external_table_list)) {
   external_tables <- read.csv(external_table_list)
