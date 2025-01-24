@@ -31,7 +31,7 @@ if (file.exists(external_table_list)) {
 
   upload_ogr <- function(schema_name, table_name, file_name, table_owner) {
     cmd <- sprintf(
-      'ogr2ogr -update -append -progress -f PostgreSQL "PG:host=%s port=%s user=%s dbname=%s password=%s" -fieldmap "%s" -lco LAUNDER=NO -nln "%s"."%s" data/external_tables/%s.gpkg',
+      'ogr2ogr -update -append -progress -f PostgreSQL "PG:host=%s port=%s user=%s dbname=%s password=%s" -fieldmap "%s" -lco LAUNDER=NO -nln "%s"."%s" %s/external_tables/%s.gpkg',
       db_host,
       db_port,
       db_user,
@@ -40,6 +40,7 @@ if (file.exists(external_table_list)) {
       "identity",
       schema_name,
       table_name,
+      Sys.getenv("datadir"),
       file_name
     )
     cat(cmd, "\n")
