@@ -147,6 +147,7 @@ class Equipment(FixedAsset):
             fields=['fleet_number', 'equipment_class', 'owner'],
             name='unique_equipment_constraint'
         )]
+        indexes = [Index(fields=['fleet_number'])]
         verbose_name = 'Equipment'
         verbose_name_plural = 'Equipment'
         ordering = [
