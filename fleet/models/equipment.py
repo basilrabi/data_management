@@ -370,17 +370,30 @@ class ProviderEquipmentRegistry(Model):
         self.x_equipment_class = self.equipment.equipment_class.name
         self.x_contractor = self.equipment.owner.name
         # ENDTODO
-        previous_registry = self.equipment \
-            .providerequipmentregistry_set \
-            .order_by('-registration_date') \
-            .first()
+        if self.id:
+            previous_registry = self.equipment \
+                .providerequipmentregistry_set \
+                .exclude(id = self.id) \
+                .order_by('-registration_date') \
+                .first()
+        else:
+            previous_registry = self.equipment \
+                .providerequipmentregistry_set \
+                .order_by('-registration_date') \
+                .first()
         if previous_registry:
-            self.capacity = previous_registry.capacity
-            self.chassis_serial_number = previous_registry.chassis_serial_number
-            self.delivery_year = previous_registry.delivery_year
-            self.engine_serial_number = previous_registry.engine_serial_number
-            self.model = previous_registry.model
-            self.plate_number = previous_registry.plate_number
+            if not self.capacity:
+                self.capacity = previous_registry.capacity
+            if not self.chassis_serial_number:
+                self.chassis_serial_number = previous_registry.chassis_serial_number
+            if not self.delivery_year:
+                self.delivery_year = previous_registry.delivery_year
+            if not self.engine_serial_number:
+                self.engine_serial_number = previous_registry.engine_serial_number
+            if not self.model:
+                self.model = previous_registry.model
+            if not self.plate_number:
+                self.plate_number = previous_registry.plate_number
         super().save(*args, **kwargs)
         latest_registry = self.equipment \
             .providerequipmentregistry_set \
