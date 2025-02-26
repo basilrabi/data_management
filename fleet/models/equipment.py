@@ -375,6 +375,7 @@ class ProviderEquipmentRegistry(Model):
             .order_by('-registration_date') \
             .first()
         if previous_registry:
+            self.capacity = previous_registry.capacity
             self.chassis_serial_number = previous_registry.chassis_serial_number
             self.delivery_year = previous_registry.delivery_year
             self.engine_serial_number = previous_registry.engine_serial_number
