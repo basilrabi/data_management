@@ -343,12 +343,12 @@ class ProviderEquipmentRegistry(Model):
     chassis_serial_number = ForeignKey(
         ChassisSerialNumber, blank=True, null=True, on_delete=PROTECT
     )
-    delivery_year = PositiveSmallIntegerField()
+    delivery_year = PositiveSmallIntegerField(blank=True, null=True)
     engine_serial_number = ForeignKey(
         EngineSerialNumber, blank=True, null=True, on_delete=PROTECT
     )
     equipment = ForeignKey(ProviderEquipment, on_delete=PROTECT)
-    model = ForeignKey(EquipmentModel, on_delete=PROTECT)
+    model = ForeignKey(EquipmentModel, blank=True, null=True, on_delete=PROTECT)
     omt_registered = BooleanField(default=False)
     plate_number = ForeignKey(
         PlateNumber, blank=True, null=True, on_delete=PROTECT
@@ -370,6 +370,16 @@ class ProviderEquipmentRegistry(Model):
         self.x_equipment_class = self.equipment.equipment_class.name
         self.x_contractor = self.equipment.owner.name
         # ENDTODO
+        previous_registry = self.equipment \
+            .providerequipmentregistry_set \
+            .order_by('-registration_date') \
+            .first()
+        if previous_registry:
+            self.chassis_serial_number = previous_registry.chassis_serial_number
+            self.delivery_year = previous_registry.delivery_year
+            self.engine_serial_number = previous_registry.engine_serial_number
+            self.model = previous_registry.model
+            self.plate_number = previous_registry.plate_number
         super().save(*args, **kwargs)
         latest_registry = self.equipment \
             .providerequipmentregistry_set \
