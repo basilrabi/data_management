@@ -572,8 +572,9 @@ class ShipmentLoadingAssayAdmin(ModelAdmin):
                        'sio2',
                        'cr',
                        'co')
-        if assay.shipment.product.name == 'LIMONITE':
-            self.fields += ('al2o3',)
+        if assay.shipment.product:
+            if assay.shipment.product.name == 'LIMONITE':
+                self.fields += ('al2o3',)
         self.inlines = [ShipmentLoadingLotAssayInline]
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
