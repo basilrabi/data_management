@@ -28,7 +28,10 @@ class EquipmentAdminForm(ModelForm):
 class ProviderEquipmentRegistryAdminForm(ModelForm):
     def full_clean(self):
         super().full_clean()
-        duplicate_safety = ProviderEquipmentRegistry.objects.filter(safety_inspection_id=self.instance.safety_inspection_id)
+        duplicate_safety = ProviderEquipmentRegistry.objects.filter(
+                safety_inspection_id=self.instance.safety_inspection_id,
+                year=self.instance.registration_date.year
+        )
         if self.instance.id:
             duplicate = duplicate_safety.exclude(id=self.instance.id)
             if duplicate.exists():
