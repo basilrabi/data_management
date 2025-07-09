@@ -358,7 +358,7 @@ class ProviderEquipmentRegistry(Model):
     safety_inspection_id = PositiveSmallIntegerField()
     sap_registered = BooleanField(default=False)
     warehouse_registered = BooleanField(default=False)
-    year = PositiveSmallIntegerField(default=2010)
+    year = PositiveSmallIntegerField(blank=True, null=True)
 
     # Auto-computed fields used for multiplechoice filters
     x_equipment_class = CharField(max_length=40, blank=True, null=True)
