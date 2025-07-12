@@ -225,7 +225,9 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
     ]
     search_fields = ['chassis_serial_number__name',
                      'engine_serial_number__name',
+                     'equipment__equipment_class__name',
                      'equipment__fleet_number',
+                     'equipment__owner__name',
                      'plate_number__plate_number',
                      'safety_inspection_id']
 
