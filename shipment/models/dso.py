@@ -324,7 +324,7 @@ class LayDaysStatement(Model):
     commenced_loading = DateTimeField(null=True, blank=True)
     completed_loading = DateTimeField(null=True, blank=True)
     cargo_description = NameField(max_length=20, default='NICKEL ORE')
-    tonnage = PositiveIntegerField(null=True, blank=True)
+    tonnage = DecimalField(blank=True, decimal_places=3, max_digits=8, null=True)
     loading_terms = PositiveSmallIntegerField(
         default=6000,
         help_text='Agreed loading rate (tons per day) or CQD days.'
