@@ -624,14 +624,14 @@ class LayDaysStatement(Model):
             timedelta(minutes=5) * \
             float(self.can_test_factor)
 
-    def time_limit(self):
+    def time_limit(self) -> timedelta:
         if self.laytime_terms == 'CQD':
             return timedelta(days=self.loading_terms)
         elif self.tonnage:
             return round_second(
                 (
                     timedelta(
-                        days=self.tonnage / self.loading_terms
+                        days=float(self.tonnage) / self.loading_terms
                     ) + self.time_can_test()
                 ) or zero_time
             )
