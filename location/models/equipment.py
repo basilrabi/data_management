@@ -23,11 +23,11 @@ from fleet.models.equipment import Equipment
 class EquipmentLocation(Model):
     equipment = ForeignKey(Equipment, on_delete=PROTECT)
     geom = PointField(srid=4326)
-    heading = PositiveSmallIntegerField(null=True, blank=True)
-    satellites = PositiveSmallIntegerField(null=True, blank=True)
-    speed = PositiveSmallIntegerField(null=True, blank=True)
+    heading = PositiveSmallIntegerField(blank=True, null=True)
+    satellites = PositiveSmallIntegerField(blank=True, null=True)
+    speed = PositiveSmallIntegerField(blank=True, null=True)
     time_stamp = DateTimeField(auto_now_add=True)
-    user = ForeignKey(User, null=True, blank=True, on_delete=SET_NULL)
+    user = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL)
 
     class Meta:
         constraints = [

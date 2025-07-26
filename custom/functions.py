@@ -328,6 +328,7 @@ def setup_triggers() -> None:
         'select/shipment_number',
         'index/shipment_loadingrate',
         'index/shipment_number',
+        'trigger/fleet_equipmentbreakdown',
         'trigger/inventory_block_exposed',
         'trigger/location_anchorage_update',
         'trigger/location_clippedcluster_insert',
