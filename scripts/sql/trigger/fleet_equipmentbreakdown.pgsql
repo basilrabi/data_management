@@ -8,7 +8,7 @@ BEGIN
         WHERE id = NEW.id;
     END IF;
 
-    RETURNS NULL;
+    RETURN NULL;
 END;
 $BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
