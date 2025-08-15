@@ -29,6 +29,7 @@ GRANT UPDATE (pp_br)                   ON TABLE inventory_block          TO plan
 GRANT UPDATE (pp_lim)                  ON TABLE inventory_block          TO planning;
 GRANT UPDATE (pp_sap)                  ON TABLE inventory_block          TO planning;
 GRANT UPDATE (z_present)               ON TABLE location_drillhole       TO planning;
+GRANT UPDATE (geom)                    ON TABLE location_mineblock       TO planning;
 GRANT UPDATE (excavated_date)          ON TABLE sampling_drillcoresample TO planning;
 
 GRANT SELECT ON SEQUENCE location_slice_id_seq TO planning;
