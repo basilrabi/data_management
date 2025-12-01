@@ -375,6 +375,10 @@ class LayDaysStatement(Model):
     negotiated = BooleanField(
         default=False, help_text='Demurrage/Despatch is negotiated.'
     )
+    negotiated_days = PositiveSmallIntegerField(
+        default=0,
+        help_text='Negotiated allowable lay days.'
+    )
     remarks = TextField(null=True, blank=True)
 
     def _clean(self):
@@ -454,7 +458,11 @@ class LayDaysStatement(Model):
 
                             # If laytime rates are mistakenly set, adjust.
                             if self.laytime_terms != 'CQD':
-                                if (_time_remaining - computed_detail.consumed()) > zero_time and \
+                                if self.negotiated_days > 0:
+                                    detail.laytime_rate = 100
+                                    detail.save()
+                                    computed_detail.laytime_rate = 100
+                                elif (_time_remaining - computed_detail.consumed()) > zero_time and \
                                         detail.interval_class in NATURAL_DELAYS and \
                                         detail.laytime_rate > 0:
                                     detail.laytime_rate = 0
@@ -627,6 +635,8 @@ class LayDaysStatement(Model):
     def time_limit(self) -> timedelta:
         if self.laytime_terms == 'CQD':
             return timedelta(days=self.loading_terms)
+        elif self.negotiated_days > 0:
+            return round_second(timedelta(days=self.negotiated_days))
         elif self.tonnage:
             return round_second(
                 (
