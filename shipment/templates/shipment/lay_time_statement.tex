@@ -126,10 +126,13 @@
             & {{ statement.can_test }} time{{ statement.can_test|pluralize }}
             & Total Time Allowed
             & {{ statement.time_allowed }} \\
-        Loading Terms
     {% if statement.laytime_terms == "CQD" %}
+        Loading Terms
             & CQD
+    {% elif statement.negotiated_days > 0 %}
+            &
     {% else %}
+        Loading Terms
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %}
     {% endif %}
     {% if statement.has_additional_laytime %}
@@ -141,10 +144,13 @@
 {% else %}
         Total Time Allowed
             & {{ statement.time_allowed }}
-            & Loading Terms
     {% if statement.laytime_terms == "CQD" %}
+            & Loading Terms
             & CQD \\
+    {% elif statement.negotiated_days > 0 %}
+            && \\
     {% else %}
+            & Loading Terms
             & {{ statement.loading_terms|intcomma }} WMT {% firstof statement.laytime_terms 'PWWD SHINC' %} \\
     {% endif %}
     {% if statement.has_additional_laytime %}
