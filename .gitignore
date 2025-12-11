@@ -5,3 +5,5 @@ log*
 .Rhistory
 .Rproj.user
 .vscode
+__pycache__/
+*.swp

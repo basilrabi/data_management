@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'comptrollership',
     'custom',
     'fleet',
+    'human_resources',
     'inventory',
     'local_calendar',
     'location',
