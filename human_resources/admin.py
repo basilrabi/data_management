@@ -1,6 +1,6 @@
 from django.contrib.admin import ModelAdmin, register
 
-from .models import OutgoingCommunication, ExternalIncomingCommunication
+from .models import OutgoingCommunication, ExternalIncomingCommunication, Letter, PoliciesAndGuideline
 from organization.models import Division
 
 
@@ -16,7 +16,7 @@ class OutgoingCommunicationAdmin(ModelAdmin):
 
     list_display = ('date',
                     'transmittal_number',
-                    'content',
+                    'nature_of_content',
                     'recipient_render',
                     'original_copy',
                     'receiving_copy'
@@ -41,3 +41,47 @@ class ExternalIncomingCommunicationAdmin(ModelAdmin):
                     'scan'
     )
     ordering = ('-datetime_received', '-transmittal_number')
+
+
+@register(Letter)
+class LetterAdmin(ModelAdmin):
+    date_hierarchy = 'date'
+    fields = ('date',
+              'nature_of_content',
+              'recipient',
+              'original_copy',
+              'receiving_copy',
+              'cancel',)
+
+    list_display = ('date',
+                    'transmittal_number',
+                    'nature_of_content',
+                    'recipient_render',
+                    'original_copy',
+                    'receiving_copy'
+    )
+
+    ordering = ('-date', '-transmittal_number')
+
+
+@register(PoliciesAndGuideline)
+class PoliciesAndGuidelineAdmin(ModelAdmin):
+    date_hierarchy = 'date'
+    fields = ('date',
+              'nature_of_content',
+              'concerned_personnel',
+              'date_of_effectivity',
+              'date_of_expiry',
+              'signed_copy',
+              'cancel',)
+
+    list_display = ('date',
+                    'transmittal_number',
+                    'nature_of_content',
+                    'concerned_personnel',
+                    'date_of_effectivity',
+                    'date_of_expiry',
+                    'signed_copy'
+    )
+
+    ordering = ('-date', '-transmittal_number')
