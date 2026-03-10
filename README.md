@@ -148,7 +148,6 @@ export DATA_MANAGEMENT_DB_NAME=data_management_db_name
 export DATA_MANAGEMENT_DB_USER=data_management_user
 export DATA_MANAGEMENT_DB_PASSWORD=data_management_password
 export DATA_MANAGEMENT_DB_PORT=5432
-export db_template=data_management_developer_template
 export DATA_MANAGEMENT_GEOLOGY=geology_password
 export DATA_MANAGEMENT_GRADECONTROL=gradecontrol_password
 export DATA_MANAGEMENT_PLANNING=planning_password
@@ -161,6 +160,7 @@ export DJANGO_SUPERUSER_USERNAME=username
 export DJANGO_SUPERUSER_PASSWORD=password
 export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
 export datadir=your_cloned_data_directory
+export db_template=data_management_developer_template
 ```
 
 When all environment variables in `~/.bashrc` and variables in `data_management/local.py` are set properly,

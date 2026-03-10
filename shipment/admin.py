@@ -575,6 +575,7 @@ class VesselAdmin(ModelAdmin):
     list_display = ('__str__',)
     search_fields = ['name']
 
+
 @register(THPALFeed)
 class THPALFeedAdmin(ModelAdmin):
     list_display = ('year', 'month', 'wmt_oversize_s', 'wmt_oversize_h', 'wmt_slurry_feed', 'dmt_undersize', 'ni_ton','fe_ton', 'co_ton','percent_moisture','certificate','pdf')

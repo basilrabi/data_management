@@ -1,10 +1,9 @@
-import math
 from decimal import Decimal, ROUND_UP
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (
     CheckConstraint,
     DateField,
+    DateTimeField,
     DecimalField,
     F,
     FileField,
@@ -14,8 +13,6 @@ from django.db.models import (
     Q,
     UniqueConstraint
 )
-from django.urls import reverse
-from django.utils import timezone
 from django.utils.html import mark_safe
 
 from custom.models import SpaceLess
@@ -229,12 +226,12 @@ class THPALFeed(Model):
     certificate = FileField(
         upload_to='assay/hpal_feed/', null=True, blank=True
     )
-    created_at = models.DateTimeField(
+    created_at = DateTimeField(
         auto_now=True
     )
 
     class Meta:
-        constraints = [UniqueConstraint(fields=['year', 'month'],name='unique_year_month')]
+        constraints = [UniqueConstraint(fields=['year', 'month'], name='unique_year_month')]
         ordering = [F('year').desc(), F('month').desc()]
 
     def __str__(self) -> str:
