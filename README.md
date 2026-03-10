@@ -148,6 +148,7 @@ export DATA_MANAGEMENT_DB_NAME=data_management_db_name
 export DATA_MANAGEMENT_DB_USER=data_management_user
 export DATA_MANAGEMENT_DB_PASSWORD=data_management_password
 export DATA_MANAGEMENT_DB_PORT=5432
+export db_template=data_management_developer_template
 export DATA_MANAGEMENT_GEOLOGY=geology_password
 export DATA_MANAGEMENT_GRADECONTROL=gradecontrol_password
 export DATA_MANAGEMENT_PLANNING=planning_password
@@ -173,6 +174,7 @@ uploading the exported production data and migrating (testing) your changes is d
 workon data_management
 ./manage.py runserver
 ```
+Incase "AttributeError: 'super' object has no attribute 'dicts' and no __dict__ for setting new attributes" appears. recreate new virtual environment and use python3.12 version and repeat "install the requirements" step.
 
 To ensure that `DEBUG` is enabled in your development environment, make sure that `data_management/developer.py` exists:
 

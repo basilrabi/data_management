@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 
 from .views import (
      data_export_laydays,
@@ -26,5 +27,6 @@ urlpatterns = [
           name='lay-days-pdf'),
      path('statement-csv/<slug:name>',
           lay_days_statement_csv,
-          name='lay-days-csv')
+          name='lay-days-csv'),
+     path('feed/<int:year>/<int:month>', views.monthly_feed, name='cert')
 ]

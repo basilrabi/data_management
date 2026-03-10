@@ -1,4 +1,6 @@
-from decimal import Decimal
+import math
+from decimal import Decimal, ROUND_UP
+from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (
     CheckConstraint,
@@ -12,6 +14,9 @@ from django.db.models import (
     Q,
     UniqueConstraint
 )
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import mark_safe
 
 from custom.models import SpaceLess
 from custom.variables import MONTH_CHOICES
@@ -176,39 +181,118 @@ class ScandiumSale(Model):
             )
         ]
 
+
 class THPALFeed(Model):
     """
     Ore fed to THPAL in a month.
     """
     year = PositiveSmallIntegerField()
     month = PositiveSmallIntegerField(choices=MONTH_CHOICES)
-    wmt_oversize = DecimalField(
+    wmt_oversize_s = DecimalField(
+        help_text='Month-end inventory of oversize ore',
         null=True, blank=True, max_digits=9, decimal_places=2,
         validators=[MinValueValidator(Decimal(0.00))]
     )
-    wmt_undersize = DecimalField(
+    wmt_oversize_h = DecimalField(
+        help_text='Hauled overzise in a month',
+        null=True, blank=True, max_digits=9, decimal_places=2,
+        validators=[MinValueValidator(Decimal(0.00))]
+    )
+    wmt_slurry_feed = DecimalField(
         null=True, blank=True, max_digits=9, decimal_places=2,
         validators=[MinValueValidator(Decimal(0.00))]
     )
     dmt_undersize = DecimalField(
-        max_digits=9, decimal_places=2,
+        max_digits=9, decimal_places=3,
         validators=[MinValueValidator(Decimal(0.00))]
     )
     ni_ton = DecimalField(
-        max_digits=7, decimal_places=2,
+        null=True, blank=True,
+        max_digits=8, decimal_places=3,
+        validators=[MinValueValidator(Decimal(0.00))]
+    )
+    fe_ton = DecimalField(
+        null=True, blank=True,
+        max_digits=8, decimal_places=3,
         validators=[MinValueValidator(Decimal(0.00))]
     )
     co_ton = DecimalField(
-        max_digits=6, decimal_places=2,
+        null=True, blank=True,
+        max_digits=8, decimal_places=3,
+        validators=[MinValueValidator(Decimal(0.00))]
+    )
+    percent_moisture = DecimalField(
+        null=True, blank=True,
+        max_digits=8, decimal_places=3,
         validators=[MinValueValidator(Decimal(0.00))]
     )
     certificate = FileField(
         upload_to='assay/hpal_feed/', null=True, blank=True
     )
+    created_at = models.DateTimeField(
+        auto_now=True
+    )
 
     class Meta:
-        constraints = [UniqueConstraint(fields=['year', 'month'])]
+        constraints = [UniqueConstraint(fields=['year', 'month'],name='unique_year_month')]
         ordering = [F('year').desc(), F('month').desc()]
 
     def __str__(self) -> str:
         return f'{self.year:04d}-{self.month:02d}'
+        
+    @property
+    def computed_oversize(self):
+        if self.wmt_oversize_s is None or self.wmt_oversize_h is None and self.wmt_undersize is not None:
+            return 0
+        
+        if self.month == 1:
+            prev_month = 12
+            prev_year = self.year - 1
+        else:
+            prev_month = self.month - 1
+            prev_year = self.year
+        
+        previous = THPALFeed.objects.filter(year=prev_year, month=prev_month).first()
+
+        previous_oversize_s = (
+            previous.wmt_oversize_s if previous and previous.wmt_oversize_s is not None else Decimal(0)
+        )
+        return (self.wmt_oversize_s or Decimal(0)) + (self.wmt_oversize_h or Decimal(0)) - previous_oversize_s
+
+    @property
+    def computed_total_feed(self):
+        if self.wmt_slurry_feed is None or self.computed_oversize is None:
+            return 0
+        return round(self.wmt_slurry_feed + self.computed_oversize, 0)
+    
+    @property
+    def net_undersize(self):
+        if self.computed_oversize is None or self.percent_moisture is None:
+            return 0
+
+        value = (
+            Decimal(self.dmt_undersize)
+            / (Decimal("100") - Decimal(self.percent_moisture))
+            * Decimal("100")
+        )
+
+        return value.quantize(Decimal("0"), rounding=ROUND_UP)
+    
+    @property
+    def oversize_final(self):
+        if self.computed_total_feed is None or self.net_undersize is None:
+            return 0
+        return round(self.computed_total_feed - self.net_undersize, 2)
+    
+    @property
+    def percent_os_final(self):
+        if self.computed_total_feed == 0 or self.oversize_final == 0:
+            return 0
+        return (self.oversize_final / self.computed_total_feed) * 100    
+
+    def pdf(self): 
+        return mark_safe(
+            '<a href="/shipment/feed/{}/{}">'
+            'PDF'
+            '</a>'.format(self.year, self.month)
+        )
