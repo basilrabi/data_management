@@ -233,6 +233,8 @@ class THPALFeed(Model):
     class Meta:
         constraints = [UniqueConstraint(fields=['year', 'month'], name='unique_year_month')]
         ordering = [F('year').desc(), F('month').desc()]
+        verbose_name = 'THPAL Feed'
+        verbose_name_plural = 'THPAL Feed'
 
     def __str__(self) -> str:
         return f'{self.year:04d}-{self.month:02d}'
