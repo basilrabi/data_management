@@ -1,6 +1,7 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from django.db.models import TextField
 from django.forms import Textarea
+from django.utils import timezone
 from nested_admin import NestedModelAdmin, NestedTabularInline
 
 from custom.admin import ReadOnlyAdmin
@@ -209,7 +210,15 @@ class EquipmentAdmin(ModelAdmin):
 @register(EquipmentBreakdown)
 class EquipmentBreakdownAdmin(NestedModelAdmin):
     inlines = [MaintenanceOperationInline]
+    list_display = (
+        'equipment',
+        'status',
+        'breakdown_duration'
+    )
     readonly_fields = ('equipment',)
+
+    def breakdown_duration(self, obj):
+        return timezone.now() - obj.reported_on
 
 
 @register(EquipmentBreakdownReport)
