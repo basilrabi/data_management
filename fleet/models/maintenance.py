@@ -1,4 +1,5 @@
 from django.db.models import (
+    CharField,
     DateTimeField,
     F,
     ForeignKey,
@@ -9,8 +10,8 @@ from django.db.models import (
     TextField
 )
 
-from custom.models import Classification,  User
-from fleet.models.equipment import Equipment
+from custom.models import Classification, User
+from fleet.models.equipment import InhouseEquipment
 
 
 class BreakdownStatus(Classification):
@@ -40,7 +41,7 @@ class EquipmentBreakdown(Model):
     """
     breakdown_end = DateTimeField(blank=True, null=True)
     description = TextField(blank=True, null=True)
-    equipment = ForeignKey(Equipment, on_delete=PROTECT)
+    equipment = ForeignKey(InhouseEquipment, on_delete=PROTECT)
     maintenance_order = PositiveIntegerField(blank=True, null=True, unique=True)
     mo_created_on = DateTimeField(blank=True, null=True)
     mo_creator = ForeignKey(User, blank=True, null=True, on_delete=PROTECT, related_name='maintenance_order')
@@ -48,6 +49,9 @@ class EquipmentBreakdown(Model):
     reported_on = DateTimeField(auto_now_add=True)
     reporter = ForeignKey(User, blank=True, null=True, on_delete=PROTECT, related_name='equipment_breakdown_report')
     status = ForeignKey('BreakdownStatus', blank=True, null=True, on_delete=PROTECT)
+
+    # Auto-computed field used for multiple choice filters
+    x_equipment_class = CharField(blank=True, max_length=40, null=True)
 
 
 class MaintenanceOperation(Model):

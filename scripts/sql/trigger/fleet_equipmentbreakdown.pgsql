@@ -1,3 +1,28 @@
+CREATE OR REPLACE FUNCTION insert_equipment_class()
+RETURNS trigger AS
+$BODY$
+DECLARE equipment_class text;
+BEGIN
+    SELECT ec.name
+    INTO equipment_class
+    FROM fleet_equipment eq,
+        fleet_equipmentclass ec
+    WHERE eq.id = NEW.equipment_id
+        AND eq.equipment_class_id = ec.id;
+
+    NEW.x_equipment_class = equipment_class;
+    RETURN NEW;
+END;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS fleet_equipmentbreakdown_x_equipment_class
+ON fleet_equipmentbreakdown;
+CREATE TRIGGER fleet_equipmentbreakdown_x_equipment_class
+BEFORE INSERT OR UPDATE
+ON fleet_equipmentbreakdown
+FOR EACH ROW
+EXECUTE PROCEDURE insert_equipment_class();
+
 CREATE OR REPLACE FUNCTION insert_mo_created_on()
 RETURNS trigger AS
 $BODY$

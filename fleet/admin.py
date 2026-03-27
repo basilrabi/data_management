@@ -8,10 +8,15 @@ from custom.admin import ReadOnlyAdmin
 from organization.admin import ServiceProviderAdmin
 from organization.models import Organization, ServiceProvider
 from .filters import (
+    EquipmentBreakdownClassFilter,
     ProviderEquipmentRegistryClassFilter,
     ProviderEquipmentRegistryProviderFilter
 )
-from .forms import EquipmentAdminForm, ProviderEquipmentRegistryAdminForm
+from .forms import (
+    EquipmentAdminForm,
+    InhouseEquipmentAdminForm,
+    ProviderEquipmentRegistryAdminForm
+)
 from .models.equipment import (
     AdditionalEquipmentCost,
     BodyType,
@@ -25,6 +30,7 @@ from .models.equipment import (
     EquipmentManufacturer,
     EquipmentMobileNumber,
     EquipmentModel,
+    InhouseEquipment,
     PlateNumber,
     ProviderEquipment,
     ProviderEquipmentRegistry,
@@ -215,6 +221,7 @@ class EquipmentBreakdownAdmin(NestedModelAdmin):
         'status',
         'breakdown_duration'
     )
+    list_filter = (EquipmentBreakdownClassFilter,)
     readonly_fields = ('equipment',)
 
     def breakdown_duration(self, obj):
@@ -236,6 +243,7 @@ class EquipmentBreakdownReportAdmin(ModelAdmin):
         'reported_on',
         'status'
     )
+    list_filter = (EquipmentBreakdownClassFilter,)
     readonly_fields = (
         'reported_on',
         'reporter',
@@ -287,6 +295,78 @@ class EquipmentMobileNumberAdmin(ModelAdmin):
 class EquipmentModelAdmin(ModelAdmin):
     list_display = ('equipment_class', 'manufacturer', 'name')
     search_fields = ['equipment_class__name', 'manufacturer__name', 'name']
+
+
+@register(InhouseEquipment)
+class InhouseEquipmentAdmin(ModelAdmin):
+    autocomplete_fields = ['model']
+    exclude = ('equipment_class',)
+    form = InhouseEquipmentAdminForm
+    inlines = [AdditionalEquipmentCostInline]
+    list_display = ('__str__', 'model', 'plate_number', 'fleet_number','department_assigned')
+    list_filter = ['active', 'equipment_class']
+    search_fields = [
+        'engine_serial_number',
+        'equipment_class__name',
+        'fleet_number',
+        'model__manufacturer__name',
+        'model__name',
+    ]
+
+    fields_1 = (
+        'fleet_number',
+        'department_assigned',
+        'model',
+        'year_model',
+        'certificate_of_registration_no',
+        'cr_date',
+        'mv_file_no',
+        'acquisition_cost',
+        'date_acquired'
+    )
+
+    fields_2 = (
+        'asset_tag_id',
+        'asset_serial_number',
+        'asset_code',
+        'service_life',
+        'engine_serial_number',
+        'plate_number',
+        'body_type',
+        'month_of_registration',
+        'chassis_serial_number',
+        'description',
+        'active'
+    )
+
+    def add_view(self, request, form_url='', extra_context=None):
+
+        if request.user.groups.all().filter(name='camp admin').exists():
+            if_camp = 'date_disposal'
+        elif request.user.is_superuser:
+            if_camp = ('date_phased_out', 'date_disposal')
+        else:
+            if_camp = 'date_phased_out'
+
+        self.fields = self.fields_1 + (if_camp,) + self.fields_2
+        return super().add_view(request, form_url, extra_context=extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+
+        if request.user.groups.all().filter(name='camp admin').exists():
+            if_camp = 'date_disposal'
+        elif request.user.is_superuser:
+            if_camp = ('date_phased_out', 'date_disposal')
+        else:
+            if_camp = 'date_phased_out'
+
+        self.fields = self.fields_1 + (if_camp,) + self.fields_2
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
+
+    def save_form(self, request, form, change):
+        obj = super().save_form(request, form, change)
+        obj.owner = Organization.objects.get(name='TMC')
+        return obj
 
 
 @register(PartGroup)

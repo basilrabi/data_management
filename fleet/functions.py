@@ -1,4 +1,18 @@
 from .models.equipment import ProviderEquipment
+from .models.maintenance import EquipmentBreakdown
+
+def breakdown_equipment_classes() -> list[str]:
+    """
+    Returns the list og equipment classes that are presently down.
+    """
+    equipment_classes = set(
+        EquipmentBreakdown.objects \
+            .values_list('x_equipment_class', flat=True)
+            .distinct()
+    )
+    choices = list(filter(None, equipment_classes))
+    choices.sort()
+    return choices
 
 def contractor_equipment_classes() -> list[str]:
     """
