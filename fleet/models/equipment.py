@@ -347,6 +347,7 @@ class ProviderEquipmentRegistry(Model):
         (True, 'Used'),
         (False, 'New')
     )
+    tpl_expiry = DateField(blank=True, null=True)
 
     acquisition_condition = BooleanField(
         default=True, choices=ACQUISITION_CONDITION

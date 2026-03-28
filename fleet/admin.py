@@ -410,6 +410,7 @@ class ProviderEquipmentRegistryAdmin(ModelAdmin):
         'chassis_serial_number',
         'plate_number',
         'delivery_year',
+        'tpl_expiry',
         'acquisition_condition',
         'capacity',
         'pull_out_date',
