@@ -63,4 +63,9 @@ class ProviderEquipmentRegistryAdminForm(ModelForm):
         else:
             if duplicate_safety.exists():
                 self.add_error('safety_inspection_id', f'Similar safety inspection id duplicated in {duplicate_safety[0]}.')
+        equipment_class = self.instance.equipment.equipment_class.name
+        model_class = self.instance.model.equipment_class.name
+        if equipment_class != model_class:
+            self.add_error('model', f'Selected equipment is a {equipment_class} but selected model is a {model_class}.')
+
 
