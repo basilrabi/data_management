@@ -6,7 +6,8 @@ from .views import (
      data_export_shipments,
      index,
      lay_days_statement_csv,
-     lay_days_statement_pdf
+     lay_days_statement_pdf,
+     monthly_feed
 )
 
 app_name = 'shipment'
@@ -26,5 +27,8 @@ urlpatterns = [
           name='lay-days-pdf'),
      path('statement-csv/<slug:name>',
           lay_days_statement_csv,
-          name='lay-days-csv')
+          name='lay-days-csv'),
+     path('feed/<int:year>/<int:month>',
+          monthly_feed,
+          name='cert')
 ]

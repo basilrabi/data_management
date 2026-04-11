@@ -160,6 +160,7 @@ export DJANGO_SUPERUSER_USERNAME=username
 export DJANGO_SUPERUSER_PASSWORD=password
 export DJANGO_SUPERUSER_EMAIL=sample.email@domain.com
 export datadir=your_cloned_data_directory
+export db_template=data_management_developer_template
 ```
 
 When all environment variables in `~/.bashrc` and variables in `data_management/local.py` are set properly,
@@ -173,6 +174,7 @@ uploading the exported production data and migrating (testing) your changes is d
 workon data_management
 ./manage.py runserver
 ```
+Incase "AttributeError: 'super' object has no attribute 'dicts' and no __dict__ for setting new attributes" appears. recreate new virtual environment and use python3.12 version and repeat "install the requirements" step.
 
 To ensure that `DEBUG` is enabled in your development environment, make sure that `data_management/developer.py` exists:
 

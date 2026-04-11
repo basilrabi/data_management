@@ -25,7 +25,7 @@ from custom.fields import AlphaNumeric, NameField, SpaceLess
 from custom.functions_standalone import month_choices
 from custom.models import Classification, FixedAsset, UnitOfMeasure
 from organization.models import Organization, OrganizationUnit, ServiceProvider
-from ..manager import ProviderEquipmentManager
+from ..manager import InhouseEquipmentManager, ProviderEquipmentManager
 
 
 class AdditionalEquipmentCost(FixedAsset):
@@ -283,6 +283,18 @@ class EquipmentModel(Classification):
         return f'{self.equipment_class.name} - {self.manufacturer.name} {self.name}'
 
 
+class InhouseEquipment(Equipment):
+    """
+    Equipment units of external service providers. The input should only be the
+    providers name, equipment type, and the body number of equipment.
+    """
+    objects = InhouseEquipmentManager()
+
+    class Meta:
+        proxy = True
+        verbose_name_plural = 'inhouse equipment units'
+
+
 class PlateNumber(Model):
     """
     LTO conduction number of equipment
@@ -335,6 +347,7 @@ class ProviderEquipmentRegistry(Model):
         (True, 'Used'),
         (False, 'New')
     )
+    tpl_expiry = DateField(blank=True, null=True)
 
     acquisition_condition = BooleanField(
         default=True, choices=ACQUISITION_CONDITION
