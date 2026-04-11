@@ -1,0 +1,113 @@
+\documentclass[10pt]{article}
+\usepackage{booktabs}
+\usepackage{fontspec}
+\usepackage[
+	a4paper,
+	left=2.5in,
+	right = .5in,
+	top=1in,
+	bottom=.5in]{geometry}
+\usepackage{wallpaper}
+\usepackage{tabularx}
+\pagestyle{empty}
+\setmainfont{Mark Pro}
+
+\usepackage{hyperref}
+
+\hypersetup{
+    pdfborder  = {0 0 0},
+    pdfinfo    = {
+        Title    = {THPAL FEED - {{ date|date:"F" }} {{ feed.year|stringformat:"s" }}},
+        Subject  = {Feed Report},
+        Author   = {Taganito Mining Corporation - Data Management},
+        Keywords = {Limonite, HPAL, Feed, Monthly Report}
+    }
+}
+
+\begin{document}
+\ThisULCornerWallPaper{1}{letter.pdf}
+
+\begin{flushright}
+	{{ feed.created_at|date:" F d, Y"}}
+\end{flushright}
+
+\vspace{2cm}
+
+\begin{center}
+	\textbf{\Large THPAL - Limonite Feeding}\\
+	\textbf{\large {{ date|date:"F" }} {{ feed.year|stringformat:"s" }}}
+\end{center}
+
+	\begin{table}[h!]
+		\centering
+		\renewcommand{\arraystretch}{1.5}
+    	\large
+		\begin{tabularx}{0.9\linewidth}{@{\hspace{3mm}}lXcXcXcXr@{\hspace{3mm}}}
+			\multicolumn{9}{c}{\textbf{Total Limonite Ore Feed with Oversize}} \\
+			\toprule
+			Weight
+				&& \%Ni
+				&& \%Fe
+				&& \%H$_2$O
+				&& \%Co \\
+			{{ feed.computed_total_feed|floatformat:"0g" }}
+				&& {{ feed.ni_ton }}
+				&& {{ feed.fe_ton }}
+				&& {{ feed.percent_moisture }}
+				&& {{ feed.co_ton }} \\
+			\bottomrule
+		\end{tabularx}
+
+	\end{table}
+
+
+	\begin{table}[h!]
+		\centering
+		\renewcommand{\arraystretch}{1.1}
+		\setlength{\tabcolsep}{10pt}
+		\begin{tabular}{l r}
+			\midrule
+			Solid feed to HPAL (DMT) * & {{ feed.dmt_undersize|floatformat:"2g" }} \\
+			Net of Oversize feed to HPAL (WMT) & {{ feed.net_undersize|floatformat:"0g" }} \\
+			Oversize from HPAL feed (WMT) & {{ feed.oversize_final|floatformat:"0g" }}\\
+			Percent of oversize from HPAL feed & {{ feed.percent_os_final|floatformat:"2g" }} \% \\
+			\midrule
+			\multicolumn{2}{l}{\textit{*Source of data from Taganito HPAL Weight and Assay Report}} \\
+		\end{tabular}
+	\end{table}
+
+	\vspace*{.5 in}
+
+	\begin{table}[h!]
+		Reviewed:
+
+		\vspace*{.3 in}
+		\textbf{BASIL ERIC C. RABI} \\
+		Manager, Data and Contracts Management \\
+
+		\vspace*{.2 in}
+		Acknowledged:
+
+		\vspace*{.3 in}
+		\textbf{CHRISTIAN A. JAYO} \\
+		OIC - Mine Production Downstream \\
+
+		\vspace*{.2 in}
+		Noted:
+
+		\vspace*{.3 in}
+		\textbf{VICENTE M. BENAMER} \\
+		Senior Manager, Mine Operations \\
+
+		\vspace*{.2 in}
+		Approved:
+
+		\vspace*{.3 in}
+		\textbf{ARTEMIO E. VALEROSO} \\
+		Senior Vice President/COO - RMM \\
+
+
+
+	\end{table}
+
+\end{document}

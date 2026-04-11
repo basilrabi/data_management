@@ -1,12 +1,14 @@
 import plotly.graph_objects as go
 
+from datetime import datetime
+from django.conf import settings
 from django.db import connection
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render
 from django.template.loader import get_template
-from os.path import join
+from os.path import isfile, join
 from pandas import DataFrame
 from plotly.offline import plot
 from shutil import copyfile
@@ -15,6 +17,7 @@ from tempfile import TemporaryDirectory
 
 from custom.functions import export_sql, get_optimum_print_slice
 from shipment.models.dso import LayDaysStatement
+from .models.feed import THPALFeed
 
 def index(request):
     loading_per_shipment = ''
@@ -286,5 +289,40 @@ def lay_days_statement_pdf(request, name):
         run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         return FileResponse(
             open(join(tempdir, f'{statement.shipment.name}.pdf'), 'rb'),
+            content_type='application/pdf'
+        )
+
+def monthly_feed (request, year, month):
+    context = {
+        'feed': THPALFeed.objects.get(year=year, month=month),
+        'date': datetime.strptime(f'{year}-{int(month):02d}-01', "%Y-%m-%d")
+    }
+    letter_src = join(settings.BASE_DIR,'custom','static','custom','img','letter.pdf')
+    template = get_template('shipment/monthly_feed.tex')
+    rendered_tpl = template.render(context)
+    with TemporaryDirectory() as tempdir:        
+        filename = join(tempdir, f'monthly_feed.tex')
+
+        with open(filename, 'x', encoding='utf-8') as f:
+            f.write(rendered_tpl)
+
+        copyfile(letter_src, join(tempdir, 'letter.pdf'))
+        cmd = ['xelatex', '-interaction=nonstopmode', '-halt-on-error', "monthly_feed.tex"]
+        p1 = run(cmd, cwd=tempdir, stdout=PIPE, stderr=PIPE, text=True)
+        p2 = run(cmd, cwd=tempdir, stdout=PIPE, stderr=PIPE, text=True)
+
+        pdf_path = join(tempdir, 'monthly_feed.pdf')
+        if not isfile(pdf_path):
+            log = (
+                "\n--- pdflatex pass 1 ---\n" + p1.stdout + (p1.stderr or "") +
+                "\n--- pdflatex pass 2 ---\n" + p2.stdout + (p2.stderr or "")
+            )
+            return HttpResponse("Latex failed.\n" + log, content_type='text/plain', status=500)
+        
+        download_name = f"THPAL_Feed_{context['date'].strftime('%B_%Y')}.pdf"
+        return FileResponse(
+            open(join(tempdir,'monthly_feed.pdf'), 'rb'),
+            as_attachment=False,
+            filename=download_name,
             content_type='application/pdf'
         )

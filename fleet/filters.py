@@ -1,5 +1,17 @@
 from django_admin_multiple_choice_list_filter.list_filters import MultipleChoiceListFilter
-from .functions import contractor_equipment_classes, contractor_with_equipment
+from .functions import breakdown_equipment_classes, contractor_equipment_classes, contractor_with_equipment
+
+
+class EquipmentBreakdownClassFilter(MultipleChoiceListFilter):
+    title = 'Equipment Class'
+    parameter_name = 'x_equipment_class__in'
+
+    def lookups(self, request, model_admin):
+        equipment_classes = breakdown_equipment_classes()
+        equipment_class_choices = []
+        for equipment_class in equipment_classes:
+            equipment_class_choices.append((equipment_class, equipment_class))
+        return tuple(equipment_class_choices)
 
 
 class ProviderEquipmentRegistryClassFilter(MultipleChoiceListFilter):

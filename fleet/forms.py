@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from organization.models import Organization
 from .models.equipment import Equipment, ProviderEquipmentRegistry
 
 
@@ -11,6 +12,29 @@ class EquipmentAdminForm(ModelForm):
             owner=self.instance.owner
         )
         error = f'{self.instance.owner}-{self.instance.model.equipment_class.name}-{self.instance.fleet_number:03d} already exists.'
+        error_exists = False
+        if self.instance.id:
+            duplicate = duplicate_equipment.exclude(id=self.instance.id)
+            if duplicate.exists():
+                error_exists = True
+        else:
+            if duplicate_equipment.exists():
+                error_exists = True
+        if error_exists:
+            self.add_error('fleet_number', error)
+            self.add_error('model', error)
+            self.add_error('owner', error)
+
+
+class InhouseEquipmentAdminForm(ModelForm):
+    def full_clean(self):
+        super().full_clean()
+        duplicate_equipment = Equipment.objects.filter(
+            equipment_class=self.instance.model.equipment_class,
+            fleet_number=self.instance.fleet_number,
+            owner=Organization.objects.get(name='TMC')
+        )
+        error = f'TMC-{self.instance.model.equipment_class.name}-{self.instance.fleet_number:03d} already exists.'
         error_exists = False
         if self.instance.id:
             duplicate = duplicate_equipment.exclude(id=self.instance.id)
@@ -39,4 +63,9 @@ class ProviderEquipmentRegistryAdminForm(ModelForm):
         else:
             if duplicate_safety.exists():
                 self.add_error('safety_inspection_id', f'Similar safety inspection id duplicated in {duplicate_safety[0]}.')
+        equipment_class = self.instance.equipment.equipment_class.name
+        model_class = self.instance.model.equipment_class.name
+        if equipment_class != model_class:
+            self.add_error('model', f'Selected equipment is a {equipment_class} but selected model is a {model_class}.')
+
 
