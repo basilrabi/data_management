@@ -164,7 +164,6 @@ class MapDocumentControl(Model):
     def reference_map_no(self):
         return f"{self.map_type.map_prefix}_{self.ridge}{self.number}_{self.year_on_map}"
 
-
     def save(self, *args, **kwargs):
 
         if not self.revision: 
@@ -175,12 +174,11 @@ class MapDocumentControl(Model):
                 self.revision = new_revision
             else:
                 self.revision = 0  
-
         if not self.number: 
             count = MapDocumentControl.objects.filter(map_type=self.map_type, year_on_map=self.year_on_map).count()
             count = MapDocumentControl.objects.filter(map_type=self.map_type, year_on_map=self.year_on_map, ridge=self.ridge).count()
             self.number = str(count + 1).zfill(3)
         super(MapDocumentControl, self).save(*args, **kwargs)
-
+        
     def __str__(self):
         return self.reference_map_no
