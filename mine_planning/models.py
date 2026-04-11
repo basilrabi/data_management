@@ -166,20 +166,28 @@ class MapDocumentControl(Model):
 
 
     def save(self, *args, **kwargs):
-
         if not self.revision: 
             if self.revised_from:  
-                
-                old_revision = self.revised_from.revision
-                new_revision = old_revision + 1
-                self.revision = new_revision
+                self.revision = self.revised_from.revision + 1
             else:
                 self.revision = 0  
 
         if not self.number: 
-            count = MapDocumentControl.objects.filter(map_type=self.map_type, year_on_map=self.year_on_map, ridge=self.ridge).count()
-            self.number = str(count + 1).zfill(3)
-        super(MapDocumentControl, self).save(*args, **kwargs)
+            existing_numbers = MapDocumentControl.objects.filter(
+                map_type=self.map_type, 
+                year_on_map=self.year_on_map,
+                ridge=self.ridge
+            ).values_list('number', flat=True)
 
+            used_ints = {int(n) for n in existing_numbers if n.isdigit()}
+
+            new_num = 1
+            while new_num in used_ints:
+                new_num += 1
+            
+            self.number = str(new_num).zfill(3)
+
+        super(MapDocumentControl, self).save(*args, **kwargs)
+        
     def __str__(self):
         return self.reference_map_no
