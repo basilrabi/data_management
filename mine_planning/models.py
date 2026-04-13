@@ -164,45 +164,6 @@ class MapDocumentControl(Model):
     @property
     def reference_map_no(self):
         return f"{self.map_type.map_prefix}_{self.ridge}{self.number}_{self.year_on_map}"
-
-    """
-    def save(self, *args, **kwargs):
-        if not self.revision: 
-            if self.revised_from:
-                self.revision = self.revised_from.revision + 1
-            else:
-                self.revision = 0
-
-        should_calculate = False
-        
-        if self.pk:
-            old_data = MapDocumentControl.objects.filter(pk=self.pk).values('map_type', 'ridge', 'year_on_map').first()
-            
-            if old_data:
-                if (old_data['map_type'] != self.map_type_id or 
-                    old_data['ridge'] != self.ridge or 
-                    old_data['year_on_map'] != self.year_on_map):
-                    should_calculate = True
-        else:
-            should_calculate = True
-
-        if should_calculate:
-            existing_numbers = MapDocumentControl.objects.filter(
-                map_type=self.map_type, 
-                year_on_map=self.year_on_map,
-                ridge=self.ridge
-            ).exclude(pk=self.pk).values_list('number', flat=True)
-
-            used_ints = {int(n) for n in existing_numbers if n and str(n).isdigit()}
-
-            new_num = 1
-            while new_num in used_ints:
-                new_num += 1
-
-            self.number = str(new_num).zfill(3)
-
-        super(MapDocumentControl, self).save(*args, **kwargs)
-"""
         
     def save(self, *args, **kwargs):
         if not self.revision: 
