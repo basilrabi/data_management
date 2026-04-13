@@ -24,6 +24,7 @@ SELECT
         WHEN tab_a.acquisition_condition THEN 'Used'
         ELSE 'New'
     END condition_during_acquisition,
+    tab_a.tpl_expiry,
     tab_j.value::text || ' ' || tab_k.name AS capacity,
     CASE
         WHEN tab_a.pull_out_date IS NULL THEN 'REGISTERED'
